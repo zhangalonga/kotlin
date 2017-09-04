@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.codegen.intrinsics.IntrinsicMethods;
 import org.jetbrains.kotlin.codegen.state.GenerationState;
 import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper;
 import org.jetbrains.kotlin.config.JvmTarget;
+import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl;
 import org.jetbrains.kotlin.descriptors.*;
 import org.jetbrains.kotlin.lexer.KtTokens;
 import org.jetbrains.kotlin.load.java.JavaVisibilities;
@@ -59,6 +60,7 @@ import static org.jetbrains.kotlin.codegen.CodegenUtilKt.isToArrayFromCollection
 import static org.jetbrains.kotlin.codegen.JvmCodegenUtil.isConstOrHasJvmFieldAnnotation;
 import static org.jetbrains.kotlin.codegen.JvmCodegenUtil.isJvmInterface;
 import static org.jetbrains.kotlin.descriptors.annotations.AnnotationUtilKt.isEffectivelyInlineOnly;
+import static org.jetbrains.kotlin.descriptors.annotations.AnnotationUtilKt.isInlineOnly;
 import static org.jetbrains.kotlin.resolve.DescriptorUtils.*;
 import static org.jetbrains.kotlin.resolve.annotations.AnnotationUtilKt.hasJvmDefaultAnnotation;
 import static org.jetbrains.kotlin.resolve.jvm.AsmTypes.*;
@@ -238,6 +240,10 @@ public class AsmUtil {
             flags |= ACC_SYNTHETIC;
         }
 
+        if (isEffectivelyInlineOnly(functionDescriptor, false)) {
+            flags |= ACC_SYNTHETIC;
+        }
+
         return flags;
     }
 
@@ -346,7 +352,7 @@ public class AsmUtil {
         DeclarationDescriptor containingDeclaration = memberDescriptor.getContainingDeclaration();
         Visibility memberVisibility = memberDescriptor.getVisibility();
 
-        if (isEffectivelyInlineOnly(memberDescriptor)) {
+        if (isInlineOnly(memberDescriptor)) {
             return ACC_PRIVATE;
         }
 
