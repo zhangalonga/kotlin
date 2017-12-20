@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.ir.types.toIrType
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.resolve.calls.components.isVararg
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.source.PsiSourceElement
 
@@ -137,7 +138,7 @@ fun IrMemberAccessExpression.addArguments(args: List<Pair<ParameterDescriptor, I
 fun IrExpression.isNullConst() = this is IrConst<*> && this.kind == IrConstKind.Null
 
 fun IrMemberAccessExpression.usesDefaultArguments(): Boolean =
-    this.descriptor.valueParameters.any { this.getValueArgument(it) == null }
+    this.descriptor.valueParameters.any { this.getValueArgument(it) == null && !it.isVararg}
 
 fun IrFunction.createParameterDeclarations() {
     fun ParameterDescriptor.irValueParameter() = IrValueParameterImpl(
