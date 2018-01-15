@@ -40,7 +40,12 @@ interface LocalNameProvider {
     }
 }
 
-class LocalDeclarationsLowering(val context: BackendContext, val localNameProvider: LocalNameProvider = LocalNameProvider.DEFAULT) : DeclarationContainerLoweringPass {
+class LocalDeclarationsLowering(
+    val context: BackendContext,
+    val localNameProvider: LocalNameProvider = LocalNameProvider.DEFAULT,
+    val loweredConstructorVisibility: Visibility = Visibilities.PUBLIC
+) :
+    DeclarationContainerLoweringPass {
 
     private object DECLARATION_ORIGIN_FIELD_FOR_CAPTURED_VALUE :
         IrDeclarationOriginImpl("FIELD_FOR_CAPTURED_VALUE") {}
@@ -625,8 +630,8 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
             val newValueParameters = createTransformedValueParameters(constructorContext, capturedValues)
 
             newDescriptor.initialize(
-                newValueParameters.map { it.descriptor as ValueParameterDescriptor },
-                Visibilities.PRIVATE,
+            newValueParameters.map { it.descriptor as ValueParameterDescriptor },
+                loweredConstructorVisibility,
                 newTypeParameters
             )
             newDescriptor.returnType = oldDescriptor.returnType
