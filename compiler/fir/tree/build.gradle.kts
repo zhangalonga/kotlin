@@ -14,6 +14,7 @@ dependencies {
 
     compile(project(":compiler:psi"))
     compile(project(":core:descriptors"))
+    compileOnly(project(":compiler:ir.tree"))
 
     compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
 }
