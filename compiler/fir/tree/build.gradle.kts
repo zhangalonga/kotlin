@@ -8,12 +8,15 @@ apply { plugin("jps-compatible") }
 
 jvmTarget = "1.6"
 
+val generatorClasspath by configurations.creating
+
 dependencies {
     val compile by configurations
     val compileOnly by configurations
 
     compile(project(":compiler:psi"))
     compile(project(":core:descriptors"))
+    generatorClasspath(project("visitors-generator"))
     compileOnly(project(":compiler:ir.tree"))
 
     compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
@@ -28,11 +31,6 @@ sourceSets {
     "test" {}
 }
 
-val generatorClasspath by configurations.creating
-
-dependencies {
-    generatorClasspath(project("visitors-generator"))
-}
 
 val generateVisitors by tasks.creating(JavaExec::class) {
     val generationRoot = "$projectDir/src/org/jetbrains/kotlin/fir/"
