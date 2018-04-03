@@ -118,6 +118,8 @@ sourceSets {
 projectTest {
     dependsOn(":dist")
     workingDir = rootDir
+    jvmArgs.removeAll { it.startsWith("-Xmx") }
+    maxHeapSize = "3g"
 }
 
 testsJar {}
