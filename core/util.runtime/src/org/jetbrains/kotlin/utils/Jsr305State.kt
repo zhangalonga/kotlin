@@ -52,7 +52,7 @@ data class Jsr305State(
     val disabled: Boolean get() = this === DISABLED
 
     companion object {
-        const val COMPATQUAL_CHECKER_FRAMEWORK_ANNOTATIONS_SUPPORT_DEFAULT_VALUE = true
+        const val COMPATQUAL_CHECKER_FRAMEWORK_ANNOTATIONS_SUPPORT_DEFAULT_VALUE: Boolean = true
 
         @JvmField
         val DEFAULT: Jsr305State = Jsr305State(ReportLevel.WARN, null, emptyMap())

@@ -42,7 +42,7 @@ class ReflectJavaClass(
                 }
                 .mapNotNull { it.simpleName.takeIf(Name::isValidIdentifier)?.let(Name::identifier) }.toList()
 
-    override fun findInnerClass(name: Name) = klass.declaredClasses
+    override fun findInnerClass(name: Name): ReflectJavaClass? = klass.declaredClasses
             .asSequence()
             .firstOrNull {
                 it.simpleName == name.asString()
@@ -111,9 +111,9 @@ class ReflectJavaClass(
     override val isEnum: Boolean
         get() = klass.isEnum
 
-    override fun equals(other: Any?) = other is ReflectJavaClass && klass == other.klass
+    override fun equals(other: Any?): Boolean = other is ReflectJavaClass && klass == other.klass
 
-    override fun hashCode() = klass.hashCode()
+    override fun hashCode(): Int = klass.hashCode()
 
-    override fun toString() = this::class.java.name + ": " + klass
+    override fun toString(): String = this::class.java.name + ": " + klass
 }

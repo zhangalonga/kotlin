@@ -16,7 +16,7 @@
 
 package org.jetbrains.kotlin.cli.common
 
-val KOTLIN_COMPILER_ENVIRONMENT_KEEPALIVE_PROPERTY = "kotlin.environment.keepalive"
+val KOTLIN_COMPILER_ENVIRONMENT_KEEPALIVE_PROPERTY: String = "kotlin.environment.keepalive"
 
 
 fun String?.toBooleanLenient(): Boolean? = when (this?.toLowerCase()) {

@@ -38,7 +38,7 @@ class KotlinInterfaceDependencyMemberInfoModel<T : KtNamedDeclaration, M : Membe
         }
     }
 
-    override fun isCheckedWhenDisabled(member: M) = false
+    override fun isCheckedWhenDisabled(member: M): Boolean = false
 
-    override fun isFixedAbstract(member: M) = null
+    override fun isFixedAbstract(member: M): Nothing? = null
 }

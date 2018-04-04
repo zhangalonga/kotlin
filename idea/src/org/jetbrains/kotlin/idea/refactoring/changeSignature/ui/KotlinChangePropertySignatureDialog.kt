@@ -57,7 +57,7 @@ class KotlinChangePropertySignatureDialog(
         init()
     }
 
-    override fun getPreferredFocusedComponent() = nameField
+    override fun getPreferredFocusedComponent(): EditorTextField = nameField
 
     override fun createCenterPanel(): JComponent? {
         fun updateReceiverUI() {

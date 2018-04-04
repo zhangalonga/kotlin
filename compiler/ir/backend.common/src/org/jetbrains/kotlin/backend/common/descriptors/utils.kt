@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.serialization.deserialization.descriptors.Deserializ
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedPropertyDescriptor
 import org.jetbrains.kotlin.types.KotlinType
 
-fun ClassDescriptor?.getter2Descriptor(methodName: Name) = this?.let {
+fun ClassDescriptor?.getter2Descriptor(methodName: Name): PropertyGetterDescriptor? = this?.let {
     this.unsubstitutedMemberScope.getContributedDescriptors{true}
             .firstOrNull {
                 it.name == methodName
@@ -32,7 +32,7 @@ fun ClassDescriptor?.getter2Descriptor(methodName: Name) = this?.let {
     }
 }
 
-fun ClassDescriptor?.signature2Descriptor(methodName: Name, signature:Array<KotlinType> = emptyArray()) = this?.let {
+fun ClassDescriptor?.signature2Descriptor(methodName: Name, signature:Array<KotlinType> = emptyArray()): SimpleFunctionDescriptor? = this?.let {
     this
             .unsubstitutedMemberScope
             .getContributedFunctions(methodName, NoLookupLocation.FROM_BACKEND)
@@ -45,16 +45,16 @@ fun ClassDescriptor?.signature2Descriptor(methodName: Name, signature:Array<Kotl
     }
 }
 
-val String.synthesizedName get() = Name.identifier(this.synthesizedString)
+val String.synthesizedName: Name get() = Name.identifier(this.synthesizedString)
 
-val String.synthesizedString get() = "\$$this"
+val String.synthesizedString: String get() = "\$$this"
 
-val DeclarationDescriptor.propertyIfAccessor
+val DeclarationDescriptor.propertyIfAccessor: DeclarationDescriptor
     get() = if (this is PropertyAccessorDescriptor)
                 this.correspondingProperty
                 else this
 
-val CallableMemberDescriptor.propertyIfAccessor
+val CallableMemberDescriptor.propertyIfAccessor: CallableMemberDescriptor
     get() = if (this is PropertyAccessorDescriptor)
                 this.correspondingProperty
                 else this
@@ -68,5 +68,5 @@ val FunctionDescriptor.deserializedPropertyIfAccessor: DeserializedCallableMembe
             error("Unexpected deserializable callable descriptor")
     }
 
-val CallableMemberDescriptor.isDeserializableCallable
+val CallableMemberDescriptor.isDeserializableCallable: Boolean
     get () = (this.propertyIfAccessor is DeserializedCallableMemberDescriptor)

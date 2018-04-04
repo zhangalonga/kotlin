@@ -30,7 +30,7 @@ interface NotPropertiesService {
             return ServiceManager.getService(project, NotPropertiesService::class.java)
         }
 
-        fun getNotProperties(element: PsiElement) =
+        fun getNotProperties(element: PsiElement): Set<FqNameUnsafe> =
                 getInstance(element.project).getNotProperties(element)
     }
 }

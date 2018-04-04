@@ -18,7 +18,7 @@ package org.jetbrains.kotlin.incremental
 
 import java.io.File
 
-fun File.isJavaFile() =
+fun File.isJavaFile(): Boolean =
         extension.equals("java", ignoreCase = true)
 
 fun File.isKotlinFile(): Boolean =

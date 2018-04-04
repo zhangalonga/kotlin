@@ -38,14 +38,14 @@ class IfThenToSafeAccessInspection : AbstractApplicabilityBasedInspection<KtIfEx
         return ifThenToSelectData.clausesReplaceableBySafeCall()
     }
 
-    override fun inspectionTarget(element: KtIfExpression) = element.ifKeyword
+    override fun inspectionTarget(element: KtIfExpression): PsiElement = element.ifKeyword
 
-    override fun inspectionText(element: KtIfExpression) = "Foldable if-then"
+    override fun inspectionText(element: KtIfExpression): String = "Foldable if-then"
 
     override fun inspectionHighlightType(element: KtIfExpression): ProblemHighlightType =
         if (element.shouldBeTransformed()) ProblemHighlightType.GENERIC_ERROR_OR_WARNING else ProblemHighlightType.INFORMATION
 
-    override val defaultFixText = "Simplify foldable if-then"
+    override val defaultFixText: String = "Simplify foldable if-then"
 
     override fun fixText(element: KtIfExpression): String {
         val ifThenToSelectData = element.buildSelectTransformationData()
@@ -60,7 +60,7 @@ class IfThenToSafeAccessInspection : AbstractApplicabilityBasedInspection<KtIfEx
         }
     }
 
-    override val startFixInWriteAction = false
+    override val startFixInWriteAction: Boolean = false
 
     override fun applyTo(element: PsiElement, project: Project, editor: Editor?) {
         val ifExpression = element.getParentOfType<KtIfExpression>(true) ?: return

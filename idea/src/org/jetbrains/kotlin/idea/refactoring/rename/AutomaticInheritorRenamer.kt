@@ -42,16 +42,16 @@ class AutomaticInheritorRenamer(klass: KtClass, newName: String): AutomaticRenam
         suggestAllNames(klass.name, newName)
     }
 
-    override fun getDialogTitle() = RefactoringBundle.message("rename.inheritors.title")
-    override fun getDialogDescription() = RefactoringBundle.message("rename.inheritors.with.the.following.names.to")
-    override fun entityName() = RefactoringBundle.message("entity.name.inheritor")
+    override fun getDialogTitle(): String = RefactoringBundle.message("rename.inheritors.title")
+    override fun getDialogDescription(): String = RefactoringBundle.message("rename.inheritors.with.the.following.names.to")
+    override fun entityName(): String = RefactoringBundle.message("entity.name.inheritor")
 }
 
 class AutomaticInheritorRenamerFactory : AutomaticRenamerFactory {
-    override fun isApplicable(element: PsiElement) = element is KtClass
-    override fun getOptionName() = RefactoringBundle.message("rename.inheritors")
-    override fun isEnabled() = JavaRefactoringSettings.getInstance().isToRenameInheritors
-    override fun setEnabled(enabled: Boolean) = JavaRefactoringSettings.getInstance().setRenameInheritors(enabled)
+    override fun isApplicable(element: PsiElement): Boolean = element is KtClass
+    override fun getOptionName(): String? = RefactoringBundle.message("rename.inheritors")
+    override fun isEnabled(): Boolean = JavaRefactoringSettings.getInstance().isToRenameInheritors
+    override fun setEnabled(enabled: Boolean): Unit = JavaRefactoringSettings.getInstance().setRenameInheritors(enabled)
 
     override fun createRenamer(element: PsiElement, newName: String, usages: Collection<UsageInfo>): AutomaticRenamer {
         return AutomaticInheritorRenamer(element as KtClass, newName)

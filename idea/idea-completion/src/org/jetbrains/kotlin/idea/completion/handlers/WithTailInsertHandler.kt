@@ -97,12 +97,12 @@ class WithTailInsertHandler(val tailText: String,
     }
 
     companion object {
-        val COMMA = WithTailInsertHandler(",", spaceBefore = false, spaceAfter = true /*TODO: use code style option*/)
-        val RPARENTH = WithTailInsertHandler(")", spaceBefore = false, spaceAfter = false)
-        val RBRACKET = WithTailInsertHandler("]", spaceBefore = false, spaceAfter = false)
-        val RBRACE = WithTailInsertHandler("}", spaceBefore = true, spaceAfter = false)
-        val ELSE = WithTailInsertHandler("else", spaceBefore = true, spaceAfter = true)
-        val EQ = WithTailInsertHandler("=", spaceBefore = true, spaceAfter = true) /*TODO: use code style options*/
-        val SPACE = WithTailInsertHandler(" ", spaceBefore = false, spaceAfter = false, overwriteText = true)
+        val COMMA: WithTailInsertHandler = WithTailInsertHandler(",", spaceBefore = false, spaceAfter = true /*TODO: use code style option*/)
+        val RPARENTH: WithTailInsertHandler = WithTailInsertHandler(")", spaceBefore = false, spaceAfter = false)
+        val RBRACKET: WithTailInsertHandler = WithTailInsertHandler("]", spaceBefore = false, spaceAfter = false)
+        val RBRACE: WithTailInsertHandler = WithTailInsertHandler("}", spaceBefore = true, spaceAfter = false)
+        val ELSE: WithTailInsertHandler = WithTailInsertHandler("else", spaceBefore = true, spaceAfter = true)
+        val EQ: WithTailInsertHandler = WithTailInsertHandler("=", spaceBefore = true, spaceAfter = true) /*TODO: use code style options*/
+        val SPACE: WithTailInsertHandler = WithTailInsertHandler(" ", spaceBefore = false, spaceAfter = false, overwriteText = true)
     }
 }

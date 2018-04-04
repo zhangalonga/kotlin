@@ -55,16 +55,16 @@ import org.jetbrains.org.objectweb.asm.util.TraceMethodVisitor
 import java.io.PrintWriter
 import java.io.StringWriter
 
-const val GENERATE_SMAP = true
-const val API = Opcodes.ASM5
-const val NUMBERED_FUNCTION_PREFIX = "kotlin/jvm/functions/Function"
-const val INLINE_FUN_VAR_SUFFIX = "\$iv"
+const val GENERATE_SMAP: Boolean = true
+const val API: Int = Opcodes.ASM5
+const val NUMBERED_FUNCTION_PREFIX: String = "kotlin/jvm/functions/Function"
+const val INLINE_FUN_VAR_SUFFIX: String = "\$iv"
 
 internal const val THIS = "this"
 internal const val THIS_0 = "this$0"
 internal const val FIRST_FUN_LABEL = "$$$$\$ROOT$$$$$"
 internal const val SPECIAL_TRANSFORMATION_NAME = "\$special"
-const val INLINE_TRANSFORMATION_SUFFIX = "\$inlined"
+const val INLINE_TRANSFORMATION_SUFFIX: String = "\$inlined"
 internal const val INLINE_CALL_TRANSFORMATION_SUFFIX = "$" + INLINE_TRANSFORMATION_SUFFIX
 internal const val INLINE_FUN_THIS_0_SUFFIX = "\$inline_fun"
 internal const val DEFAULT_LAMBDA_FAKE_CALL = "$$\$DEFAULT_LAMBDA_FAKE_CALL$$$"
@@ -242,7 +242,7 @@ internal fun isAnonymousClass(internalName: String) =
     !isSamWrapper(internalName) &&
             internalName.substringAfterLast('/').substringAfterLast("$", "").isInteger()
 
-fun wrapWithMaxLocalCalc(methodNode: MethodNode) =
+fun wrapWithMaxLocalCalc(methodNode: MethodNode): MaxStackFrameSizeAndLocalsCalculator =
     MaxStackFrameSizeAndLocalsCalculator(API, methodNode.access, methodNode.desc, methodNode)
 
 private fun String.isInteger(radix: Int = 10) = toIntOrNull(radix) != null

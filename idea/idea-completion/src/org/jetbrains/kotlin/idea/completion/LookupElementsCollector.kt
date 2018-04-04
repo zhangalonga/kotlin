@@ -38,7 +38,7 @@ class LookupElementsCollector(
         private val filter: ((LookupElement) -> Boolean)?
 ) {
 
-    var bestMatchingDegree = Int.MIN_VALUE
+    var bestMatchingDegree: Int = Int.MIN_VALUE
         private set
 
     private val elements = ArrayList<LookupElement>()

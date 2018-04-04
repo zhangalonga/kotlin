@@ -28,15 +28,15 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValue
 
 sealed class AccessTarget {
     class Declaration(val descriptor: VariableDescriptor) : AccessTarget() {
-        override fun equals(other: Any?) = other is Declaration && descriptor == other.descriptor
+        override fun equals(other: Any?): Boolean = other is Declaration && descriptor == other.descriptor
 
-        override fun hashCode() = descriptor.hashCode()
+        override fun hashCode(): Int = descriptor.hashCode()
     }
 
     class Call(val resolvedCall: ResolvedCall<*>) : AccessTarget() {
-        override fun equals(other: Any?) = other is Call && resolvedCall == other.resolvedCall
+        override fun equals(other: Any?): Boolean = other is Call && resolvedCall == other.resolvedCall
 
-        override fun hashCode() = resolvedCall.hashCode()
+        override fun hashCode(): Int = resolvedCall.hashCode()
     }
 
     object BlackBox : AccessTarget()

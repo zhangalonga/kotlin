@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.utils.addIfNotNull
 import java.util.*
 
 class TypeBoundsImpl(override val typeVariable: TypeVariable) : TypeBounds {
-    override val bounds = ArrayList<Bound>()
+    override val bounds: ArrayList<Bound> = ArrayList<Bound>()
 
     private var resultValues: Collection<KotlinType>? = null
 

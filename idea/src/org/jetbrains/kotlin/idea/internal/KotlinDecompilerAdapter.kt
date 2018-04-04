@@ -38,8 +38,8 @@ fun showDecompiledCode(sourceFile: KtFile) {
     }
 }
 
-val KOTLIN_DECOMPILED_FOLDER = "kotlinDecompiled"
-val KOTLIN_DECOMPILED_ROOT = "dummy://$KOTLIN_DECOMPILED_FOLDER"
+val KOTLIN_DECOMPILED_FOLDER: String = "kotlinDecompiled"
+val KOTLIN_DECOMPILED_ROOT: String = "dummy://$KOTLIN_DECOMPILED_FOLDER"
 
 fun getOrCreateDummyRoot(): VirtualFile =
     VirtualFileManager.getInstance().refreshAndFindFileByUrl(KOTLIN_DECOMPILED_ROOT) ?:

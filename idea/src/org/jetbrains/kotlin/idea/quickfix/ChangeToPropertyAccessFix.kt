@@ -29,9 +29,9 @@ class ChangeToPropertyAccessFix(
         element: KtCallExpression,
         private val isObjectCall: Boolean) : KotlinQuickFixAction<KtCallExpression>(element) {
 
-    override fun getFamilyName() = if (isObjectCall) "Remove invocation" else "Change to property access"
+    override fun getFamilyName(): String = if (isObjectCall) "Remove invocation" else "Change to property access"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

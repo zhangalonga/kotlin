@@ -11,5 +11,5 @@ import org.jetbrains.kotlin.fir.expressions.FirBody
 import org.jetbrains.kotlin.fir.expressions.FirStatement
 
 class FirBlockBodyImpl(override val session: FirSession, override val psi: PsiElement?) : FirBody {
-    override val statements = mutableListOf<FirStatement>()
+    override val statements: MutableList<FirStatement> = mutableListOf()
 }

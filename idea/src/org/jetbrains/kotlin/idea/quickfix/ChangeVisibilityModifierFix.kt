@@ -24,9 +24,9 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
 
 class ChangeVisibilityModifierFix(element: KtDeclaration) : KotlinQuickFixAction<KtDeclaration>(element) {
-    override fun getFamilyName() = "Use inherited visibility"
+    override fun getFamilyName(): String = "Use inherited visibility"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

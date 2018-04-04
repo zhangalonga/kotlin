@@ -133,8 +133,8 @@ abstract class AbstractKapt3Extension(
         val mapDiagnosticLocations: Boolean,
         val compilerConfiguration: CompilerConfiguration
 ) : PartialAnalysisHandlerExtension() {
-    val compileClasspath = compileClasspath.distinct()
-    val annotationProcessingClasspath = annotationProcessingClasspath.distinct()
+    val compileClasspath: List<File> = compileClasspath.distinct()
+    val annotationProcessingClasspath: List<File> = annotationProcessingClasspath.distinct()
 
     private var annotationProcessingComplete = false
 

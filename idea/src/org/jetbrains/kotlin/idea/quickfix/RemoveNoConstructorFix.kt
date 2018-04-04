@@ -28,9 +28,9 @@ import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 
 class RemoveNoConstructorFix(constructor: KtValueArgumentList) : KotlinQuickFixAction<KtValueArgumentList>(constructor) {
 
-    override fun getText() = "Remove constructor call"
+    override fun getText(): String = "Remove constructor call"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val superTypeCallEntry = element?.getStrictParentOfType<KtSuperTypeCallEntry>() ?: return

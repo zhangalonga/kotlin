@@ -35,7 +35,7 @@ import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
 sealed class PluginUpdateStatus {
-    val timestamp = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis()
 
     object LatestVersionInstalled : PluginUpdateStatus()
 

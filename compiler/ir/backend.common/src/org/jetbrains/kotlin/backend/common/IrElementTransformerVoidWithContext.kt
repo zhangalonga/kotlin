@@ -65,13 +65,13 @@ abstract class IrElementTransformerVoidWithContext : IrElementTransformerVoid() 
         return result
     }
 
-    protected val currentFile get() = scopeStack.lastOrNull { it.irElement is IrFile }!!.irElement as IrFile
-    protected val currentClass get() = scopeStack.lastOrNull { it.scope.scopeOwner is ClassDescriptor }
-    protected val currentFunction get() = scopeStack.lastOrNull { it.scope.scopeOwner is FunctionDescriptor }
-    protected val currentProperty get() = scopeStack.lastOrNull { it.scope.scopeOwner is PropertyDescriptor }
-    protected val currentScope get() = scopeStack.peek()
-    protected val parentScope get() = if (scopeStack.size < 2) null else scopeStack[scopeStack.size - 2]
-    protected val allScopes get() = scopeStack
+    protected val currentFile: IrFile get() = scopeStack.lastOrNull { it.irElement is IrFile }!!.irElement as IrFile
+    protected val currentClass: ScopeWithIr? get() = scopeStack.lastOrNull { it.scope.scopeOwner is ClassDescriptor }
+    protected val currentFunction: ScopeWithIr? get() = scopeStack.lastOrNull { it.scope.scopeOwner is FunctionDescriptor }
+    protected val currentProperty: ScopeWithIr? get() = scopeStack.lastOrNull { it.scope.scopeOwner is PropertyDescriptor }
+    protected val currentScope: ScopeWithIr? get() = scopeStack.peek()
+    protected val parentScope: ScopeWithIr? get() = if (scopeStack.size < 2) null else scopeStack[scopeStack.size - 2]
+    protected val allScopes: MutableList<ScopeWithIr> get() = scopeStack
 
     fun printScopeStack() {
         scopeStack.forEach { println(it.scope.scopeOwner) }
@@ -133,12 +133,12 @@ abstract class IrElementVisitorVoidWithContext : IrElementVisitorVoid {
         scopeStack.pop()
     }
 
-    protected val currentFile get() = scopeStack.lastOrNull { it.scope.scopeOwner is PackageFragmentDescriptor }
-    protected val currentClass get() = scopeStack.lastOrNull { it.scope.scopeOwner is ClassDescriptor }
-    protected val currentFunction get() = scopeStack.lastOrNull { it.scope.scopeOwner is FunctionDescriptor }
-    protected val currentProperty get() = scopeStack.lastOrNull { it.scope.scopeOwner is PropertyDescriptor }
-    protected val currentScope get() = scopeStack.peek()
-    protected val parentScope get() = if (scopeStack.size < 2) null else scopeStack[scopeStack.size - 2]
+    protected val currentFile: ScopeWithIr? get() = scopeStack.lastOrNull { it.scope.scopeOwner is PackageFragmentDescriptor }
+    protected val currentClass: ScopeWithIr? get() = scopeStack.lastOrNull { it.scope.scopeOwner is ClassDescriptor }
+    protected val currentFunction: ScopeWithIr? get() = scopeStack.lastOrNull { it.scope.scopeOwner is FunctionDescriptor }
+    protected val currentProperty: ScopeWithIr? get() = scopeStack.lastOrNull { it.scope.scopeOwner is PropertyDescriptor }
+    protected val currentScope: ScopeWithIr? get() = scopeStack.peek()
+    protected val parentScope: ScopeWithIr? get() = if (scopeStack.size < 2) null else scopeStack[scopeStack.size - 2]
 
     fun printScopeStack() {
         scopeStack.forEach { println(it.scope.scopeOwner) }

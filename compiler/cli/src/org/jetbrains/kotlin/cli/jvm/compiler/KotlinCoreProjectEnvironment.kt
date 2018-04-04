@@ -26,5 +26,5 @@ open class KotlinCoreProjectEnvironment(
         disposable: Disposable,
         applicationEnvironment: JavaCoreApplicationEnvironment
 ) : JavaCoreProjectEnvironment(disposable, applicationEnvironment) {
-    override fun createCoreFileManager() = KotlinCliJavaFileManagerImpl(PsiManager.getInstance(project))
+    override fun createCoreFileManager(): KotlinCliJavaFileManagerImpl = KotlinCliJavaFileManagerImpl(PsiManager.getInstance(project))
 }

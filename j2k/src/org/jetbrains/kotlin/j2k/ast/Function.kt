@@ -83,5 +83,5 @@ class AnonymousFunction(
 ): Expression() {
     private val function = Function(Identifier.Empty, Annotations.Empty, Modifiers.Empty, returnType, typeParameterList, parameterList, body, false)
 
-    override fun generateCode(builder: CodeBuilder) = function.generateCode(builder)
+    override fun generateCode(builder: CodeBuilder): Unit = function.generateCode(builder)
 }

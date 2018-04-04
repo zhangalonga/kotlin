@@ -11,4 +11,4 @@ fun RepositoryHandler.androidDxJarRepo(project: Project): IvyArtifactRepository 
     artifactPattern("${baseDir.canonicalPath}/[organisation]/[module]/[revision]/[artifact](-[classifier]).jar")
 }
 
-fun Project.androidDxJar() = "kotlin.build.custom.deps:android-dx:${rootProject.extra["versions.androidBuildTools"]}"
+fun Project.androidDxJar(): String = "kotlin.build.custom.deps:android-dx:${rootProject.extra["versions.androidBuildTools"]}"

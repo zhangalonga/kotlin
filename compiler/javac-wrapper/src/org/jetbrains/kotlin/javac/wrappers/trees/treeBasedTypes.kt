@@ -62,13 +62,13 @@ abstract class TreeBasedType<out T : JCTree>(
     override val isDeprecatedInJavaDoc: Boolean
         get() = false
 
-    override fun findAnnotation(fqName: FqName) = annotations.find { it.classId?.asSingleFqName() == fqName }
+    override fun findAnnotation(fqName: FqName): JavaAnnotation? = annotations.find { it.classId?.asSingleFqName() == fqName }
 
-    override fun equals(other: Any?) = (other as? TreeBasedType<*>)?.tree == tree
+    override fun equals(other: Any?): Boolean = (other as? TreeBasedType<*>)?.tree == tree
 
-    override fun hashCode() = tree.hashCode()
+    override fun hashCode(): Int = tree.hashCode()
 
-    override fun toString() = tree.toString()
+    override fun toString(): String = tree.toString()
 
 }
 
@@ -183,7 +183,7 @@ class TreeBasedTypeParameterType(override val classifier: JavaTypeParameter) : J
     override val presentableText: String
         get() = classifierQualifiedName
 
-    override fun findAnnotation(fqName: FqName) = annotations.find { it.classId?.asSingleFqName() == fqName }
+    override fun findAnnotation(fqName: FqName): JavaAnnotation? = annotations.find { it.classId?.asSingleFqName() == fqName }
 
     override val isDeprecatedInJavaDoc: Boolean
         get() = false

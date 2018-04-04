@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.android.synthetic.res.ResourceIdentifier
 
 object AndroidConst {
     val SYNTHETIC_PACKAGE: String = "kotlinx.android.synthetic"
-    val SYNTHETIC_PACKAGE_PATH_LENGTH = SYNTHETIC_PACKAGE.count { it == '.' } + 1
+    val SYNTHETIC_PACKAGE_PATH_LENGTH: Int = SYNTHETIC_PACKAGE.count { it == '.' } + 1
 
     val SYNTHETIC_SUBPACKAGES: List<String> = SYNTHETIC_PACKAGE.split('.').fold(arrayListOf<String>()) { list, segment ->
         val prevSegment = list.lastOrNull()?.let { "$it." } ?: ""
@@ -33,26 +33,26 @@ object AndroidConst {
     val CLASS_ATTRIBUTE_NO_NAMESPACE: String = "class"
 
     private val IDENTIFIER_WORD_REGEX = "[(?:\\p{L}\\p{M}*)0-9_\\.\\:\\-]+"
-    val IDENTIFIER_REGEX = "^@(\\+)?(($IDENTIFIER_WORD_REGEX)\\:)?id\\/($IDENTIFIER_WORD_REGEX)$".toRegex()
+    val IDENTIFIER_REGEX: Regex = "^@(\\+)?(($IDENTIFIER_WORD_REGEX)\\:)?id\\/($IDENTIFIER_WORD_REGEX)$".toRegex()
 
-    val CLEAR_FUNCTION_NAME = "clearFindViewByIdCache"
+    val CLEAR_FUNCTION_NAME: String = "clearFindViewByIdCache"
 
 
     //TODO FqName / ClassId
 
-    val VIEW_FQNAME = "android.view.View"
-    val VIEWSTUB_FQNAME = "android.view.ViewStub"
+    val VIEW_FQNAME: String = "android.view.View"
+    val VIEWSTUB_FQNAME: String = "android.view.ViewStub"
 
-    val ACTIVITY_FQNAME = "android.app.Activity"
-    val FRAGMENT_FQNAME = "android.app.Fragment"
-    val DIALOG_FQNAME = "android.app.Dialog"
-    val SUPPORT_V4_PACKAGE = "android.support.v4"
-    val SUPPORT_FRAGMENT_FQNAME = "$SUPPORT_V4_PACKAGE.app.Fragment"
-    val SUPPORT_FRAGMENT_ACTIVITY_FQNAME = "$SUPPORT_V4_PACKAGE.app.FragmentActivity"
+    val ACTIVITY_FQNAME: String = "android.app.Activity"
+    val FRAGMENT_FQNAME: String = "android.app.Fragment"
+    val DIALOG_FQNAME: String = "android.app.Dialog"
+    val SUPPORT_V4_PACKAGE: String = "android.support.v4"
+    val SUPPORT_FRAGMENT_FQNAME: String = "$SUPPORT_V4_PACKAGE.app.Fragment"
+    val SUPPORT_FRAGMENT_ACTIVITY_FQNAME: String = "$SUPPORT_V4_PACKAGE.app.FragmentActivity"
 
-    val IGNORED_XML_WIDGET_TYPES = setOf("requestFocus", "merge", "tag", "check", "blink")
+    val IGNORED_XML_WIDGET_TYPES: Set<String> = setOf("requestFocus", "merge", "tag", "check", "blink")
 
-    val FQNAME_RESOLVE_PACKAGES = listOf("android.widget", "android.webkit", "android.view")
+    val FQNAME_RESOLVE_PACKAGES: List<String> = listOf("android.widget", "android.webkit", "android.view")
 }
 
 fun androidIdToName(id: String): ResourceIdentifier? {
@@ -66,7 +66,7 @@ fun androidIdToName(id: String): ResourceIdentifier? {
 }
 
 // See also AndroidResourceUtil#getFieldNameByResourceName()
-fun getJavaIdentifierNameForResourceName(styleName: String) = buildString {
+fun getJavaIdentifierNameForResourceName(styleName: String): String = buildString {
     for (char in styleName) {
         when (char) {
             '.', '-', ':' -> append('_')

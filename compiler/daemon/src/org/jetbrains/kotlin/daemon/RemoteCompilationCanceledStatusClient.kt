@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.progress.CompilationCanceledException
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 
-val CANCELED_STATUS_CHECK_THRESHOLD_NS = TimeUnit.MILLISECONDS.toNanos(100)
+val CANCELED_STATUS_CHECK_THRESHOLD_NS: Long = TimeUnit.MILLISECONDS.toNanos(100)
 
 class RemoteCompilationCanceledStatusClient(val facade: CompilerCallbackServicesFacade, val profiler: Profiler = DummyProfiler()): CompilationCanceledStatus {
 

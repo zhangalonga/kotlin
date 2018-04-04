@@ -38,7 +38,7 @@ abstract class IrBuiltinOperatorDescriptorBase(containingDeclaration: Declaratio
     override fun getOriginal(): SimpleFunctionDescriptor = this
     override fun substitute(substitutor: TypeSubstitutor): FunctionDescriptor = throw UnsupportedOperationException()
     override fun getOverriddenDescriptors(): Collection<FunctionDescriptor> = emptyList()
-    override fun setOverriddenDescriptors(overriddenDescriptors: Collection<CallableMemberDescriptor>) =
+    override fun setOverriddenDescriptors(overriddenDescriptors: Collection<CallableMemberDescriptor>): Nothing =
         throw UnsupportedOperationException()
 
     override fun getTypeParameters(): List<TypeParameterDescriptor> = emptyList()
@@ -63,10 +63,10 @@ abstract class IrBuiltinOperatorDescriptorBase(containingDeclaration: Declaratio
     override fun copy(
         newOwner: DeclarationDescriptor?, modality: Modality?, visibility: Visibility?,
         kind: CallableMemberDescriptor.Kind?, copyOverrides: Boolean
-    ) =
+    ): Nothing =
         throw UnsupportedOperationException()
 
-    override fun newCopyBuilder() =
+    override fun newCopyBuilder(): Nothing =
         throw UnsupportedOperationException()
 
     override fun <R : Any?, D : Any?> accept(visitor: DeclarationDescriptorVisitor<R, D>, data: D): R {

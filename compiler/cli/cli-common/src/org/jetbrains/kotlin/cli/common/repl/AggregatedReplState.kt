@@ -92,7 +92,7 @@ open class AggregatedReplStageState<T1, T2>(val state1: IReplStageState<T1>, val
                 else -> super.asState(target)
             }
 
-    override fun getNextLineNo() = state1.getNextLineNo()
+    override fun getNextLineNo(): Int = state1.getNextLineNo()
 
     override val currentGeneration: Int get() = state1.currentGeneration
 }

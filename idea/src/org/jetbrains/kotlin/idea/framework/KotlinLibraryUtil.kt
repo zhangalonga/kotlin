@@ -11,7 +11,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.roots.libraries.Library
 
 private val MAVEN_SYSTEM_ID = ProjectSystemId("MAVEN")
-val GRADLE_SYSTEM_ID = ProjectSystemId("GRADLE")
+val GRADLE_SYSTEM_ID: ProjectSystemId = ProjectSystemId("GRADLE")
 
 fun isExternalLibrary(library: Library): Boolean {
     return ExternalSystemApiUtil.isExternalSystemLibrary(library, ProjectSystemId.IDE) ||
@@ -20,5 +20,5 @@ fun isExternalLibrary(library: Library): Boolean {
 }
 
 
-fun Module.isGradleModule() =
+fun Module.isGradleModule(): Boolean =
     ExternalSystemApiUtil.isExternalSystemAwareModule(GRADLE_SYSTEM_ID, this)

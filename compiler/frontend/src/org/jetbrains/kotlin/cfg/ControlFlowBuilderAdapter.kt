@@ -160,7 +160,7 @@ abstract class ControlFlowBuilderAdapter : ControlFlowBuilder {
         delegateBuilder.returnNoValue(returnExpression, subroutine)
     }
 
-    override fun read(element: KtElement, target: AccessTarget, receiverValues: Map<PseudoValue, ReceiverValue>) =
+    override fun read(element: KtElement, target: AccessTarget, receiverValues: Map<PseudoValue, ReceiverValue>): ReadValueInstruction =
         delegateBuilder.read(element, target, receiverValues)
 
     override fun write(

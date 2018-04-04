@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 class SamWithReceiverGradleSubplugin : Plugin<Project> {
     companion object {
-        fun isEnabled(project: Project) = project.plugins.findPlugin(SamWithReceiverGradleSubplugin::class.java) != null
+        fun isEnabled(project: Project): Boolean = project.plugins.findPlugin(SamWithReceiverGradleSubplugin::class.java) != null
 
         fun getSamWithReceiverExtension(project: Project): SamWithReceiverExtension {
             return project.extensions.getByType(SamWithReceiverExtension::class.java)
@@ -66,14 +66,14 @@ class SamWithReceiverGradleSubplugin : Plugin<Project> {
 
 class SamWithReceiverKotlinGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
     companion object {
-        val SAM_WITH_RECEIVER_GROUP_NAME = "org.jetbrains.kotlin"
-        val SAM_WITH_RECEIVER_ARTIFACT_NAME = "kotlin-sam-with-receiver"
+        val SAM_WITH_RECEIVER_GROUP_NAME: String = "org.jetbrains.kotlin"
+        val SAM_WITH_RECEIVER_ARTIFACT_NAME: String = "kotlin-sam-with-receiver"
 
         private val ANNOTATION_ARG_NAME = "annotation"
         private val PRESET_ARG_NAME = "preset"
     }
 
-    override fun isApplicable(project: Project, task: AbstractCompile) = SamWithReceiverGradleSubplugin.isEnabled(project)
+    override fun isApplicable(project: Project, task: AbstractCompile): Boolean = SamWithReceiverGradleSubplugin.isEnabled(project)
 
     override fun apply(
             project: Project,
@@ -100,7 +100,7 @@ class SamWithReceiverKotlinGradleSubplugin : KotlinGradleSubplugin<AbstractCompi
         return options
     }
 
-    override fun getArtifactName() = "kotlin-sam-with-receiver"
-    override fun getGroupName() = "org.jetbrains.kotlin"
-    override fun getCompilerPluginId() = "org.jetbrains.kotlin.samWithReceiver"
+    override fun getArtifactName(): String = "kotlin-sam-with-receiver"
+    override fun getGroupName(): String = "org.jetbrains.kotlin"
+    override fun getCompilerPluginId(): String = "org.jetbrains.kotlin.samWithReceiver"
 }

@@ -55,7 +55,7 @@ class KotlinMavenPluginPhaseInspection : DomElementsInspection<MavenDomProjectMo
         private val JS_STDLIB_MAVEN_ID = MavenId(KotlinMavenConfigurator.GROUP_ID, MAVEN_JS_STDLIB_ID, null)
     }
 
-    override fun getStaticDescription() = "Reports kotlin-maven-plugin configuration issues"
+    override fun getStaticDescription(): String = "Reports kotlin-maven-plugin configuration issues"
 
     override fun checkFileElement(domFileElement: DomFileElement<MavenDomProjectModel>?, holder: DomElementAnnotationHolder?) {
         if (domFileElement == null || holder == null) {

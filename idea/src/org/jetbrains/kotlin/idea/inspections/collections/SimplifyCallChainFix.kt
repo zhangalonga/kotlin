@@ -24,9 +24,9 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 class SimplifyCallChainFix(val newName: String) : LocalQuickFix {
-    override fun getName() = "Merge call chain to '$newName'"
+    override fun getName(): String = "Merge call chain to '$newName'"
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         (descriptor.psiElement as? KtQualifiedExpression)?.let { secondQualifiedExpression ->

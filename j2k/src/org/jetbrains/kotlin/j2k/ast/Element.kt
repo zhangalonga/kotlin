@@ -58,8 +58,8 @@ data class CommentsAndSpacesInheritance(
         val commentsInside: Boolean = true
 ) {
     companion object {
-        val NO_SPACES = CommentsAndSpacesInheritance(spacesBefore = SpacesInheritance.NONE)
-        val LINE_BREAKS = CommentsAndSpacesInheritance(spacesBefore = SpacesInheritance.LINE_BREAKS)
+        val NO_SPACES: CommentsAndSpacesInheritance = CommentsAndSpacesInheritance(spacesBefore = SpacesInheritance.NONE)
+        val LINE_BREAKS: CommentsAndSpacesInheritance = CommentsAndSpacesInheritance(spacesBefore = SpacesInheritance.LINE_BREAKS)
     }
 }
 
@@ -102,7 +102,7 @@ abstract class Element {
     }
 
     companion object {
-        var saveCreationStacktraces = false
+        var saveCreationStacktraces: Boolean = false
     }
 }
 

@@ -32,11 +32,12 @@ import org.jetbrains.kotlin.j2k.ReferenceSearcher
 import java.util.*
 
 object IdeaReferenceSearcher: ReferenceSearcher {
-    override fun findLocalUsages(element: PsiElement, scope: PsiElement) = ReferencesSearch.search(element, LocalSearchScope(scope)).findAll()
+    override fun findLocalUsages(element: PsiElement, scope: PsiElement): MutableCollection<PsiReference> =
+        ReferencesSearch.search(element, LocalSearchScope(scope)).findAll()
 
-    override fun hasInheritors(`class`: PsiClass) = ClassInheritorsSearch.search(`class`, false).any()
+    override fun hasInheritors(`class`: PsiClass): Boolean = ClassInheritorsSearch.search(`class`, false).any()
 
-    override fun hasOverrides(method: PsiMethod) = OverridingMethodsSearch.search(method, false).any()
+    override fun hasOverrides(method: PsiMethod): Boolean = OverridingMethodsSearch.search(method, false).any()
 
     override fun findUsagesForExternalCodeProcessing(element: PsiElement, searchJava: Boolean, searchKotlin: Boolean): Collection<PsiReference> {
         val fileTypes = ArrayList<FileType>()

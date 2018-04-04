@@ -21,11 +21,11 @@ class FirDefaultSetterValueParameter(
     psi: PsiElement?,
     override var returnType: FirType
 ) : FirAbstractNamedAnnotatedDeclaration(session, psi, IrDeclarationKind.VALUE_PARAMETER, name), FirValueParameter {
-    override val isCrossinline = false
+    override val isCrossinline: Boolean = false
 
-    override val isNoinline = false
+    override val isNoinline: Boolean = false
 
-    override val isVararg = false
+    override val isVararg: Boolean = false
 
     override val defaultValue: FirExpression? = null
 
@@ -36,6 +36,6 @@ class FirDefaultSetterValueParameter(
     }
 
     companion object {
-        val name = Name.identifier("value")
+        val name: Name = Name.identifier("value")
     }
 }

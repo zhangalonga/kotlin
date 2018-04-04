@@ -49,9 +49,9 @@ class KotlinBasicStepMethodFilter(
             (targetDescriptor as? FunctionDescriptor)?.let { SamCodegenUtil.getOriginalIfSamAdapter(it) } ?: targetDescriptor
     )
 
-    override fun getCallingExpressionLines() = myCallingExpressionLines
+    override fun getCallingExpressionLines(): Range<Int> = myCallingExpressionLines
 
-    override fun getMethodName() = myTargetMethodName
+    override fun getMethodName(): String = myTargetMethodName
 
     override fun locationMatches(process: DebugProcessImpl, location: Location): Boolean {
         val targetDescriptor = _targetDescriptor.get() ?: return true

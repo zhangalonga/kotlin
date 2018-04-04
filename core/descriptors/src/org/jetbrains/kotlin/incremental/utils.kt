@@ -45,4 +45,4 @@ fun LookupTracker.recordPackageLookup(from: LookupLocation, packageFqName: Strin
     record(location.filePath, position, packageFqName, ScopeKind.PACKAGE, name)
 }
 
-const val ANDROID_LAYOUT_CONTENT_LOOKUP_NAME = "<LAYOUT-CONTENT>"
+const val ANDROID_LAYOUT_CONTENT_LOOKUP_NAME: String = "<LAYOUT-CONTENT>"

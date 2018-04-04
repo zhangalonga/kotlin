@@ -41,7 +41,7 @@ class KotlinUCollectionLiteralExpression(
     override val valueArgumentCount: Int
         get() = sourcePsi.getInnerExpressions().size
 
-    override val valueArguments by lazy {
+    override val valueArguments: List<UExpression> by lazy {
         sourcePsi.getInnerExpressions().map { KotlinConverter.convertOrEmpty(it, this) }
     }
 

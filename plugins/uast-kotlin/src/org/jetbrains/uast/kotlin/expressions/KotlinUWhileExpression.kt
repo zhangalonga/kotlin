@@ -18,6 +18,7 @@ package org.jetbrains.uast.kotlin
 
 import org.jetbrains.kotlin.psi.KtWhileExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UIdentifier
 import org.jetbrains.uast.UWhileExpression
 
@@ -25,8 +26,8 @@ class KotlinUWhileExpression(
         override val psi: KtWhileExpression,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UWhileExpression {
-    override val condition by lz { KotlinConverter.convertOrEmpty(psi.condition, this) }
-    override val body by lz { KotlinConverter.convertOrEmpty(psi.body, this) }
+    override val condition: UExpression by lz { KotlinConverter.convertOrEmpty(psi.condition, this) }
+    override val body: UExpression by lz { KotlinConverter.convertOrEmpty(psi.body, this) }
 
     override val whileIdentifier: UIdentifier
         get() = UIdentifier(null, this)

@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.idea.core.script.ScriptDependenciesManager
 
 // Allow searching java classes in jars in script dependencies, this is needed for stuff like completion and autoimport
 class JavaClassesInScriptDependenciesShortNameCache(private val project: Project) : PsiShortNamesCache() {
-    override fun getAllClassNames() = emptyArray<String>()
+    override fun getAllClassNames(): Array<String> = emptyArray<String>()
 
     override fun getAllClassNames(dest: HashSet<String>) {}
 
@@ -42,21 +42,21 @@ class JavaClassesInScriptDependenciesShortNameCache(private val project: Project
         return classes.toTypedArray()
     }
 
-    override fun getMethodsByName(name: String, scope: GlobalSearchScope) = PsiMethod.EMPTY_ARRAY
+    override fun getMethodsByName(name: String, scope: GlobalSearchScope): Array<out PsiMethod> = PsiMethod.EMPTY_ARRAY
 
-    override fun getAllMethodNames() = emptyArray<String>()
+    override fun getAllMethodNames(): Array<String> = emptyArray<String>()
 
     override fun getAllMethodNames(set: HashSet<String>) {}
 
-    override fun getFieldsByName(name: String, scope: GlobalSearchScope) = PsiField.EMPTY_ARRAY
+    override fun getFieldsByName(name: String, scope: GlobalSearchScope): Array<out PsiField> = PsiField.EMPTY_ARRAY
 
-    override fun getMethodsByNameIfNotMoreThan(name: String, scope: GlobalSearchScope, maxCount: Int) = PsiMethod.EMPTY_ARRAY
+    override fun getMethodsByNameIfNotMoreThan(name: String, scope: GlobalSearchScope, maxCount: Int): Array<out PsiMethod> = PsiMethod.EMPTY_ARRAY
 
-    override fun processMethodsWithName(name: String, scope: GlobalSearchScope, processor: Processor<PsiMethod>) = true
+    override fun processMethodsWithName(name: String, scope: GlobalSearchScope, processor: Processor<PsiMethod>): Boolean = true
 
-    override fun getAllFieldNames() = emptyArray<String>()
+    override fun getAllFieldNames(): Array<String> = emptyArray<String>()
 
     override fun getAllFieldNames(set: HashSet<String>) {}
 
-    override fun getFieldsByNameIfNotMoreThan(name: String, scope: GlobalSearchScope, maxCount: Int) = PsiField.EMPTY_ARRAY
+    override fun getFieldsByNameIfNotMoreThan(name: String, scope: GlobalSearchScope, maxCount: Int): Array<out PsiField> = PsiField.EMPTY_ARRAY
 }

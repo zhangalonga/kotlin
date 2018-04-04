@@ -161,6 +161,6 @@ class FreshVariableNewTypeSubstitutor(val freshVariables: List<TypeVariableFromC
     }
 
     companion object {
-        val Empty = FreshVariableNewTypeSubstitutor(emptyList())
+        val Empty: FreshVariableNewTypeSubstitutor = FreshVariableNewTypeSubstitutor(emptyList())
     }
 }

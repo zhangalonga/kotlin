@@ -59,7 +59,7 @@ class JavaArrayAnnotationArgumentImpl(
         private val psiValue: PsiArrayInitializerMemberValue,
         name: Name?
 ) : JavaAnnotationArgumentImpl(name), JavaArrayAnnotationArgument {
-    override fun getElements() = psiValue.initializers.map { JavaAnnotationArgumentImpl.create(it, null) }
+    override fun getElements(): List<JavaAnnotationArgument> = psiValue.initializers.map { JavaAnnotationArgumentImpl.create(it, null) }
 }
 
 class JavaEnumValueAnnotationArgumentImpl(
@@ -86,12 +86,12 @@ class JavaClassObjectAnnotationArgumentImpl(
         private val psiExpression: PsiClassObjectAccessExpression,
         name: Name?
 ) : JavaAnnotationArgumentImpl(name), JavaClassObjectAnnotationArgument {
-    override fun getReferencedType() = JavaTypeImpl.create(psiExpression.operand.type)
+    override fun getReferencedType(): JavaTypeImpl<*> = JavaTypeImpl.create(psiExpression.operand.type)
 }
 
 class JavaAnnotationAsAnnotationArgumentImpl(
         private val psiAnnotation: PsiAnnotation,
         name: Name?
 ) : JavaAnnotationArgumentImpl(name), JavaAnnotationAsAnnotationArgument {
-    override fun getAnnotation() = JavaAnnotationImpl(psiAnnotation)
+    override fun getAnnotation(): JavaAnnotationImpl = JavaAnnotationImpl(psiAnnotation)
 }

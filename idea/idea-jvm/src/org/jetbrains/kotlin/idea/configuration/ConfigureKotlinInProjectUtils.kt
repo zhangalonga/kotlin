@@ -43,32 +43,32 @@ import org.jetbrains.kotlin.utils.ifEmpty
 
 data class RepositoryDescription(val id: String, val name: String, val url: String, val bintrayUrl: String?, val isSnapshot: Boolean)
 
-const val LAST_SNAPSHOT_VERSION = "1.2-SNAPSHOT"
+const val LAST_SNAPSHOT_VERSION: String = "1.2-SNAPSHOT"
 
-val SNAPSHOT_REPOSITORY = RepositoryDescription(
+val SNAPSHOT_REPOSITORY: RepositoryDescription = RepositoryDescription(
         "sonatype.oss.snapshots",
         "Sonatype OSS Snapshot Repository",
         "http://oss.sonatype.org/content/repositories/snapshots",
         null,
         isSnapshot = true)
 
-val EAP_REPOSITORY = RepositoryDescription(
+val EAP_REPOSITORY: RepositoryDescription = RepositoryDescription(
         "bintray.kotlin.eap",
         "Bintray Kotlin EAP Repository",
         "http://dl.bintray.com/kotlin/kotlin-eap",
         "https://bintray.com/kotlin/kotlin-eap/kotlin/",
         isSnapshot = false)
 
-val MAVEN_CENTRAL = "mavenCentral()"
+val MAVEN_CENTRAL: String = "mavenCentral()"
 
-val JCENTER = "jcenter()"
+val JCENTER: String = "jcenter()"
 
-val KOTLIN_GROUP_ID = "org.jetbrains.kotlin"
+val KOTLIN_GROUP_ID: String = "org.jetbrains.kotlin"
 
 fun isRepositoryConfigured(repositoriesBlockText: String): Boolean =
         repositoriesBlockText.contains(MAVEN_CENTRAL) || repositoriesBlockText.contains(JCENTER)
 
-fun DependencyScope.toGradleCompileScope(isAndroidModule: Boolean) = when (this) {
+fun DependencyScope.toGradleCompileScope(isAndroidModule: Boolean): String = when (this) {
     DependencyScope.COMPILE -> "compile"
     // TODO: We should add testCompile or androidTestCompile
     DependencyScope.TEST -> if (isAndroidModule) "compile" else "testCompile"
@@ -77,9 +77,9 @@ fun DependencyScope.toGradleCompileScope(isAndroidModule: Boolean) = when (this)
     else -> "compile"
 }
 
-fun RepositoryDescription.toGroovyRepositorySnippet() = "maven {\n    url '$url'\n}"
+fun RepositoryDescription.toGroovyRepositorySnippet(): String = "maven {\n    url '$url'\n}"
 
-fun RepositoryDescription.toKotlinRepositorySnippet() = "maven {\n    setUrl(\"$url\")\n}"
+fun RepositoryDescription.toKotlinRepositorySnippet(): String = "maven {\n    setUrl(\"$url\")\n}"
 
 fun getRepositoryForVersion(version: String): RepositoryDescription? = when {
     isSnapshot(version) -> SNAPSHOT_REPOSITORY
@@ -171,7 +171,7 @@ fun getConfiguratorByName(name: String): KotlinProjectConfigurator? {
     return allConfigurators().firstOrNull { it.name == name }
 }
 
-fun allConfigurators() = Extensions.getExtensions(KotlinProjectConfigurator.EP_NAME)
+fun allConfigurators(): Array<out KotlinProjectConfigurator> = Extensions.getExtensions(KotlinProjectConfigurator.EP_NAME)
 
 fun getCanBeConfiguredModules(project: Project, configurator: KotlinProjectConfigurator): List<Module> {
     return ModuleSourceRootMap(project).groupByBaseModules(project.allModules())

@@ -146,8 +146,8 @@ class AnnotationProcessingManager(
         private val androidVariant: Any? = null) {
 
     private val project = task.project
-    val wrappersDirectory = File(aptWorkingDir, "wrappers")
-    val hackAnnotationDir = File(aptWorkingDir, "java_src")
+    val wrappersDirectory: File = File(aptWorkingDir, "wrappers")
+    val hackAnnotationDir: File = File(aptWorkingDir, "java_src")
 
     private var originalJavaCompilerArgs: List<String>? = null
     private var originalProcessorPath: FileCollection? = null
@@ -171,7 +171,7 @@ class AnnotationProcessingManager(
             return kotlinGeneratedDir
         }
 
-    val kaptProcessorPath get() = setOf(wrappersDirectory) + aptFiles + javaTask.classpath
+    val kaptProcessorPath: Set<File> get() = setOf(wrappersDirectory) + aptFiles + javaTask.classpath
 
     private fun allowToUseOriginalKapt(): Boolean {
         return project.hasProperty("allow.original.kapt")

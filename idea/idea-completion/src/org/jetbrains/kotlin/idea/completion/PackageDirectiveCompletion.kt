@@ -20,6 +20,8 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.PlainPrefixMatcher
 import com.intellij.patterns.PlatformPatterns
+import com.intellij.patterns.PsiElementPattern
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.idea.caches.resolve.getResolutionFacade
 import org.jetbrains.kotlin.idea.util.CallType
 import org.jetbrains.kotlin.psi.KtFile
@@ -32,8 +34,8 @@ import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
  * DUMMY_IDENTIFIER.
  */
 object PackageDirectiveCompletion {
-    val DUMMY_IDENTIFIER = "___package___"
-    val ACTIVATION_PATTERN = PlatformPatterns.psiElement().inside(KtPackageDirective::class.java)
+    val DUMMY_IDENTIFIER: String = "___package___"
+    val ACTIVATION_PATTERN: PsiElementPattern.Capture<PsiElement> = PlatformPatterns.psiElement().inside(KtPackageDirective::class.java)
 
     fun perform(parameters: CompletionParameters, result: CompletionResultSet): Boolean {
         val position = parameters.position

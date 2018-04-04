@@ -50,5 +50,5 @@ class UastKotlinPsiParameter(
         return ktParameter == (other as? UastKotlinPsiParameter)?.ktParameter
     }
 
-    override fun hashCode() = ktParameter.hashCode()
+    override fun hashCode(): Int = ktParameter.hashCode()
 }

@@ -16,7 +16,9 @@
 
 package org.jetbrains.uast.kotlin
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiType
 import org.jetbrains.kotlin.psi.KtCallableReferenceExpression
 import org.jetbrains.kotlin.resolve.BindingContext.DOUBLE_COLON_LHS
 import org.jetbrains.uast.UCallableReferenceExpression
@@ -34,7 +36,7 @@ class KotlinUCallableReferenceExpression(
             return KotlinConverter.convertExpression(receiverExpression, this)
         }
 
-    override val qualifierType by lz {
+    override val qualifierType: PsiType? by lz {
         val ktType = psi.analyze()[DOUBLE_COLON_LHS, psi.receiverExpression]?.type ?: return@lz null
         ktType.toPsiType(this, psi, boxed = true)
     }
@@ -45,5 +47,5 @@ class KotlinUCallableReferenceExpression(
     override val resolvedName: String?
         get() = (resolve() as? PsiNamedElement)?.name
 
-    override fun resolve() = psi.callableReference.resolveCallToDeclaration(this)
+    override fun resolve(): PsiElement? = psi.callableReference.resolveCallToDeclaration(this)
 }

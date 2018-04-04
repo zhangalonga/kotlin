@@ -69,7 +69,7 @@ class InvokeOperatorReferenceSearcher(
         processReferenceElement(callExpression)
     }
 
-    override fun isReferenceToCheck(ref: PsiReference) = ref is KtInvokeFunctionReference
+    override fun isReferenceToCheck(ref: PsiReference): Boolean = ref is KtInvokeFunctionReference
 
     override fun extractReference(element: KtElement): PsiReference? {
         val callExpression = element as? KtCallExpression ?: return null

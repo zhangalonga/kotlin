@@ -28,9 +28,9 @@ import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 
 data class KotlinTodoOccurrence(private val _file: PsiFile, private val _textRange: TextRange, private val _pattern: IndexPattern) : IndexPatternOccurrence {
-    override fun getFile() = _file
-    override fun getPattern() = _pattern
-    override fun getTextRange() = _textRange
+    override fun getFile(): PsiFile = _file
+    override fun getPattern(): IndexPattern = _pattern
+    override fun getTextRange(): TextRange = _textRange
 }
 
 class KotlinTodoSearcher : QueryExecutorBase<IndexPatternOccurrence, IndexPatternSearch.SearchParameters>(true) {

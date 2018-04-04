@@ -31,26 +31,26 @@ class ApiVersion private constructor(
     override fun compareTo(other: ApiVersion): Int =
             version.compareTo(other.version)
 
-    override fun equals(other: Any?) =
+    override fun equals(other: Any?): Boolean =
             (other as? ApiVersion)?.version == version
 
-    override fun hashCode() =
+    override fun hashCode(): Int =
             version.hashCode()
 
-    override fun toString() = versionString
+    override fun toString(): String = versionString
 
     companion object {
         @JvmField
-        val KOTLIN_1_0 = createByLanguageVersion(LanguageVersion.KOTLIN_1_0)
+        val KOTLIN_1_0: ApiVersion = createByLanguageVersion(LanguageVersion.KOTLIN_1_0)
 
         @JvmField
-        val KOTLIN_1_1 = createByLanguageVersion(LanguageVersion.KOTLIN_1_1)
+        val KOTLIN_1_1: ApiVersion = createByLanguageVersion(LanguageVersion.KOTLIN_1_1)
 
         @JvmField
-        val KOTLIN_1_2 = createByLanguageVersion(LanguageVersion.KOTLIN_1_2)
+        val KOTLIN_1_2: ApiVersion = createByLanguageVersion(LanguageVersion.KOTLIN_1_2)
 
         @JvmField
-        val KOTLIN_1_3 = createByLanguageVersion(LanguageVersion.KOTLIN_1_3)
+        val KOTLIN_1_3: ApiVersion = createByLanguageVersion(LanguageVersion.KOTLIN_1_3)
 
         @JvmField
         val LATEST_STABLE: ApiVersion = createByLanguageVersion(LanguageVersion.LATEST_STABLE)

@@ -256,11 +256,11 @@ class AndroidSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         }
     }
 
-    override fun getCompilerPluginId() = "org.jetbrains.kotlin.android"
+    override fun getCompilerPluginId(): String = "org.jetbrains.kotlin.android"
 
-    override fun getGroupName() = "org.jetbrains.kotlin"
+    override fun getGroupName(): String = "org.jetbrains.kotlin"
 
-    override fun getArtifactName() = "kotlin-android-extensions"
+    override fun getArtifactName(): String = "kotlin-android-extensions"
 
     private fun File.parseXml(): Document {
         val factory = DocumentBuilderFactory.newInstance()

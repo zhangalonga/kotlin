@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.gradle.tasks
 
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
 import org.gradle.api.plugins.BasePluginConvention
 import org.gradle.api.tasks.*
@@ -47,12 +48,13 @@ import org.jetbrains.kotlin.utils.LibraryUtils
 import java.io.File
 import java.util.*
 import java.util.concurrent.Callable
+import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
 
-const val ANNOTATIONS_PLUGIN_NAME = "org.jetbrains.kotlin.kapt"
-const val KOTLIN_BUILD_DIR_NAME = "kotlin"
-const val USING_INCREMENTAL_COMPILATION_MESSAGE = "Using Kotlin incremental compilation"
-const val USING_EXPERIMENTAL_JS_INCREMENTAL_COMPILATION_MESSAGE = "Using experimental Kotlin/JS incremental compilation"
+const val ANNOTATIONS_PLUGIN_NAME: String = "org.jetbrains.kotlin.kapt"
+const val KOTLIN_BUILD_DIR_NAME: String = "kotlin"
+const val USING_INCREMENTAL_COMPILATION_MESSAGE: String = "Using Kotlin incremental compilation"
+const val USING_EXPERIMENTAL_JS_INCREMENTAL_COMPILATION_MESSAGE: String = "Using experimental Kotlin/JS incremental compilation"
 
 abstract class AbstractKotlinCompileTool<T : CommonToolArguments>() : AbstractCompile(), CompilerArgumentAwareWithInput<T> {
     // TODO: deprecate and remove
@@ -64,7 +66,7 @@ abstract class AbstractKotlinCompileTool<T : CommonToolArguments>() : AbstractCo
 
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
-    override fun getSource() = super.getSource()
+    override fun getSource(): FileTree = super.getSource()
 
     @get:Classpath @get:InputFiles
     internal val computedCompilerClasspath: List<File>
@@ -103,7 +105,7 @@ abstract class AbstractKotlinCompile<T : CommonCompilerArguments>() : AbstractKo
     internal val pluginOptions = CompilerPluginOptions()
 
     @get:Classpath @get:InputFiles
-    protected val additionalClasspath = arrayListOf<File>()
+    protected val additionalClasspath: ArrayList<File> = arrayListOf<File>()
 
     @get:Internal // classpath already participates in the checks
     protected val compileClasspath: Iterable<File>
@@ -268,7 +270,7 @@ open class KotlinCompile : AbstractKotlinCompile<K2JVMCompilerArguments>(), Kotl
     val buildHistoryFile: File get() = File(taskBuildDirectory, "build-history.bin")
 
     @get:Internal
-    val kaptOptions = KaptOptions()
+    val kaptOptions: KaptOptions = KaptOptions()
 
     /** A package prefix that is used for locating Java sources in a directory structure with non-full-depth packages.
      *

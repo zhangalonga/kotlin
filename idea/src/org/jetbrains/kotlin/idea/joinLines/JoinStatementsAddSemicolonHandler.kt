@@ -53,7 +53,7 @@ class JoinStatementsAddSemicolonHandler : JoinRawLinesHandlerDelegate {
         return linebreak.textRange.startOffset + 1
     }
 
-    override fun tryJoinLines(document: Document, file: PsiFile, start: Int, end: Int) = CANNOT_JOIN
+    override fun tryJoinLines(document: Document, file: PsiFile, start: Int, end: Int): Int = CANNOT_JOIN
 
     private fun PsiElement.firstMaterialSiblingSameLine(getNext: PsiElement.() -> PsiElement?): PsiElement? {
         var element = this

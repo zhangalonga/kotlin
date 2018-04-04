@@ -76,18 +76,16 @@ object JpsJsModuleUtils {
     }
 
     @JvmStatic
-    fun getOutputFile(outputDir: File, moduleName: String, isTests: Boolean)
-            = File(outputDir, moduleName + suffix(isTests) + KotlinJavascriptMetadataUtils.JS_EXT)
+    fun getOutputFile(outputDir: File, moduleName: String, isTests: Boolean): File = File(outputDir, moduleName + suffix(isTests) + KotlinJavascriptMetadataUtils.JS_EXT)
 
     @JvmStatic
-    fun getOutputMetaFile(outputDir: File, moduleName: String, isTests: Boolean)
-            = File(outputDir, moduleName + suffix(isTests) + KotlinJavascriptMetadataUtils.META_JS_SUFFIX)
+    fun getOutputMetaFile(outputDir: File, moduleName: String, isTests: Boolean): File = File(outputDir, moduleName + suffix(isTests) + KotlinJavascriptMetadataUtils.META_JS_SUFFIX)
 
     private fun suffix(isTests: Boolean) = if (isTests) "_test" else ""
 }
 
-val JpsModule.hasProductionSourceRoot
+val JpsModule.hasProductionSourceRoot: Boolean
     get() = sourceRoots.any { it.rootType == JavaSourceRootType.SOURCE}
 
-val JpsModule.hasTestSourceRoot
+val JpsModule.hasTestSourceRoot: Boolean
     get() = sourceRoots.any { it.rootType == JavaSourceRootType.TEST_SOURCE}

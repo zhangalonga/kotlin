@@ -95,7 +95,7 @@ fun KotlinType.renderTypeWithSubstitution(substitutor: TypeSubstitutor?, default
 // This method is used to create full copies of functions (including copies of all types)
 // It's needed to prevent accesses to PSI (e.g. using LazyJavaClassifierType properties) when Change signature invalidates it
 // See KotlinChangeSignatureTest.testSAMChangeMethodReturnType
-fun DeclarationDescriptor.createDeepCopy() = (this as? JavaMethodDescriptor)?.substitute(TypeSubstitutor.create(ForceTypeCopySubstitution)) ?: this
+fun DeclarationDescriptor.createDeepCopy(): DeclarationDescriptor = (this as? JavaMethodDescriptor)?.substitute(TypeSubstitutor.create(ForceTypeCopySubstitution)) ?: this
 
 private object ForceTypeCopySubstitution : TypeSubstitution() {
     override fun get(key: KotlinType) =

@@ -142,7 +142,7 @@ class KotlinChangeSignatureData(
 
     override fun getParameters(): List<KotlinParameterInfo> = parameters
 
-    override fun getName() = when (baseDescriptor) {
+    override fun getName(): String = when (baseDescriptor) {
         is ConstructorDescriptor -> baseDescriptor.containingDeclaration.name.asString()
         is AnonymousFunctionDescriptor -> ""
         else -> baseDescriptor.name.asString()
@@ -160,9 +160,9 @@ class KotlinChangeSignatureData(
         return !(baseDescriptor is AnonymousFunctionDescriptor || parent is ClassDescriptor && parent.kind == ClassKind.INTERFACE)
     }
 
-    override fun canChangeParameters() = true
+    override fun canChangeParameters(): Boolean = true
 
-    override fun canChangeName() = !(baseDescriptor is ConstructorDescriptor || baseDescriptor is AnonymousFunctionDescriptor)
+    override fun canChangeName(): Boolean = !(baseDescriptor is ConstructorDescriptor || baseDescriptor is AnonymousFunctionDescriptor)
 
     override fun canChangeReturnType(): MethodDescriptor.ReadWriteOption =
             if (baseDescriptor is ConstructorDescriptor) MethodDescriptor.ReadWriteOption.None else MethodDescriptor.ReadWriteOption.ReadWrite

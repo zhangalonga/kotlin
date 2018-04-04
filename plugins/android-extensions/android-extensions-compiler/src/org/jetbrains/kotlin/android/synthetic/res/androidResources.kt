@@ -35,13 +35,13 @@ class AndroidVariant(val name: String, val resDirectories: List<String>) {
         get() = name == "main"
 
     companion object {
-        fun createMainVariant(resDirectories: List<String>) = AndroidVariant("main", resDirectories)
+        fun createMainVariant(resDirectories: List<String>): AndroidVariant = AndroidVariant("main", resDirectories)
     }
 }
 
 class AndroidModule(val applicationPackage: String, val variants: List<AndroidVariant>) {
-    override fun equals(other: Any?) = other is AndroidModule && applicationPackage == other.applicationPackage
-    override fun hashCode() = applicationPackage.hashCode()
+    override fun equals(other: Any?): Boolean = other is AndroidModule && applicationPackage == other.applicationPackage
+    override fun hashCode(): Int = applicationPackage.hashCode()
 }
 
 class ResourceIdentifier(val name: String, val packageName: String?) {
@@ -75,8 +75,8 @@ sealed class AndroidResource(val id: ResourceIdentifier, val sourceElement: PsiE
             sourceElement: PsiElement?,
             partiallyDefined: Boolean = false
     ) : AndroidResource(id, sourceElement, partiallyDefined) {
-        override fun sameClass(other: AndroidResource) = other is Widget
-        override fun partiallyDefined() = Widget(id, xmlType, sourceElement, true)
+        override fun sameClass(other: AndroidResource): Boolean = other is Widget
+        override fun partiallyDefined(): Widget = Widget(id, xmlType, sourceElement, true)
     }
 
     class Fragment(
@@ -84,8 +84,8 @@ sealed class AndroidResource(val id: ResourceIdentifier, val sourceElement: PsiE
             sourceElement: PsiElement?,
             partiallyDefined: Boolean = false
     ) : AndroidResource(id, sourceElement, partiallyDefined) {
-        override fun sameClass(other: AndroidResource) = other is Fragment
-        override fun partiallyDefined() = Fragment(id, sourceElement, true)
+        override fun sameClass(other: AndroidResource): Boolean = other is Fragment
+        override fun partiallyDefined(): Fragment = Fragment(id, sourceElement, true)
     }
 }
 

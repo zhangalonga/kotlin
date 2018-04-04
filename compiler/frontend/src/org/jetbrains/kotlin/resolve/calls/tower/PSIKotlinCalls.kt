@@ -42,7 +42,7 @@ abstract class PSIKotlinCall : KotlinCall {
     abstract val dataFlowInfoForArguments: DataFlowInfoForArguments
     abstract val tracingStrategy: TracingStrategy
 
-    override fun toString() = "$psiCall"
+    override fun toString(): String = "$psiCall"
 }
 
 class PSIKotlinCallImpl(

@@ -24,9 +24,9 @@ import org.jetbrains.kotlin.idea.intentions.branchedTransformations.BranchedFold
 import org.jetbrains.kotlin.psi.*
 
 class LiftAssignmentOutOfTryFix(element: KtTryExpression): KotlinQuickFixAction<KtTryExpression>(element) {
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
-    override fun getText() = "Lift assignment out of 'try' expression"
+    override fun getText(): String = "Lift assignment out of 'try' expression"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

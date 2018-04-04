@@ -35,9 +35,9 @@ class AddWhenRemainingBranchesFix(
         val withImport: Boolean = false
 ) : KotlinQuickFixAction<KtWhenExpression>(expression) {
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
-    override fun getText() = "Add remaining branches" + if (withImport) " with import" else ""
+    override fun getText(): String = "Add remaining branches" + if (withImport) " with import" else ""
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         val element = element ?: return false

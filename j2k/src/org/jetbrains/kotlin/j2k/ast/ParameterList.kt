@@ -47,7 +47,7 @@ class LPar private constructor() : Element() {
     }
 
     companion object {
-        fun withPrototype(element: PsiElement?) = LPar().assignPrototype(element, CommentsAndSpacesInheritance.LINE_BREAKS)
+        fun withPrototype(element: PsiElement?): LPar = LPar().assignPrototype(element, CommentsAndSpacesInheritance.LINE_BREAKS)
     }
 }
 
@@ -57,6 +57,6 @@ class RPar private constructor() : Element() {
     }
 
     companion object {
-        fun withPrototype(element: PsiElement?) = RPar().assignPrototype(element, CommentsAndSpacesInheritance.LINE_BREAKS)
+        fun withPrototype(element: PsiElement?): RPar = RPar().assignPrototype(element, CommentsAndSpacesInheritance.LINE_BREAKS)
     }
 }

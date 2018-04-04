@@ -76,7 +76,7 @@ class MetadataPackageFragment(
         private val packagePartProvider: PackagePartProvider,
         private val finder: KotlinMetadataFinder
 ) : DeserializedPackageFragment(fqName, storageManager, module) {
-    override val classDataFinder = ClassDataFinder { classId ->
+    override val classDataFinder: ClassDataFinder = ClassDataFinder { classId ->
         val topLevelClassId = generateSequence(classId, ClassId::getOuterClassId).last()
         val stream = finder.findMetadata(topLevelClassId) ?: return@ClassDataFinder null
         val (message, nameResolver) = readProto(stream)
@@ -138,7 +138,7 @@ class MetadataPackageFragment(
     }
 
     companion object {
-        val DOT_METADATA_FILE_EXTENSION = ".kotlin_metadata"
-        val METADATA_FILE_EXTENSION = "kotlin_metadata"
+        val DOT_METADATA_FILE_EXTENSION: String = ".kotlin_metadata"
+        val METADATA_FILE_EXTENSION: String = "kotlin_metadata"
     }
 }

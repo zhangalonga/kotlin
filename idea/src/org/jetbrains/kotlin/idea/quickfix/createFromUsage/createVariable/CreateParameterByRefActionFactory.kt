@@ -122,7 +122,8 @@ object CreateParameterByRefActionFactory : CreateParameterFromUsageFactory<KtSim
         )
     }
 
-    override fun extractFixData(element: KtSimpleNameExpression, diagnostic: Diagnostic) = extractFixData(element)
+    override fun extractFixData(element: KtSimpleNameExpression, diagnostic: Diagnostic): CreateParameterData<KtSimpleNameExpression>? =
+        extractFixData(element)
 }
 
 fun KotlinType.hasTypeParametersToAdd(functionDescriptor: FunctionDescriptor, context: BindingContext): Boolean {

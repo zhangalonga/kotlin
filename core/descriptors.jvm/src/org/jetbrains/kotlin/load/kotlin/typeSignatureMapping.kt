@@ -45,7 +45,7 @@ interface TypeMappingConfiguration<out T : Any> {
     fun processErrorType(kotlinType: KotlinType, descriptor: ClassDescriptor)
 }
 
-const val NON_EXISTENT_CLASS_NAME = "error/NonExistentClass"
+const val NON_EXISTENT_CLASS_NAME: String = "error/NonExistentClass"
 
 private val CONTINUATION_INTERNAL_NAME =
     JvmClassName.byClassId(ClassId.topLevel(DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME)).internalName

@@ -43,9 +43,9 @@ import org.jetbrains.kotlin.psi.psiUtil.*
 open class KotlinIntroduceTypeAliasHandler : RefactoringActionHandler {
     companion object {
         @JvmField
-        val REFACTORING_NAME = "Introduce Type Alias"
+        val REFACTORING_NAME: String = "Introduce Type Alias"
 
-        val INSTANCE = KotlinIntroduceTypeAliasHandler()
+        val INSTANCE: KotlinIntroduceTypeAliasHandler = KotlinIntroduceTypeAliasHandler()
     }
 
     private fun selectElements(editor: Editor, file: KtFile, continuation: (elements: List<PsiElement>, targetSibling: PsiElement) -> Unit) {

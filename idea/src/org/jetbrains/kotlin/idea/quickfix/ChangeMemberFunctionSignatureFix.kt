@@ -235,7 +235,7 @@ class ChangeMemberFunctionSignatureFix private constructor(
             "Change function signature..."
     }
 
-    override fun getFamilyName() = "Change function signature"
+    override fun getFamilyName(): String = "Change function signature"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

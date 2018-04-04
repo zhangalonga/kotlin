@@ -39,7 +39,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.script.KotlinScriptDefinition
 import kotlin.concurrent.write
 
-const val KOTLIN_REPL_JVM_TARGET_PROPERTY = "kotlin.repl.jvm.target"
+const val KOTLIN_REPL_JVM_TARGET_PROPERTY: String = "kotlin.repl.jvm.target"
 
 open class GenericReplChecker(
         disposable: Disposable,

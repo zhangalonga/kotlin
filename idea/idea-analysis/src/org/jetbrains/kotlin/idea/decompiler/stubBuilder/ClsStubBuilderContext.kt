@@ -48,8 +48,8 @@ class ClsStubBuilderComponents(
 interface TypeParameters {
     operator fun get(id: Int): Name
 
-    fun child(nameResolver: NameResolver, innerTypeParameters: List<ProtoBuf.TypeParameter>)
-            = TypeParametersImpl(nameResolver, innerTypeParameters, parent = this)
+    fun child(nameResolver: NameResolver, innerTypeParameters: List<ProtoBuf.TypeParameter>): TypeParametersImpl =
+        TypeParametersImpl(nameResolver, innerTypeParameters, parent = this)
 }
 
 object EmptyTypeParameters : TypeParameters {

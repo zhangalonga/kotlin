@@ -20,6 +20,6 @@ interface FirSymbolProvider {
     fun getPackage(fqName: FqName): FqName? // TODO: Replace to symbol sometime
 
     companion object {
-        fun getInstance(session: FirSession) = session.service<FirSymbolProvider>()
+        fun getInstance(session: FirSession): FirSymbolProvider = session.service()
     }
 }

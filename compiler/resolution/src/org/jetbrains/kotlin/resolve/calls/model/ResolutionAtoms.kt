@@ -168,7 +168,7 @@ class CallResolutionResult(
         setAnalyzedResults(listOfNotNull(resultCallAtom))
     }
 
-    override fun toString() = "$type, resultCallAtom = $resultCallAtom, (${diagnostics.joinToString()})"
+    override fun toString(): String = "$type, resultCallAtom = $resultCallAtom, (${diagnostics.joinToString()})"
 }
 
 val ResolvedCallAtom.freshReturnType: UnwrappedType?

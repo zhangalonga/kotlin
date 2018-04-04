@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class LocalFunctionCollector(val bindingContext: BindingContext) : KtVisitorVoid() {
-    val functions = mutableSetOf<FunctionDescriptor>()
+    val functions: MutableSet<FunctionDescriptor> = mutableSetOf<FunctionDescriptor>()
 
     override fun visitExpression(expression: KtExpression) {
         if (expression is KtDeclarationWithBody) {

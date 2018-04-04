@@ -16,4 +16,4 @@
 
 package org.jetbrains.kotlin.idea.internal.makeBackup
 
-val HISTORY_LABEL_PREFIX = "build started "
+val HISTORY_LABEL_PREFIX: String = "build started "

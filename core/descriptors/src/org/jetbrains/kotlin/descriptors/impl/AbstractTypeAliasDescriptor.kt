@@ -70,15 +70,15 @@ abstract class AbstractTypeAliasDescriptor(
     override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> =
             declaredTypeParametersImpl
 
-    override fun getModality() = Modality.FINAL
+    override fun getModality(): Modality = Modality.FINAL
 
-    override fun getVisibility() = visibilityImpl
+    override fun getVisibility(): Visibility = visibilityImpl
 
     override fun isExpect(): Boolean = false
 
     override fun isActual(): Boolean = false
 
-    override fun isExternal() = false
+    override fun isExternal(): Boolean = false
 
     override fun getTypeConstructor(): TypeConstructor =
             typeConstructor

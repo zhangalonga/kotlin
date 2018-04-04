@@ -23,9 +23,9 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtWhenEntry
 
 class RemoveWhenElseBranchFix(element: KtWhenEntry) : KotlinQuickFixAction<KtWhenEntry>(element) {
-    override fun getFamilyName() = "Remove else branch"
+    override fun getFamilyName(): String = "Remove else branch"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         element?.delete()

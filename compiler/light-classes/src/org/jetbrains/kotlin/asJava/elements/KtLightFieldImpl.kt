@@ -40,19 +40,19 @@ sealed class KtLightFieldImpl<D : PsiField>(
         @Suppress("UNCHECKED_CAST")
         get() = super.clsDelegate as D
 
-    override fun setInitializer(initializer: PsiExpression?) = cannotModify()
+    override fun setInitializer(initializer: PsiExpression?): Nothing = cannotModify()
 
-    override fun getType() = clsDelegate.type
+    override fun getType(): PsiType = clsDelegate.type
 
-    override fun getTypeElement() = clsDelegate.typeElement
+    override fun getTypeElement(): PsiTypeElement? = clsDelegate.typeElement
 
-    override fun getInitializer() = clsDelegate.initializer
+    override fun getInitializer(): PsiExpression? = clsDelegate.initializer
 
-    override fun hasInitializer() = clsDelegate.hasInitializer()
+    override fun hasInitializer(): Boolean = clsDelegate.hasInitializer()
 
-    override fun normalizeDeclaration() = cannotModify()
+    override fun normalizeDeclaration(): Nothing = cannotModify()
 
-    override fun computeConstantValue() = clsDelegate.computeConstantValue()
+    override fun computeConstantValue(): Any? = clsDelegate.computeConstantValue()
 
     override fun setName(@NonNls name: String): PsiElement {
         (kotlinOrigin as? KtNamedDeclaration)?.setName(name)
@@ -65,13 +65,13 @@ sealed class KtLightFieldImpl<D : PsiField>(
              this.name == other.name &&
              this.containingClass == other.containingClass)
 
-    override fun hashCode() = 31 * containingClass.hashCode() + name.hashCode()
+    override fun hashCode(): Int = 31 * containingClass.hashCode() + name.hashCode()
 
     override fun computeConstantValue(visitedVars: MutableSet<PsiVariable>?): Any? {
         return (clsDelegate as PsiVariableEx).computeConstantValue(visitedVars)
     }
 
-    override fun copy() = Factory.create(lightMemberOrigin?.copy(), clsDelegate, containingClass)
+    override fun copy(): KtLightField = Factory.create(lightMemberOrigin?.copy(), clsDelegate, containingClass)
 
 
     class KtLightEnumConstant(
@@ -90,16 +90,16 @@ sealed class KtLightFieldImpl<D : PsiField>(
 
         // NOTE: we don't use "delegation by" because the compiler would generate method calls to ALL of PsiEnumConstant members,
         // but we need only members whose implementations are not present in KotlinLightField
-        override fun getArgumentList() = clsDelegate.argumentList
+        override fun getArgumentList(): PsiExpressionList? = clsDelegate.argumentList
 
         override fun getInitializingClass(): PsiEnumConstantInitializer? = initializingClass
         override fun getOrCreateInitializingClass(): PsiEnumConstantInitializer {
             return initializingClass ?: throw UnsupportedOperationException("Can't create enum constant body: ${clsDelegate.name}")
         }
 
-        override fun resolveConstructor() = clsDelegate.resolveConstructor()
-        override fun resolveMethod() = clsDelegate.resolveMethod()
-        override fun resolveMethodGenerics() = clsDelegate.resolveMethodGenerics()
+        override fun resolveConstructor(): PsiMethod? = clsDelegate.resolveConstructor()
+        override fun resolveMethod(): PsiMethod? = clsDelegate.resolveMethod()
+        override fun resolveMethodGenerics(): JavaResolveResult = clsDelegate.resolveMethodGenerics()
     }
 
     class KtLightFieldForDeclaration(origin: LightMemberOrigin?, computeDelegate: () -> PsiField, containingClass: KtLightClass, dummyDelegate: PsiField?) :
@@ -124,10 +124,10 @@ sealed class KtLightFieldImpl<D : PsiField>(
             return KtLightFieldForDeclaration(origin, computeRealDelegate, containingClass, dummyDelegate)
         }
 
-        fun fromClsFields(delegateClass: PsiClass, containingClass: KtLightClass) = delegateClass.fields.map {
+        fun fromClsFields(delegateClass: PsiClass, containingClass: KtLightClass): List<KtLightField> = delegateClass.fields.map {
             KtLightFieldImpl.create(getOrigin(it), it, containingClass)
         }
 
-        fun getOrigin(field: PsiField) = getMemberOrigin(field)
+        fun getOrigin(field: PsiField): LightMemberOriginForDeclaration? = getMemberOrigin(field)
     }
 }

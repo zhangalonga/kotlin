@@ -25,9 +25,9 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.createExpressionByPattern
 
 class ChangeToFunctionInvocationFix(element: KtExpression) : KotlinQuickFixAction<KtExpression>(element) {
-    override fun getFamilyName() = "Change to function invocation"
+    override fun getFamilyName(): String = "Change to function invocation"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

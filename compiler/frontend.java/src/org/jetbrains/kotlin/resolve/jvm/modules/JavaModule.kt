@@ -107,4 +107,4 @@ interface JavaModule {
     }
 }
 
-const val KOTLIN_STDLIB_MODULE_NAME = "kotlin.stdlib"
+const val KOTLIN_STDLIB_MODULE_NAME: String = "kotlin.stdlib"

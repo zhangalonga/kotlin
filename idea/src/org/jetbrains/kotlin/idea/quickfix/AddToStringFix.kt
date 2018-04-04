@@ -27,8 +27,8 @@ import org.jetbrains.kotlin.psi.createExpressionByPattern
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 
 class AddToStringFix(element: KtExpression, private val nullable: Boolean) : KotlinQuickFixAction<KtExpression>(element), LowPriorityAction {
-    override fun getFamilyName() = "Add 'toString()' call"
-    override fun getText() = if (nullable) "Add safe '?.toString()' call" else "Add 'toString()' call"
+    override fun getFamilyName(): String = "Add 'toString()' call"
+    override fun getText(): String = if (nullable) "Add safe '?.toString()' call" else "Add 'toString()' call"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

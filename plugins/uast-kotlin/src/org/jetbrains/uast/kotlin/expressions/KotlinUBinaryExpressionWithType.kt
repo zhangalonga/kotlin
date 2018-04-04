@@ -28,14 +28,14 @@ class KotlinUBinaryExpressionWithType(
 ) : KotlinAbstractUExpression(givenParent), UBinaryExpressionWithType,
         KotlinUElementWithType, KotlinEvaluatableUElement {
     
-    override val operand by lz { KotlinConverter.convertOrEmpty(psi.left, this) }
-    override val type by lz { psi.right.toPsiType(this) }
+    override val operand: UExpression by lz { KotlinConverter.convertOrEmpty(psi.left, this) }
+    override val type: PsiType by lz { psi.right.toPsiType(this) }
     
-    override val typeReference by lz { 
+    override val typeReference: LazyKotlinUTypeReferenceExpression? by lz {
         psi.right?.let { LazyKotlinUTypeReferenceExpression(it, this) }
     }
     
-    override val operationKind = when (psi.operationReference.getReferencedNameElementType()) {
+    override val operationKind: UastBinaryExpressionWithTypeKind = when (psi.operationReference.getReferencedNameElementType()) {
         KtTokens.AS_KEYWORD -> UastBinaryExpressionWithTypeKind.TYPE_CAST
         KtTokens.AS_SAFE -> KotlinBinaryExpressionWithTypeKinds.SAFE_TYPE_CAST
         else -> UastBinaryExpressionWithTypeKind.UNKNOWN

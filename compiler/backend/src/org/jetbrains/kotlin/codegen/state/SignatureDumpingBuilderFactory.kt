@@ -40,11 +40,11 @@ class SignatureDumpingBuilderFactory(
 ) : DelegatingClassBuilderFactory(builderFactory) {
 
     companion object {
-        val MEMBER_RENDERER = DescriptorRenderer.withOptions {
+        val MEMBER_RENDERER: DescriptorRenderer = DescriptorRenderer.withOptions {
             withDefinedIn = false
             modifiers -= DescriptorRendererModifier.VISIBILITY
         }
-        val TYPE_RENDERER = DescriptorRenderer.withOptions {
+        val TYPE_RENDERER: DescriptorRenderer = DescriptorRenderer.withOptions {
             withSourceFileForTopLevel = false
             modifiers -= DescriptorRendererModifier.VISIBILITY
         }

@@ -35,9 +35,9 @@ class RemoveNullableFix(element: KtNullableType,
         PROPERTY("Make not-nullable")
     }
 
-    override fun getFamilyName() = "Remove '?'"
+    override fun getFamilyName(): String = "Remove '?'"
 
-    override fun getText() = typeOfError.message
+    override fun getText(): String = typeOfError.message
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

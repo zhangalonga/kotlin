@@ -28,9 +28,9 @@ class KtPrimaryConstructor : KtConstructor<KtPrimaryConstructor> {
     constructor(node: ASTNode) : super(node)
     constructor(stub: KotlinPlaceHolderStub<KtPrimaryConstructor>) : super(stub, KtStubElementTypes.PRIMARY_CONSTRUCTOR)
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitPrimaryConstructor(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitPrimaryConstructor(this, data)
 
-    override fun getContainingClassOrObject() = parent as KtClassOrObject
+    override fun getContainingClassOrObject(): KtClassOrObject = parent as KtClassOrObject
 
     private fun getOrCreateConstructorKeyword(): PsiElement {
         return getConstructorKeyword() ?: addBefore(KtPsiFactory(this).createConstructorKeyword(), valueParameterList!!)

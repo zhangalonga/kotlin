@@ -83,7 +83,7 @@ class SubpackagesIndexService(private val project: Project) {
             return existingSubPackagesShortNames.map { fqName.child(it) }
         }
 
-        override fun toString() = "SubpackagesIndex: OOCB on creation $oocbCount, all packages size ${allPackageFqNames.size}"
+        override fun toString(): String = "SubpackagesIndex: OOCB on creation $oocbCount, all packages size ${allPackageFqNames.size}"
     }
 
     companion object {

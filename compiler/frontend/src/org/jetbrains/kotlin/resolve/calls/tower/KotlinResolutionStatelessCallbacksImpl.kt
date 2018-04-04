@@ -27,26 +27,27 @@ import org.jetbrains.kotlin.resolve.calls.callResolverUtil.isSuperOrDelegatingCo
 import org.jetbrains.kotlin.resolve.calls.components.KotlinResolutionStatelessCallbacks
 import org.jetbrains.kotlin.resolve.calls.model.CallableReferenceKotlinCallArgument
 import org.jetbrains.kotlin.resolve.calls.model.KotlinCall
+import org.jetbrains.kotlin.resolve.calls.model.KotlinResolutionCandidate
 import org.jetbrains.kotlin.resolve.calls.model.SimpleKotlinCallArgument
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 class KotlinResolutionStatelessCallbacksImpl(
     private val deprecationResolver: DeprecationResolver
 ) : KotlinResolutionStatelessCallbacks {
-    override fun isDescriptorFromSource(descriptor: CallableDescriptor) =
+    override fun isDescriptorFromSource(descriptor: CallableDescriptor): Boolean =
         DescriptorToSourceUtils.descriptorToDeclaration(descriptor) != null
 
-    override fun isInfixCall(kotlinCall: KotlinCall) =
+    override fun isInfixCall(kotlinCall: KotlinCall): Boolean =
         kotlinCall is PSIKotlinCallImpl && isInfixCall(kotlinCall.psiCall)
 
-    override fun isOperatorCall(kotlinCall: KotlinCall) =
+    override fun isOperatorCall(kotlinCall: KotlinCall): Boolean =
         (kotlinCall is PSIKotlinCallForInvoke) ||
                 (kotlinCall is PSIKotlinCallImpl && isConventionCall(kotlinCall.psiCall))
 
-    override fun isSuperOrDelegatingConstructorCall(kotlinCall: KotlinCall) =
+    override fun isSuperOrDelegatingConstructorCall(kotlinCall: KotlinCall): Boolean =
         kotlinCall is PSIKotlinCallImpl && isSuperOrDelegatingConstructorCall(kotlinCall.psiCall)
 
-    override fun isHiddenInResolution(descriptor: DeclarationDescriptor, kotlinCall: KotlinCall) =
+    override fun isHiddenInResolution(descriptor: DeclarationDescriptor, kotlinCall: KotlinCall): Boolean =
         deprecationResolver.isHiddenInResolution(descriptor, isSuperOrDelegatingConstructorCall(kotlinCall))
 
     override fun isSuperExpression(receiver: SimpleKotlinCallArgument?): Boolean =
@@ -55,6 +56,6 @@ class KotlinResolutionStatelessCallbacksImpl(
     override fun getScopeTowerForCallableReferenceArgument(argument: CallableReferenceKotlinCallArgument): ImplicitScopeTower =
         (argument as CallableReferenceKotlinCallArgumentImpl).scopeTowerForResolution
 
-    override fun getVariableCandidateIfInvoke(functionCall: KotlinCall) =
+    override fun getVariableCandidateIfInvoke(functionCall: KotlinCall): KotlinResolutionCandidate? =
         functionCall.safeAs<PSIKotlinCallForInvoke>()?.variableCall
 }

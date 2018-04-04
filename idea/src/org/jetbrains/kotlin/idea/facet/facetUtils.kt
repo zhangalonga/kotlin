@@ -224,10 +224,10 @@ fun KotlinFacet.noVersionAutoAdvance() {
 
 // "Primary" fields are written to argument beans directly and thus not presented in the "additional arguments" string
 // Update these lists when facet/project settings UI changes
-val commonUIExposedFields = listOf(CommonCompilerArguments::languageVersion.name,
-                                   CommonCompilerArguments::apiVersion.name,
-                                   CommonCompilerArguments::suppressWarnings.name,
-                                   CommonCompilerArguments::coroutinesState.name)
+val commonUIExposedFields: List<String> = listOf(CommonCompilerArguments::languageVersion.name,
+                                                 CommonCompilerArguments::apiVersion.name,
+                                                 CommonCompilerArguments::suppressWarnings.name,
+                                                 CommonCompilerArguments::coroutinesState.name)
 private val commonUIHiddenFields = listOf(CommonCompilerArguments::pluginClasspaths.name,
                                           CommonCompilerArguments::pluginOptions.name)
 private val commonPrimaryFields = commonUIExposedFields + commonUIHiddenFields
@@ -235,7 +235,7 @@ private val commonPrimaryFields = commonUIExposedFields + commonUIHiddenFields
 private val jvmSpecificUIExposedFields = listOf(K2JVMCompilerArguments::jvmTarget.name,
                                                 K2JVMCompilerArguments::destination.name,
                                                 K2JVMCompilerArguments::classpath.name)
-val jvmUIExposedFields = commonUIExposedFields + jvmSpecificUIExposedFields
+val jvmUIExposedFields: List<String> = commonUIExposedFields + jvmSpecificUIExposedFields
 private val jvmPrimaryFields = commonPrimaryFields + jvmSpecificUIExposedFields
 
 private val jsSpecificUIExposedFields = listOf(K2JSCompilerArguments::sourceMap.name,
@@ -244,12 +244,12 @@ private val jsSpecificUIExposedFields = listOf(K2JSCompilerArguments::sourceMap.
                                                K2JSCompilerArguments::outputPrefix.name,
                                                K2JSCompilerArguments::outputPostfix.name,
                                                K2JSCompilerArguments::moduleKind.name)
-val jsUIExposedFields = commonUIExposedFields + jsSpecificUIExposedFields
+val jsUIExposedFields: List<String> = commonUIExposedFields + jsSpecificUIExposedFields
 private val jsPrimaryFields = commonPrimaryFields + jsSpecificUIExposedFields
 
 private val metadataSpecificUIExposedFields = listOf(K2MetadataCompilerArguments::destination.name,
                                                      K2MetadataCompilerArguments::classpath.name)
-val metadataUIExposedFields = commonUIExposedFields + metadataSpecificUIExposedFields
+val metadataUIExposedFields: List<String> = commonUIExposedFields + metadataSpecificUIExposedFields
 private val metadataPrimaryFields = commonPrimaryFields + metadataSpecificUIExposedFields
 
 private val CommonCompilerArguments.primaryFields: List<String>

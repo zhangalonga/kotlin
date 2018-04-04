@@ -16,10 +16,7 @@
 
 package org.jetbrains.kotlin.resolve.scopes
 
-import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.descriptors.PackageViewDescriptor
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.SubpackagesScope
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.FqName
@@ -34,10 +31,10 @@ class SubpackagesImportingScope(
 
     override fun getContributedPackage(name: Name): PackageViewDescriptor? = getPackage(name)
 
-    override fun printStructure(p: Printer) = printScopeStructure(p)
+    override fun printStructure(p: Printer): Unit = printScopeStructure(p)
 
-    override fun getContributedVariables(name: Name, location: LookupLocation) = super.getContributedVariables(name, location)
-    override fun getContributedFunctions(name: Name, location: LookupLocation) = super.getContributedFunctions(name, location)
+    override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> = super.getContributedVariables(name, location)
+    override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> = super.getContributedFunctions(name, location)
 
     //TODO: kept old behavior, but it seems very strange (super call seems more applicable)
     override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? = null
@@ -55,5 +52,5 @@ class SubpackagesImportingScope(
         changeNamesForAliased: Boolean
     ): Collection<DeclarationDescriptor> = emptyList()
 
-    override fun computeImportedNames() = emptySet<Name>()
+    override fun computeImportedNames(): Set<Name> = emptySet<Name>()
 }

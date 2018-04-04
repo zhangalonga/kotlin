@@ -50,7 +50,7 @@ private fun String.method(name: String, parameters: String, returnType: String) 
                 SignatureBuildingComponents.signature(this@method, "$name($parameters)$returnType"))
 
 object BuiltinSpecialProperties {
-    val PROPERTY_FQ_NAME_TO_JVM_GETTER_NAME_MAP = mapOf(
+    val PROPERTY_FQ_NAME_TO_JVM_GETTER_NAME_MAP: Map<FqName, Name> = mapOf(
             BUILTIN_NAMES._enum.childSafe("name") to Name.identifier("name"),
             BUILTIN_NAMES._enum.childSafe("ordinal") to Name.identifier("ordinal"),
             BUILTIN_NAMES.collection.child("size") to Name.identifier("size"),
@@ -99,16 +99,16 @@ object BuiltinMethodsWithSpecialGenericSignature {
     ).map { "java/util/Collection".method(it, "Ljava/util/Collection;", JvmPrimitiveType.BOOLEAN.desc) }
 
     private val ERASED_COLLECTION_PARAMETER_SIGNATURES = ERASED_COLLECTION_PARAMETER_NAME_AND_SIGNATURES.map { it.signature }
-    val ERASED_COLLECTION_PARAMETER_NAMES = ERASED_COLLECTION_PARAMETER_NAME_AND_SIGNATURES.map { it.name.asString() }
+    val ERASED_COLLECTION_PARAMETER_NAMES: List<String> = ERASED_COLLECTION_PARAMETER_NAME_AND_SIGNATURES.map { it.name.asString() }
 
     enum class TypeSafeBarrierDescription(val defaultValue: Any?) {
         NULL(null), INDEX(-1), FALSE(false),
 
         MAP_GET_OR_DEFAULT(null) {
-            override fun checkParameter(index: Int) = index != 1
+            override fun checkParameter(index: Int): Boolean = index != 1
         };
 
-        open fun checkParameter(index: Int) = true
+        open fun checkParameter(index: Int): Boolean = true
     }
 
     private val GENERIC_PARAMETERS_METHODS_TO_DEFAULT_VALUES_MAP =
@@ -349,4 +349,4 @@ val CallableMemberDescriptor.isFromJava: Boolean
         return descriptor.containingDeclaration is JavaClassDescriptor
     }
 
-fun CallableMemberDescriptor.isFromJavaOrBuiltins() = isFromJava || KotlinBuiltIns.isBuiltIn(this)
+fun CallableMemberDescriptor.isFromJavaOrBuiltins(): Boolean = isFromJava || KotlinBuiltIns.isBuiltIn(this)

@@ -64,7 +64,7 @@ class ReplaceCallWithBinaryOperatorInspection : AbstractApplicabilityBasedInspec
         return element.isReceiverExpressionWithValue()
     }
 
-    override fun inspectionTarget(element: KtDotQualifiedExpression) = element.callExpression?.calleeExpression ?: element
+    override fun inspectionTarget(element: KtDotQualifiedExpression): KtExpression = element.callExpression?.calleeExpression ?: element
 
     override fun inspectionHighlightType(element: KtDotQualifiedExpression): ProblemHighlightType {
         val calleeExpression = element.callExpression?.calleeExpression as? KtSimpleNameExpression
@@ -77,7 +77,7 @@ class ReplaceCallWithBinaryOperatorInspection : AbstractApplicabilityBasedInspec
         }
     }
 
-    override fun inspectionText(element: KtDotQualifiedExpression) = "Call replaceable with binary operator"
+    override fun inspectionText(element: KtDotQualifiedExpression): String = "Call replaceable with binary operator"
 
     override val defaultFixText: String
         get() = "Replace with binary operator"

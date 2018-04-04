@@ -39,7 +39,7 @@ class TreeBasedAnnotation(
     override val classId: ClassId?
         get() = (resolve() as? JavaClassWithClassId)?.classId ?: ClassId.topLevel(FqName(annotation.annotationType.toString().substringAfter("@")))
 
-    override fun resolve() = javac.resolve(annotation.annotationType, compilationUnit, onElement) as? JavaClass
+    override fun resolve(): JavaClass? = javac.resolve(annotation.annotationType, compilationUnit, onElement) as? JavaClass
 
 }
 
@@ -75,7 +75,7 @@ class TreeBasedReferenceAnnotationArgument(
 class TreeBasedArrayAnnotationArgument(val args: List<JavaAnnotationArgument>,
                                        name: Name,
                                        javac: JavacWrapper) : TreeBasedAnnotationArgument(name, javac), JavaArrayAnnotationArgument {
-    override fun getElements() = args
+    override fun getElements(): List<JavaAnnotationArgument> = args
 
 }
 

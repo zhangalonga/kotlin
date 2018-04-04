@@ -31,11 +31,11 @@ interface DeclaredMemberIndex {
     fun getFieldNames(): Set<Name>
 
     object Empty : DeclaredMemberIndex {
-        override fun findMethodsByName(name: Name) = listOf<JavaMethod>()
-        override fun getMethodNames() = emptySet<Name>()
+        override fun findMethodsByName(name: Name): List<JavaMethod> = listOf()
+        override fun getMethodNames(): Set<Name> = emptySet()
 
         override fun findFieldByName(name: Name): JavaField? = null
-        override fun getFieldNames() = emptySet<Name>()
+        override fun getFieldNames(): Set<Name> = emptySet()
     }
 }
 

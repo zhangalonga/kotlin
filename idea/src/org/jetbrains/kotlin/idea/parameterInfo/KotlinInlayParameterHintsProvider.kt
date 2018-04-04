@@ -83,7 +83,7 @@ enum class HintType(desc: String, enabled: Boolean) {
 
 
     LAMBDA_RETURN_EXPRESSION("Show lambda return expression hints", true) {
-        override fun isApplicable(elem: PsiElement) =
+        override fun isApplicable(elem: PsiElement): Boolean =
             elem is KtExpression && elem !is KtLambdaExpression && elem !is KtFunctionLiteral &&
                     !elem.isNameReferenceInCall()
 
@@ -96,7 +96,7 @@ enum class HintType(desc: String, enabled: Boolean) {
     },
 
     LAMBDA_IMPLICIT_PARAMETER_RECEIVER("Show hints for implicit receivers and parameters of lambdas", true) {
-        override fun isApplicable(elem: PsiElement) = elem is KtLambdaExpression
+        override fun isApplicable(elem: PsiElement): Boolean = elem is KtLambdaExpression
 
         override fun provideHints(elem: PsiElement): List<InlayInfo> {
             (elem as? KtLambdaExpression)?.let {
@@ -106,7 +106,7 @@ enum class HintType(desc: String, enabled: Boolean) {
         }
     },
     SUSPENDING_CALL("Show hints for suspending calls", false) {
-        override fun isApplicable(elem: PsiElement) = elem.isNameReferenceInCall() && KotlinInternalMode.enabled
+        override fun isApplicable(elem: PsiElement): Boolean = elem.isNameReferenceInCall() && KotlinInternalMode.enabled
 
         override fun provideHints(elem: PsiElement): List<InlayInfo> {
             val callExpression = elem.parent as? KtCallExpression ?: return emptyList()
@@ -130,8 +130,8 @@ enum class HintType(desc: String, enabled: Boolean) {
 
     abstract fun isApplicable(elem: PsiElement): Boolean
     abstract fun provideHints(elem: PsiElement): List<InlayInfo>
-    val option = Option("SHOW_${this.name}", desc, enabled)
-    val enabled
+    val option: Option = Option("SHOW_${this.name}", desc, enabled)
+    val enabled: Boolean
         get() = option.get()
 }
 

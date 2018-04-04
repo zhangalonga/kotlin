@@ -71,44 +71,44 @@ class KotlinStandaloneScriptRunConfiguration(
     @JvmField
     var isAlternativeJrePathEnabled: Boolean = false
 
-    override fun getVMParameters() = vmParameters
+    override fun getVMParameters(): String? = vmParameters
     override fun setVMParameters(value: String?) {
         vmParameters = value
     }
 
-    override fun getAlternativeJrePath() = alternativeJrePath
+    override fun getAlternativeJrePath(): String? = alternativeJrePath
     override fun setAlternativeJrePath(path: String?) {
         alternativeJrePath = path
     }
 
-    override fun getProgramParameters() = programParameters
+    override fun getProgramParameters(): String? = programParameters
     override fun setProgramParameters(value: String?) {
         programParameters = value
     }
 
-    override fun getEnvs() = envs
+    override fun getEnvs(): MutableMap<String, String> = envs
     override fun setEnvs(envs: MutableMap<String, String>) {
         this.envs = envs
     }
 
-    override fun getWorkingDirectory() = workingDirectory
+    override fun getWorkingDirectory(): String? = workingDirectory
     override fun setWorkingDirectory(value: String?) {
         workingDirectory = value
     }
 
-    override fun isPassParentEnvs() = passParentEnvs
+    override fun isPassParentEnvs(): Boolean = passParentEnvs
     override fun setPassParentEnvs(passParentEnvs: Boolean) {
         this.passParentEnvs = passParentEnvs
     }
 
-    override fun isAlternativeJrePathEnabled() = isAlternativeJrePathEnabled
+    override fun isAlternativeJrePathEnabled(): Boolean = isAlternativeJrePathEnabled
     override fun setAlternativeJrePathEnabled(enabled: Boolean) {
         isAlternativeJrePathEnabled = enabled
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState = ScriptCommandLineState(environment, this)
 
-    override fun suggestedName() = filePath?.substringAfterLast('/')
+    override fun suggestedName(): String? = filePath?.substringAfterLast('/')
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         val group = SettingsEditorGroup<KotlinStandaloneScriptRunConfiguration>()
@@ -157,9 +157,9 @@ class KotlinStandaloneScriptRunConfiguration(
     }
 
     // NOTE: this is needed for coverage
-    override fun getRunClass() = null
+    override fun getRunClass(): Nothing? = null
 
-    override fun getPackage() = null
+    override fun getPackage(): Nothing? = null
 
     override fun getRefactoringElementListener(element: PsiElement): RefactoringElementListener? {
         val file = element as? KtFile ?: return null

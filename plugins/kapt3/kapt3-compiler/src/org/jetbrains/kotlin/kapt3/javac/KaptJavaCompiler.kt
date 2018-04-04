@@ -22,7 +22,7 @@ import com.sun.tools.javac.util.Context
 import com.sun.tools.javac.util.List as JavacList
 
 class KaptJavaCompiler(context: Context) : JavaCompiler(context) {
-    public override fun shouldStop(cs: CompileStates.CompileState) = super.shouldStop(cs)
+    public override fun shouldStop(cs: CompileStates.CompileState): Boolean = super.shouldStop(cs)
 
     fun <T> stopIfErrorOccurred(cs: CompileStates.CompileState, list: JavacList<T>): JavacList<T> {
         return if (shouldStop(cs)) JavacList.nil<T>() else list

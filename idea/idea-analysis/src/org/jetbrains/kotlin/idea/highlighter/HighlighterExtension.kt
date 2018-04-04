@@ -29,6 +29,6 @@ abstract class HighlighterExtension {
             = highlightDeclaration(elementToHighlight, resolvedCall.resultingDescriptor)
 
     companion object {
-        val EP_NAME = ExtensionPointName.create<HighlighterExtension>("org.jetbrains.kotlin.highlighterExtension")
+        val EP_NAME: ExtensionPointName<HighlighterExtension> = ExtensionPointName.create<HighlighterExtension>("org.jetbrains.kotlin.highlighterExtension")
     }
 }

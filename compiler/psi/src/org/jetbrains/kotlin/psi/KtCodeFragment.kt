@@ -78,11 +78,11 @@ abstract class KtCodeFragment(
         resolveScope = scope
     }
 
-    override fun getForcedResolveScope() = resolveScope
+    override fun getForcedResolveScope(): GlobalSearchScope? = resolveScope
 
-    override fun isPhysical() = isPhysical
+    override fun isPhysical(): Boolean = isPhysical
 
-    override fun isValid() = true
+    override fun isValid(): Boolean = true
 
     override fun getContext(): PsiElement? {
         if (fakeContextForJavaFile != null) return fakeContextForJavaFile
@@ -94,7 +94,7 @@ abstract class KtCodeFragment(
         return context
     }
 
-    override fun getResolveScope() = context?.resolveScope ?: super.getResolveScope()
+    override fun getResolveScope(): GlobalSearchScope = context?.resolveScope ?: super.getResolveScope()
 
     override fun clone(): KtCodeFragment {
         val clone = cloneImpl(calcTreeElement().clone() as FileElement) as KtCodeFragment
@@ -107,15 +107,15 @@ abstract class KtCodeFragment(
         return clone
     }
 
-    final override fun getViewProvider() = viewProvider
+    final override fun getViewProvider(): SingleRootFileViewProvider = viewProvider
 
-    override fun getThisType() = thisType
+    override fun getThisType(): PsiType? = thisType
 
     override fun setThisType(psiType: PsiType?) {
         thisType = psiType
     }
 
-    override fun getSuperType() = superType
+    override fun getSuperType(): PsiType? = superType
 
     override fun setSuperType(superType: PsiType?) {
         this.superType = superType
@@ -158,13 +158,13 @@ abstract class KtCodeFragment(
 
     override fun setVisibilityChecker(checker: JavaCodeFragment.VisibilityChecker?) {}
 
-    override fun getVisibilityChecker() = JavaCodeFragment.VisibilityChecker.EVERYTHING_VISIBLE
+    override fun getVisibilityChecker(): JavaCodeFragment.VisibilityChecker = JavaCodeFragment.VisibilityChecker.EVERYTHING_VISIBLE
 
     override fun setExceptionHandler(checker: JavaCodeFragment.ExceptionHandler?) {
         exceptionHandler = checker
     }
 
-    override fun getExceptionHandler() = exceptionHandler
+    override fun getExceptionHandler(): JavaCodeFragment.ExceptionHandler? = exceptionHandler
 
     override fun importClass(aClass: PsiClass?): Boolean {
         return true

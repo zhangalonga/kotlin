@@ -70,7 +70,7 @@ open class ChangeVariableTypeFix(element: KtVariableDeclaration, type: KotlinTyp
     }
 
     class OnType(element: KtVariableDeclaration, type: KotlinType) : ChangeVariableTypeFix(element, type), HighPriorityAction {
-        override fun variablePresentation() = null
+        override fun variablePresentation(): Nothing? = null
     }
 
     class ForOverridden(element: KtVariableDeclaration, type: KotlinType) : ChangeVariableTypeFix(element, type) {
@@ -80,11 +80,9 @@ open class ChangeVariableTypeFix(element: KtVariableDeclaration, type: KotlinTyp
         }
     }
 
-    override fun getFamilyName()
-            = KotlinBundle.message("change.type.family")
+    override fun getFamilyName(): String = KotlinBundle.message("change.type.family")
 
-    override fun isAvailable(project: Project, editor: Editor?, file: KtFile)
-            = !typeContainsError
+    override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean = !typeContainsError
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

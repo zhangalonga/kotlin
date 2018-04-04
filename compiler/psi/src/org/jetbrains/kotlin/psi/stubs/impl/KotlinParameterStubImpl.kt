@@ -40,7 +40,7 @@ class KotlinParameterStubImpl(
         return if (fqName != null) FqName(fqName.string) else null
     }
 
-    override fun isMutable() = isMutable
-    override fun hasValOrVar() = hasValOrVar
-    override fun hasDefaultValue() = hasDefaultValue
+    override fun isMutable(): Boolean = isMutable
+    override fun hasValOrVar(): Boolean = hasValOrVar
+    override fun hasDefaultValue(): Boolean = hasDefaultValue
 }

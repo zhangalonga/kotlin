@@ -49,7 +49,7 @@ class VariableLivenessFrame(val maxLocals: Int) : VarFrame<VariableLivenessFrame
         return bitSet == other.bitSet
     }
 
-    override fun hashCode() = bitSet.hashCode()
+    override fun hashCode(): Int = bitSet.hashCode()
 }
 
 fun analyzeLiveness(node: MethodNode): List<VariableLivenessFrame> {

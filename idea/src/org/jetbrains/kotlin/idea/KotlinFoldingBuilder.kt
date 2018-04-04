@@ -152,7 +152,7 @@ class KotlinFoldingBuilder : CustomFoldingBuilder(), DumbAware {
         return false
     }
 
-    override fun isCustomFoldingRoot(node: ASTNode) = node.elementType == KtNodeTypes.BLOCK || node.elementType == KtNodeTypes.CLASS_BODY
+    override fun isCustomFoldingRoot(node: ASTNode): Boolean = node.elementType == KtNodeTypes.BLOCK || node.elementType == KtNodeTypes.CLASS_BODY
 
     private fun isFirstElementInFile(element: PsiElement): Boolean {
         val parent = element.parent

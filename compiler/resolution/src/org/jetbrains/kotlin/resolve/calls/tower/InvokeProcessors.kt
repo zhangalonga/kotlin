@@ -33,7 +33,7 @@ abstract class AbstractInvokeTowerProcessor<C : Candidate>(
     private val previousData = ArrayList<TowerData>()
     private val invokeProcessors: MutableList<Collection<VariableInvokeProcessor>> = ArrayList()
 
-    protected fun hasInvokeProcessors() = invokeProcessors.isNotEmpty()
+    protected fun hasInvokeProcessors(): Boolean = invokeProcessors.isNotEmpty()
 
     private inner class VariableInvokeProcessor(
         var variableCandidate: C,
@@ -122,7 +122,7 @@ class InvokeTowerProcessor<C : Candidate>(
         ) { getFunctions(OperatorNameConventions.INVOKE, it) }
     }
 
-    override fun mayDataBeApplicable(data: TowerData) =
+    override fun mayDataBeApplicable(data: TowerData): Boolean =
         data == TowerData.Empty || data is TowerData.TowerLevel
 
     override fun recordLookups(skippedData: Collection<TowerData>, name: Name) {

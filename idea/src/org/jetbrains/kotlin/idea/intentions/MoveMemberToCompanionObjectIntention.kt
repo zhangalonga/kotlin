@@ -245,7 +245,7 @@ class MoveMemberToCompanionObjectIntention : SelfTargetingRangeIntention<KtNamed
         }.isNotEmpty()
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtNamedDeclaration, editor: Editor?) {
         val project = element.project

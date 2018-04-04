@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.psi.*
 
 class ParcelableAddSupertypeQuickfix(clazz: KtClassOrObject) : AbstractParcelableQuickFix<KtClassOrObject>(clazz) {
     object Factory : AbstractFactory({ findElement<KtClassOrObject>()?.let(::ParcelableAddSupertypeQuickfix) })
-    override fun getText() = "Add ''Parcelable'' supertype"
+    override fun getText(): String = "Add ''Parcelable'' supertype"
 
     override fun invoke(ktPsiFactory: KtPsiFactory, element: KtClassOrObject) {
         element.addSuperTypeListEntry(ktPsiFactory.createSuperTypeEntry(CLASS_PARCELABLE)).shortenReferences()

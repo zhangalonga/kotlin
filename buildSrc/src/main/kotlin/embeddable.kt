@@ -7,9 +7,9 @@ import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.task
 import org.gradle.kotlin.dsl.*
 
-val kotlinEmbeddableRootPackage = "org.jetbrains.kotlin"
+val kotlinEmbeddableRootPackage: String = "org.jetbrains.kotlin"
 
-val packagesToRelocate =
+val packagesToRelocate: List<String> =
         listOf( "com.intellij",
                 "com.google",
                 "com.sampullara",
@@ -26,7 +26,7 @@ val packagesToRelocate =
 // To speed-up rewriting process we want to have this dummy as small as possible.
 // But due to the shadow plugin bug (https://github.com/johnrengelman/shadow/issues/262) it is not possible to use
 // packagesToRelocate list to for the include list. Therefore the exclude list has to be created.
-val packagesToExcludeFromDummy =
+val packagesToExcludeFromDummy: List<String> =
         listOf("org/jetbrains/kotlin/**",
                "org/intellij/lang/annotations/**",
                "org/jetbrains/jps/**",
@@ -82,7 +82,7 @@ fun Project.compilerDummyForDependenciesRewriting(taskName: String = "compilerDu
             body()
         }
 
-const val COMPILER_DUMMY_JAR_CONFIGURATION_NAME = "compilerDummyJar"
+const val COMPILER_DUMMY_JAR_CONFIGURATION_NAME: String = "compilerDummyJar"
 
 fun Project.compilerDummyJar(task: Jar, body: Jar.() -> Unit = {}) {
     task.body()

@@ -42,7 +42,7 @@ public object EDT : CoroutineDispatcher() {
         companion object Key : CoroutineContext.Key<ModalityStateElement>
     }
 
-    operator fun invoke(project: Project) = this + project.cancelOnDisposal
+    operator fun invoke(project: Project): CoroutineContext = this + project.cancelOnDisposal
 }
 
 // job that is cancelled when the project is disposed

@@ -36,7 +36,7 @@ class KotlinFindUsagesProvider : FindUsagesProvider {
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean =
             psiElement is KtNamedDeclaration
 
-    override fun getWordsScanner() = null
+    override fun getWordsScanner(): Nothing? = null
 
     override fun getHelpId(psiElement: PsiElement): String? = null
 

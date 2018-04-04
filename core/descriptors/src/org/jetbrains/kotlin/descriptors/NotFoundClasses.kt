@@ -58,29 +58,29 @@ class NotFoundClasses(private val storageManager: StorageManager, private val mo
 
         private val typeConstructor = ClassTypeConstructorImpl(this, typeParameters, setOf(module.builtIns.anyType))
 
-        override fun getKind() = ClassKind.CLASS
-        override fun getModality() = Modality.FINAL
-        override fun getVisibility() = Visibilities.PUBLIC
-        override fun getTypeConstructor() = typeConstructor
-        override fun getDeclaredTypeParameters() = typeParameters
-        override fun isInner() = isInner
+        override fun getKind(): ClassKind = ClassKind.CLASS
+        override fun getModality(): Modality = Modality.FINAL
+        override fun getVisibility(): Visibility = Visibilities.PUBLIC
+        override fun getTypeConstructor(): ClassTypeConstructorImpl = typeConstructor
+        override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> = typeParameters
+        override fun isInner(): Boolean = isInner
 
-        override fun isCompanionObject() = false
-        override fun isData() = false
-        override fun isInline() = false
-        override fun isExpect() = false
-        override fun isActual() = false
-        override fun isExternal() = false
+        override fun isCompanionObject(): Boolean = false
+        override fun isData(): Boolean = false
+        override fun isInline(): Boolean = false
+        override fun isExpect(): Boolean = false
+        override fun isActual(): Boolean = false
+        override fun isExternal(): Boolean = false
         override val annotations: Annotations get() = Annotations.EMPTY
 
-        override fun getUnsubstitutedMemberScope() = MemberScope.Empty
-        override fun getStaticScope() = MemberScope.Empty
+        override fun getUnsubstitutedMemberScope(): MemberScope.Empty = MemberScope.Empty
+        override fun getStaticScope(): MemberScope.Empty = MemberScope.Empty
         override fun getConstructors(): Collection<ClassConstructorDescriptor> = emptySet()
         override fun getUnsubstitutedPrimaryConstructor(): ClassConstructorDescriptor? = null
         override fun getCompanionObjectDescriptor(): ClassDescriptor? = null
         override fun getSealedSubclasses(): Collection<ClassDescriptor> = emptyList()
 
-        override fun toString() = "class $name (not found)"
+        override fun toString(): String = "class $name (not found)"
     }
 
     // We create different ClassDescriptor instances for types with the same ClassId but different number of type arguments.

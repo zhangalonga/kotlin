@@ -37,10 +37,10 @@ enum class JvmTarget(override val description: String) : TargetPlatformVersion {
 
     companion object {
         @JvmField
-        val DEFAULT = JVM_1_6
+        val DEFAULT: JvmTarget = JVM_1_6
 
         @JvmStatic
-        fun fromString(string: String) = values().find { it.description == string }
+        fun fromString(string: String): JvmTarget? = values().find { it.description == string }
 
         fun getDescription(bytecodeVersion: Int): String {
             val platformDescription = values().find { it.bytecodeVersion == bytecodeVersion }?.description ?:

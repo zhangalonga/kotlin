@@ -60,6 +60,6 @@ class JvmBuiltInClassDescriptorFactory(
     companion object {
         private val KOTLIN_FQ_NAME = KotlinBuiltIns.BUILT_INS_PACKAGE_FQ_NAME
         private val CLONEABLE_NAME = KotlinBuiltIns.FQ_NAMES.cloneable.shortName()
-        val CLONEABLE_CLASS_ID = ClassId.topLevel(KotlinBuiltIns.FQ_NAMES.cloneable.toSafe())
+        val CLONEABLE_CLASS_ID: ClassId = ClassId.topLevel(KotlinBuiltIns.FQ_NAMES.cloneable.toSafe())
     }
 }

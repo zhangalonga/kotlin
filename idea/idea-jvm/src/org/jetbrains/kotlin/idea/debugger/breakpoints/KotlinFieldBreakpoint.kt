@@ -381,7 +381,7 @@ class KotlinFieldBreakpoint(
         }
     }
 
-    override fun getCategory() = CATEGORY
+    override fun getCategory(): Key<FieldBreakpoint> = CATEGORY
 
     override fun getDisplayName(): String? {
         if (!isValid) {

@@ -206,7 +206,7 @@ enum class KotlinCallKind(vararg resolutionPart: ResolutionPart) {
     ),
     UNSUPPORTED();
 
-    val resolutionSequence = resolutionPart.asList()
+    val resolutionSequence: List<ResolutionPart> = resolutionPart.asList()
 }
 
 class GivenCandidate(

@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.load.java.components.DescriptorResolverUtils
 import org.jetbrains.kotlin.load.java.components.TypeUsage
 import org.jetbrains.kotlin.load.java.lazy.LazyJavaResolverContext
 import org.jetbrains.kotlin.load.java.lazy.types.toAttributes
+import org.jetbrains.kotlin.load.java.sources.JavaSourceElement
 import org.jetbrains.kotlin.load.java.structure.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -41,11 +42,11 @@ class LazyJavaAnnotationDescriptor(
         private val c: LazyJavaResolverContext,
         private val javaAnnotation: JavaAnnotation
 ) : AnnotationDescriptor {
-    override val fqName by c.storageManager.createNullableLazyValue {
+    override val fqName: FqName? by c.storageManager.createNullableLazyValue {
         javaAnnotation.classId?.asSingleFqName()
     }
 
-    override val type by c.storageManager.createLazyValue {
+    override val type: SimpleType by c.storageManager.createLazyValue {
         val fqName = fqName ?: return@createLazyValue ErrorUtils.createErrorType("No fqName: $javaAnnotation")
         val annotationClass = JavaToKotlinClassMap.mapJavaToKotlin(fqName, c.module.builtIns)
                               ?: javaAnnotation.resolve()?.let { javaClass -> c.components.moduleClassResolver.resolveClass(javaClass) }
@@ -53,9 +54,9 @@ class LazyJavaAnnotationDescriptor(
         annotationClass.defaultType
     }
 
-    override val source = c.components.sourceElementFactory.source(javaAnnotation)
+    override val source: JavaSourceElement = c.components.sourceElementFactory.source(javaAnnotation)
 
-    override val allValueArguments by c.storageManager.createLazyValue {
+    override val allValueArguments: Map<Name, ConstantValue<*>> by c.storageManager.createLazyValue {
         javaAnnotation.arguments.mapNotNull { arg ->
             val name = arg.name ?: DEFAULT_ANNOTATION_MEMBER_NAME
             resolveAnnotationArgument(arg)?.let { value -> name to value }

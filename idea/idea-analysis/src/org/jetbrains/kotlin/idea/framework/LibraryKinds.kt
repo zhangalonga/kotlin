@@ -32,11 +32,11 @@ import java.util.jar.Attributes
 import java.util.regex.Pattern
 
 object JSLibraryKind : PersistentLibraryKind<DummyLibraryProperties>("kotlin.js") {
-    override fun createDefaultProperties() = DummyLibraryProperties.INSTANCE!!
+    override fun createDefaultProperties(): DummyLibraryProperties = DummyLibraryProperties.INSTANCE!!
 }
 
 object CommonLibraryKind : PersistentLibraryKind<DummyLibraryProperties>("kotlin.common") {
-    override fun createDefaultProperties() = DummyLibraryProperties.INSTANCE!!
+    override fun createDefaultProperties(): DummyLibraryProperties = DummyLibraryProperties.INSTANCE!!
 }
 
 fun getLibraryPlatform(library: Library): TargetPlatform {
@@ -95,5 +95,5 @@ fun getLibraryJarVersion(library: Library, jarPattern: Pattern): String? {
     return null
 }
 
-fun getCommonRuntimeLibraryVersion(library: Library) =
+fun getCommonRuntimeLibraryVersion(library: Library): String? =
         getLibraryJarVersion(library, PathUtil.KOTLIN_STDLIB_COMMON_JAR_PATTERN)

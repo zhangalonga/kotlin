@@ -71,7 +71,7 @@ class KotlinLanguageInjector(
         private val ABSENT_KOTLIN_INJECTION = BaseInjection("ABSENT_KOTLIN_BASE_INJECTION")
     }
 
-    var annotationInjectionsEnabled = Registry.`is`("kotlin.annotation.injection.enabled", false)
+    var annotationInjectionsEnabled: Boolean = Registry.`is`("kotlin.annotation.injection.enabled", false)
 
     private val kotlinSupport: KotlinLanguageInjectionSupport? by lazy {
         ArrayList(InjectorUtils.getActiveInjectionSupports()).filterIsInstance(KotlinLanguageInjectionSupport::class.java).firstOrNull()

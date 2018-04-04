@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.load.java.structure.impl.classFiles
 import com.intellij.util.cls.ClsFormatException
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.kotlin.load.java.structure.*
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.utils.compact
@@ -35,7 +36,7 @@ abstract class BinaryJavaMethodBase(
         val typeParameters: List<JavaTypeParameter>,
         override val name: Name
 ) : JavaMember, MapBasedJavaAnnotationOwner, BinaryJavaModifierListOwner {
-    override val annotationsByFqName by buildLazyValueForMap()
+    override val annotationsByFqName: Map<FqName?, JavaAnnotation> by buildLazyValueForMap()
 
     override val annotations: Collection<JavaAnnotation> = ContainerUtil.newSmartList()
 

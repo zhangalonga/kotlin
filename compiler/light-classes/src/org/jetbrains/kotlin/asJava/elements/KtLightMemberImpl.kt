@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.asJava.elements
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.psi.*
 import com.intellij.psi.impl.compiled.ClsRepositoryPsiElement
+import com.intellij.psi.javadoc.PsiDocComment
 import org.jetbrains.kotlin.asJava.builder.ClsWrapperStubPsiFactory.ORIGIN
 import org.jetbrains.kotlin.asJava.builder.LightElementOrigin
 import org.jetbrains.kotlin.asJava.builder.LightMemberOrigin
@@ -38,7 +39,7 @@ abstract class KtLightMemberImpl<out D : PsiMember>(
         private val containingClass: KtLightClass,
         private val dummyDelegate: D?
 ) : KtLightElementBase(containingClass), PsiMember, KtLightMember<D> {
-    override val clsDelegate by lazyPub(computeRealDelegate)
+    override val clsDelegate: D by lazyPub(computeRealDelegate)
     private val lightIdentifier by lazyPub { KtLightIdentifier(this, kotlinOrigin as? KtNamedDeclaration) }
 
     private val _modifierList by lazyPub {
@@ -47,13 +48,13 @@ abstract class KtLightMemberImpl<out D : PsiMember>(
         else clsDelegate.modifierList!!
     }
 
-    override fun hasModifierProperty(name: String) = _modifierList.hasModifierProperty(name)
+    override fun hasModifierProperty(name: String): Boolean = _modifierList.hasModifierProperty(name)
 
     override fun getModifierList(): PsiModifierList = _modifierList
 
     override fun toString(): String = "${this::class.java.simpleName}:$name"
 
-    override fun getContainingClass() = containingClass
+    override fun getContainingClass(): KtLightClass = containingClass
 
     override fun getName(): String = dummyDelegate?.name ?: clsDelegate.name!!
 
@@ -61,9 +62,9 @@ abstract class KtLightMemberImpl<out D : PsiMember>(
 
     override val kotlinOrigin: KtDeclaration? get() = lightMemberOrigin?.originalElement
 
-    override fun getDocComment() = (clsDelegate as PsiDocCommentOwner).docComment
+    override fun getDocComment(): PsiDocComment? = (clsDelegate as PsiDocCommentOwner).docComment
 
-    override fun isDeprecated() = (clsDelegate as PsiDocCommentOwner).isDeprecated
+    override fun isDeprecated(): Boolean = (clsDelegate as PsiDocCommentOwner).isDeprecated
 
     override fun isEquivalentTo(another: PsiElement?): Boolean {
         val isEquivalentByOrigin =

@@ -13,7 +13,7 @@ import java.io.OutputStream
 
 // TODO: optimize by reordering records to minimize storage of 'range' fields
 open class JvmStringTable(nameResolver: JvmNameResolver? = null) : StringTable {
-    val strings = ArrayList<String>()
+    val strings: ArrayList<String> = ArrayList()
     private val records = ArrayList<Record.Builder>()
     private val map = HashMap<String, Int>()
     private val localNames = LinkedHashSet<Int>()

@@ -76,10 +76,10 @@ class CallInstruction private constructor(
 
     override fun <R> accept(visitor: InstructionVisitorWithResult<R>): R = visitor.visitCallInstruction(this)
 
-    override fun createCopy() =
+    override fun createCopy(): OperationInstruction =
         CallInstruction(element, blockScope, resolvedCall, receiverValues, arguments).setResult(resultValue)
 
-    override fun toString() =
+    override fun toString(): String =
         renderInstruction("call", "${render(element)}, ${resolvedCall.resultingDescriptor!!.name}")
 }
 
@@ -110,14 +110,14 @@ class MagicInstruction(
     override val outputValue: PseudoValue
         get() = resultValue!!
 
-    override fun accept(visitor: InstructionVisitor) = visitor.visitMagic(this)
+    override fun accept(visitor: InstructionVisitor): Unit = visitor.visitMagic(this)
 
     override fun <R> accept(visitor: InstructionVisitorWithResult<R>): R = visitor.visitMagic(this)
 
-    override fun createCopy() =
+    override fun createCopy(): OperationInstruction =
         MagicInstruction(element, blockScope, inputValues, kind).setResult(resultValue)
 
-    override fun toString() = renderInstruction("magic[$kind]", render(element))
+    override fun toString(): String = renderInstruction("magic[$kind]", render(element))
 }
 
 enum class MagicKind(val sideEffectFree: Boolean = false) {
@@ -161,11 +161,11 @@ class MergeInstruction private constructor(
     override val outputValue: PseudoValue
         get() = resultValue!!
 
-    override fun accept(visitor: InstructionVisitor) = visitor.visitMerge(this)
+    override fun accept(visitor: InstructionVisitor): Unit = visitor.visitMerge(this)
 
     override fun <R> accept(visitor: InstructionVisitorWithResult<R>): R = visitor.visitMerge(this)
 
-    override fun createCopy() = MergeInstruction(element, blockScope, inputValues).setResult(resultValue)
+    override fun createCopy(): OperationInstruction = MergeInstruction(element, blockScope, inputValues).setResult(resultValue)
 
-    override fun toString() = renderInstruction("merge", render(element))
+    override fun toString(): String = renderInstruction("merge", render(element))
 }

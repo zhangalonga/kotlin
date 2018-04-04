@@ -33,9 +33,9 @@ class KotlinTopLevelTypeAliasByPackageIndex : StringStubIndexExtension<KtTypeAli
             )
 
     companion object {
-        val KEY = KotlinIndexUtil.createIndexKey(KotlinTopLevelTypeAliasByPackageIndex::class.java)
-        val INSTANCE = KotlinTopLevelTypeAliasByPackageIndex()
+        val KEY: StubIndexKey<String, KtTypeAlias> = KotlinIndexUtil.createIndexKey(KotlinTopLevelTypeAliasByPackageIndex::class.java)
+        val INSTANCE: KotlinTopLevelTypeAliasByPackageIndex = KotlinTopLevelTypeAliasByPackageIndex()
 
-        @JvmStatic fun getInstance() = INSTANCE
+        @JvmStatic fun getInstance(): KotlinTopLevelTypeAliasByPackageIndex = INSTANCE
     }
 }

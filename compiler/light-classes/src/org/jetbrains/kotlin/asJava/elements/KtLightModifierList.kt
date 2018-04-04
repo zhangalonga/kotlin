@@ -37,39 +37,39 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 
 abstract class KtLightModifierList<out T : KtLightElement<KtModifierListOwner, PsiModifierListOwner>>(protected val owner: T)
     : KtLightElementBase(owner), PsiModifierList, KtLightElement<KtModifierList, PsiModifierList> {
-    override val clsDelegate by lazyPub { owner.clsDelegate.modifierList!! }
+    override val clsDelegate: PsiModifierList by lazyPub { owner.clsDelegate.modifierList!! }
     private val _annotations by lazyPub { computeAnnotations(this) }
 
     override val kotlinOrigin: KtModifierList?
         get() = owner.kotlinOrigin?.modifierList
 
-    override fun getParent() = owner
+    override fun getParent(): T = owner
 
-    override fun hasExplicitModifier(name: String) = hasModifierProperty(name)
+    override fun hasExplicitModifier(name: String): Boolean = hasModifierProperty(name)
 
-    override fun setModifierProperty(name: String, value: Boolean) = clsDelegate.setModifierProperty(name, value)
-    override fun checkSetModifierProperty(name: String, value: Boolean) = clsDelegate.checkSetModifierProperty(name, value)
-    override fun addAnnotation(qualifiedName: String) = clsDelegate.addAnnotation(qualifiedName)
+    override fun setModifierProperty(name: String, value: Boolean): Unit = clsDelegate.setModifierProperty(name, value)
+    override fun checkSetModifierProperty(name: String, value: Boolean): Unit = clsDelegate.checkSetModifierProperty(name, value)
+    override fun addAnnotation(qualifiedName: String): PsiAnnotation = clsDelegate.addAnnotation(qualifiedName)
 
     override fun getApplicableAnnotations(): Array<out PsiAnnotation> = annotations
 
     override fun getAnnotations(): Array<out PsiAnnotation> = _annotations.toTypedArray()
-    override fun findAnnotation(qualifiedName: String) = _annotations.firstOrNull { it.fqNameMatches(qualifiedName) }
+    override fun findAnnotation(qualifiedName: String): KtLightAbstractAnnotation? = _annotations.firstOrNull { it.fqNameMatches(qualifiedName) }
 
-    override fun isEquivalentTo(another: PsiElement?) =
+    override fun isEquivalentTo(another: PsiElement?): Boolean =
             another is KtLightModifierList<*> && owner == another.owner
 
-    override fun isWritable() = false
+    override fun isWritable(): Boolean = false
 
-    override fun toString() = "Light modifier list of $owner"
+    override fun toString(): String = "Light modifier list of $owner"
 }
 
 class KtLightSimpleModifierList(
         owner: KtLightElement<KtModifierListOwner, PsiModifierListOwner>, private val modifiers: Set<String>
 ) : KtLightModifierList<KtLightElement<KtModifierListOwner, PsiModifierListOwner>>(owner) {
-    override fun hasModifierProperty(name: String) = name in modifiers
+    override fun hasModifierProperty(name: String): Boolean = name in modifiers
 
-    override fun copy() = KtLightSimpleModifierList(owner, modifiers)
+    override fun copy(): KtLightSimpleModifierList = KtLightSimpleModifierList(owner, modifiers)
 }
 
 private fun computeAnnotations(lightModifierList: KtLightModifierList<*>): List<KtLightAbstractAnnotation> {

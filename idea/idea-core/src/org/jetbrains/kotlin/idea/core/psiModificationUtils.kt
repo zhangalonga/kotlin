@@ -269,7 +269,7 @@ fun KtDeclaration.implicitVisibility(): KtModifierKeywordToken? =
             }
         }
 
-fun KtModifierListOwner.canBePrivate() = modifierList?.hasModifier(KtTokens.ABSTRACT_KEYWORD) != true
+fun KtModifierListOwner.canBePrivate(): Boolean = modifierList?.hasModifier(KtTokens.ABSTRACT_KEYWORD) != true
 
 fun KtModifierListOwner.canBeProtected(): Boolean {
     val parent = when (this) {
@@ -473,7 +473,7 @@ fun KtModifierList.normalize(): KtModifierList {
     }
 }
 
-fun KtBlockStringTemplateEntry.canDropBraces() =
+fun KtBlockStringTemplateEntry.canDropBraces(): Boolean =
     expression is KtNameReferenceExpression && canPlaceAfterSimpleNameEntry(nextSibling)
 
 fun KtBlockStringTemplateEntry.dropBraces(): KtSimpleNameStringTemplateEntry {

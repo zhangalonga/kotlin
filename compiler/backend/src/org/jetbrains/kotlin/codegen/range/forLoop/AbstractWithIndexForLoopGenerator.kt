@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.Type
+import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 
 abstract class AbstractWithIndexForLoopGenerator(
     protected val codegen: ExpressionCodegen,
@@ -22,8 +23,8 @@ abstract class AbstractWithIndexForLoopGenerator(
     protected val rangeCall: ResolvedCall<out CallableDescriptor>
 ) : ForLoopGenerator {
 
-    protected val bindingContext = codegen.bindingContext
-    protected val v = codegen.v!!
+    protected val bindingContext: BindingContext = codegen.bindingContext
+    protected val v: InstructionAdapter = codegen.v!!
 
     private val loopParameterStartLabel = Label()
     private val bodyEnd = Label()

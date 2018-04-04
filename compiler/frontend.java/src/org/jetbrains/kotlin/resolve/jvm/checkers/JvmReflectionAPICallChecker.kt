@@ -36,7 +36,7 @@ class JvmReflectionAPICallChecker(
         notFoundClasses: NotFoundClasses,
         storageManager: StorageManager
 ) : AbstractReflectionApiCallChecker(module, notFoundClasses, storageManager) {
-    override val isWholeReflectionApiAvailable by storageManager.createLazyValue {
+    override val isWholeReflectionApiAvailable: Boolean by storageManager.createLazyValue {
         module.findClassAcrossModuleDependencies(JvmAbi.REFLECTION_FACTORY_IMPL) != null
     }
 

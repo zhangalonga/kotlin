@@ -46,7 +46,7 @@ class KotlinClassHeader(
             private val entryById = values().associateBy(Kind::id)
 
             @JvmStatic
-            fun getById(id: Int) = entryById[id] ?: UNKNOWN
+            fun getById(id: Int): Kind = entryById[id] ?: UNKNOWN
         }
     }
 
@@ -78,5 +78,5 @@ class KotlinClassHeader(
     val isScript: Boolean
         get() = (extraInt and JvmAnnotationNames.METADATA_SCRIPT_FLAG) != 0
 
-    override fun toString() = "$kind version=$metadataVersion"
+    override fun toString(): String = "$kind version=$metadataVersion"
 }

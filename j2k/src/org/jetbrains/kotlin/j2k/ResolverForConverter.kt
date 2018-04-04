@@ -24,5 +24,5 @@ interface ResolverForConverter {
 }
 
 object EmptyResolverForConverter : ResolverForConverter {
-    override fun resolveToDescriptor(declaration: KtDeclaration) = null
+    override fun resolveToDescriptor(declaration: KtDeclaration): Nothing? = null
 }

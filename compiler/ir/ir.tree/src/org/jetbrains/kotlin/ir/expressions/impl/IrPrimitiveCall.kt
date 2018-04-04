@@ -67,8 +67,8 @@ abstract class IrPrimitiveCallBase(
     }
 
     companion object {
-        const val ARGUMENT0 = 0
-        const val ARGUMENT1 = 1
+        const val ARGUMENT0: Int = 0
+        const val ARGUMENT1: Int = 1
     }
 }
 

@@ -31,7 +31,7 @@ abstract class AbstractKotlinInlineDialog(
 ) : InlineOptionsDialog(project, true, callable)  {
 
     // NB: can be -1 in case of too expensive search!
-    protected val occurrencesNumber = initOccurrencesNumber(callable)
+    protected val occurrencesNumber: Int = initOccurrencesNumber(callable)
 
     private val occurrencesString get() = if (occurrencesNumber >= 0) {
         "" + occurrencesNumber + " " + StringUtil.pluralize("occurrence", occurrencesNumber)
@@ -51,13 +51,13 @@ abstract class AbstractKotlinInlineDialog(
     // Independent on this, "inline this only" is enabled on references and disabled on original declaration
     // If this is false, "inline all & remove" is dependent on next flag (allowInlineAll),
     // "inline all and keep" is enabled
-    override fun canInlineThisOnly() = false
+    override fun canInlineThisOnly(): Boolean = false
 
     // If this is false, "inline all & remove" is disabled
     // If this is true, it can be enabled if 'canInlineThisOnly' is false (see above)
-    override fun allowInlineAll() = true
+    override fun allowInlineAll(): Boolean = true
 
-    override fun getBorderTitle() = refactoringName
+    override fun getBorderTitle(): String = refactoringName
 
     override fun getNameLabelText(): String {
         val occurrencesString = occurrencesString?.let { " - $it" } ?: ""
@@ -67,7 +67,7 @@ abstract class AbstractKotlinInlineDialog(
     private fun getInlineText(verb: String) =
             "Inline all references and $verb the $kind " + (occurrencesString?.let { "($it)" } ?: "")
 
-    override fun getInlineAllText() =
+    override fun getInlineAllText(): String =
             getInlineText("remove")
 
     override fun getKeepTheDeclarationText(): String? =
@@ -79,5 +79,5 @@ abstract class AbstractKotlinInlineDialog(
                 null
             }
 
-    override fun getInlineThisText() = "Inline this reference and keep the $kind"
+    override fun getInlineThisText(): String = "Inline this reference and keep the $kind"
 }

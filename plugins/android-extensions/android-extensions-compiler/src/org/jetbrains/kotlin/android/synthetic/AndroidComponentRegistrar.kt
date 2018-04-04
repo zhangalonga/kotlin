@@ -50,22 +50,22 @@ import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
 import org.jetbrains.kotlin.utils.decodePluginOptions
 
 object AndroidConfigurationKeys {
-    val VARIANT = CompilerConfigurationKey.create<List<String>>("Android build variant")
-    val PACKAGE = CompilerConfigurationKey.create<String>("application package fq name")
-    val EXPERIMENTAL = CompilerConfigurationKey.create<String>("enable experimental features")
-    val DEFAULT_CACHE_IMPL = CompilerConfigurationKey.create<String>("default cache implementation")
+    val VARIANT: CompilerConfigurationKey<List<String>> = CompilerConfigurationKey.create<List<String>>("Android build variant")
+    val PACKAGE: CompilerConfigurationKey<String> = CompilerConfigurationKey.create<String>("application package fq name")
+    val EXPERIMENTAL: CompilerConfigurationKey<String> = CompilerConfigurationKey.create<String>("enable experimental features")
+    val DEFAULT_CACHE_IMPL: CompilerConfigurationKey<String> = CompilerConfigurationKey.create<String>("default cache implementation")
 }
 
 class AndroidCommandLineProcessor : CommandLineProcessor {
     companion object {
         val ANDROID_COMPILER_PLUGIN_ID: String = "org.jetbrains.kotlin.android"
 
-        val CONFIGURATION = CliOption("configuration", "<encoded>", "Encoded configuration", required = false)
+        val CONFIGURATION: CliOption = CliOption("configuration", "<encoded>", "Encoded configuration", required = false)
 
-        val VARIANT_OPTION = CliOption("variant", "<name;path>", "Android build variant", allowMultipleOccurrences = true, required = false)
-        val PACKAGE_OPTION = CliOption("package", "<fq name>", "Application package", required = false)
-        val EXPERIMENTAL_OPTION = CliOption("experimental", "true/false", "Enable experimental features", required = false)
-        val DEFAULT_CACHE_IMPL_OPTION = CliOption(
+        val VARIANT_OPTION: CliOption = CliOption("variant", "<name;path>", "Android build variant", allowMultipleOccurrences = true, required = false)
+        val PACKAGE_OPTION: CliOption = CliOption("package", "<fq name>", "Application package", required = false)
+        val EXPERIMENTAL_OPTION: CliOption = CliOption("experimental", "true/false", "Enable experimental features", required = false)
+        val DEFAULT_CACHE_IMPL_OPTION: CliOption = CliOption(
                 "defaultCacheImplementation", "hashMap/sparseArray/none", "Default cache implementation for module", required = false)
 
         /* This option is just for saving Android Extensions status in Kotlin facet. It should not be supported from CLI. */

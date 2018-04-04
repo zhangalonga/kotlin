@@ -94,7 +94,7 @@ interface DataFlowInfo {
     fun or(other: DataFlowInfo): DataFlowInfo
 
     companion object {
-        val EMPTY = DataFlowInfoFactory.EMPTY
+        val EMPTY: DataFlowInfo = DataFlowInfoFactory.EMPTY
     }
 }
 

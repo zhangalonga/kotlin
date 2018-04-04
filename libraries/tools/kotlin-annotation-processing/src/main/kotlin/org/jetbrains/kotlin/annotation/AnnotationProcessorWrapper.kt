@@ -27,7 +27,7 @@ import javax.tools.Diagnostic
 import kotlin.properties.Delegates
 
 class AnnotationProcessorStub : AbstractProcessor() {
-    override fun process(annotations: Set<TypeElement>?, roundEnv: RoundEnvironment?) = true
+    override fun process(annotations: Set<TypeElement>?, roundEnv: RoundEnvironment?): Boolean = true
 }
 
 abstract class AnnotationProcessorWrapper(

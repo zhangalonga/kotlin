@@ -184,7 +184,7 @@ class BoxedToPrimitiveEquality private constructor(
             }
 
         @JvmStatic
-        fun isApplicable(opToken: IElementType, leftType: Type, rightType: Type) =
+        fun isApplicable(opToken: IElementType, leftType: Type, rightType: Type): Boolean =
             (opToken == KtTokens.EQEQ || opToken == KtTokens.EXCLEQ) &&
                     AsmUtil.isIntOrLongPrimitive(rightType) &&
                     AsmUtil.isBoxedTypeOf(leftType, rightType)
@@ -197,8 +197,8 @@ protected constructor(
     right: StackValue,
     primitiveType: Type
 ) : NumberLikeCompare(leftPrimitive, right, primitiveType, KtTokens.EQEQ) {
-    protected val primitiveType = leftPrimitive.type
-    protected val rightType = right.type
+    protected val primitiveType: Type = leftPrimitive.type
+    protected val rightType: Type = right.type
 
     override fun condJump(jumpLabel: Label, v: InstructionAdapter, jumpIfFalse: Boolean) {
         val notNullLabel = Label()
@@ -252,7 +252,7 @@ class PrimitiveToBoxedEquality private constructor(
             }
 
         @JvmStatic
-        fun isApplicable(opToken: IElementType, leftType: Type, rightType: Type) =
+        fun isApplicable(opToken: IElementType, leftType: Type, rightType: Type): Boolean =
             (opToken == KtTokens.EQEQ || opToken == KtTokens.EXCLEQ) &&
                     AsmUtil.isIntOrLongPrimitive(leftType) &&
                     AsmUtil.isBoxedTypeOf(rightType, leftType)
@@ -289,7 +289,7 @@ class PrimitiveToObjectEquality private constructor(
             }
 
         @JvmStatic
-        fun isApplicable(opToken: IElementType, leftType: Type, rightType: Type) =
+        fun isApplicable(opToken: IElementType, leftType: Type, rightType: Type): Boolean =
             (opToken == KtTokens.EQEQ || opToken == KtTokens.EXCLEQ) &&
                     AsmUtil.isIntOrLongPrimitive(leftType) &&
                     rightType.sort == Type.OBJECT
@@ -365,7 +365,7 @@ class Ieee754Equality private constructor(
 
     companion object {
         @JvmStatic
-        fun create(frameMap: FrameMap, left: StackValue, right: StackValue, comparisonType: Type, opToken: IElementType) =
+        fun create(frameMap: FrameMap, left: StackValue, right: StackValue, comparisonType: Type, opToken: IElementType): BranchedValue =
             Ieee754Equality(frameMap, left, right, comparisonType).let {
                 when (opToken) {
                     KtTokens.EQEQ -> it

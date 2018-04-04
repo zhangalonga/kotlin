@@ -39,7 +39,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 abstract class KotlinExtractSuperHandlerBase(private val isExtractInterface: Boolean) : RefactoringActionHandler, ElementsHandler {
-    override fun isEnabledOnElements(elements: Array<out PsiElement>) = elements.singleOrNull() is KtClassOrObject
+    override fun isEnabledOnElements(elements: Array<out PsiElement>): Boolean = elements.singleOrNull() is KtClassOrObject
 
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext?) {
         val offset = editor.caretModel.offset

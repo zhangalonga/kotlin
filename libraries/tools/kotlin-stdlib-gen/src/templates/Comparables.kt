@@ -24,7 +24,7 @@ object ComparableOps : TemplateGroupBase() {
     private val intPrimitives = setOf(PrimitiveType.Int, PrimitiveType.Long)
     private val shortIntPrimitives = setOf(PrimitiveType.Byte, PrimitiveType.Short)
 
-    val f_coerceAtLeast = fn("coerceAtLeast(minimumValue: SELF)") {
+    val f_coerceAtLeast: FamilyPrimitiveMemberDefinition = fn("coerceAtLeast(minimumValue: SELF)") {
         include(Generic)
         include(Primitives, numericPrimitives)
     } builder {
@@ -46,7 +46,8 @@ object ComparableOps : TemplateGroupBase() {
         }
     }
 
-    val f_coerceAtMost = fn("coerceAtMost(maximumValue: SELF)") {
+
+    val f_coerceAtMost: FamilyPrimitiveMemberDefinition = fn("coerceAtMost(maximumValue: SELF)") {
         include(Generic)
         include(Primitives, numericPrimitives)
     } builder {
@@ -111,7 +112,7 @@ object ComparableOps : TemplateGroupBase() {
         }
     }
 
-    val f_coerceIn_fpRange = fn("coerceIn(range: ClosedFloatingPointRange<T>)") {
+    val f_coerceIn_fpRange: FamilyPrimitiveMemberDefinition = fn("coerceIn(range: ClosedFloatingPointRange<T>)") {
         include(Generic)
     } builder {
         sourceFile(SourceFile.Ranges)

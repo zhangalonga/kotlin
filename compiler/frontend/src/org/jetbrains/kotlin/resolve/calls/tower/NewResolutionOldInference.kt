@@ -566,7 +566,7 @@ class NewResolutionOldInference(
 
 }
 
-fun ResolutionContext<*>.transformToReceiverWithSmartCastInfo(receiver: ReceiverValue) =
+fun ResolutionContext<*>.transformToReceiverWithSmartCastInfo(receiver: ReceiverValue): ReceiverValueWithSmartCastInfo =
     transformToReceiverWithSmartCastInfo(scope.ownerDescriptor, trace.bindingContext, dataFlowInfo, receiver, languageVersionSettings, dataFlowValueFactory)
 
 fun transformToReceiverWithSmartCastInfo(

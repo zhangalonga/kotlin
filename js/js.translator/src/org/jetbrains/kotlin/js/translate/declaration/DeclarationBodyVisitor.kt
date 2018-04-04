@@ -38,8 +38,8 @@ class DeclarationBodyVisitor(
         private val enumInitializer: JsFunction?
 ) : AbstractDeclarationVisitor() {
     private var enumEntryOrdinal: Int = 0
-    val initializerStatements = mutableListOf<JsStatement>()
-    val enumEntries = mutableListOf<ClassDescriptor>()
+    val initializerStatements: MutableList<JsStatement> = mutableListOf()
+    val enumEntries: MutableList<ClassDescriptor> = mutableListOf()
 
     override val enumInitializerName: JsName?
         get() = enumInitializer?.name

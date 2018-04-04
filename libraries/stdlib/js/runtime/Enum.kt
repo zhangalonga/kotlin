@@ -26,13 +26,13 @@ public class Enum<T : Enum<T>> : Comparable<Enum<T>> {
     val ordinal: Int
         get() = _ordinal
 
-    override fun compareTo(other: Enum<T>) = ordinal.compareTo(other.ordinal)
+    override fun compareTo(other: Enum<T>): Int = ordinal.compareTo(other.ordinal)
 
-    override fun equals(other: Any?) = this === other
+    override fun equals(other: Any?): Boolean = this === other
 
     override fun hashCode(): Int = js("Kotlin.identityHashCode")(this)
 
-    override fun toString() = name
+    override fun toString(): String = name
 
     companion object
 }

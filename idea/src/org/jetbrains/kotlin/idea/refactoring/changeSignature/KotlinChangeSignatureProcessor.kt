@@ -41,7 +41,7 @@ class KotlinChangeSignatureProcessor(
         changeInfo: KotlinChangeInfo,
         private val commandName: String
 ) : ChangeSignatureProcessorBase(project, KotlinChangeInfoWrapper(changeInfo)) {
-    val ktChangeInfo
+    val ktChangeInfo: KotlinChangeInfo
         get() = changeInfo.delegate!!
 
     override fun createUsageViewDescriptor(usages: Array<UsageInfo>): UsageViewDescriptor {
@@ -49,7 +49,7 @@ class KotlinChangeSignatureProcessor(
         return KotlinUsagesViewDescriptor(myChangeInfo.method, RefactoringBundle.message("0.to.change.signature", subject))
     }
 
-    override fun getChangeInfo() = super.getChangeInfo() as KotlinChangeInfoWrapper
+    override fun getChangeInfo(): KotlinChangeInfoWrapper = super.getChangeInfo() as KotlinChangeInfoWrapper
 
     override fun findUsages(): Array<UsageInfo> {
         val allUsages = ArrayList<UsageInfo>()
@@ -111,7 +111,7 @@ class KotlinChangeSignatureProcessor(
 
     override fun isPreviewUsages(usages: Array<out UsageInfo>): Boolean = isPreviewUsages
 
-    override fun getCommandName() = commandName
+    override fun getCommandName(): String = commandName
 
     override fun performRefactoring(usages: Array<out UsageInfo>) {
         try {

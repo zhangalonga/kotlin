@@ -40,7 +40,7 @@ class IdeReplConfiguration : ReplConfiguration {
         }
     }
 
-    override fun createDiagnosticHolder() = IdeDiagnosticMessageHolder()
+    override fun createDiagnosticHolder(): IdeDiagnosticMessageHolder = IdeDiagnosticMessageHolder()
 
     override val writer: ReplWriter
     override val exceptionReporter: ReplExceptionReporter

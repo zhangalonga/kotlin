@@ -52,9 +52,9 @@ private val starProjectionFixFamilyName = "Add star projections"
 
 class AddStarProjectionsFix(element: KtUserType, private val argumentCount: Int) : KotlinQuickFixAction<KtUserType>(element) {
 
-    override fun getFamilyName() = starProjectionFixFamilyName
+    override fun getFamilyName(): String = starProjectionFixFamilyName
 
-    override fun getText() = "Add '${TypeReconstructionUtil.getTypeNameAndStarProjectionsString("", argumentCount)}'"
+    override fun getText(): String = "Add '${TypeReconstructionUtil.getTypeNameAndStarProjectionsString("", argumentCount)}'"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return
@@ -68,9 +68,9 @@ class AddStarProjectionsFix(element: KtUserType, private val argumentCount: Int)
 
 class AddStartProjectionsForInnerClass(element: KtTypeReference) : KotlinQuickFixAction<KtTypeReference>(element) {
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
-    override fun getText() = starProjectionFixFamilyName
+    override fun getText(): String = starProjectionFixFamilyName
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val typeReference = element ?: return

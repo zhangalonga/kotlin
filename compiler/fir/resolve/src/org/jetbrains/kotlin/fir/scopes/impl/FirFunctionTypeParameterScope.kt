@@ -6,8 +6,10 @@
 package org.jetbrains.kotlin.fir.scopes.impl
 
 import org.jetbrains.kotlin.fir.declarations.FirNamedFunction
+import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.scopes.FirTypeParameterScope
+import org.jetbrains.kotlin.name.Name
 
 class FirFunctionTypeParameterScope(function: FirNamedFunction) : FirTypeParameterScope {
-    override val typeParameters = function.typeParameters.groupBy { it.name }
+    override val typeParameters: Map<Name, List<FirTypeParameter>> = function.typeParameters.groupBy { it.name }
 }

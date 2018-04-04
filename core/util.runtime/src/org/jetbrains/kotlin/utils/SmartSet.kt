@@ -30,10 +30,10 @@ class SmartSet<T> private constructor() : AbstractSet<T>() {
         private val ARRAY_THRESHOLD = 5
 
         @JvmStatic
-        fun <T> create() = SmartSet<T>()
+        fun <T> create(): SmartSet<T> = SmartSet<T>()
 
         @JvmStatic
-        fun <T> create(set: Collection<T>) = SmartSet<T>().apply { this.addAll(set) }
+        fun <T> create(set: Collection<T>): SmartSet<T> = SmartSet<T>().apply { this.addAll(set) }
     }
 
     // null if size = 0, object if size = 1, array of objects if size < threshold, linked hash set otherwise

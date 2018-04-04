@@ -31,7 +31,7 @@ class AnnotateWithParcelizeQuickFix(clazz: KtClassOrObject) : AbstractParcelable
         AnnotateWithParcelizeQuickFix(targetClass)
     })
 
-    override fun getText() = "Annotate containing class with ''@Parcelize''"
+    override fun getText(): String = "Annotate containing class with ''@Parcelize''"
 
     override fun invoke(ktPsiFactory: KtPsiFactory, element: KtClassOrObject) {
         element.addAnnotation(FqName(Parcelize::class.java.name))

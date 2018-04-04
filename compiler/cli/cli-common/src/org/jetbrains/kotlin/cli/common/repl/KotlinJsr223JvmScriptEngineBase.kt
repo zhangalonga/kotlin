@@ -20,8 +20,8 @@ import java.io.Reader
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import javax.script.*
 
-const val KOTLIN_SCRIPT_STATE_BINDINGS_KEY = "kotlin.script.state"
-const val KOTLIN_SCRIPT_ENGINE_BINDINGS_KEY = "kotlin.script.engine"
+const val KOTLIN_SCRIPT_STATE_BINDINGS_KEY: String = "kotlin.script.state"
+const val KOTLIN_SCRIPT_ENGINE_BINDINGS_KEY: String = "kotlin.script.engine"
 
 abstract class KotlinJsr223JvmScriptEngineBase(protected val myFactory: ScriptEngineFactory) : AbstractScriptEngine(), ScriptEngine, Compilable {
 
@@ -41,11 +41,11 @@ abstract class KotlinJsr223JvmScriptEngineBase(protected val myFactory: ScriptEn
     override fun getFactory(): ScriptEngineFactory = myFactory
 
     // the parameter could be used in the future when we decide to keep state completely in the context and solve appropriate problems (now e.g. replCompiler keeps separate state)
-    fun nextCodeLine(context: ScriptContext, code: String) = getCurrentState(context).let { ReplCodeLine(it.getNextLineNo(), it.currentGeneration, code) }
+    fun nextCodeLine(context: ScriptContext, code: String): ReplCodeLine = getCurrentState(context).let { ReplCodeLine(it.getNextLineNo(), it.currentGeneration, code) }
 
     protected abstract fun createState(lock: ReentrantReadWriteLock = ReentrantReadWriteLock()): IReplStageState<*>
 
-    protected fun getCurrentState(context: ScriptContext) =
+    protected fun getCurrentState(context: ScriptContext): IReplStageState<*> =
             context.getBindings(ScriptContext.ENGINE_SCOPE)
                     .getOrPut(KOTLIN_SCRIPT_STATE_BINDINGS_KEY, {
                         // TODO: check why createBinding is not called on creating default context, so the engine is not set

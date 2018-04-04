@@ -30,11 +30,11 @@ class RemoveFinalUpperBoundFix(val typeReference: KtTypeReference) : KotlinQuick
         typeReference.getStrictParentOfType<KtTypeParameter>()?.extendsBound = null
     }
 
-    override fun getText() = "Remove final upper bound"
+    override fun getText(): String = "Remove final upper bound"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     companion object Factory : KotlinSingleIntentionActionFactory() {
-        override fun createAction(diagnostic: Diagnostic) = RemoveFinalUpperBoundFix(Errors.FINAL_UPPER_BOUND.cast(diagnostic).psiElement)
+        override fun createAction(diagnostic: Diagnostic): RemoveFinalUpperBoundFix = RemoveFinalUpperBoundFix(Errors.FINAL_UPPER_BOUND.cast(diagnostic).psiElement)
     }
 }

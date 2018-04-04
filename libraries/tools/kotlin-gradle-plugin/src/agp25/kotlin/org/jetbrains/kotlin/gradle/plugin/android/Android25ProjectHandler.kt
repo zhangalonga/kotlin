@@ -103,7 +103,7 @@ class Android25ProjectHandler(kotlinConfigurationTools: KotlinConfigurationTools
             @Suppress("DEPRECATION") // There is always a Java compile task -- the deprecation was for Jack
             variantData.javaCompile
 
-    override fun addJavaSourceDirectoryToVariantModel(variantData: BaseVariant, javaSourceDirectory: File) =
+    override fun addJavaSourceDirectoryToVariantModel(variantData: BaseVariant, javaSourceDirectory: File): Unit =
             variantData.addJavaSourceFoldersToModel(javaSourceDirectory)
 
     override fun configureMultiProjectIc(project: Project,

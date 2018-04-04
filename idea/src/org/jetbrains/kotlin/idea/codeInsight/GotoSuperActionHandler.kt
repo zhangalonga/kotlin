@@ -110,5 +110,5 @@ class GotoSuperActionHandler : CodeInsightActionHandler {
             else -> null
         }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 }

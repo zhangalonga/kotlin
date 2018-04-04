@@ -49,7 +49,7 @@ class KaptTreeMaker(context: Context, private val kaptContext: KaptContext<*>) :
         return FqName(path)
     }
 
-    fun FqName(fqName: FqName) = FqName(fqName.pathSegments().map { it.asString() })
+    fun FqName(fqName: FqName): JCTree.JCExpression = FqName(fqName.pathSegments().map { it.asString() })
 
     private fun FqName(path: List<String>): JCTree.JCExpression {
         if (path.size == 1) return SimpleName(path.single())
@@ -61,9 +61,9 @@ class KaptTreeMaker(context: Context, private val kaptContext: KaptContext<*>) :
         return expr
     }
 
-    fun getQualifiedName(type: Type) = getQualifiedName(type.internalName)
+    fun getQualifiedName(type: Type): String = getQualifiedName(type.internalName)
 
-    fun getSimpleName(clazz: ClassNode) = getQualifiedName(clazz.name).substringAfterLast('.')
+    fun getSimpleName(clazz: ClassNode): String = getQualifiedName(clazz.name).substringAfterLast('.')
 
     fun getQualifiedName(internalName: String): String {
         val nameWithDots = internalName.replace('/', '.')

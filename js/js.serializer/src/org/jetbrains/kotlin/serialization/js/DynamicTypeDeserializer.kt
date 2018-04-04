@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.types.createDynamicType
 import org.jetbrains.kotlin.types.typeUtil.builtIns
 
 object DynamicTypeDeserializer : FlexibleTypeDeserializer {
-    val id = "kotlin.DynamicType"
+    val id: String = "kotlin.DynamicType"
 
     override fun create(proto: ProtoBuf.Type, flexibleId: String, lowerBound: SimpleType, upperBound: SimpleType): KotlinType {
         if (flexibleId != id) return ErrorUtils.createErrorType("Unexpected id: $flexibleId. ($lowerBound..$upperBound)")

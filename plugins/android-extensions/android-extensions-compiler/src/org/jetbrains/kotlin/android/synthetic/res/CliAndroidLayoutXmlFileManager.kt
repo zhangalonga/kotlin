@@ -28,7 +28,7 @@ class CliAndroidLayoutXmlFileManager(
         applicationPackage: String,
         variants: List<AndroidVariant>
 ) : AndroidLayoutXmlFileManager(project) {
-    override val androidModule = AndroidModule(applicationPackage, variants)
+    override val androidModule: AndroidModule = AndroidModule(applicationPackage, variants)
 
     private val saxParser: SAXParser = initSAX()
 

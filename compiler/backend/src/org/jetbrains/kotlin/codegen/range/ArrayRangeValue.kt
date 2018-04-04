@@ -27,7 +27,7 @@ class ArrayRangeValue(
     private val canCacheArrayLength: Boolean,
     private val shouldAlwaysStoreArrayInNewVar: Boolean
 ) : RangeValue {
-    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression) =
+    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression): ForInArrayLoopGenerator =
         ForInArrayLoopGenerator(codegen, forExpression, canCacheArrayLength, shouldAlwaysStoreArrayInNewVar)
 
     override fun createInExpressionGenerator(codegen: ExpressionCodegen, operatorReference: KtSimpleNameExpression): InExpressionGenerator =

@@ -26,5 +26,5 @@ class KotlinEnumEntrySuperclassReferenceExpressionStubImpl(parent: StubElement<*
     KotlinStubBaseImpl<KtEnumEntrySuperclassReferenceExpression>(parent, KtStubElementTypes.ENUM_ENTRY_SUPERCLASS_REFERENCE_EXPRESSION),
     KotlinEnumEntrySuperclassReferenceExpressionStub {
 
-    override fun getReferencedName() = referencedName.string
+    override fun getReferencedName(): String = referencedName.string
 }

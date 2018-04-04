@@ -29,8 +29,8 @@ class KtScratchFileLanguageProvider : ScratchFileLanguageProvider() {
         return KtScratchFile(project, editor)
     }
 
-    override fun createReplExecutor(file: ScratchFile) = KtScratchReplExecutor(file)
-    override fun createCompilingExecutor(file: ScratchFile) = KtCompilingExecutor(file)
+    override fun createReplExecutor(file: ScratchFile): KtScratchReplExecutor = KtScratchReplExecutor(file)
+    override fun createCompilingExecutor(file: ScratchFile): KtCompilingExecutor = KtCompilingExecutor(file)
 
-    override fun getOutputHandler() = InlayScratchOutputHandler
+    override fun getOutputHandler(): InlayScratchOutputHandler = InlayScratchOutputHandler
 }

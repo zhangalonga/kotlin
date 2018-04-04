@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.KtBlockStringTemplateEntry
 class RemoveCurlyBracesFromTemplateInspection : IntentionBasedInspection<KtBlockStringTemplateEntry>(RemoveCurlyBracesFromTemplateIntention::class)
 
 class RemoveCurlyBracesFromTemplateIntention : SelfTargetingOffsetIndependentIntention<KtBlockStringTemplateEntry>(KtBlockStringTemplateEntry::class.java, "Remove curly braces") {
-    override fun isApplicableTo(element: KtBlockStringTemplateEntry) = element.canDropBraces()
+    override fun isApplicableTo(element: KtBlockStringTemplateEntry): Boolean = element.canDropBraces()
 
     override fun applyTo(element: KtBlockStringTemplateEntry, editor: Editor?) {
         element.dropBraces()

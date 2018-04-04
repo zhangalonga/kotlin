@@ -27,7 +27,7 @@ class CompilerSettings : Freezable() {
     var outputDirectoryForJsLibraryFiles: String by FreezableVar(DEFAULT_OUTPUT_DIRECTORY)
 
     companion object {
-        val DEFAULT_ADDITIONAL_ARGUMENTS = "-version"
+        val DEFAULT_ADDITIONAL_ARGUMENTS: String = "-version"
         private val DEFAULT_OUTPUT_DIRECTORY = "lib"
     }
 }
@@ -35,6 +35,6 @@ class CompilerSettings : Freezable() {
 val CompilerSettings.additionalArgumentsAsList: List<String>
     get() = splitArgumentString(additionalArguments)
 
-fun splitArgumentString(arguments: String) = StringUtil.splitHonorQuotes(arguments, ' ').map {
+fun splitArgumentString(arguments: String): List<String> = StringUtil.splitHonorQuotes(arguments, ' ').map {
     if (it.startsWith('"')) StringUtil.unescapeChar(StringUtil.unquoteString(it), '"') else it
 }

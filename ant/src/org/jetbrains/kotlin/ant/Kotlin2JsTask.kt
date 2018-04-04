@@ -20,7 +20,7 @@ import org.apache.tools.ant.types.Path
 import java.io.File
 
 class Kotlin2JsTask : KotlinCompilerBaseTask() {
-    override val compilerFqName = "org.jetbrains.kotlin.cli.js.K2JSCompiler"
+    override val compilerFqName: String = "org.jetbrains.kotlin.cli.js.K2JSCompiler"
 
     var libraries: Path? = null
     var outputPrefix: File? = null

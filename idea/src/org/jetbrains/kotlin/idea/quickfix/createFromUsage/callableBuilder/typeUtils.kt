@@ -314,7 +314,7 @@ internal fun KotlinType.substitute(substitution: KotlinTypeSubstitution, varianc
     }
 }
 
-fun KtExpression.getExpressionForTypeGuess() = getAssignmentByLHS()?.right ?: this
+fun KtExpression.getExpressionForTypeGuess(): KtExpression = getAssignmentByLHS()?.right ?: this
 
 fun KtCallElement.getTypeInfoForTypeArguments(): List<TypeInfo> {
     return typeArguments.mapNotNull { it.typeReference?.let { TypeInfo(it, Variance.INVARIANT) } }

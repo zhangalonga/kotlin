@@ -64,12 +64,12 @@ class LetImplementInterfaceFix(
 
     }
 
-    override fun getFamilyName() = "Let type implement interface"
-    override fun getText() = "$prefix interface '$expectedTypeName'"
+    override fun getFamilyName(): String = "Let type implement interface"
+    override fun getText(): String = "$prefix interface '$expectedTypeName'"
 
-    override fun isAvailable(project: Project, editor: Editor?, file: KtFile) = validExpectedType
+    override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean = validExpectedType
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

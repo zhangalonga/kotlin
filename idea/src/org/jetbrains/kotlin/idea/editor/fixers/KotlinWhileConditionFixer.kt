@@ -17,13 +17,14 @@
 package org.jetbrains.kotlin.idea.editor.fixers
 
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtWhileExpression
 
 class KotlinWhileConditionFixer: MissingConditionFixer<KtWhileExpression>() {
-    override val keyword = "while"
-    override fun getElement(element: PsiElement?) = element as? KtWhileExpression
-    override fun getCondition(element: KtWhileExpression) = element.condition
-    override fun getLeftParenthesis(element: KtWhileExpression) = element.leftParenthesis
-    override fun getRightParenthesis(element: KtWhileExpression) = element.rightParenthesis
-    override fun getBody(element: KtWhileExpression) = element.body
+    override val keyword: String = "while"
+    override fun getElement(element: PsiElement?): KtWhileExpression? = element as? KtWhileExpression
+    override fun getCondition(element: KtWhileExpression): KtExpression? = element.condition
+    override fun getLeftParenthesis(element: KtWhileExpression): PsiElement? = element.leftParenthesis
+    override fun getRightParenthesis(element: KtWhileExpression): PsiElement? = element.rightParenthesis
+    override fun getBody(element: KtWhileExpression): KtExpression? = element.body
 }

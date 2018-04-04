@@ -38,9 +38,9 @@ class SpecifyOverrideExplicitlyFix(
         element: KtClassOrObject, private val signature: String
 ) : KotlinQuickFixAction<KtClassOrObject>(element) {
 
-    override fun getText() = "Specify override for '$signature' explicitly"
+    override fun getText(): String = "Specify override for '$signature' explicitly"
 
-    override fun getFamilyName() = "Specify override explicitly"
+    override fun getFamilyName(): String = "Specify override explicitly"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

@@ -33,8 +33,8 @@ class ChangeToLabeledReturnFix(
         element: KtReturnExpression, val labeledReturn: String
 ) : KotlinQuickFixAction<KtReturnExpression>(element) {
 
-    override fun getFamilyName() = "Change to return with label"
-    override fun getText() = "Change to '$labeledReturn'"
+    override fun getFamilyName(): String = "Change to return with label"
+    override fun getText(): String = "Change to '$labeledReturn'"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val returnExpression = element ?: return

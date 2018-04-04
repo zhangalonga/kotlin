@@ -24,7 +24,7 @@ class ClassBuilderOnDemand(createClassBuilder: () -> ClassBuilder) : DelegatingC
     val isComputed: Boolean
         get() = classBuilder.isComputed()
 
-    override fun getDelegate() = classBuilder()
+    override fun getDelegate(): ClassBuilder = classBuilder()
 
     fun ensureGenerated() {
         classBuilder()

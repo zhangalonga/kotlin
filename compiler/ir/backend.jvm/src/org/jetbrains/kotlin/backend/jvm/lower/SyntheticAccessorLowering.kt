@@ -72,8 +72,8 @@ class ClassStubContext(
 
 class ContextAnnotator(val state: GenerationState) : ClassLowerWithContext() {
 
-    val context2Codegen = hashMapOf<IrClassContext, CodegenContext<*>>()
-    val class2Codegen = hashMapOf<ClassDescriptor, CodegenContext<*>>()
+    val context2Codegen: HashMap<IrClassContext, CodegenContext<*>> = hashMapOf<IrClassContext, CodegenContext<*>>()
+    val class2Codegen: HashMap<ClassDescriptor, CodegenContext<*>> = hashMapOf<ClassDescriptor, CodegenContext<*>>()
 
     private val IrClassContext.codegenContext: CodegenContext<*>
         get() = context2Codegen[this]!!
@@ -105,7 +105,7 @@ class SyntheticAccessorLowering(val context: JvmBackendContext) : FileLoweringPa
 
     private val state = context.state
 
-    var pendingTransformations = mutableListOf<Function0<Unit>>()
+    var pendingTransformations: MutableList<() -> Unit> = mutableListOf<Function0<Unit>>()
 
     private val IrClassContext.codegenContext: CodegenContext<*>
         get() = contextAnnotator.context2Codegen[this]!!

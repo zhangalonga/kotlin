@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.calls.util.FakeCallableDescriptorForTypeAliasObject
 
-val SINCE_KOTLIN_FQ_NAME = FqName("kotlin.SinceKotlin")
+val SINCE_KOTLIN_FQ_NAME: FqName = FqName("kotlin.SinceKotlin")
 
 /**
  * @return true if the descriptor is accessible according to [languageVersionSettings], or false otherwise. The [actionIfInaccessible]

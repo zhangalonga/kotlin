@@ -28,7 +28,7 @@ fun FunctionDescriptor.hasJavaOriginInHierarchy(): Boolean {
         original.overriddenDescriptors.any { it.hasJavaOriginInHierarchy() }
 }
 
-fun Visibility.isVisibleOutside() = this != Visibilities.PRIVATE && this != Visibilities.PRIVATE_TO_THIS && this != Visibilities.INVISIBLE_FAKE
+fun Visibility.isVisibleOutside(): Boolean = this != Visibilities.PRIVATE && this != Visibilities.PRIVATE_TO_THIS && this != Visibilities.INVISIBLE_FAKE
 
 fun syntheticVisibility(originalDescriptor: DeclarationDescriptorWithVisibility, isUsedForExtension: Boolean): Visibility {
     val originalVisibility = originalDescriptor.visibility

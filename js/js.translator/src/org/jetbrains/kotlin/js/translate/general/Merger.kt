@@ -31,7 +31,7 @@ class Merger(private val rootFunction: JsFunction, val internalModuleName: JsNam
     // Maps unique signature (see generateSignature) to names
     private val nameTable = mutableMapOf<String, JsName>()
     private val importedModuleTable = mutableMapOf<JsImportedModuleKey, JsName>()
-    val importBlock = JsGlobalBlock()
+    val importBlock: JsGlobalBlock = JsGlobalBlock()
     private val declarationBlock = JsGlobalBlock()
     private val initializerBlock = JsGlobalBlock()
     private val exportBlock = JsGlobalBlock()

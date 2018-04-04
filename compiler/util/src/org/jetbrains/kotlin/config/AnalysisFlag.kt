@@ -50,24 +50,24 @@ class AnalysisFlag<out T> internal constructor(
 
     companion object Flags {
         @JvmStatic
-        val skipMetadataVersionCheck by Flag.Boolean
+        val skipMetadataVersionCheck: AnalysisFlag<Boolean> by Flag.Boolean
 
         @JvmStatic
-        val multiPlatformDoNotCheckActual by Flag.Boolean
+        val multiPlatformDoNotCheckActual: AnalysisFlag<Boolean> by Flag.Boolean
 
         @JvmStatic
-        val jsr305 by Flag.Jsr305StateWarnByDefault
+        val jsr305: AnalysisFlag<Jsr305State> by Flag.Jsr305StateWarnByDefault
 
         @JvmStatic
-        val allowKotlinPackage by Flag.Boolean
+        val allowKotlinPackage: AnalysisFlag<Boolean> by Flag.Boolean
 
         @JvmStatic
-        val experimental by Flag.ListOfStrings
+        val experimental: AnalysisFlag<List<String>> by Flag.ListOfStrings
 
         @JvmStatic
-        val useExperimental by Flag.ListOfStrings
+        val useExperimental: AnalysisFlag<List<String>> by Flag.ListOfStrings
 
         @JvmStatic
-        val explicitApiVersion by Flag.Boolean
+        val explicitApiVersion: AnalysisFlag<Boolean> by Flag.Boolean
     }
 }

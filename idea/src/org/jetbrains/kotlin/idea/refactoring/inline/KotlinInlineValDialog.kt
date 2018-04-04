@@ -56,9 +56,9 @@ class KotlinInlineValDialog(
         init()
     }
 
-    fun shouldBeShown() = !simpleLocal || EditorSettingsExternalizable.getInstance().isShowInlineLocalDialog
+    fun shouldBeShown(): Boolean = !simpleLocal || EditorSettingsExternalizable.getInstance().isShowInlineLocalDialog
 
-    override fun isInlineThis() = JavaRefactoringSettings.getInstance().INLINE_LOCAL_THIS
+    override fun isInlineThis(): Boolean = JavaRefactoringSettings.getInstance().INLINE_LOCAL_THIS
 
     public override fun doAction() {
         invokeRefactoring(

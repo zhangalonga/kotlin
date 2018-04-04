@@ -103,5 +103,5 @@ class TypeMismatchDiagnostic(
     val expectedType: KotlinType,
     val actualType: KotlinType
 ) : KotlinCallDiagnostic(ResolutionCandidateApplicability.INAPPLICABLE) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgument(callArgument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgument(callArgument, this)
 }

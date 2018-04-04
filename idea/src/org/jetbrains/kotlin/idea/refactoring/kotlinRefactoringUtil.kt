@@ -93,7 +93,7 @@ import java.lang.annotation.Retention
 import java.util.*
 import javax.swing.Icon
 
-val CHECK_SUPER_METHODS_YES_NO_DIALOG = "CHECK_SUPER_METHODS_YES_NO_DIALOG"
+val CHECK_SUPER_METHODS_YES_NO_DIALOG: String = "CHECK_SUPER_METHODS_YES_NO_DIALOG"
 
 @JvmOverloads
 fun getOrCreateKotlinFile(fileName: String,
@@ -352,7 +352,7 @@ fun PsiElement.getLineCount(): Int {
 fun PsiElement.isMultiLine(): Boolean = getLineCount() > 1
 
 class SeparateFileWrapper(manager: PsiManager) : LightElement(manager, KotlinLanguage.INSTANCE) {
-    override fun toString() = ""
+    override fun toString(): String = ""
 }
 
 fun <T> chooseContainerElement(
@@ -726,7 +726,7 @@ fun KtNamedDeclaration.isAbstract(): Boolean {
     }
 }
 
-fun KtNamedDeclaration.isConstructorDeclaredProperty() = this is KtParameter && ownerFunction is KtPrimaryConstructor && hasValOrVar()
+fun KtNamedDeclaration.isConstructorDeclaredProperty(): Boolean = this is KtParameter && ownerFunction is KtPrimaryConstructor && hasValOrVar()
 
 fun <ListType : KtElement> replaceListPsiAndKeepDelimiters(
         originalList: ListType,
@@ -772,7 +772,7 @@ fun <ListType : KtElement> replaceListPsiAndKeepDelimiters(
     return originalList
 }
 
-fun <T> Pass(body: (T) -> Unit) = object : Pass<T>() {
+fun <T> Pass(body: (T) -> Unit): Pass<T> = object : Pass<T>() {
     override fun pass(t: T) = body(t)
 }
 

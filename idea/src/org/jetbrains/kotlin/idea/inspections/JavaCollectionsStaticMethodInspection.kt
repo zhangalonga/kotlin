@@ -40,7 +40,7 @@ class JavaCollectionsStaticMethodInspection : AbstractKotlinInspection() {
     }
 
     companion object {
-        fun getTargetMethodOnImmutableList(expression: KtDotQualifiedExpression) =
+        fun getTargetMethodOnImmutableList(expression: KtDotQualifiedExpression): Pair<String, KtValueArgument>? =
             getTargetMethod(expression) { isListOrSubtype() && !isMutableListOrSubtype() }
 
         private fun getTargetMethodOnMutableList(expression: KtDotQualifiedExpression) =

@@ -59,11 +59,11 @@ open class DescriptorMemberChooserObject(
         }
     }
 
-    override fun equals(other: Any?) = this === other || other is DescriptorMemberChooserObject && descriptor == other.descriptor
+    override fun equals(other: Any?): Boolean = this === other || other is DescriptorMemberChooserObject && descriptor == other.descriptor
 
-    override fun hashCode() = descriptor.hashCode()
+    override fun hashCode(): Int = descriptor.hashCode()
 
-    override fun getElement() = psiElement
+    override fun getElement(): PsiElement = psiElement
 
     companion object {
         private val MEMBER_RENDERER = DescriptorRenderer.withOptions {

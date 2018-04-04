@@ -31,14 +31,14 @@ class DisjointKeysUnionTypeSubstitution private constructor(
         }
     }
 
-    override fun get(key: KotlinType) = first[key] ?: second[key]
-    override fun prepareTopLevelType(topLevelType: KotlinType, position: Variance) =
+    override fun get(key: KotlinType): TypeProjection? = first[key] ?: second[key]
+    override fun prepareTopLevelType(topLevelType: KotlinType, position: Variance): KotlinType =
             second.prepareTopLevelType(first.prepareTopLevelType(topLevelType, position), position)
 
-    override fun isEmpty() = false
+    override fun isEmpty(): Boolean = false
 
-    override fun approximateCapturedTypes() = first.approximateCapturedTypes() || second.approximateCapturedTypes()
-    override fun approximateContravariantCapturedTypes() = first.approximateContravariantCapturedTypes() || second.approximateContravariantCapturedTypes()
+    override fun approximateCapturedTypes(): Boolean = first.approximateCapturedTypes() || second.approximateCapturedTypes()
+    override fun approximateContravariantCapturedTypes(): Boolean = first.approximateContravariantCapturedTypes() || second.approximateContravariantCapturedTypes()
 
-    override fun filterAnnotations(annotations: Annotations) = second.filterAnnotations(first.filterAnnotations(annotations))
+    override fun filterAnnotations(annotations: Annotations): Annotations = second.filterAnnotations(first.filterAnnotations(annotations))
 }

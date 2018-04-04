@@ -170,4 +170,4 @@ fun getUnsubstitutedTypeConstraintInfo(element: KtTypeElement): UnsubstitutedTyp
     return UnsubstitutedTypeConstraintInfo(typeParameter, substitution, upperBound)
 }
 
-fun getTypeConstraintInfo(element: KtTypeElement) = getUnsubstitutedTypeConstraintInfo(element)?.performSubstitution()
+fun getTypeConstraintInfo(element: KtTypeElement): TypeConstraintInfo? = getUnsubstitutedTypeConstraintInfo(element)?.performSubstitution()

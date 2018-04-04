@@ -43,10 +43,10 @@ open class KotlinPlatformCommonPlugin : KotlinPlatformPluginBase("common") {
     }
 }
 
-const val EXPECTED_BY_CONFIG_NAME = "expectedBy"
+const val EXPECTED_BY_CONFIG_NAME: String = "expectedBy"
 
-const val IMPLEMENT_CONFIG_NAME = "implement"
-const val IMPLEMENT_DEPRECATION_WARNING = "The '$IMPLEMENT_CONFIG_NAME' configuration is deprecated and will be removed. " +
+const val IMPLEMENT_CONFIG_NAME: String = "implement"
+const val IMPLEMENT_DEPRECATION_WARNING: String = "The '$IMPLEMENT_CONFIG_NAME' configuration is deprecated and will be removed. " +
                                           "Use '$EXPECTED_BY_CONFIG_NAME' instead."
 
 open class KotlinPlatformImplementationPluginBase(platformName: String) : KotlinPlatformPluginBase(platformName) {

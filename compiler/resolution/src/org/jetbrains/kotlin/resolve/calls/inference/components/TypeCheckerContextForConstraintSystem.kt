@@ -23,7 +23,7 @@ abstract class TypeCheckerContextForConstraintSystem : TypeCheckerContext(errorT
 
     abstract fun addLowerConstraint(typeVariable: TypeConstructor, subType: UnwrappedType)
 
-    override fun getLowerCapturedTypePolicy(subType: SimpleType, superType: NewCapturedType) = when {
+    override fun getLowerCapturedTypePolicy(subType: SimpleType, superType: NewCapturedType): LowerCapturedTypePolicy = when {
         isMyTypeVariable(subType) -> LowerCapturedTypePolicy.SKIP_LOWER
         subType.contains { it.anyBound(this::isMyTypeVariable) } -> LowerCapturedTypePolicy.CHECK_ONLY_LOWER
         else -> LowerCapturedTypePolicy.CHECK_SUBTYPE_AND_LOWER

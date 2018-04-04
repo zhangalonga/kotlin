@@ -61,7 +61,7 @@ class KotlinTypeReferenceEditorComboWithBrowseButton(
         }
     }
 
-    override fun getText() = childComponent.text.trim { it <= ' ' }
+    override fun getText(): String = childComponent.text.trim { it <= ' ' }
 
     override fun setText(text: String) {
         childComponent.text = text

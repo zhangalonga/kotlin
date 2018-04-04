@@ -74,7 +74,7 @@ class IncrementalJvmCachesManager(
 ) : IncrementalCachesManager<IncrementalJvmCache>(cacheDirectory, reporter) {
 
     private val jvmCacheDir = File(cacheDirectory, "jvm").apply { mkdirs() }
-    override val platformCache = IncrementalJvmCache(jvmCacheDir, outputDir).apply { registerCache() }
+    override val platformCache: IncrementalJvmCache = IncrementalJvmCache(jvmCacheDir, outputDir).apply { registerCache() }
 }
 
 class IncrementalJsCachesManager(
@@ -83,5 +83,5 @@ class IncrementalJsCachesManager(
 ) : IncrementalCachesManager<IncrementalJsCache>(cachesRootDir, reporter) {
 
     private val jsCacheFile = File(cachesRootDir, "js").apply { mkdirs() }
-    override val platformCache = IncrementalJsCache(jsCacheFile).apply { registerCache() }
+    override val platformCache: IncrementalJsCache = IncrementalJsCache(jsCacheFile).apply { registerCache() }
 }

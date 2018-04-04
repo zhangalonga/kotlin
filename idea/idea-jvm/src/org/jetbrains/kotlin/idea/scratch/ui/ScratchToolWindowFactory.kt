@@ -33,7 +33,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 
 class ScratchToolWindowFactory : ToolWindowFactory {
     companion object {
-        val ID = "Scratch error output"
+        val ID: String = "Scratch error output"
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {

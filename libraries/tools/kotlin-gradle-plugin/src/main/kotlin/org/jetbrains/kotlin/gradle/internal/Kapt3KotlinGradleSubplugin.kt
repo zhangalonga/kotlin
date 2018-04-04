@@ -42,18 +42,18 @@ import java.util.*
 // apply plugin: 'kotlin-kapt'
 class Kapt3GradleSubplugin : Plugin<Project> {
     companion object {
-        fun isEnabled(project: Project) = project.plugins.findPlugin(Kapt3GradleSubplugin::class.java) != null
+        fun isEnabled(project: Project): Boolean = project.plugins.findPlugin(Kapt3GradleSubplugin::class.java) != null
 
         @JvmStatic
-        fun getKaptGeneratedClassesDir(project: Project, sourceSetName: String) =
+        fun getKaptGeneratedClassesDir(project: Project, sourceSetName: String): File =
                 File(project.project.buildDir, "tmp/kapt3/classes/$sourceSetName")
 
         @JvmStatic
-        fun getKaptGeneratedSourcesDir(project: Project, sourceSetName: String) =
+        fun getKaptGeneratedSourcesDir(project: Project, sourceSetName: String): File =
                 File(project.project.buildDir, "generated/source/kapt/$sourceSetName")
 
         @JvmStatic
-        fun getKaptGeneratedKotlinSourcesDir(project: Project, sourceSetName: String) =
+        fun getKaptGeneratedKotlinSourcesDir(project: Project, sourceSetName: String): File =
                 File(project.project.buildDir, "generated/source/kaptKotlin/$sourceSetName")
     }
 
@@ -76,11 +76,11 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
     companion object {
         private val VERBOSE_OPTION_NAME = "kapt.verbose"
 
-        val MAIN_KAPT_CONFIGURATION_NAME = "kapt"
+        val MAIN_KAPT_CONFIGURATION_NAME: String = "kapt"
 
-        val KAPT_GROUP_NAME = "org.jetbrains.kotlin"
-        val KAPT_ARTIFACT_NAME = "kotlin-annotation-processing-gradle"
-        val KAPT_SUBPLUGIN_ID = "org.jetbrains.kotlin.kapt3"
+        val KAPT_GROUP_NAME: String = "org.jetbrains.kotlin"
+        val KAPT_ARTIFACT_NAME: String = "kotlin-annotation-processing-gradle"
+        val KAPT_SUBPLUGIN_ID: String = "org.jetbrains.kotlin.kapt3"
 
         fun getKaptConfigurationName(sourceSetName: String): String {
             return if (sourceSetName != "main")
@@ -93,12 +93,12 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
             return project.configurations.findByName(getKaptConfigurationName(sourceSetName))
         }
 
-        fun findMainKaptConfiguration(project: Project) = project.findKaptConfiguration(MAIN_KAPT_CONFIGURATION_NAME)
+        fun findMainKaptConfiguration(project: Project): Configuration? = project.findKaptConfiguration(MAIN_KAPT_CONFIGURATION_NAME)
     }
 
     private val kotlinToKaptGenerateStubsTasksMap = mutableMapOf<KotlinCompile, KaptGenerateStubsTask>()
 
-    override fun isApplicable(project: Project, task: AbstractCompile) = task is KotlinCompile && Kapt3GradleSubplugin.isEnabled(project)
+    override fun isApplicable(project: Project, task: AbstractCompile): Boolean = task is KotlinCompile && Kapt3GradleSubplugin.isEnabled(project)
 
     private fun Kapt3SubpluginContext.getKaptStubsDir() = createAndReturnTemporaryKaptDirectory("stubs")
 
@@ -369,9 +369,9 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         }
     }
 
-    override fun getCompilerPluginId() = KAPT_SUBPLUGIN_ID
-    override fun getGroupName() = KAPT_GROUP_NAME
-    override fun getArtifactName() = KAPT_ARTIFACT_NAME
+    override fun getCompilerPluginId(): String = KAPT_SUBPLUGIN_ID
+    override fun getGroupName(): String = KAPT_GROUP_NAME
+    override fun getArtifactName(): String = KAPT_ARTIFACT_NAME
 }
 
 internal fun registerGeneratedJavaSource(kaptTask: KaptTask, javaTask: AbstractCompile) {

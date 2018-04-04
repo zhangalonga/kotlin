@@ -36,7 +36,7 @@ class KotlinFacetCompilerPluginsTab(
         private val validatorsManager: FacetValidatorsManager
 ) : FacetEditorTab() {
     companion object {
-        fun parsePluginOptions(configuration: KotlinFacetConfiguration) =
+        fun parsePluginOptions(configuration: KotlinFacetConfiguration): List<CliOptionValue> =
                 configuration.settings.compilerArguments?.pluginOptions?.mapNotNull(::parsePluginOption) ?: emptyList()
     }
 
@@ -143,7 +143,7 @@ class KotlinFacetCompilerPluginsTab(
         validatorsManager.registerValidator(OptionValidator())
     }
 
-    override fun getDisplayName() = "Compiler Plugins"
+    override fun getDisplayName(): String = "Compiler Plugins"
 
     override fun createComponent(): JComponent {
         val panel = JPanel(BorderLayout())
@@ -167,7 +167,7 @@ class KotlinFacetCompilerPluginsTab(
         return panel
     }
 
-    override fun isModified() = tableModel?.isModified ?: false
+    override fun isModified(): Boolean = tableModel?.isModified ?: false
 
     override fun reset() {
         table?.model = PluginTableModel()

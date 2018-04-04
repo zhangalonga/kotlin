@@ -25,10 +25,7 @@ import com.intellij.psi.*
 import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog
 import com.intellij.refactoring.util.CommonRefactoringUtil
-import com.intellij.ui.DocumentAdapter
-import com.intellij.ui.NonFocusableCheckBox
-import com.intellij.ui.RecentsManager
-import com.intellij.ui.TextFieldWithHistoryWithBrowseButton
+import com.intellij.ui.*
 import com.intellij.ui.components.JBLabelDecorator
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.ui.FormBuilder
@@ -39,6 +36,7 @@ import org.jetbrains.kotlin.idea.util.application.executeCommand
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
+import javax.swing.Action
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 
@@ -68,11 +66,11 @@ class KotlinAwareMoveFilesOrDirectoriesDialog(
     val updatePackageDirective: Boolean
         get() = updatePackageDirectiveCb.isSelected
 
-    override fun createActions() = arrayOf(okAction, cancelAction, helpAction)
+    override fun createActions(): Array<Action> = arrayOf(okAction, cancelAction, helpAction)
 
-    override fun getPreferredFocusedComponent() = targetDirectoryField.childComponent
+    override fun getPreferredFocusedComponent(): TextFieldWithHistory? = targetDirectoryField.childComponent
 
-    override fun createCenterPanel() = null
+    override fun createCenterPanel(): Nothing? = null
 
     override fun createNorthPanel(): JComponent {
         RecentsManager.getInstance(project).getRecentEntries(RECENT_KEYS)?.let { targetDirectoryField.childComponent.history = it }
@@ -144,7 +142,7 @@ class KotlinAwareMoveFilesOrDirectoriesDialog(
         }
     }
 
-    override fun doHelpAction() = HelpManager.getInstance().invokeHelp(helpID)
+    override fun doHelpAction(): Unit = HelpManager.getInstance().invokeHelp(helpID)
 
     private fun isOpenInEditor(): Boolean {
         if (ApplicationManager.getApplication().isUnitTestMode) return false

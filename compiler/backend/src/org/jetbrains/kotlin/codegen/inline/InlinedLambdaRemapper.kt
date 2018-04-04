@@ -27,7 +27,7 @@ class InlinedLambdaRemapper(
         private val isDefaultBoundCallableReference: Boolean
 ) : FieldRemapper(originalLambdaInternalName, parent, methodParams) {
 
-    public override fun canProcess(fieldOwner: String, fieldName: String, isFolding: Boolean) =
+    public override fun canProcess(fieldOwner: String, fieldName: String, isFolding: Boolean): Boolean =
             isFolding && (isMyBoundReceiverForDefaultLambda(fieldOwner, fieldName) || super.canProcess(fieldOwner, fieldName, true))
 
     private fun isMyBoundReceiverForDefaultLambda(fieldOwner: String, fieldName: String) =
@@ -36,12 +36,12 @@ class InlinedLambdaRemapper(
     override fun getFieldNameForFolding(insnNode: FieldInsnNode): String =
             if (isMyBoundReceiverForDefaultLambda(insnNode.owner, insnNode.name)) AsmUtil.RECEIVER_NAME else insnNode.name
 
-    override fun findField(fieldInsnNode: FieldInsnNode, captured: Collection<CapturedParamInfo>) =
+    override fun findField(fieldInsnNode: FieldInsnNode, captured: Collection<CapturedParamInfo>): CapturedParamInfo? =
             parent!!.findField(fieldInsnNode, captured)
 
     override val isInsideInliningLambda: Boolean = true
 
-    override fun getFieldForInline(node: FieldInsnNode, prefix: StackValue?) =
+    override fun getFieldForInline(node: FieldInsnNode, prefix: StackValue?): StackValue? =
             if (parent!!.isRoot)
                 super.getFieldForInline(node, prefix)
             else

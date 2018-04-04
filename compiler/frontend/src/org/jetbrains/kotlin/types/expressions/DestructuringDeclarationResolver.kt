@@ -65,7 +65,7 @@ class DestructuringDeclarationResolver(
         receiver: ReceiverValue?,
         initializer: KtExpression?,
         context: ExpressionTypingContext
-    ) = resolveLocalVariablesFromDestructuringDeclaration(
+    ): Unit = resolveLocalVariablesFromDestructuringDeclaration(
         writableScope, destructuringDeclaration, receiver, initializer, context
     ).forEach {
         ExpressionTypingUtils.checkVariableShadowing(writableScope, context.trace, it)

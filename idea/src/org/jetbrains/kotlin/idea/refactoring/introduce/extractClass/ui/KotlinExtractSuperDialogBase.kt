@@ -78,7 +78,7 @@ abstract class KotlinExtractSuperDialogBase(
                      member.hasModifier(KtTokens.LATEINIT_KEYWORD))
         }
 
-        override fun isFixedAbstract(memberInfo: KotlinMemberInfo?) = true
+        override fun isFixedAbstract(memberInfo: KotlinMemberInfo?): Boolean = true
     }
 
     val selectedTargetParent: PsiElement
@@ -94,11 +94,11 @@ abstract class KotlinExtractSuperDialogBase(
 
     protected abstract fun createMemberInfoModel(): MemberInfoModelBase
 
-    override fun getDocCommentPanelName() = "KDoc for abstracts"
+    override fun getDocCommentPanelName(): String = "KDoc for abstracts"
 
-    override fun checkConflicts() = conflictChecker(this)
+    override fun checkConflicts(): Boolean = conflictChecker(this)
 
-    override fun createActionComponent() = Box.createHorizontalBox()!!
+    override fun createActionComponent(): Box = Box.createHorizontalBox()!!
 
     override fun createExtractedSuperNameField(): JTextField {
         return super.createExtractedSuperNameField().apply {
@@ -171,7 +171,7 @@ abstract class KotlinExtractSuperDialogBase(
         if (targetParent is PsiDirectory) super.preparePackage()
     }
 
-    override fun isExtractSuperclass() = true
+    override fun isExtractSuperclass(): Boolean = true
 
     override fun validateName(name: String): String? {
         return when {
@@ -181,7 +181,7 @@ abstract class KotlinExtractSuperDialogBase(
         }
     }
 
-    override fun createProcessor() = null
+    override fun createProcessor(): Nothing? = null
 
     override fun executeRefactoring() {
         val extractInfo = ExtractSuperInfo(

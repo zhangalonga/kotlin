@@ -62,7 +62,7 @@ data class ExtractionOptions(
         val canWrapInWith: Boolean = false
 ) {
     companion object {
-        val DEFAULT = ExtractionOptions()
+        val DEFAULT: ExtractionOptions = ExtractionOptions()
     }
 }
 
@@ -92,7 +92,7 @@ data class ExtractionData(
 ) : Disposable {
     val project: Project = originalFile.project
     val originalElements: List<PsiElement> = originalRange.elements
-    val physicalElements = originalElements.map { it.substringContextOrThis }
+    val physicalElements: List<PsiElement> = originalElements.map { it.substringContextOrThis }
 
     val substringInfo: ExtractableSubstringInfo?
         get() = (originalElements.singleOrNull() as? KtExpression)?.extractableSubstringInfo
@@ -102,7 +102,7 @@ data class ExtractionData(
                                     it is KtDeclarationWithBody || it is KtAnonymousInitializer
                                 } ?: false
 
-    val expressions = originalElements.filterIsInstance<KtExpression>()
+    val expressions: List<KtExpression> = originalElements.filterIsInstance<KtExpression>()
 
     val codeFragmentText: String by lazy {
         val originalElements = originalElements
@@ -113,7 +113,7 @@ data class ExtractionData(
         }
     }
 
-    val commonParent = PsiTreeUtil.findCommonParent(physicalElements) as KtElement
+    val commonParent: KtElement = PsiTreeUtil.findCommonParent(physicalElements) as KtElement
 
     val bindingContext: BindingContext? by lazy { commonParent.analyze() }
 

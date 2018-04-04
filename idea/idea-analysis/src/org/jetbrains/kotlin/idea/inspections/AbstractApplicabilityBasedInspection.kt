@@ -27,7 +27,7 @@ abstract class AbstractApplicabilityBasedInspection<TElement: KtElement>(
         val elementType: Class<TElement>
 ) : AbstractKotlinInspection() {
 
-    final override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    final override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
             object : KtVisitorVoid() {
                 override fun visitKtElement(element: KtElement) {
                     super.visitKtElement(element)
@@ -58,13 +58,13 @@ abstract class AbstractApplicabilityBasedInspection<TElement: KtElement>(
 
     abstract val defaultFixText: String
 
-    open fun fixText(element: TElement) = defaultFixText
+    open fun fixText(element: TElement): String = defaultFixText
 
     abstract fun isApplicable(element: TElement): Boolean
 
     abstract fun applyTo(element: PsiElement, project: Project = element.project, editor: Editor? = null)
 
-    open val startFixInWriteAction = true
+    open val startFixInWriteAction: Boolean = true
 
     private inner class LocalFix(val text: String) : LocalQuickFix {
         override fun startInWriteAction() = startFixInWriteAction

@@ -27,7 +27,7 @@ fun Project.commonDep(group: String, artifact: String, vararg suffixesAndClassif
     return "$group:$artifact${artifactSuffixes.joinToString("")}:${commonVer(group, artifact)}${classifiers.joinToString("")}"
 }
 
-fun Project.commonVer(group: String, artifact: String) =
+fun Project.commonVer(group: String, artifact: String): Any? =
         when {
             rootProject.extra.has("versions.$artifact") -> rootProject.extra["versions.$artifact"]
             rootProject.extra.has("versions.$group") -> rootProject.extra["versions.$group"]
@@ -63,16 +63,16 @@ fun DependencyHandler.projectRuntimeJar(name: String): ProjectDependency = proje
 fun DependencyHandler.projectArchives(name: String): ProjectDependency = project(name, configuration = "archives")
 fun DependencyHandler.projectClasses(name: String): ProjectDependency = project(name, configuration = "classes-dirs")
 
-val protobufLiteProject = ":custom-dependencies:protobuf-lite"
-val protobufRelocatedProject = ":custom-dependencies:protobuf-relocated"
+val protobufLiteProject: String = ":custom-dependencies:protobuf-lite"
+val protobufRelocatedProject: String = ":custom-dependencies:protobuf-relocated"
 fun DependencyHandler.protobufLite(): ProjectDependency =
         project(protobufLiteProject, configuration = "default").apply { isTransitive = false }
-val protobufLiteTask = "$protobufLiteProject:prepare"
+val protobufLiteTask: String = "$protobufLiteProject:prepare"
 
 fun DependencyHandler.protobufFull(): ProjectDependency =
         project(protobufRelocatedProject, configuration = "default").apply { isTransitive = false }
 
-fun File.matchMaybeVersionedArtifact(baseName: String) = name.matches(baseName.toMaybeVersionedJarRegex())
+fun File.matchMaybeVersionedArtifact(baseName: String): Boolean = name.matches(baseName.toMaybeVersionedJarRegex())
 
 private val wildcardsRe = """[^*?]+|(\*)|(\?)""".toRegex()
 
@@ -104,7 +104,7 @@ fun Project.toolsJar(jdkHome: File = File(this.property("JDK_18") as String)): F
     firstFromJavaHomeThatExists("lib/tools.jar", jdkHome = jdkHome)
 
 object EmbeddedComponents {
-    val CONFIGURATION_NAME = "embeddedComponents"
+    val CONFIGURATION_NAME: String = "embeddedComponents"
 }
 
 fun Project.containsEmbeddedComponents() {

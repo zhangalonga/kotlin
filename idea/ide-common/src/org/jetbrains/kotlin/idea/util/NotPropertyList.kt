@@ -28,5 +28,5 @@ fun FunctionDescriptor.shouldNotConvertToProperty(notProperties: Set<FqNameUnsaf
     return this.overriddenTreeUniqueAsSequence(false).any { fqNameUnsafe in notProperties }
 }
 
-fun SyntheticJavaPropertyDescriptor.suppressedByNotPropertyList(set: Set<FqNameUnsafe>) =
+fun SyntheticJavaPropertyDescriptor.suppressedByNotPropertyList(set: Set<FqNameUnsafe>): Boolean =
         getMethod.shouldNotConvertToProperty(set) || setMethod?.shouldNotConvertToProperty(set) ?: false

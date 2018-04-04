@@ -48,8 +48,8 @@ import java.io.DataOutputStream
 import java.io.File
 
 open class MetadataSerializer(private val dependOnOldBuiltIns: Boolean) {
-    protected var totalSize = 0
-    protected var totalFiles = 0
+    protected var totalSize: Int = 0
+    protected var totalFiles: Int = 0
 
     fun serialize(environment: KotlinCoreEnvironment) {
         val configuration = environment.configuration

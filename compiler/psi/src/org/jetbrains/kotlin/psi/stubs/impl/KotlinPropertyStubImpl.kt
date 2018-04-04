@@ -46,13 +46,13 @@ class KotlinPropertyStubImpl(
         }
     }
 
-    override fun getFqName() = fqName
-    override fun isVar() = isVar
-    override fun isTopLevel() = isTopLevel
-    override fun hasDelegate() = hasDelegate
-    override fun hasDelegateExpression() = hasDelegateExpression
-    override fun hasInitializer() = hasInitializer
-    override fun isExtension() = isExtension
-    override fun hasReturnTypeRef() = hasReturnTypeRef
-    override fun getName() = StringRef.toString(name)
+    override fun getFqName(): FqName? = fqName
+    override fun isVar(): Boolean = isVar
+    override fun isTopLevel(): Boolean = isTopLevel
+    override fun hasDelegate(): Boolean = hasDelegate
+    override fun hasDelegateExpression(): Boolean = hasDelegateExpression
+    override fun hasInitializer(): Boolean = hasInitializer
+    override fun isExtension(): Boolean = isExtension
+    override fun hasReturnTypeRef(): Boolean = hasReturnTypeRef
+    override fun getName(): String? = StringRef.toString(name)
 }

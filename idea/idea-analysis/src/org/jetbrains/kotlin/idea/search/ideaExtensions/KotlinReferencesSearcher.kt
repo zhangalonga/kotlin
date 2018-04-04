@@ -53,7 +53,7 @@ data class KotlinReferencesSearchOptions(val acceptCallableOverrides: Boolean = 
     fun anyEnabled(): Boolean = acceptCallableOverrides || acceptOverloads || acceptExtensionsOfDeclarationClass
 
     companion object {
-        val Empty = KotlinReferencesSearchOptions()
+        val Empty: KotlinReferencesSearchOptions = KotlinReferencesSearchOptions()
     }
 }
 

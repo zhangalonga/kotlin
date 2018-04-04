@@ -38,7 +38,7 @@ class RealContextVariablesProvider(
         private val contextElement: PsiElement
 ) : ContextVariablesProvider {
 
-    val allFunctionTypeVariables by lazy {
+    val allFunctionTypeVariables: List<VariableDescriptor> by lazy {
         collectVariables().filter { it.type.isFunctionTypeOrSubtype }
     }
 

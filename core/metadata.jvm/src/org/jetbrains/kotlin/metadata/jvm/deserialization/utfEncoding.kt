@@ -19,9 +19,9 @@ package org.jetbrains.kotlin.metadata.jvm.deserialization
 import java.util.*
 
 // The maximum possible length of the byte array in the CONSTANT_Utf8_info structure in the bytecode, as per JVMS7 4.4.7
-const val MAX_UTF8_INFO_LENGTH = 65535
+const val MAX_UTF8_INFO_LENGTH: Int = 65535
 
-const val UTF8_MODE_MARKER = 0.toChar()
+const val UTF8_MODE_MARKER: Char = 0.toChar()
 
 fun bytesToStrings(bytes: ByteArray): Array<String> {
     val result = ArrayList<String>(1)

@@ -28,17 +28,17 @@ interface Value : org.jetbrains.org.objectweb.asm.tree.analysis.Value {
 }
 
 object NOT_A_VALUE: Value {
-    override val asmType = Type.getType("<invalid>")
-    override val valid = false
+    override val asmType: Type = Type.getType("<invalid>")
+    override val valid: Boolean = false
     override fun getSize(): Int = 1
 
-    override fun toString() = "NOT_A_VALUE"
+    override fun toString(): String = "NOT_A_VALUE"
 }
 
 object VOID_VALUE: Value {
     override val asmType: Type = Type.VOID_TYPE
     override val valid: Boolean = false
-    override fun toString() = "VOID_VALUE"
+    override fun toString(): String = "VOID_VALUE"
 }
 
 fun makeNotInitializedValue(t: Type): Value? {
@@ -49,17 +49,17 @@ fun makeNotInitializedValue(t: Type): Value? {
 }
 
 class NotInitialized(override val asmType: Type): Value {
-    override val valid = false
-    override fun toString() = "NotInitialized: $asmType"
+    override val valid: Boolean = false
+    override fun toString(): String = "NotInitialized: $asmType"
 }
 
 abstract class AbstractValueBase<out V>(
         override val asmType: Type
 ) : Value {
-    override val valid = true
+    override val valid: Boolean = true
     abstract val value: V
 
-    override fun toString() = "$value: $asmType"
+    override fun toString(): String = "$value: $asmType"
 
     override fun equals(other: Any?): Boolean {
         if (other !is AbstractValue<*>) return false
@@ -91,17 +91,17 @@ class NewObjectValue(asmType: Type): ObjectValue(null, asmType) {
 
 class LabelValue(value: LabelNode): AbstractValue<LabelNode>(value, Type.VOID_TYPE)
 
-fun boolean(v: Boolean) = IntValue(if (v) 1 else 0, Type.BOOLEAN_TYPE)
-fun byte(v: Byte) = IntValue(v.toInt(), Type.BYTE_TYPE)
-fun short(v: Short) = IntValue(v.toInt(), Type.SHORT_TYPE)
-fun char(v: Char) = IntValue(v.toInt(), Type.CHAR_TYPE)
-fun int(v: Int) = IntValue(v, Type.INT_TYPE)
-fun long(v: Long) = LongValue(v)
-fun float(v: Float) = FloatValue(v)
-fun double(v: Double) = DoubleValue(v)
+fun boolean(v: Boolean): IntValue = IntValue(if (v) 1 else 0, Type.BOOLEAN_TYPE)
+fun byte(v: Byte): IntValue = IntValue(v.toInt(), Type.BYTE_TYPE)
+fun short(v: Short): IntValue = IntValue(v.toInt(), Type.SHORT_TYPE)
+fun char(v: Char): IntValue = IntValue(v.toInt(), Type.CHAR_TYPE)
+fun int(v: Int): IntValue = IntValue(v, Type.INT_TYPE)
+fun long(v: Long): LongValue = LongValue(v)
+fun float(v: Float): FloatValue = FloatValue(v)
+fun double(v: Double): DoubleValue = DoubleValue(v)
 //fun <T> obj(v: T, t: Type = if (v != null) Type.getType(v.javaClass) else Type.getType(Any::class.java)) = ObjectValue(v, t)
 
-val NULL_VALUE = ObjectValue(null, Type.getObjectType("null"))
+val NULL_VALUE: ObjectValue = ObjectValue(null, Type.getObjectType("null"))
 
 val Value.boolean: Boolean get() = (this as IntValue).value == 1
 val Value.int: Int get() = (this as IntValue).value

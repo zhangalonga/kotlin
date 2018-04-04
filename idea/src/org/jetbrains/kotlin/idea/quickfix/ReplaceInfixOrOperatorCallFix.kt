@@ -36,9 +36,9 @@ class ReplaceInfixOrOperatorCallFix(
         private val notNullNeeded: Boolean
 ) : KotlinQuickFixAction<KtExpression>(element) {
 
-    override fun getText() = "Replace with safe (?.) call"
+    override fun getText(): String = "Replace with safe (?.) call"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return
@@ -88,7 +88,7 @@ class ReplaceInfixOrOperatorCallFix(
         }
     }
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 
     companion object : KotlinSingleIntentionActionFactory() {
         override fun createAction(diagnostic: Diagnostic): IntentionAction? {

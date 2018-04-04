@@ -29,7 +29,7 @@ class FirTypeParameterImpl(
         symbol.bind(this)
     }
 
-    override val bounds = mutableListOf<FirType>()
+    override val bounds: MutableList<FirType> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         bounds.transformInplace(transformer, data)

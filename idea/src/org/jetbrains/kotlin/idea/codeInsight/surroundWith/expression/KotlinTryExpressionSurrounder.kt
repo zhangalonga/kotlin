@@ -24,13 +24,13 @@ import org.jetbrains.kotlin.psi.KtTryExpression
 
 sealed class KotlinTryExpressionSurrounder : KotlinControlFlowExpressionSurrounderBase() {
     class TryCatch : KotlinTryExpressionSurrounder() {
-        override fun getTemplateDescription() = "try { expr } catch {}"
-        override fun getPattern() = "try { $0 } catch (e: Exception) {}"
+        override fun getTemplateDescription(): String = "try { expr } catch {}"
+        override fun getPattern(): String = "try { $0 } catch (e: Exception) {}"
     }
 
     class TryCatchFinally : KotlinTryExpressionSurrounder() {
-        override fun getTemplateDescription() = "try { expr } catch {} finally {}"
-        override fun getPattern() = "try { $0 } catch (e: Exception) {} finally {}"
+        override fun getTemplateDescription(): String = "try { expr } catch {} finally {}"
+        override fun getPattern(): String = "try { $0 } catch (e: Exception) {} finally {}"
     }
 
     override fun getRange(editor: Editor, replaced: KtExpression): TextRange? {

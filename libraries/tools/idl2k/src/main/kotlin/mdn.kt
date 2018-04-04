@@ -11,7 +11,7 @@ class MDNDocumentationCache(val existing: Set<String>, val nonExisting: Set<Stri
     }
 
     companion object {
-        val Empty = MDNDocumentationCache(emptySet(), emptySet())
+        val Empty: MDNDocumentationCache = MDNDocumentationCache(emptySet(), emptySet())
 
         fun read(file: File): MDNDocumentationCache {
             val existing = HashSet<String>()

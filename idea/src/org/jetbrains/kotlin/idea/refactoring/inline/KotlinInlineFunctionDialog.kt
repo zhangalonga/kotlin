@@ -37,7 +37,7 @@ class KotlinInlineFunctionDialog(
         init()
     }
 
-    override fun isInlineThis() = JavaRefactoringSettings.getInstance().INLINE_METHOD_THIS
+    override fun isInlineThis(): Boolean = JavaRefactoringSettings.getInstance().INLINE_METHOD_THIS
 
     public override fun doAction() {
         invokeRefactoring(
@@ -52,8 +52,8 @@ class KotlinInlineFunctionDialog(
         }
     }
 
-    override fun doHelpAction() =
+    override fun doHelpAction(): Unit =
             HelpManager.getInstance().invokeHelp(if (callable is KtConstructor<*>) HelpID.INLINE_CONSTRUCTOR else HelpID.INLINE_METHOD)
 
-    override fun canInlineThisOnly() = allowInlineThisOnly
+    override fun canInlineThisOnly(): Boolean = allowInlineThisOnly
 }

@@ -62,7 +62,7 @@ class JvmDependenciesIndexImpl(_roots: List<JavaRoot>): JvmDependenciesIndex {
     // helps improve several scenarios, LazyJavaResolverContext.findClassInJava being the most important
     private var lastClassSearch: Pair<FindClassRequest, SearchResult>? = null
 
-    override val indexedRoots by lazy { roots.asSequence() }
+    override val indexedRoots: Sequence<JavaRoot> by lazy { roots.asSequence() }
 
     private val packageCache: Array<out MutableMap<String, VirtualFile?>> by lazy {
         Array(roots.size) { THashMap<String, VirtualFile?>() }

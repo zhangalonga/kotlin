@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.types.FlexibleType
 class KotlinJavascriptSerializerExtension(
         private val fileRegistry: KotlinFileRegistry
 ) : KotlinSerializerExtensionBase(JsSerializerProtocol) {
-    override val stringTable = JavaScriptStringTable()
+    override val stringTable: JavaScriptStringTable = JavaScriptStringTable()
 
     override fun serializeFlexibleType(flexibleType: FlexibleType, lowerProto: ProtoBuf.Type.Builder, upperProto: ProtoBuf.Type.Builder) {
         lowerProto.flexibleTypeCapabilitiesId = stringTable.getStringIndex(DynamicTypeDeserializer.id)

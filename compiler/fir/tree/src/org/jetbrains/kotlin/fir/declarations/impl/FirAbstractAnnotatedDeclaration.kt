@@ -17,5 +17,5 @@ abstract class FirAbstractAnnotatedDeclaration(
     final override val psi: PsiElement?,
     final override val declarationKind: IrDeclarationKind
 ) : FirAnnotationContainer, FirDeclaration {
-    final override val annotations = mutableListOf<FirAnnotationCall>()
+    final override val annotations: MutableList<FirAnnotationCall> = mutableListOf()
 }

@@ -33,12 +33,12 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 
 class KotlinRainbowVisitor : RainbowVisitor() {
     companion object {
-        val KOTLIN_TARGET_ELEMENT_EVALUATOR = KotlinTargetElementEvaluator()
+        val KOTLIN_TARGET_ELEMENT_EVALUATOR: KotlinTargetElementEvaluator = KotlinTargetElementEvaluator()
     }
 
-    override fun suitableForFile(file: PsiFile) = file is KtFile
+    override fun suitableForFile(file: PsiFile): Boolean = file is KtFile
 
-    override fun clone() = KotlinRainbowVisitor()
+    override fun clone(): KotlinRainbowVisitor = KotlinRainbowVisitor()
 
     override fun visit(element: PsiElement) {
         when {

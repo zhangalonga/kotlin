@@ -18,7 +18,7 @@ fun ClassDescriptor.underlyingRepresentation(): ValueParameterDescriptor? {
     return unsubstitutedPrimaryConstructor?.valueParameters?.singleOrNull()
 }
 
-fun DeclarationDescriptor.isInlineClass() = this is ClassDescriptor && this.isInline
+fun DeclarationDescriptor.isInlineClass(): Boolean = this is ClassDescriptor && this.isInline
 
 fun KotlinType.unsubstitutedUnderlyingParameter(): ValueParameterDescriptor? {
     return constructor.declarationDescriptor.safeAs<ClassDescriptor>()?.underlyingRepresentation()

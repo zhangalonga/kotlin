@@ -108,7 +108,7 @@ class TypeCandidate(val theType: KotlinType, scope: HierarchicalScope? = null) {
         }
     }
 
-    override fun toString() = theType.toString()
+    override fun toString(): String = theType.toString()
 }
 
 data class RenderedTypeParameter(
@@ -137,7 +137,7 @@ sealed class CallablePlacement {
 class CallableBuilder(val config: CallableBuilderConfiguration) {
     private var finished: Boolean = false
 
-    val currentFileContext = config.currentFile.analyzeWithContent()
+    val currentFileContext: BindingContext = config.currentFile.analyzeWithContent()
 
     private lateinit var _currentFileModule: ModuleDescriptor
     val currentFileModule: ModuleDescriptor

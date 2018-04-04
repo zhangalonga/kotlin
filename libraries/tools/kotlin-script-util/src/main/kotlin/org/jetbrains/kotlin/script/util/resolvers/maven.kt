@@ -30,12 +30,12 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
 
-val mavenCentral = RemoteRepository("maven-central", "default", "http://repo1.maven.org/maven2/")
+val mavenCentral: RemoteRepository = RemoteRepository("maven-central", "default", "http://repo1.maven.org/maven2/")
 
 class MavenResolver(val reportError: ((String) -> Unit)? = null): Resolver {
 
     // TODO: make robust
-    val localRepo = File(File(System.getProperty("user.home")!!, ".m2"), "repository")
+    val localRepo: File = File(File(System.getProperty("user.home")!!, ".m2"), "repository")
 
     val repos: ArrayList<RemoteRepository> = arrayListOf()
 

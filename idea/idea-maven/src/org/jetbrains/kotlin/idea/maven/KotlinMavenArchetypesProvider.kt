@@ -72,7 +72,7 @@ class KotlinMavenArchetypesProvider(private val kotlinPluginVersion: String, pri
         }
     }
 
-    override fun getArchetypes() = archetypesBlocking.toMutableList()
+    override fun getArchetypes(): MutableList<MavenArchetype> = archetypesBlocking.toMutableList()
 
     private fun fallbackArchetypes() =
         listOf("kotlin-archetype-jvm", "kotlin-archetype-js")

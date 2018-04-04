@@ -21,7 +21,7 @@ import templates.SequenceClass.*
 
 object StringJoinOps : TemplateGroupBase() {
 
-    val f_joinTo = fn("joinTo(buffer: A, separator: CharSequence = \", \", prefix: CharSequence = \"\", postfix: CharSequence = \"\", limit: Int = -1, truncated: CharSequence = \"...\", transform: ((T) -> CharSequence)? = null)") {
+    val f_joinTo: FamilyPrimitiveMemberDefinition = fn("joinTo(buffer: A, separator: CharSequence = \", \", prefix: CharSequence = \"\", postfix: CharSequence = \"\", limit: Int = -1, truncated: CharSequence = \"...\", transform: ((T) -> CharSequence)? = null)") {
         includeDefault()
     } builder {
         doc {
@@ -72,7 +72,7 @@ object StringJoinOps : TemplateGroupBase() {
         }
     }
 
-    val f_joinToString = fn("joinToString(separator: CharSequence = \", \", prefix: CharSequence = \"\", postfix: CharSequence = \"\", limit: Int = -1, truncated: CharSequence = \"...\", transform: ((T) -> CharSequence)? = null)") {
+    val f_joinToString: FamilyPrimitiveMemberDefinition = fn("joinToString(separator: CharSequence = \", \", prefix: CharSequence = \"\", postfix: CharSequence = \"\", limit: Int = -1, truncated: CharSequence = \"...\", transform: ((T) -> CharSequence)? = null)") {
         includeDefault()
     } builder {
         doc {

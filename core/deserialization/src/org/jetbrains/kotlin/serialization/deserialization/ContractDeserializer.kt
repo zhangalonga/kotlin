@@ -29,7 +29,7 @@ interface ContractDeserializer {
     ): Pair<FunctionDescriptor.UserDataKey<*>, ContractProvider>?
 
     companion object {
-        val DEFAULT = object : ContractDeserializer {
+        val DEFAULT: ContractDeserializer = object : ContractDeserializer {
             override fun deserializeContractFromFunction(
                     proto: ProtoBuf.Function,
                     ownerFunction: FunctionDescriptor,

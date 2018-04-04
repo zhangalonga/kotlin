@@ -121,8 +121,8 @@ open class LazyClassMemberScope(
         return declarations.map { it.name }
     }
 
-    override fun getVariableNames() = _variableNames
-    override fun getFunctionNames() = _functionNames
+    override fun getVariableNames(): MutableSet<Name> = _variableNames
+    override fun getFunctionNames(): MutableSet<Name> = _functionNames
 
     private interface MemberExtractor<out T : CallableMemberDescriptor> {
         fun extract(extractFrom: KotlinType, name: Name): Collection<T>
@@ -461,7 +461,7 @@ open class LazyClassMemberScope(
     }
 
     // Do not add details here, they may compromise the laziness during debugging
-    override fun toString() = "lazy scope for class ${thisDescriptor.name}"
+    override fun toString(): String = "lazy scope for class ${thisDescriptor.name}"
 
     companion object {
         private val EXTRACT_FUNCTIONS: MemberExtractor<SimpleFunctionDescriptor> = object : MemberExtractor<SimpleFunctionDescriptor> {

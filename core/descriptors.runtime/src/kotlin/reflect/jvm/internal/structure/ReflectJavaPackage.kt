@@ -35,16 +35,16 @@ class ReflectJavaPackage(override val fqName: FqName) : ReflectJavaElement(), Ja
         }
 
     // TODO: support it if possible
-    override val annotations get() = emptyList<JavaAnnotation>()
+    override val annotations: List<JavaAnnotation> get() = emptyList<JavaAnnotation>()
 
-    override fun findAnnotation(fqName: FqName) = null
+    override fun findAnnotation(fqName: FqName): Nothing? = null
 
     override val isDeprecatedInJavaDoc: Boolean
         get() = false
 
-    override fun equals(other: Any?) = other is ReflectJavaPackage && fqName == other.fqName
+    override fun equals(other: Any?): Boolean = other is ReflectJavaPackage && fqName == other.fqName
 
-    override fun hashCode() = fqName.hashCode()
+    override fun hashCode(): Int = fqName.hashCode()
 
-    override fun toString() = this::class.java.name + ": " + fqName
+    override fun toString(): String = this::class.java.name + ": " + fqName
 }

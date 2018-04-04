@@ -38,15 +38,15 @@ class KotlinUBinaryExpression(
         )
     }
 
-    override val leftOperand by lz { KotlinConverter.convertOrEmpty(psi.left, this) }
-    override val rightOperand by lz { KotlinConverter.convertOrEmpty(psi.right, this) }
+    override val leftOperand: UExpression by lz { KotlinConverter.convertOrEmpty(psi.left, this) }
+    override val rightOperand: UExpression by lz { KotlinConverter.convertOrEmpty(psi.right, this) }
 
     override val operatorIdentifier: UIdentifier?
         get() = UIdentifier(psi.operationReference, this)
 
-    override fun resolveOperator() = psi.operationReference.resolveCallToDeclaration(context = this) as? PsiMethod
+    override fun resolveOperator(): PsiMethod? = psi.operationReference.resolveCallToDeclaration(context = this) as? PsiMethod
 
-    override val operator = when (psi.operationToken) {
+    override val operator: UastBinaryOperator = when (psi.operationToken) {
         KtTokens.EQ -> UastBinaryOperator.ASSIGN
         KtTokens.PLUS -> UastBinaryOperator.PLUS
         KtTokens.MINUS -> UastBinaryOperator.MINUS
@@ -102,5 +102,5 @@ class KotlinCustomUBinaryExpression(
     override val operatorIdentifier: UIdentifier?
         get() = null
 
-    override fun resolveOperator() = null
+    override fun resolveOperator(): Nothing? = null
 }

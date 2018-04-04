@@ -70,7 +70,7 @@ class InlinePlatformCompatibilityChecker(val jvmTarget: JvmTarget) : CallChecker
     }
 
     companion object {
-        fun doCheck() = "true" != System.getProperty("kotlin.skip.bytecode.version.check")
+        fun doCheck(): Boolean = "true" != System.getProperty("kotlin.skip.bytecode.version.check")
 
         fun getBytecodeVersionIfDeserializedDescriptor(funOrProperty: DeclarationDescriptor): Int? {
             if (funOrProperty !is DeserializedCallableMemberDescriptor) return null

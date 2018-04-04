@@ -20,10 +20,10 @@
 external internal fun <T> Array(size: Int): Array<T>
 
 @JsName("newArray")
-fun <T> newArray(size: Int, initValue: T) = fillArrayVal(Array<T>(size), initValue)
+fun <T> newArray(size: Int, initValue: T): Array<T> = fillArrayVal(Array<T>(size), initValue)
 
 @JsName("newArrayF")
-inline fun <T> arrayWithFun(size: Int, init: (Int) -> T) = fillArrayFun(Array<T>(size), init)
+inline fun <T> arrayWithFun(size: Int, init: (Int) -> T): Array<T> = fillArrayFun(Array<T>(size), init)
 
 @JsName("fillArray")
 inline fun <T> fillArrayFun(array: Array<T>, init: (Int) -> T): Array<T> {

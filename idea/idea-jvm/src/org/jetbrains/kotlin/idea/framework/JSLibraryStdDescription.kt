@@ -40,11 +40,11 @@ class JSLibraryStdDescription(project: Project?) :
     }
 
     companion object {
-        val LIBRARY_NAME = "KotlinJavaScript"
+        val LIBRARY_NAME: String = "KotlinJavaScript"
 
-        val JAVA_SCRIPT_LIBRARY_CREATION = "JavaScript Library Creation"
-        val DIALOG_TITLE = "Create Kotlin JavaScript Library"
-        val LIBRARY_CAPTION = "Kotlin JavaScript Library"
-        val SUITABLE_LIBRARY_KINDS = setOf(JSLibraryKind)
+        val JAVA_SCRIPT_LIBRARY_CREATION: String = "JavaScript Library Creation"
+        val DIALOG_TITLE: String = "Create Kotlin JavaScript Library"
+        val LIBRARY_CAPTION: String = "Kotlin JavaScript Library"
+        val SUITABLE_LIBRARY_KINDS: Set<JSLibraryKind> = setOf(JSLibraryKind)
     }
 }

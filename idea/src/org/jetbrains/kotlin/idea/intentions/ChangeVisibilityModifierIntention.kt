@@ -116,7 +116,7 @@ open class ChangeVisibilityModifierIntention protected constructor(
         }
     }
 
-    protected fun isAnnotationClassPrimaryConstructor(element: KtDeclaration) =
+    protected fun isAnnotationClassPrimaryConstructor(element: KtDeclaration): Boolean =
         element is KtPrimaryConstructor && (element.parent as? KtClass)?.hasModifier(KtTokens.ANNOTATION_KEYWORD) ?: false
 
     class Public : ChangeVisibilityModifierIntention(KtTokens.PUBLIC_KEYWORD), HighPriorityAction

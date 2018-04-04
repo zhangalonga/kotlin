@@ -38,7 +38,7 @@ class KotlinUFile(override val psi: KtFile, override val languagePlugin: UastLan
 
     override val sourcePsi: PsiElement? = psi
 
-    override val allCommentsInFile by lz {
+    override val allCommentsInFile: ArrayList<UComment> by lz {
         val comments = ArrayList<UComment>(0)
         psi.accept(object : PsiRecursiveElementWalkingVisitor() {
             override fun visitComment(comment: PsiComment) {
@@ -48,9 +48,9 @@ class KotlinUFile(override val psi: KtFile, override val languagePlugin: UastLan
         comments
     }
     
-    override val imports by lz { psi.importDirectives.map { KotlinUImportStatement(it, this) } }
+    override val imports: List<KotlinUImportStatement> by lz { psi.importDirectives.map { KotlinUImportStatement(it, this) } }
 
-    override val classes by lz {
+    override val classes: List<UClass> by lz {
         val facadeOrScriptClass = if (psi.isScript()) psi.script?.toLightClass() else psi.findFacadeClass()
         val classes = psi.declarations.mapNotNull { (it as? KtClassOrObject)?.toLightClass()?.toUClass() }
 

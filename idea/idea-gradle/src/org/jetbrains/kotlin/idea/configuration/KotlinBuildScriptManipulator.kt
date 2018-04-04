@@ -322,7 +322,7 @@ class KotlinBuildScriptManipulator(private val kotlinScript: KtFile) : GradleBui
 
     companion object {
         private val STDLIB_ARTIFACT_PREFIX = "org.jetbrains.kotlin:kotlin-stdlib"
-        val GSK_KOTLIN_VERSION_PROPERTY_NAME = "kotlin_version"
+        val GSK_KOTLIN_VERSION_PROPERTY_NAME: String = "kotlin_version"
 
         fun getKotlinGradlePluginClassPathSnippet(): String = "classpath(${getKotlinModuleDependencySnippet("gradle-plugin")})"
 

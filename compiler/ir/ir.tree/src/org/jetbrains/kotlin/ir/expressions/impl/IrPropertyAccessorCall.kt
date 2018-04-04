@@ -48,7 +48,7 @@ abstract class IrPropertyAccessorCallBase(
     }
 
     companion object {
-        const val SETTER_ARGUMENT_INDEX = 0
+        const val SETTER_ARGUMENT_INDEX: Int = 0
     }
 }
 

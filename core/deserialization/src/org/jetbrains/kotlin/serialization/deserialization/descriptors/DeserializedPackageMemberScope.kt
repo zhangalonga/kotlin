@@ -44,14 +44,14 @@ open class DeserializedPackageMemberScope(
 ) {
     private val packageFqName = packageDescriptor.fqName
 
-    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean)
-            = computeDescriptors(kindFilter, nameFilter, NoLookupLocation.WHEN_GET_ALL_DESCRIPTORS) +
-              c.components.fictitiousClassDescriptorFactories.flatMap { it.getAllContributedClassesIfPossible(packageFqName) }
+    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): List<DeclarationDescriptor> =
+        computeDescriptors(kindFilter, nameFilter, NoLookupLocation.WHEN_GET_ALL_DESCRIPTORS) +
+                c.components.fictitiousClassDescriptorFactories.flatMap { it.getAllContributedClassesIfPossible(packageFqName) }
 
-    override fun hasClass(name: Name) =
+    override fun hasClass(name: Name): Boolean =
             super.hasClass(name) || c.components.fictitiousClassDescriptorFactories.any { it.shouldCreateClass(packageFqName, name) }
 
-    override fun createClassId(name: Name) = ClassId(packageFqName, name)
+    override fun createClassId(name: Name): ClassId = ClassId(packageFqName, name)
 
 
     override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? {

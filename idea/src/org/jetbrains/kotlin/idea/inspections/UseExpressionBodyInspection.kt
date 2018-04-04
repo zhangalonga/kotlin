@@ -35,7 +35,7 @@ class UseExpressionBodyInspection(private val convertEmptyToUnit: Boolean) : Abs
 
     private data class Status(val toHighlight: PsiElement?, val subject: String, val highlightType: ProblemHighlightType)
 
-    fun isActiveFor(declaration: KtDeclarationWithBody) = statusFor(declaration) != null
+    fun isActiveFor(declaration: KtDeclarationWithBody): Boolean = statusFor(declaration) != null
 
     private fun statusFor(declaration: KtDeclarationWithBody): Status? {
         if (declaration is KtConstructor<*>) return null
@@ -55,7 +55,7 @@ class UseExpressionBodyInspection(private val convertEmptyToUnit: Boolean) : Abs
         }
     }
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): KtVisitorVoid =
             declarationVisitor(fun(declaration) {
                 declaration as? KtDeclarationWithBody ?: return
                 val (toHighlightElement, suffix, highlightType) = statusFor(declaration) ?: return
@@ -189,9 +189,9 @@ class UseExpressionBodyInspection(private val convertEmptyToUnit: Boolean) : Abs
     }
 
     inner class ConvertToExpressionBodyFix : LocalQuickFix {
-        override fun getFamilyName() = name
+        override fun getFamilyName(): String = name
 
-        override fun getName() = "Convert to expression body"
+        override fun getName(): String = "Convert to expression body"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val declaration = descriptor.psiElement as? KtDeclarationWithBody ?: return

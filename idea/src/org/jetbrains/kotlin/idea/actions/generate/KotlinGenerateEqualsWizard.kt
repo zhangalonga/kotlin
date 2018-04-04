@@ -124,7 +124,7 @@ class KotlinGenerateEqualsWizard(
         super.doOKAction()
     }
 
-    fun getPropertiesForEquals() = myEqualsPanel?.table?.selectedMemberInfos?.map { it.member } ?: emptyList()
+    fun getPropertiesForEquals(): List<KtNamedDeclaration> = myEqualsPanel?.table?.selectedMemberInfos?.map { it.member } ?: emptyList()
 
-    fun getPropertiesForHashCode() = myHashCodePanel?.table?.selectedMemberInfos?.map { it.member } ?: emptyList()
+    fun getPropertiesForHashCode(): List<KtNamedDeclaration> = myHashCodePanel?.table?.selectedMemberInfos?.map { it.member } ?: emptyList()
 }

@@ -76,9 +76,9 @@ class ChangeSuspendInHierarchyFix(
         }
     }
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     private fun findAllFunctionToProcess(project: Project): Set<KtNamedFunction> {
         val result = LinkedHashSet<KtNamedFunction>()

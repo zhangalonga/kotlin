@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.diagnostics.rendering.Renderers.RENDER_TYPE
 
 object DefaultErrorMessagesAndroid : DefaultErrorMessages.Extension {
     private val MAP = DiagnosticFactoryToRendererMap("Android")
-    override fun getMap() = MAP
+    override fun getMap(): DiagnosticFactoryToRendererMap = MAP
 
     init {
         MAP.put(ErrorsAndroid.SYNTHETIC_INVALID_WIDGET_TYPE,

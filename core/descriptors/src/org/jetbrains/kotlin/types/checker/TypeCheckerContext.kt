@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.utils.SmartSet
 import java.util.*
 
 open class TypeCheckerContext(val errorTypeEqualsToAnything: Boolean, val allowedTypeVariable: Boolean = true) {
-    protected var argumentsDepth = 0
+    protected var argumentsDepth: Int = 0
 
     private var supertypesLocked = false
     private var supertypesDeque: ArrayDeque<SimpleType>? = null
@@ -33,8 +33,8 @@ open class TypeCheckerContext(val errorTypeEqualsToAnything: Boolean, val allowe
         return a == b
     }
 
-    open fun getLowerCapturedTypePolicy(subType: SimpleType, superType: NewCapturedType) = LowerCapturedTypePolicy.CHECK_SUBTYPE_AND_LOWER
-    open val sameConstructorPolicy get() = SeveralSupertypesWithSameConstructorPolicy.INTERSECT_ARGUMENTS_AND_CHECK_AGAIN
+    open fun getLowerCapturedTypePolicy(subType: SimpleType, superType: NewCapturedType): LowerCapturedTypePolicy = LowerCapturedTypePolicy.CHECK_SUBTYPE_AND_LOWER
+    open val sameConstructorPolicy: SeveralSupertypesWithSameConstructorPolicy get() = SeveralSupertypesWithSameConstructorPolicy.INTERSECT_ARGUMENTS_AND_CHECK_AGAIN
 
     internal inline fun <T> runWithArgumentsSettings(subArgument: UnwrappedType, f: TypeCheckerContext.() -> T): T {
         if (argumentsDepth > 100) {

@@ -37,7 +37,7 @@ object DslMarkerUtils {
     private fun Annotations.extractDslMarkerFqNames() =
         filter(AnnotationDescriptor::isDslMarker).map { it.fqName!! }
 
-    val DSL_MARKER_FQ_NAME = FqName("kotlin.DslMarker")
+    val DSL_MARKER_FQ_NAME: FqName = FqName("kotlin.DslMarker")
 }
 
 private fun AnnotationDescriptor.isDslMarker(): Boolean {

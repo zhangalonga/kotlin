@@ -28,8 +28,8 @@ import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.types.*
 import kotlin.reflect.KProperty
 
-val KOTLIN_REFLECT_FQ_NAME = FqName("kotlin.reflect")
-val K_FUNCTION_PREFIX = "KFunction"
+val KOTLIN_REFLECT_FQ_NAME: FqName = FqName("kotlin.reflect")
+val K_FUNCTION_PREFIX: String = "KFunction"
 
 class ReflectionTypes(module: ModuleDescriptor, private val notFoundClasses: NotFoundClasses) {
     private val kotlinReflectScope: MemberScope by lazy(LazyThreadSafetyMode.PUBLICATION) {

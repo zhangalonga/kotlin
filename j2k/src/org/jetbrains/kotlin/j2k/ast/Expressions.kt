@@ -33,7 +33,7 @@ class ArrayAccessExpression(val expression: Expression, val index: Expression, v
 
 open class AssignmentExpression(val left: Expression, val right: Expression, val op: Operator) : Expression() {
 
-    fun isMultiAssignment() = right is AssignmentExpression
+    fun isMultiAssignment(): Boolean = right is AssignmentExpression
 
     fun appendAssignment(builder: CodeBuilder, left: Expression, right: Expression) {
         builder.appendOperand(this, left).append(" ").append(op).append(" ").appendOperand(this, right)
@@ -158,7 +158,7 @@ open class Operator(val operatorType: IElementType): Expression() {
         builder.append(asString(operatorType))
     }
 
-    fun asString() = asString(operatorType)
+    fun asString(): String = asString(operatorType)
 
     fun acceptLineBreakBefore(): Boolean {
         return when(operatorType) {
@@ -226,8 +226,8 @@ open class Operator(val operatorType: IElementType): Expression() {
     }
 
     companion object {
-        val EQEQ = Operator(JavaTokenType.EQEQ).assignNoPrototype()
-        val EQ = Operator(JavaTokenType.EQ).assignNoPrototype()
+        val EQEQ: Operator = Operator(JavaTokenType.EQEQ).assignNoPrototype()
+        val EQ: Operator = Operator(JavaTokenType.EQ).assignNoPrototype()
     }
 }
 

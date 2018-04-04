@@ -37,7 +37,7 @@ class KotlinGradleModuleConfigurator : KotlinWithGradleConfigurator() {
     override val kotlinPluginName: String
         get() = KOTLIN
 
-    override fun getJvmTarget(sdk: Sdk?, version: String) = getDefaultJvmTarget(sdk, version)?.description
+    override fun getJvmTarget(sdk: Sdk?, version: String): String? = getDefaultJvmTarget(sdk, version)?.description
 
     override fun configureModule(
         module: Module,
@@ -57,7 +57,7 @@ class KotlinGradleModuleConfigurator : KotlinWithGradleConfigurator() {
     }
 
     companion object {
-        val NAME = "gradle"
-        val KOTLIN = "kotlin"
+        val NAME: String = "gradle"
+        val KOTLIN: String = "kotlin"
     }
 }

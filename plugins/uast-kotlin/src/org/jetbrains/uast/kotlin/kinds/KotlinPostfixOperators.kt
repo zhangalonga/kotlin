@@ -20,5 +20,5 @@ import org.jetbrains.uast.UastPostfixOperator
 
 object KotlinPostfixOperators {
     @JvmField
-    val EXCLEXCL = UastPostfixOperator("!!")
+    val EXCLEXCL: UastPostfixOperator = UastPostfixOperator("!!")
 }

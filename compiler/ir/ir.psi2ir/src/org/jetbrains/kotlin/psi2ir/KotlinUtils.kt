@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.name.Name
@@ -39,7 +40,7 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils
 import java.lang.Exception
 
-fun KotlinType.containsNull() =
+fun KotlinType.containsNull(): Boolean =
     TypeUtils.isNullableType(this)
 
 fun KtElement.deparenthesize(): KtElement =
@@ -67,10 +68,10 @@ fun KtSecondaryConstructor.isConstructorDelegatingToSuper(bindingContext: Bindin
     return targetClassDescriptor != ownerClassDescriptor
 }
 
-inline fun ClassDescriptor.findFirstFunction(name: String, predicate: (CallableMemberDescriptor) -> Boolean) =
+inline fun ClassDescriptor.findFirstFunction(name: String, predicate: (CallableMemberDescriptor) -> Boolean): SimpleFunctionDescriptor =
     unsubstitutedMemberScope.findFirstFunction(name, predicate)
 
-inline fun MemberScope.findFirstFunction(name: String, predicate: (CallableMemberDescriptor) -> Boolean) =
+inline fun MemberScope.findFirstFunction(name: String, predicate: (CallableMemberDescriptor) -> Boolean): SimpleFunctionDescriptor =
     getContributedFunctions(Name.identifier(name), NoLookupLocation.FROM_BACKEND).first(predicate)
 
 fun MemberScope.findSingleFunction(name: Name): FunctionDescriptor =
@@ -79,7 +80,7 @@ fun MemberScope.findSingleFunction(name: Name): FunctionDescriptor =
 fun KotlinBuiltIns.findSingleFunction(name: Name): FunctionDescriptor =
     builtInsPackageScope.findSingleFunction(name)
 
-val PsiElement?.startOffsetOrUndefined get() = this?.startOffset ?: UNDEFINED_OFFSET
-val PsiElement?.endOffsetOrUndefined get() = this?.endOffset ?: UNDEFINED_OFFSET
+val PsiElement?.startOffsetOrUndefined: Int get() = this?.startOffset ?: UNDEFINED_OFFSET
+val PsiElement?.endOffsetOrUndefined: Int get() = this?.endOffset ?: UNDEFINED_OFFSET
 
 

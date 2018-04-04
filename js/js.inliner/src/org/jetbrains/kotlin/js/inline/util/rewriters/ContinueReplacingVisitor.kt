@@ -19,9 +19,9 @@ package org.jetbrains.kotlin.js.inline.util.rewriters
 import org.jetbrains.kotlin.js.backend.ast.*
 
 class ContinueReplacingVisitor(val loopLabelName: JsName?, val guardLabelName: JsName) : JsVisitorWithContextImpl() {
-    var loopNestingLevel = 0
+    var loopNestingLevel: Int = 0
 
-    override fun visit(x: JsFunction, ctx: JsContext<JsNode>) = false
+    override fun visit(x: JsFunction, ctx: JsContext<JsNode>): Boolean = false
 
     override fun visit(x: JsContinue, ctx: JsContext<JsNode>): Boolean {
         val target = x.label?.name

@@ -122,7 +122,7 @@ private class SimpleTypeImpl(
 }
 
 abstract class DelegatingSimpleTypeImpl(override val delegate: SimpleType) : DelegatingSimpleType() {
-    override fun replaceAnnotations(newAnnotations: Annotations) =
+    override fun replaceAnnotations(newAnnotations: Annotations): DelegatingSimpleTypeImpl =
             if (newAnnotations !== annotations)
                 AnnotatedSimpleType(this, newAnnotations)
             else

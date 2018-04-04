@@ -47,8 +47,8 @@ abstract class SelfTargetingIntention<TElement : PsiElement>(
         this.text = text
     }
 
-    final override fun getText() = text
-    final override fun getFamilyName() = familyName
+    final override fun getText(): String = text
+    final override fun getFamilyName(): String = familyName
 
     abstract fun isApplicableTo(element: TElement, caretOffset: Int): Boolean
 
@@ -107,7 +107,7 @@ abstract class SelfTargetingIntention<TElement : PsiElement>(
         applyTo(target, editor)
     }
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 
     override fun toString(): String = getText()
 

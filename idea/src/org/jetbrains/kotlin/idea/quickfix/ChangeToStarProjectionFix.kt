@@ -24,9 +24,9 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 class ChangeToStarProjectionFix(element: KtTypeElement) : KotlinQuickFixAction<KtTypeElement>(element) {
-    override fun getFamilyName() = "Change to star projection"
+    override fun getFamilyName(): String = "Change to star projection"
 
-    override fun getText() = element?.let { "Change type arguments to <${it.typeArgumentsAsTypes.joinToString { "*" }}>" } ?: ""
+    override fun getText(): String = element?.let { "Change type arguments to <${it.typeArgumentsAsTypes.joinToString { "*" }}>" } ?: ""
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

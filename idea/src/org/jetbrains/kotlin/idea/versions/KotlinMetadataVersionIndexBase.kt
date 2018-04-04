@@ -55,7 +55,7 @@ abstract class KotlinMetadataVersionIndexBase<T, V : BinaryVersion>(
         }
     }
 
-    override fun dependsOnFileContent() = true
+    override fun dependsOnFileContent(): Boolean = true
 
     protected val LOG: Logger = Logger.getInstance(classOfIndex)
 

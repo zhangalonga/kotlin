@@ -17,22 +17,20 @@
 package org.jetbrains.kotlin.resolve.lazy.data
 
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.psi.KtAnnotationEntry
-import org.jetbrains.kotlin.psi.KtObjectDeclaration
-import org.jetbrains.kotlin.psi.KtParameter
-import org.jetbrains.kotlin.psi.KtScript
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.*
 
 class KtScriptInfo(
     val script: KtScript
 ) : KtClassLikeInfo {
-    override fun getContainingPackageFqName() = script.fqName.parent()
-    override fun getModifierList() = null
-    override fun getCompanionObjects() = listOf<KtObjectDeclaration>()
-    override fun getScopeAnchor() = script
-    override fun getCorrespondingClassOrObject() = null
-    override fun getTypeParameterList() = null
-    override fun getPrimaryConstructorParameters() = listOf<KtParameter>()
-    override fun getClassKind() = ClassKind.CLASS
-    override fun getDeclarations() = script.declarations
-    override fun getDanglingAnnotations() = listOf<KtAnnotationEntry>()
+    override fun getContainingPackageFqName(): FqName = script.fqName.parent()
+    override fun getModifierList(): Nothing? = null
+    override fun getCompanionObjects(): List<KtObjectDeclaration> = listOf<KtObjectDeclaration>()
+    override fun getScopeAnchor(): KtScript = script
+    override fun getCorrespondingClassOrObject(): Nothing? = null
+    override fun getTypeParameterList(): Nothing? = null
+    override fun getPrimaryConstructorParameters(): List<KtParameter> = listOf<KtParameter>()
+    override fun getClassKind(): ClassKind = ClassKind.CLASS
+    override fun getDeclarations(): List<KtDeclaration> = script.declarations
+    override fun getDanglingAnnotations(): List<KtAnnotationEntry> = listOf<KtAnnotationEntry>()
 }

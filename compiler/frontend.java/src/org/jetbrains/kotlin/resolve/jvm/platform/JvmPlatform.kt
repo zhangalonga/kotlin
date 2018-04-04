@@ -48,5 +48,5 @@ object JvmPlatform : TargetPlatform("JVM") {
 
     override val platformConfigurator: PlatformConfigurator = JvmPlatformConfigurator
 
-    override val multiTargetPlatform = MultiTargetPlatform.Specific(platformName)
+    override val multiTargetPlatform: MultiTargetPlatform.Specific = MultiTargetPlatform.Specific(platformName)
 }

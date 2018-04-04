@@ -418,9 +418,9 @@ class KotlinBreadcrumbsInfoProvider : BreadcrumbsInfoProvider() {
         return handler as ElementHandler<in KtElement>?
     }
 
-    override fun getLanguages() = arrayOf(KotlinLanguage.INSTANCE)
+    override fun getLanguages(): Array<KotlinLanguage> = arrayOf(KotlinLanguage.INSTANCE)
 
-    override fun acceptElement(e: PsiElement) = !DumbService.isDumb(e.project) && handler(e) != null
+    override fun acceptElement(e: PsiElement): Boolean = !DumbService.isDumb(e.project) && handler(e) != null
 
     override fun getElementInfo(e: PsiElement): String {
         if (DumbService.isDumb(e.project)) return ""

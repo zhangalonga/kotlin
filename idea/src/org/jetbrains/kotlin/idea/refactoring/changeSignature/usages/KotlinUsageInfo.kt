@@ -26,7 +26,7 @@ abstract class KotlinUsageInfo<T : PsiElement> : UsageInfo {
     constructor(reference: PsiReference) : super(reference)
 
     @Suppress("UNCHECKED_CAST")
-    override fun getElement() = super.getElement() as T?
+    override fun getElement(): T? = super.getElement() as T?
 
     open fun preprocessUsage() {}
 

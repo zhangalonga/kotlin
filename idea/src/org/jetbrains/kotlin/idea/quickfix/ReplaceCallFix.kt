@@ -35,7 +35,7 @@ abstract class ReplaceCallFix(
         private val notNullNeeded: Boolean = false
 ) : KotlinQuickFixAction<KtQualifiedExpression>(expression) {
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         val element = element ?: return false
@@ -58,9 +58,9 @@ class ReplaceImplicitReceiverCallFix(
         expression: KtExpression,
         private val notNullNeeded: Boolean
 ) : KotlinQuickFixAction<KtExpression>(expression) {
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
-    override fun getText() = "Replace with safe (this?.) call"
+    override fun getText(): String = "Replace with safe (this?.) call"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return
@@ -78,7 +78,7 @@ class ReplaceWithSafeCallFix(
         notNullNeeded: Boolean
 ) : ReplaceCallFix(expression, "?.", notNullNeeded) {
 
-    override fun getText() = "Replace with safe (?.) call"
+    override fun getText(): String = "Replace with safe (?.) call"
 
     companion object : KotlinSingleIntentionActionFactory() {
         override fun createAction(diagnostic: Diagnostic): IntentionAction? {
@@ -104,7 +104,7 @@ class ReplaceWithSafeCallForScopeFunctionFix(
         notNullNeeded: Boolean
 ) : ReplaceCallFix(expression, "?.", notNullNeeded) {
 
-    override fun getText() = "Replace scope function with safe (?.) call"
+    override fun getText(): String = "Replace scope function with safe (?.) call"
 
     companion object : KotlinSingleIntentionActionFactory() {
         override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtExpression>? {
@@ -153,7 +153,7 @@ class ReplaceWithSafeCallForScopeFunctionFix(
 }
 
 class ReplaceWithDotCallFix(expression: KtSafeQualifiedExpression) : ReplaceCallFix(expression, "."), CleanupFix {
-    override fun getText() = "Replace with dot call"
+    override fun getText(): String = "Replace with dot call"
 
     companion object : KotlinSingleIntentionActionFactory() {
         override fun createAction(diagnostic: Diagnostic): IntentionAction? {

@@ -62,5 +62,5 @@ actual inline fun todo(@Suppress("UNUSED_PARAMETER") block: () -> Unit) {
  */
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 @InlineOnly
-inline fun currentStackTrace() = (java.lang.Exception() as java.lang.Throwable).stackTrace
+inline fun currentStackTrace(): Array<out StackTraceElement> = (java.lang.Exception() as java.lang.Throwable).stackTrace
 

@@ -83,7 +83,7 @@ class RemoveExclExclCallFix(psiElement: PsiElement) : ExclExclCallFix(psiElement
 class AddExclExclCallFix(psiElement: PsiElement, val checkImplicitReceivers: Boolean) : ExclExclCallFix(psiElement) {
     constructor(psiElement: PsiElement) : this(psiElement, true)
 
-    override fun getText() = KotlinBundle.message("introduce.non.null.assertion")
+    override fun getText(): String = KotlinBundle.message("introduce.non.null.assertion")
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean =
         getExpressionForIntroduceCall() != null

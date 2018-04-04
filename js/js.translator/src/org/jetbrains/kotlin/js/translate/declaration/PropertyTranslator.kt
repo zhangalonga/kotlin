@@ -209,9 +209,9 @@ fun TranslationContext.contextWithPropertyMetadataCreationIntrinsified(
     ))
 }
 
-fun KtProperty.hasCustomGetter() = getter?.hasBody() ?: false
+fun KtProperty.hasCustomGetter(): Boolean = getter?.hasBody() ?: false
 
-fun KtProperty.hasCustomSetter() = setter?.hasBody() ?: false
+fun KtProperty.hasCustomSetter(): Boolean = setter?.hasBody() ?: false
 
 private class PropertyTranslator(
         val descriptor: VariableDescriptorWithAccessors,

@@ -49,7 +49,7 @@ class TypeAliasExpansion private constructor(
             return TypeAliasExpansion(parent, typeAliasDescriptor, arguments, mappedArguments)
         }
 
-        fun createWithFormalArguments(typeAliasDescriptor: TypeAliasDescriptor) =
+        fun createWithFormalArguments(typeAliasDescriptor: TypeAliasDescriptor): TypeAliasExpansion =
             create(null, typeAliasDescriptor, emptyList())
     }
 }

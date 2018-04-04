@@ -24,16 +24,16 @@ class Parameters(val parameters: List<ParameterInfo>) : Iterable<ParameterInfo> 
     private val actualDeclShifts: Array<ParameterInfo?>
     private val paramToDeclByteCodeIndex: HashMap<ParameterInfo, Int> = hashMapOf()
 
-    val argsSizeOnStack = parameters.sumBy { it.type.size }
+    val argsSizeOnStack: Int = parameters.sumBy { it.type.size }
 
     val realParametersSizeOnStack: Int
         get() = argsSizeOnStack - capturedParametersSizeOnStack
 
-    val capturedParametersSizeOnStack by lazy {
+    val capturedParametersSizeOnStack: Int by lazy {
         captured.sumBy { it.type.size }
     }
 
-    val captured by lazy {
+    val captured: List<CapturedParamInfo> by lazy {
         parameters.filterIsInstance<CapturedParamInfo>()
     }
 

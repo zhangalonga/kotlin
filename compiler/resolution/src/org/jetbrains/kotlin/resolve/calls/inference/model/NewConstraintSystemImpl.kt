@@ -62,7 +62,7 @@ class NewConstraintSystemImpl(
     override val diagnostics: List<KotlinCallDiagnostic>
         get() = storage.errors
 
-    override fun getBuilder() = apply { checkState(State.BUILDING, State.COMPLETION) }
+    override fun getBuilder(): NewConstraintSystemImpl = apply { checkState(State.BUILDING, State.COMPLETION) }
 
     override fun asReadOnlyStorage(): ConstraintStorage {
         checkState(State.BUILDING, State.FREEZED)
@@ -70,9 +70,9 @@ class NewConstraintSystemImpl(
         return storage
     }
 
-    override fun asConstraintSystemCompleterContext() = apply { checkState(State.BUILDING) }
+    override fun asConstraintSystemCompleterContext(): NewConstraintSystemImpl = apply { checkState(State.BUILDING) }
 
-    override fun asPostponedArgumentsAnalyzerContext() = apply { checkState(State.BUILDING) }
+    override fun asPostponedArgumentsAnalyzerContext(): NewConstraintSystemImpl = apply { checkState(State.BUILDING) }
 
     // ConstraintSystemOperation
     override fun registerVariable(variable: NewTypeVariable) {
@@ -83,7 +83,7 @@ class NewConstraintSystemImpl(
         storage.notFixedTypeVariables[variable.freshTypeConstructor] = MutableVariableWithConstraints(variable)
     }
 
-    override fun addSubtypeConstraint(lowerType: UnwrappedType, upperType: UnwrappedType, position: ConstraintPosition) =
+    override fun addSubtypeConstraint(lowerType: UnwrappedType, upperType: UnwrappedType, position: ConstraintPosition): Unit =
         constraintInjector.addInitialSubtypeConstraint(
             apply { checkState(State.BUILDING, State.COMPLETION, State.TRANSACTION) },
             lowerType,
@@ -91,7 +91,7 @@ class NewConstraintSystemImpl(
             position
         )
 
-    override fun addEqualityConstraint(a: UnwrappedType, b: UnwrappedType, position: ConstraintPosition) =
+    override fun addEqualityConstraint(a: UnwrappedType, b: UnwrappedType, position: ConstraintPosition): Unit =
         constraintInjector.addInitialEqualityConstraint(
             apply { checkState(State.BUILDING, State.COMPLETION, State.TRANSACTION) },
             a,

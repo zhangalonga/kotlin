@@ -58,7 +58,7 @@ object Renderers {
     private val LOG = Logger.getInstance(Renderers::class.java)
 
     @JvmField
-    val TO_STRING = Renderer<Any> { element ->
+    val TO_STRING: DiagnosticParameterRenderer<Any> = Renderer<Any> { element ->
         if (element is DeclarationDescriptor) {
             LOG.warn(
                 "Diagnostic renderer TO_STRING was used to render an instance of DeclarationDescriptor.\n"
@@ -70,20 +70,20 @@ object Renderers {
     }
 
     @JvmField
-    val STRING = Renderer<String> { it }
+    val STRING: DiagnosticParameterRenderer<String> = Renderer<String> { it }
 
     @JvmField
-    val THROWABLE = Renderer<Throwable> {
+    val THROWABLE: DiagnosticParameterRenderer<Throwable> = Renderer<Throwable> {
         val writer = StringWriter()
         it.printStackTrace(PrintWriter(writer))
         StringUtil.first(writer.toString(), 2048, true)
     }
 
     @JvmField
-    val NAME = Renderer<Named> { it.name.asString() }
+    val NAME: DiagnosticParameterRenderer<Named> = Renderer<Named> { it.name.asString() }
 
     @JvmField
-    val PLATFORM = Renderer<ModuleDescriptor> {
+    val PLATFORM: DiagnosticParameterRenderer<ModuleDescriptor> = Renderer<ModuleDescriptor> {
         val platform = it.getMultiTargetPlatform()
         " ${it.getCapability(ModuleInfo.Capability)?.displayedName ?: ""}" + when (platform) {
             MultiTargetPlatform.Common -> ""
@@ -93,14 +93,14 @@ object Renderers {
     }
 
     @JvmField
-    val VISIBILITY = Renderer<Visibility> {
+    val VISIBILITY: DiagnosticParameterRenderer<Visibility> = Renderer<Visibility> {
         if (it == Visibilities.INVISIBLE_FAKE)
             "invisible (private in a supertype)"
         else it.displayName
     }
 
     @JvmField
-    val DECLARATION_NAME_WITH_KIND = Renderer<DeclarationDescriptor> {
+    val DECLARATION_NAME_WITH_KIND: DiagnosticParameterRenderer<DeclarationDescriptor> = Renderer<DeclarationDescriptor> {
         val name = it.name.asString()
         when (it) {
             is PackageFragmentDescriptor -> "package '$name'"
@@ -117,7 +117,7 @@ object Renderers {
     }
 
     @JvmField
-    val CAPITALIZED_DECLARATION_NAME_WITH_KIND_AND_PLATFORM = ContextDependentRenderer<DeclarationDescriptor> { descriptor, context ->
+    val CAPITALIZED_DECLARATION_NAME_WITH_KIND_AND_PLATFORM: DiagnosticParameterRenderer<DeclarationDescriptor> = ContextDependentRenderer<DeclarationDescriptor> { descriptor, context ->
         val declarationWithNameAndKind = DECLARATION_NAME_WITH_KIND.render(descriptor, context)
         val withPlatform = if (descriptor is MemberDescriptor && descriptor.isActual)
             "actual $declarationWithNameAndKind"
@@ -129,7 +129,7 @@ object Renderers {
 
 
     @JvmField
-    val NAME_OF_CONTAINING_DECLARATION_OR_FILE = Renderer<DeclarationDescriptor> {
+    val NAME_OF_CONTAINING_DECLARATION_OR_FILE: DiagnosticParameterRenderer<DeclarationDescriptor> = Renderer<DeclarationDescriptor> {
         if (DescriptorUtils.isTopLevelDeclaration(it) && it is DeclarationDescriptorWithVisibility && it.visibility == Visibilities.PRIVATE) {
             "file"
         } else {
@@ -143,25 +143,25 @@ object Renderers {
     }
 
     @JvmField
-    val ELEMENT_TEXT = Renderer<PsiElement> { it.text }
+    val ELEMENT_TEXT: DiagnosticParameterRenderer<PsiElement> = Renderer<PsiElement> { it.text }
 
     @JvmField
-    val DECLARATION_NAME = Renderer<KtNamedDeclaration> { it.nameAsSafeName.asString() }
+    val DECLARATION_NAME: DiagnosticParameterRenderer<KtNamedDeclaration> = Renderer<KtNamedDeclaration> { it.nameAsSafeName.asString() }
 
     @JvmField
-    val RENDER_CLASS_OR_OBJECT = Renderer { classOrObject: KtClassOrObject ->
+    val RENDER_CLASS_OR_OBJECT: DiagnosticParameterRenderer<KtClassOrObject> = Renderer { classOrObject: KtClassOrObject ->
         val name = classOrObject.name?.let { " ${it.wrapIntoQuotes()}" } ?: ""
         if (classOrObject is KtClass) "Class" + name else "Object" + name
     }
 
     @JvmField
-    val RENDER_CLASS_OR_OBJECT_NAME = Renderer<ClassifierDescriptorWithTypeParameters> { it.renderKindWithName() }
+    val RENDER_CLASS_OR_OBJECT_NAME: DiagnosticParameterRenderer<ClassifierDescriptorWithTypeParameters> = Renderer<ClassifierDescriptorWithTypeParameters> { it.renderKindWithName() }
 
     @JvmField
-    val RENDER_TYPE = SmartTypeRenderer(DescriptorRenderer.FQ_NAMES_IN_TYPES.withOptions { parameterNamesInFunctionalTypes = false })
+    val RENDER_TYPE: SmartTypeRenderer = SmartTypeRenderer(DescriptorRenderer.FQ_NAMES_IN_TYPES.withOptions { parameterNamesInFunctionalTypes = false })
 
     @JvmField
-    val RENDER_POSITION_VARIANCE = Renderer { variance: Variance ->
+    val RENDER_POSITION_VARIANCE: DiagnosticParameterRenderer<Variance> = Renderer { variance: Variance ->
         when (variance) {
             Variance.INVARIANT -> "invariant"
             Variance.IN_VARIANCE -> "in"
@@ -170,7 +170,7 @@ object Renderers {
     }
 
     @JvmField
-    val AMBIGUOUS_CALLS = Renderer { calls: Collection<ResolvedCall<*>> ->
+    val AMBIGUOUS_CALLS: DiagnosticParameterRenderer<Collection<ResolvedCall<*>>> = Renderer { calls: Collection<ResolvedCall<*>> ->
         val descriptors = calls.map { it.resultingDescriptor }
         val context = RenderingContext.Impl(descriptors)
         descriptors
@@ -179,7 +179,7 @@ object Renderers {
     }
 
     @JvmStatic
-    fun <T> commaSeparated(itemRenderer: DiagnosticParameterRenderer<T>) = ContextDependentRenderer<Collection<T>> { collection, context ->
+    fun <T> commaSeparated(itemRenderer: DiagnosticParameterRenderer<T>): DiagnosticParameterRenderer<Collection<T>> = ContextDependentRenderer<Collection<T>> { collection, context ->
         buildString {
             val iterator = collection.iterator()
             while (iterator.hasNext()) {
@@ -193,27 +193,27 @@ object Renderers {
     }
 
     @JvmField
-    val TYPE_INFERENCE_CONFLICTING_SUBSTITUTIONS_RENDERER = Renderer<InferenceErrorData> {
+    val TYPE_INFERENCE_CONFLICTING_SUBSTITUTIONS_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer<InferenceErrorData> {
         renderConflictingSubstitutionsInferenceError(it, TabledDescriptorRenderer.create()).toString()
     }
 
     @JvmField
-    val TYPE_INFERENCE_PARAMETER_CONSTRAINT_ERROR_RENDERER = Renderer<InferenceErrorData> {
+    val TYPE_INFERENCE_PARAMETER_CONSTRAINT_ERROR_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer<InferenceErrorData> {
         renderParameterConstraintError(it, TabledDescriptorRenderer.create()).toString()
     }
 
     @JvmField
-    val TYPE_INFERENCE_NO_INFORMATION_FOR_PARAMETER_RENDERER = Renderer<InferenceErrorData> {
+    val TYPE_INFERENCE_NO_INFORMATION_FOR_PARAMETER_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer<InferenceErrorData> {
         renderNoInformationForParameterError(it, TabledDescriptorRenderer.create()).toString()
     }
 
     @JvmField
-    val TYPE_INFERENCE_UPPER_BOUND_VIOLATED_RENDERER = Renderer<InferenceErrorData> {
+    val TYPE_INFERENCE_UPPER_BOUND_VIOLATED_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer<InferenceErrorData> {
         renderUpperBoundViolatedInferenceError(it, TabledDescriptorRenderer.create()).toString()
     }
 
     @JvmField
-    val TYPE_INFERENCE_CANNOT_CAPTURE_TYPES_RENDERER = Renderer<InferenceErrorData> {
+    val TYPE_INFERENCE_CANNOT_CAPTURE_TYPES_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer<InferenceErrorData> {
         renderCannotCaptureTypeParameterError(it, TabledDescriptorRenderer.create()).toString()
     }
 
@@ -512,7 +512,7 @@ object Renderers {
     }
 
     @JvmField
-    val CLASSES_OR_SEPARATED = Renderer<Collection<ClassDescriptor>> { descriptors ->
+    val CLASSES_OR_SEPARATED: DiagnosticParameterRenderer<Collection<ClassDescriptor>> = Renderer<Collection<ClassDescriptor>> { descriptors ->
         buildString {
             var index = 0
             for (descriptor in descriptors) {
@@ -531,7 +531,7 @@ object Renderers {
         StringUtil.join(types, { RENDER_TYPE.render(it, context) }, ", ")
 
     @JvmField
-    val RENDER_COLLECTION_OF_TYPES = ContextDependentRenderer<Collection<KotlinType>> { types, context -> renderTypes(types, context) }
+    val RENDER_COLLECTION_OF_TYPES: DiagnosticParameterRenderer<Collection<KotlinType>> = ContextDependentRenderer<Collection<KotlinType>> { types, context -> renderTypes(types, context) }
 
     fun renderConstraintSystem(constraintSystem: ConstraintSystem, shortTypeBounds: Boolean): String {
         val typeBounds = linkedSetOf<TypeBounds>()
@@ -587,7 +587,7 @@ object Renderers {
     private val WHEN_MISSING_LIMIT = 7
 
     @JvmField
-    val RENDER_WHEN_MISSING_CASES = Renderer<List<WhenMissingCase>> {
+    val RENDER_WHEN_MISSING_CASES: DiagnosticParameterRenderer<List<WhenMissingCase>> = Renderer<List<WhenMissingCase>> {
         if (!it.hasUnknown) {
             val list = it.joinToString(", ", limit = WHEN_MISSING_LIMIT) { "'$it'" }
             val branches = if (it.size > 1) "branches" else "branch"
@@ -598,25 +598,25 @@ object Renderers {
     }
 
     @JvmField
-    val FQ_NAMES_IN_TYPES = DescriptorRenderer.FQ_NAMES_IN_TYPES.asRenderer()
+    val FQ_NAMES_IN_TYPES: SmartDescriptorRenderer = DescriptorRenderer.FQ_NAMES_IN_TYPES.asRenderer()
     @JvmField
-    val COMPACT = DescriptorRenderer.COMPACT.asRenderer()
+    val COMPACT: SmartDescriptorRenderer = DescriptorRenderer.COMPACT.asRenderer()
     @JvmField
-    val COMPACT_WITHOUT_SUPERTYPES = DescriptorRenderer.COMPACT_WITHOUT_SUPERTYPES.asRenderer()
+    val COMPACT_WITHOUT_SUPERTYPES: SmartDescriptorRenderer = DescriptorRenderer.COMPACT_WITHOUT_SUPERTYPES.asRenderer()
     @JvmField
-    val WITHOUT_MODIFIERS = DescriptorRenderer.withOptions {
+    val WITHOUT_MODIFIERS: SmartDescriptorRenderer = DescriptorRenderer.withOptions {
         modifiers = emptySet()
     }.asRenderer()
     @JvmField
-    val SHORT_NAMES_IN_TYPES = DescriptorRenderer.SHORT_NAMES_IN_TYPES.asRenderer()
+    val SHORT_NAMES_IN_TYPES: SmartDescriptorRenderer = DescriptorRenderer.SHORT_NAMES_IN_TYPES.asRenderer()
     @JvmField
-    val COMPACT_WITH_MODIFIERS = DescriptorRenderer.COMPACT_WITH_MODIFIERS.asRenderer()
+    val COMPACT_WITH_MODIFIERS: SmartDescriptorRenderer = DescriptorRenderer.COMPACT_WITH_MODIFIERS.asRenderer()
     @JvmField
-    val DEPRECATION_RENDERER = DescriptorRenderer.ONLY_NAMES_WITH_SHORT_TYPES.withOptions {
+    val DEPRECATION_RENDERER: SmartDescriptorRenderer = DescriptorRenderer.ONLY_NAMES_WITH_SHORT_TYPES.withOptions {
         withoutTypeParameters = false
         receiverAfterName = false
         renderAccessors = true
     }.asRenderer()
 }
 
-fun DescriptorRenderer.asRenderer() = SmartDescriptorRenderer(this)
+fun DescriptorRenderer.asRenderer(): SmartDescriptorRenderer = SmartDescriptorRenderer(this)

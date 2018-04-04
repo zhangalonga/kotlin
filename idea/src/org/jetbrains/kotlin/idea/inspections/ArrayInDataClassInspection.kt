@@ -63,11 +63,11 @@ class ArrayInDataClassInspection : AbstractKotlinInspection() {
     }
 
     class GenerateEqualsAndHashcodeFix : LocalQuickFix {
-        override fun getName() = "Generate equals() and hashCode()"
+        override fun getName(): String = "Generate equals() and hashCode()"
 
-        override fun getFamilyName() = name
+        override fun getFamilyName(): String = name
 
-        override fun startInWriteAction() = false
+        override fun startInWriteAction(): Boolean = false
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return

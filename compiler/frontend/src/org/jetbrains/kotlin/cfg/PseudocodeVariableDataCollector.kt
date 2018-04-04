@@ -32,7 +32,7 @@ class PseudocodeVariableDataCollector(
     private val bindingContext: BindingContext,
     private val pseudocode: Pseudocode
 ) {
-    val blockScopeVariableInfo = computeBlockScopeVariableInfo(pseudocode)
+    val blockScopeVariableInfo: BlockScopeVariableInfo = computeBlockScopeVariableInfo(pseudocode)
 
     fun <I : ControlFlowInfo<*, *>> collectData(
         traversalOrder: TraversalOrder,
@@ -92,8 +92,8 @@ interface BlockScopeVariableInfo {
 }
 
 class BlockScopeVariableInfoImpl : BlockScopeVariableInfo {
-    override val declaredIn = HashMap<VariableDescriptor, BlockScope>()
-    override val scopeVariables = HashMap<BlockScope, MutableCollection<VariableDescriptor>>()
+    override val declaredIn: HashMap<VariableDescriptor, BlockScope> = HashMap<VariableDescriptor, BlockScope>()
+    override val scopeVariables: HashMap<BlockScope, MutableCollection<VariableDescriptor>> = HashMap<BlockScope, MutableCollection<VariableDescriptor>>()
 
     fun registerVariableDeclaredInScope(variable: VariableDescriptor, blockScope: BlockScope) {
         declaredIn[variable] = blockScope

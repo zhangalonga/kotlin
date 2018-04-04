@@ -27,13 +27,13 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
 class IntroduceWhenSubjectInspection : AbstractApplicabilityBasedInspection<KtWhenExpression>(KtWhenExpression::class.java) {
 
-    override fun isApplicable(element: KtWhenExpression) = element.getSubjectToIntroduce() != null
+    override fun isApplicable(element: KtWhenExpression): Boolean = element.getSubjectToIntroduce() != null
 
-    override fun inspectionTarget(element: KtWhenExpression) = element.whenKeyword
+    override fun inspectionTarget(element: KtWhenExpression): PsiElement = element.whenKeyword
 
-    override fun inspectionText(element: KtWhenExpression) = "'when' with subject should be used"
+    override fun inspectionText(element: KtWhenExpression): String = "'when' with subject should be used"
 
-    override val defaultFixText = "Introduce 'when' subject"
+    override val defaultFixText: String = "Introduce 'when' subject"
 
     override fun fixText(element: KtWhenExpression): String {
         val subject = element.getSubjectToIntroduce() ?: return ""

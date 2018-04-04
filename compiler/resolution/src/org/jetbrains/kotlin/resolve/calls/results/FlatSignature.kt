@@ -34,7 +34,7 @@ interface TypeSpecificityComparator {
     fun isDefinitelyLessSpecific(specific: KotlinType, general: KotlinType): Boolean
 
     object NONE : TypeSpecificityComparator {
-        override fun isDefinitelyLessSpecific(specific: KotlinType, general: KotlinType) = false
+        override fun isDefinitelyLessSpecific(specific: KotlinType, general: KotlinType): Boolean = false
     }
 }
 
@@ -48,7 +48,7 @@ class FlatSignature<out T> private constructor(
     val isExpect: Boolean,
     val isSyntheticMember: Boolean
 ) {
-    val isGeneric = typeParameters.isNotEmpty()
+    val isGeneric: Boolean = typeParameters.isNotEmpty()
 
     companion object {
         fun <T> createFromReflectionType(
@@ -107,7 +107,7 @@ class FlatSignature<out T> private constructor(
                 isSyntheticMember = descriptor is SyntheticMemberDescriptor<*>
             )
 
-        val ValueParameterDescriptor.argumentValueType get() = varargElementType ?: type
+        val ValueParameterDescriptor.argumentValueType: KotlinType get() = varargElementType ?: type
     }
 }
 
@@ -118,7 +118,7 @@ interface SimpleConstraintSystem {
     fun hasContradiction(): Boolean
 
     // todo hack for migration
-    val captureFromArgument get() = false
+    val captureFromArgument: Boolean get() = false
 }
 
 fun <T> SimpleConstraintSystem.isSignatureNotLessSpecific(

@@ -48,13 +48,13 @@ val COMPILE_DAEMON_DEFAULT_SHUTDOWN_DELAY_MS: Long = 1000L // 1 sec
 val COMPILE_DAEMON_MEMORY_THRESHOLD_INFINITE: Long = 0L
 val COMPILE_DAEMON_FORCE_SHUTDOWN_DEFAULT_TIMEOUT_MS: Long = 10000L // 10 secs
 val COMPILE_DAEMON_TIMEOUT_INFINITE_MS: Long = 0L
-val COMPILE_DAEMON_IS_READY_MESSAGE = "Kotlin compile daemon is ready"
+val COMPILE_DAEMON_IS_READY_MESSAGE: String = "Kotlin compile daemon is ready"
 
 val COMPILE_DAEMON_CUSTOM_RUN_FILES_PATH_FOR_TESTS: String = "kotlin.daemon.custom.run.files.path.for.tests"
 val COMPILE_DAEMON_DEFAULT_RUN_DIR_PATH: String get() =
     FileSystem.getRuntimeStateFilesPath("kotlin", "daemon")
 
-val CLASSPATH_ID_DIGEST = "MD5"
+val CLASSPATH_ID_DIGEST: String = "MD5"
 
 
 open class PropMapper<C, V, out P : KMutableProperty1<C, V>>(val dest: C,
@@ -71,7 +71,7 @@ open class PropMapper<C, V, out P : KMutableProperty1<C, V>>(val dest: C,
                 else -> listOfNotNull(prefix + names.first(), toString(prop.get(dest)))
             }
 
-    open fun apply(s: String) = prop.set(dest, fromString(s))
+    open fun apply(s: String): Unit = prop.set(dest, fromString(s))
 }
 
 
@@ -105,7 +105,7 @@ class BoolPropMapper<C, out P : KMutableProperty1<C, Boolean>>(dest: C, prop: P,
 class RestPropMapper<C, out P : KMutableProperty1<C, MutableCollection<String>>>(dest: C, prop: P)
 : PropMapper<C, MutableCollection<String>, P>(dest = dest, prop = prop, toString = { null }, fromString = { arrayListOf() }) {
     override fun toArgs(prefix: String): List<String> = prop.get(dest).map { prefix + it }
-    override fun apply(s: String) = add(s)
+    override fun apply(s: String): Unit = add(s)
     fun add(s: String) {
         prop.get(dest).add(s)
     }
@@ -172,7 +172,7 @@ fun Iterable<String>.filterExtractProps(propMappers: List<PropMapper<*, *, *>>, 
 }
 
 
-fun String.trimQuotes() = trim('"','\'')
+fun String.trimQuotes(): String = trim('"', '\'')
 
 
 interface OptionsGroup : Serializable {

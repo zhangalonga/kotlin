@@ -42,12 +42,13 @@ class PredefinedPackageFragmentDescriptor(
 
     private val scope = PredefinedScope()
     
-    override fun getMemberScope() = scope
+    override fun getMemberScope(): PredefinedScope = scope
 
     inner class PredefinedScope : MemberScopeImpl() {
-        override fun getContributedVariables(name: Name, location: LookupLocation) = emptyList<PropertyDescriptor>()
+        override fun getContributedVariables(name: Name, location: LookupLocation): List<PropertyDescriptor> = emptyList()
 
-        override fun getContributedFunctions(name: Name, location: LookupLocation) = calculatedFunctions().filter { it.name == name }
+        override fun getContributedFunctions(name: Name, location: LookupLocation): List<SimpleFunctionDescriptor> =
+            calculatedFunctions().filter { it.name == name }
 
         override fun getContributedDescriptors(
                 kindFilter: DescriptorKindFilter,

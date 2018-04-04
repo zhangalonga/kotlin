@@ -20,10 +20,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
+import com.intellij.psi.stubs.StubIndexKey
 import org.jetbrains.kotlin.psi.KtCallableDeclaration
 
 class KotlinOverridableInternalMembersShortNameIndex private constructor() : StringStubIndexExtension<KtCallableDeclaration>() {
-    override fun getKey() = KEY
+    override fun getKey(): StubIndexKey<String, KtCallableDeclaration> = KEY
 
     override fun get(name: String, project: Project, scope: GlobalSearchScope): Collection<KtCallableDeclaration> {
         return StubIndex.getElements(KEY, name, project, scope, KtCallableDeclaration::class.java)
@@ -32,7 +33,7 @@ class KotlinOverridableInternalMembersShortNameIndex private constructor() : Str
     companion object {
 
         @JvmField
-        val Instance = KotlinOverridableInternalMembersShortNameIndex()
+        val Instance: KotlinOverridableInternalMembersShortNameIndex = KotlinOverridableInternalMembersShortNameIndex()
 
         private val KEY = KotlinIndexUtil.createIndexKey(KotlinOverridableInternalMembersShortNameIndex::class.java)
     }

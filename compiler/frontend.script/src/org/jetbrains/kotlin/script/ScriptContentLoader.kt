@@ -33,8 +33,7 @@ import kotlin.script.experimental.dependencies.ScriptDependencies
 import kotlin.script.experimental.dependencies.ScriptReport
 
 class ScriptContentLoader(private val project: Project) {
-    fun getScriptContents(scriptDefinition: KotlinScriptDefinition, file: VirtualFile)
-            = BasicScriptContents(file, getAnnotations = { loadAnnotations(scriptDefinition, file) })
+    fun getScriptContents(scriptDefinition: KotlinScriptDefinition, file: VirtualFile): BasicScriptContents = BasicScriptContents(file, getAnnotations = { loadAnnotations(scriptDefinition, file) })
 
     private fun loadAnnotations(scriptDefinition: KotlinScriptDefinition, file: VirtualFile): List<Annotation> {
         val classLoader = scriptDefinition.template.java.classLoader
@@ -82,7 +81,7 @@ class ScriptContentLoader(private val project: Project) {
         return result
     }
 
-    fun getEnvironment(scriptDef: KotlinScriptDefinition) =
+    fun getEnvironment(scriptDef: KotlinScriptDefinition): Map<String, Any?> =
             (scriptDef as? KotlinScriptDefinitionFromAnnotatedTemplate)?.environment.orEmpty()
 }
 

@@ -54,12 +54,12 @@ interface JavaAnnotation : JavaElement {
 
 interface MapBasedJavaAnnotationOwner : JavaAnnotationOwner {
     val annotationsByFqName: Map<FqName?, JavaAnnotation>
-    override fun findAnnotation(fqName: FqName) = annotationsByFqName[fqName]
+    override fun findAnnotation(fqName: FqName): JavaAnnotation? = annotationsByFqName[fqName]
     override val isDeprecatedInJavaDoc: Boolean
         get() = false
 }
 
-fun JavaAnnotationOwner.buildLazyValueForMap() = lazy {
+fun JavaAnnotationOwner.buildLazyValueForMap(): Lazy<Map<FqName?, JavaAnnotation>> = lazy {
     annotations.associateBy { it.classId?.asSingleFqName() }
 }
 

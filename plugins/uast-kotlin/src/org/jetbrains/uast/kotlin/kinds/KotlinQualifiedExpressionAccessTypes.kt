@@ -20,5 +20,5 @@ import org.jetbrains.uast.UastQualifiedExpressionAccessType
 
 object KotlinQualifiedExpressionAccessTypes {
     @JvmField
-    val SAFE = UastQualifiedExpressionAccessType("?.")
+    val SAFE: UastQualifiedExpressionAccessType = UastQualifiedExpressionAccessType("?.")
 }

@@ -21,9 +21,9 @@ import org.jetbrains.kotlin.script.KotlinScriptDefinition
 import kotlin.script.experimental.dependencies.ScriptDependencies
 
 class ScriptModuleSearchScope(val scriptFile: VirtualFile, baseScope: GlobalSearchScope) : DelegatingGlobalSearchScope(baseScope) {
-    override fun equals(other: Any?) = other is ScriptModuleSearchScope && scriptFile == other.scriptFile && super.equals(other)
+    override fun equals(other: Any?): Boolean = other is ScriptModuleSearchScope && scriptFile == other.scriptFile && super.equals(other)
 
-    override fun hashCode() = scriptFile.hashCode() * 73 * super.hashCode()
+    override fun hashCode(): Int = scriptFile.hashCode() * 73 * super.hashCode()
 }
 
 data class ScriptModuleInfo(
@@ -39,7 +39,7 @@ data class ScriptModuleInfo(
 
     override val name: Name = Name.special("<script ${scriptFile.name} ${scriptDefinition.name}>")
 
-    override fun contentScope() = GlobalSearchScope.fileScope(project, scriptFile)
+    override fun contentScope(): GlobalSearchScope = GlobalSearchScope.fileScope(project, scriptFile)
 
     override fun dependencies(): List<IdeaModuleInfo> {
         return listOf(
@@ -68,12 +68,12 @@ class ScriptDependenciesModuleInfo(
     val project: Project,
     val scriptModuleInfo: ScriptModuleInfo?
 ) : IdeaModuleInfo, BinaryModuleInfo {
-    override fun dependencies() = (listOf(this) + sdkDependencies(
+    override fun dependencies(): List<IdeaModuleInfo> = (listOf(this) + sdkDependencies(
         scriptModuleInfo?.externalDependencies,
         project
     ))
 
-    override val name = Name.special("<Script dependencies>")
+    override val name: Name = Name.special("<Script dependencies>")
 
     override fun contentScope(): GlobalSearchScope {
         if (scriptModuleInfo == null) {
@@ -87,7 +87,7 @@ class ScriptDependenciesModuleInfo(
 
     // NOTE: intentionally not taking corresponding script info into account
     // otherwise there is no way to implement getModuleInfo
-    override fun hashCode() = project.hashCode()
+    override fun hashCode(): Int = project.hashCode()
 
     override fun equals(other: Any?): Boolean = other is ScriptDependenciesModuleInfo && this.project == other.project
 
@@ -101,7 +101,7 @@ class ScriptDependenciesModuleInfo(
 data class ScriptDependenciesSourceModuleInfo(
     val project: Project
 ) : IdeaModuleInfo, SourceForBinaryModuleInfo {
-    override val name = Name.special("<Source for script dependencies>")
+    override val name: Name = Name.special("<Source for script dependencies>")
 
     override val binariesModuleInfo: ScriptDependenciesModuleInfo
         get() = ScriptDependenciesModuleInfo(project, null)

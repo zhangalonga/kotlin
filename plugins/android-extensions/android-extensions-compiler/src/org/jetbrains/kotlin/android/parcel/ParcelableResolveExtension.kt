@@ -75,9 +75,9 @@ open class ParcelableResolveExtension : SyntheticResolveExtension {
         }
     }
 
-    protected open fun isExperimental(element: KtElement) = true
+    protected open fun isExperimental(element: KtElement): Boolean = true
 
-    override fun getSyntheticCompanionObjectNameIfNeeded(thisDescriptor: ClassDescriptor) = null
+    override fun getSyntheticCompanionObjectNameIfNeeded(thisDescriptor: ClassDescriptor): Nothing? = null
 
     override fun generateSyntheticMethods(
             clazz: ClassDescriptor,
@@ -142,5 +142,5 @@ internal val PARCELER_FQNAME: FqName = FqName(Parceler::class.java.canonicalName
 val ClassDescriptor.isParcelize: Boolean
     get() = this.annotations.hasAnnotation(PARCELIZE_CLASS_FQNAME)
 
-val KotlinType.isParceler
+val KotlinType.isParceler: Boolean
     get() = constructor.declarationDescriptor?.fqNameSafe == PARCELER_FQNAME

@@ -29,7 +29,7 @@ fun checkReservedYield(expression: KtSimpleNameExpression?, sink: DiagnosticSink
     }
 }
 
-val MESSAGE_FOR_YIELD_BEFORE_LAMBDA = "Reserved yield block/lambda. Use 'yield() { ... }' or 'yield(fun...)'"
+val MESSAGE_FOR_YIELD_BEFORE_LAMBDA: String = "Reserved yield block/lambda. Use 'yield() { ... }' or 'yield(fun...)'"
 
 fun checkReservedYieldBeforeLambda(element: PsiElement, sink: DiagnosticSink) {
     KtPsiUtil.getPreviousWord(element, "yield")?.let {

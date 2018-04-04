@@ -44,10 +44,10 @@ data class CompileServiceSession(val compileService: CompileService, val session
 
 object KotlinCompilerClient {
 
-    val DAEMON_DEFAULT_STARTUP_TIMEOUT_MS = 10000L
-    val DAEMON_CONNECT_CYCLE_ATTEMPTS = 3
+    val DAEMON_DEFAULT_STARTUP_TIMEOUT_MS: Long = 10000L
+    val DAEMON_CONNECT_CYCLE_ATTEMPTS: Int = 3
 
-    val verboseReporting = System.getProperty(COMPILE_DAEMON_VERBOSE_REPORT_PROPERTY) != null
+    val verboseReporting: Boolean = System.getProperty(COMPILE_DAEMON_VERBOSE_REPORT_PROPERTY) != null
 
     fun getOrCreateClientFlagFile(daemonOptions: DaemonOptions): File =
             // for jps property is passed from IDEA to JPS in KotlinBuildProcessParametersProvider

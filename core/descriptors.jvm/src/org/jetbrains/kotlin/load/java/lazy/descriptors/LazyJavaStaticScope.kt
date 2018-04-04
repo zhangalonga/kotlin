@@ -25,12 +25,12 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.KotlinType
 
 abstract class LazyJavaStaticScope(c: LazyJavaResolverContext) : LazyJavaScope(c) {
-    override fun getDispatchReceiverParameter() = null
+    override fun getDispatchReceiverParameter(): Nothing? = null
 
     override fun resolveMethodSignature(
             method: JavaMethod, methodTypeParameters: List<TypeParameterDescriptor>, returnType: KotlinType,
             valueParameters: List<ValueParameterDescriptor>
-    ) = LazyJavaScope.MethodSignatureData(returnType, null, valueParameters, methodTypeParameters, false, emptyList())
+    ): MethodSignatureData = LazyJavaScope.MethodSignatureData(returnType, null, valueParameters, methodTypeParameters, false, emptyList())
 
     override fun computeNonDeclaredProperties(name: Name, result: MutableCollection<PropertyDescriptor>) {
         //no undeclared properties

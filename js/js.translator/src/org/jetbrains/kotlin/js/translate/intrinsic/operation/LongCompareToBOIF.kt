@@ -16,17 +16,20 @@
 
 package org.jetbrains.kotlin.js.translate.intrinsic.operation
 
+import com.google.common.collect.ImmutableSet
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.js.backend.ast.JsBinaryOperation
 import org.jetbrains.kotlin.js.backend.ast.JsExpression
 import org.jetbrains.kotlin.js.backend.ast.JsIntLiteral
+import org.jetbrains.kotlin.js.patterns.DescriptorPredicate
 import org.jetbrains.kotlin.js.patterns.PatternBuilder.pattern
 import org.jetbrains.kotlin.js.translate.context.Namer
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.operation.OperatorTable
 import org.jetbrains.kotlin.js.translate.utils.JsAstUtils.*
 import org.jetbrains.kotlin.js.translate.utils.PsiUtils.getOperationToken
+import org.jetbrains.kotlin.lexer.KtSingleValueToken
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
@@ -34,13 +37,13 @@ import org.jetbrains.kotlin.utils.identity as ID
 
 object LongCompareToBOIF : BinaryOperationIntrinsicFactory {
 
-    val FLOATING_POINT_COMPARE_TO_LONG_PATTERN = pattern("Double|Float.compareTo(Long)")
-    val LONG_COMPARE_TO_FLOATING_POINT_PATTERN = pattern("Long.compareTo(Float|Double)")
-    val INTEGER_COMPARE_TO_LONG_PATTERN = pattern("Int|Short|Byte.compareTo(Long)")
-    val CHAR_COMPARE_TO_LONG_PATTERN = pattern("Char.compareTo(Long)")
-    val LONG_COMPARE_TO_INTEGER_PATTERN = pattern("Long.compareTo(Int|Short|Byte)")
-    val LONG_COMPARE_TO_CHAR_PATTERN = pattern("Long.compareTo(Char)")
-    val LONG_COMPARE_TO_LONG_PATTERN = pattern("Long.compareTo(Long)")
+    val FLOATING_POINT_COMPARE_TO_LONG_PATTERN: DescriptorPredicate = pattern("Double|Float.compareTo(Long)")
+    val LONG_COMPARE_TO_FLOATING_POINT_PATTERN: DescriptorPredicate = pattern("Long.compareTo(Float|Double)")
+    val INTEGER_COMPARE_TO_LONG_PATTERN: DescriptorPredicate = pattern("Int|Short|Byte.compareTo(Long)")
+    val CHAR_COMPARE_TO_LONG_PATTERN: DescriptorPredicate = pattern("Char.compareTo(Long)")
+    val LONG_COMPARE_TO_INTEGER_PATTERN: DescriptorPredicate = pattern("Long.compareTo(Int|Short|Byte)")
+    val LONG_COMPARE_TO_CHAR_PATTERN: DescriptorPredicate = pattern("Long.compareTo(Char)")
+    val LONG_COMPARE_TO_LONG_PATTERN: DescriptorPredicate = pattern("Long.compareTo(Long)")
 
     private object FLOATING_POINT_COMPARE_TO_LONG : AbstractBinaryOperationIntrinsic() {
         override fun apply(expression: KtBinaryExpression, left: JsExpression, right: JsExpression, context: TranslationContext): JsExpression {
@@ -70,7 +73,7 @@ object LongCompareToBOIF : BinaryOperationIntrinsicFactory {
     private val LONG_COMPARE_TO_CHAR  = CompareToBinaryIntrinsic( ID(), { longFromInt(charToInt(it)) })
     private val LONG_COMPARE_TO_LONG  = CompareToBinaryIntrinsic( ID(), ID() )
 
-    override fun getSupportTokens() = OperatorConventions.COMPARISON_OPERATIONS
+    override fun getSupportTokens(): ImmutableSet<KtSingleValueToken> = OperatorConventions.COMPARISON_OPERATIONS
 
     override fun getIntrinsic(descriptor: FunctionDescriptor, leftType: KotlinType?, rightType: KotlinType?): BinaryOperationIntrinsic? {
         if (KotlinBuiltIns.isBuiltIn(descriptor)) {

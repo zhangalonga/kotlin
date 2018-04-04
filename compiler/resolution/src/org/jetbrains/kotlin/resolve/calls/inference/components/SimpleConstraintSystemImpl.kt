@@ -53,6 +53,6 @@ class SimpleConstraintSystemImpl(constraintInjector: ConstraintInjector, builtIn
         csBuilder.addSubtypeConstraint(subType, superType, SimpleConstraintSystemConstraintPosition)
     }
 
-    override fun hasContradiction() = csBuilder.hasContradiction
-    override val captureFromArgument get() = true
+    override fun hasContradiction(): Boolean = csBuilder.hasContradiction
+    override val captureFromArgument: Boolean get() = true
 }

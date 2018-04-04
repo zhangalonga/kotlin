@@ -19,6 +19,8 @@ import org.jetbrains.kotlin.codegen.inline.TypeParameterMappings
 import org.jetbrains.kotlin.codegen.intrinsics.JavaClassProperty
 import org.jetbrains.kotlin.codegen.pseudoInsns.fixStackAndJump
 import org.jetbrains.kotlin.codegen.signature.BothSignatureWriter
+import org.jetbrains.kotlin.codegen.state.GenerationState
+import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor
 import org.jetbrains.kotlin.ir.IrElement
@@ -52,7 +54,7 @@ open class ExpressionInfo(val expression: IrExpression)
 class LoopInfo(val loop: IrLoop, val continueLabel: Label, val breakLabel: Label): ExpressionInfo(loop)
 
 class TryInfo(val tryBlock: IrTry) : ExpressionInfo(tryBlock) {
-    val gaps = mutableListOf<Label>()
+    val gaps: MutableList<Label> = mutableListOf<Label>()
 }
 
 class BlockInfo private constructor(val parent: BlockInfo?) {
@@ -60,7 +62,7 @@ class BlockInfo private constructor(val parent: BlockInfo?) {
 
     private val infos = Stack<ExpressionInfo>()
 
-    fun create() = BlockInfo(this).apply {
+    fun create(): BlockInfo = BlockInfo(this).apply {
         this@apply.infos.addAll(this@BlockInfo.infos)
     }
 
@@ -82,7 +84,7 @@ class BlockInfo private constructor(val parent: BlockInfo?) {
     fun hasFinallyBlocks(): Boolean = infos.firstIsInstanceOrNull<TryInfo>() != null
 
     companion object {
-        fun create() = BlockInfo(null)
+        fun create(): BlockInfo = BlockInfo(null)
     }
 }
 
@@ -97,13 +99,13 @@ class ExpressionCodegen(
 ) : IrElementVisitor<StackValue, BlockInfo>, BaseExpressionCodegen {
 
     /*TODO*/
-    val intrinsics = IrIntrinsicMethods(classCodegen.context.irBuiltIns)
+    val intrinsics: IrIntrinsicMethods = IrIntrinsicMethods(classCodegen.context.irBuiltIns)
 
-    val typeMapper = classCodegen.typeMapper
+    val typeMapper: KotlinTypeMapper = classCodegen.typeMapper
 
-    val returnType = typeMapper.mapReturnType(irFunction.descriptor)
+    val returnType: Type = typeMapper.mapReturnType(irFunction.descriptor)
 
-    val state = classCodegen.state
+    val state: GenerationState = classCodegen.state
 
     fun generate() {
         mv.visitCode()

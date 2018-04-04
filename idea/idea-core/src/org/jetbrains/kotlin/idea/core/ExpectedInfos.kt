@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.resolve.ResolutionFacade
 import org.jetbrains.kotlin.idea.resolve.ideService
 import org.jetbrains.kotlin.idea.util.*
+import org.jetbrains.kotlin.lexer.KtSingleValueToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
@@ -50,8 +51,8 @@ enum class Tail {
 
 data class ItemOptions(val starPrefix: Boolean) {
     companion object {
-        val DEFAULT = ItemOptions(false)
-        val STAR_PREFIX = ItemOptions(true)
+        val DEFAULT: ItemOptions = ItemOptions(false)
+        val STAR_PREFIX: ItemOptions = ItemOptions(true)
     }
 }
 
@@ -65,20 +66,20 @@ interface ByTypeFilter {
         get() = listOfNotNull(fuzzyType)
 
     object All : ByTypeFilter {
-        override fun matchingSubstitutor(descriptorType: FuzzyType) = TypeSubstitutor.EMPTY
+        override fun matchingSubstitutor(descriptorType: FuzzyType): TypeSubstitutor? = TypeSubstitutor.EMPTY
     }
 
     object None : ByTypeFilter {
-        override fun matchingSubstitutor(descriptorType: FuzzyType) = null
+        override fun matchingSubstitutor(descriptorType: FuzzyType): Nothing? = null
     }
 }
 
 class ByExpectedTypeFilter(override val fuzzyType: FuzzyType) : ByTypeFilter {
-    override fun matchingSubstitutor(descriptorType: FuzzyType) = descriptorType.checkIsSubtypeOf(fuzzyType)
+    override fun matchingSubstitutor(descriptorType: FuzzyType): TypeSubstitutor? = descriptorType.checkIsSubtypeOf(fuzzyType)
 
-    override fun equals(other: Any?) = other is ByExpectedTypeFilter && fuzzyType == other.fuzzyType
+    override fun equals(other: Any?): Boolean = other is ByExpectedTypeFilter && fuzzyType == other.fuzzyType
 
-    override fun hashCode() = fuzzyType.hashCode()
+    override fun hashCode(): Int = fuzzyType.hashCode()
 }
 
 data /* for copy() */
@@ -697,5 +698,5 @@ class ExpectedInfos(
     private fun Collection<ExpectedInfo>.copyWithNoAdditionalData() = map { it.copy(additionalData = null, itemOptions = ItemOptions.DEFAULT) }
 }
 
-val COMPARISON_TOKENS = setOf(KtTokens.EQEQ, KtTokens.EXCLEQ, KtTokens.EQEQEQ, KtTokens.EXCLEQEQEQ)
+val COMPARISON_TOKENS: Set<KtSingleValueToken> = setOf(KtTokens.EQEQ, KtTokens.EXCLEQ, KtTokens.EQEQEQ, KtTokens.EXCLEQEQEQ)
 

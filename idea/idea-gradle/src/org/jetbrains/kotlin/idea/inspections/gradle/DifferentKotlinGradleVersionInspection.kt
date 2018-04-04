@@ -35,7 +35,7 @@ class DifferentKotlinGradleVersionInspection : GradleBaseInspection(), PluginVer
 
     override fun buildVisitor(): BaseInspectionVisitor = MyVisitor()
 
-    override fun getGroupDisplayName() = BaseInspection.PROBABLE_BUGS
+    override fun getGroupDisplayName(): String = BaseInspection.PROBABLE_BUGS
 
     override fun buildErrorString(vararg args: Any): String {
         return "Kotlin version that is used for building with Gradle (${args[0]}) differs from the one bundled into the IDE plugin (${args[1]})"

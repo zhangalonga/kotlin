@@ -38,13 +38,13 @@ abstract class TypeSubstitution {
     open fun approximateCapturedTypes(): Boolean = false
     open fun approximateContravariantCapturedTypes(): Boolean = false
 
-    open fun filterAnnotations(annotations: Annotations) = annotations
+    open fun filterAnnotations(annotations: Annotations): Annotations = annotations
 
     fun buildSubstitutor(): TypeSubstitutor = TypeSubstitutor.create(this)
 }
 
 abstract class TypeConstructorSubstitution : TypeSubstitution() {
-    override fun get(key: KotlinType) = get(key.constructor)
+    override fun get(key: KotlinType): TypeProjection? = get(key.constructor)
 
     abstract fun get(key: TypeConstructor): TypeProjection?
 
@@ -67,7 +67,7 @@ abstract class TypeConstructorSubstitution : TypeSubstitution() {
                 override fun isEmpty() = map.isEmpty()
             }
 
-        @JvmStatic fun create(kotlinType: KotlinType) = create(kotlinType.constructor, kotlinType.arguments)
+        @JvmStatic fun create(kotlinType: KotlinType): TypeSubstitution = create(kotlinType.constructor, kotlinType.arguments)
 
         @JvmStatic fun create(typeConstructor: TypeConstructor, arguments: List<TypeProjection>): TypeSubstitution {
             val parameters = typeConstructor.parameters
@@ -98,7 +98,7 @@ class IndexedParametersSubstitution(
 
     override fun isEmpty(): Boolean = arguments.isEmpty()
 
-    override fun approximateContravariantCapturedTypes() = approximateCapturedTypes
+    override fun approximateContravariantCapturedTypes(): Boolean = approximateCapturedTypes
 
     override fun get(key: KotlinType): TypeProjection? {
         val parameter = key.constructor.declarationDescriptor as? TypeParameterDescriptor ?: return null
@@ -147,15 +147,15 @@ fun SimpleType.replace(
 }
 
 open class DelegatedTypeSubstitution(val substitution: TypeSubstitution): TypeSubstitution() {
-    override fun get(key: KotlinType) = substitution[key]
-    override fun prepareTopLevelType(topLevelType: KotlinType, position: Variance) = substitution.prepareTopLevelType(topLevelType, position)
+    override fun get(key: KotlinType): TypeProjection? = substitution[key]
+    override fun prepareTopLevelType(topLevelType: KotlinType, position: Variance): KotlinType = substitution.prepareTopLevelType(topLevelType, position)
 
-    override fun isEmpty() = substitution.isEmpty()
+    override fun isEmpty(): Boolean = substitution.isEmpty()
 
-    override fun approximateCapturedTypes() = substitution.approximateCapturedTypes()
-    override fun approximateContravariantCapturedTypes() = substitution.approximateContravariantCapturedTypes()
+    override fun approximateCapturedTypes(): Boolean = substitution.approximateCapturedTypes()
+    override fun approximateContravariantCapturedTypes(): Boolean = substitution.approximateContravariantCapturedTypes()
 
-    override fun filterAnnotations(annotations: Annotations) = substitution.filterAnnotations(annotations)
+    override fun filterAnnotations(annotations: Annotations): Annotations = substitution.filterAnnotations(annotations)
 }
 
 // This method used for transform type to simple type afler substitution

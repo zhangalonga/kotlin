@@ -37,18 +37,18 @@ class KotlinTypeInfo @JvmOverloads constructor(
     val jumpFlowInfo: DataFlowInfo = dataFlowInfo
 ) {
 
-    fun clearType() = replaceType(null)
+    fun clearType(): KotlinTypeInfo = replaceType(null)
 
     // NB: do not compare type with this.type because this comparison is complex and unstable
-    fun replaceType(type: KotlinType?) = KotlinTypeInfo(type, dataFlowInfo, jumpOutPossible, jumpFlowInfo)
+    fun replaceType(type: KotlinType?): KotlinTypeInfo = KotlinTypeInfo(type, dataFlowInfo, jumpOutPossible, jumpFlowInfo)
 
-    fun replaceJumpOutPossible(jumpOutPossible: Boolean) =
+    fun replaceJumpOutPossible(jumpOutPossible: Boolean): KotlinTypeInfo =
         if (jumpOutPossible == this.jumpOutPossible) this else KotlinTypeInfo(type, dataFlowInfo, jumpOutPossible, jumpFlowInfo)
 
-    fun replaceJumpFlowInfo(jumpFlowInfo: DataFlowInfo) =
+    fun replaceJumpFlowInfo(jumpFlowInfo: DataFlowInfo): KotlinTypeInfo =
         if (jumpFlowInfo == this.jumpFlowInfo) this else KotlinTypeInfo(type, dataFlowInfo, jumpOutPossible, jumpFlowInfo)
 
-    fun replaceDataFlowInfo(dataFlowInfo: DataFlowInfo) = when (this.dataFlowInfo) {
+    fun replaceDataFlowInfo(dataFlowInfo: DataFlowInfo): KotlinTypeInfo = when (this.dataFlowInfo) {
     // Nothing changed
         dataFlowInfo -> this
     // Jump info is the same as data flow info: change both

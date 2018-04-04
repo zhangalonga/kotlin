@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.psi.KtFile
 class KotlinFilePartClassIndex private constructor() : StringStubIndexExtension<KtFile>() {
     override fun getKey(): StubIndexKey<String, KtFile> = KEY
 
-    override fun get(key: String, project: Project, scope: GlobalSearchScope) =
+    override fun get(key: String, project: Project, scope: GlobalSearchScope): MutableCollection<KtFile> =
             StubIndex.getElements(KEY, key, project, scope, KtFile::class.java)
 
     companion object {

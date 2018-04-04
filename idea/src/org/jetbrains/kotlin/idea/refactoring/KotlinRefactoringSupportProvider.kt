@@ -36,13 +36,13 @@ import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtElement
 
 class KotlinRefactoringSupportProvider : RefactoringSupportProvider() {
-    override fun isSafeDeleteAvailable(element: PsiElement) = element.canDeleteElement()
+    override fun isSafeDeleteAvailable(element: PsiElement): Boolean = element.canDeleteElement()
 
-    override fun getIntroduceVariableHandler() = KotlinIntroduceVariableHandler
+    override fun getIntroduceVariableHandler(): KotlinIntroduceVariableHandler = KotlinIntroduceVariableHandler
 
-    override fun getIntroduceParameterHandler() = KotlinIntroduceParameterHandler()
+    override fun getIntroduceParameterHandler(): KotlinIntroduceParameterHandler = KotlinIntroduceParameterHandler()
 
-    override fun getIntroduceFunctionalParameterHandler() = KotlinIntroduceLambdaParameterHandler()
+    override fun getIntroduceFunctionalParameterHandler(): KotlinIntroduceLambdaParameterHandler = KotlinIntroduceLambdaParameterHandler()
 
     fun getIntroducePropertyHandler(): RefactoringActionHandler = KotlinIntroducePropertyHandler()
 
@@ -52,15 +52,15 @@ class KotlinRefactoringSupportProvider : RefactoringSupportProvider() {
     fun getExtractFunctionToScopeHandler(): RefactoringActionHandler =
             ExtractKotlinFunctionHandler(true, ExtractKotlinFunctionHandler.InteractiveExtractionHelper)
 
-    override fun getChangeSignatureHandler() = KotlinChangeSignatureHandler()
+    override fun getChangeSignatureHandler(): KotlinChangeSignatureHandler = KotlinChangeSignatureHandler()
 
-    override fun getPullUpHandler() = KotlinPullUpHandler()
+    override fun getPullUpHandler(): KotlinPullUpHandler = KotlinPullUpHandler()
 
-    override fun getPushDownHandler() = KotlinPushDownHandler()
+    override fun getPushDownHandler(): KotlinPushDownHandler = KotlinPushDownHandler()
 
-    override fun getExtractSuperClassHandler() = KotlinExtractSuperclassHandler
+    override fun getExtractSuperClassHandler(): KotlinExtractSuperclassHandler = KotlinExtractSuperclassHandler
 
-    override fun getExtractInterfaceHandler() = KotlinExtractInterfaceHandler
+    override fun getExtractInterfaceHandler(): KotlinExtractInterfaceHandler = KotlinExtractInterfaceHandler
 }
 
 class KotlinVetoRenameCondition: Condition<PsiElement> {

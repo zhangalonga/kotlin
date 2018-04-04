@@ -37,7 +37,7 @@ class TreeBasedValueParameter(
         tree.annotations().map { TreeBasedAnnotation(it, compilationUnit, javac, containingElement) }
     }
 
-    override fun findAnnotation(fqName: FqName) =
+    override fun findAnnotation(fqName: FqName): TreeBasedAnnotation? =
             annotations
                     .filter { it.annotation.annotationType.toString().endsWith(fqName.shortName().asString()) }
                     .find { it.classId?.asSingleFqName() == fqName }

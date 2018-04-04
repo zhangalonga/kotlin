@@ -35,8 +35,8 @@ abstract class ResolutionPart {
     open fun KotlinResolutionCandidate.workCount(): Int = 1
 
     // helper functions
-    protected inline val KotlinResolutionCandidate.candidateDescriptor get() = resolvedCall.candidateDescriptor
-    protected inline val KotlinResolutionCandidate.kotlinCall get() = resolvedCall.atom
+    protected inline val KotlinResolutionCandidate.candidateDescriptor: CallableDescriptor get() = resolvedCall.candidateDescriptor
+    protected inline val KotlinResolutionCandidate.kotlinCall: KotlinCall get() = resolvedCall.atom
 }
 
 interface KotlinDiagnosticsHolder {
@@ -69,7 +69,7 @@ class KotlinResolutionCandidate(
     val knownTypeParametersResultingSubstitutor: TypeSubstitutor? = null,
     private val resolutionSequence: List<ResolutionPart> = resolvedCall.atom.callKind.resolutionSequence
 ) : Candidate, KotlinDiagnosticsHolder {
-    val diagnosticsFromResolutionParts = arrayListOf<KotlinCallDiagnostic>() // TODO: this is mutable list, take diagnostics only once!
+    val diagnosticsFromResolutionParts: ArrayList<KotlinCallDiagnostic> = arrayListOf<KotlinCallDiagnostic>() // TODO: this is mutable list, take diagnostics only once!
     private var newSystem: NewConstraintSystemImpl? = null
     private var currentApplicability = ResolutionCandidateApplicability.RESOLVED
     private var subResolvedAtoms: MutableList<ResolvedAtom> = arrayListOf()

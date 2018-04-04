@@ -77,10 +77,10 @@ class DeserializationContext(
         parentTypeDeserializer: TypeDeserializer?,
         typeParameters: List<ProtoBuf.TypeParameter>
 ) {
-    val typeDeserializer = TypeDeserializer(this, parentTypeDeserializer, typeParameters,
-                                            "Deserializer for ${containingDeclaration.name}")
+    val typeDeserializer: TypeDeserializer = TypeDeserializer(this, parentTypeDeserializer, typeParameters,
+                                                              "Deserializer for ${containingDeclaration.name}")
 
-    val memberDeserializer = MemberDeserializer(this)
+    val memberDeserializer: MemberDeserializer = MemberDeserializer(this)
 
     val storageManager: StorageManager get() = components.storageManager
 
@@ -89,7 +89,7 @@ class DeserializationContext(
             typeParameterProtos: List<ProtoBuf.TypeParameter>,
             nameResolver: NameResolver = this.nameResolver,
             typeTable: TypeTable = this.typeTable
-    ) = DeserializationContext(
+    ): DeserializationContext = DeserializationContext(
             components, nameResolver, descriptor, typeTable, versionRequirementTable, this.containerSource,
             parentTypeDeserializer = this.typeDeserializer, typeParameters = typeParameterProtos
     )

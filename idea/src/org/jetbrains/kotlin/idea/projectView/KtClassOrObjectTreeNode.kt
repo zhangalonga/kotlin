@@ -73,7 +73,7 @@ class KtClassOrObjectTreeNode(project: Project?, ktClassOrObject: KtClassOrObjec
         }
     }
 
-    override fun isDeprecated() = KtPsiUtil.isDeprecated(value)
+    override fun isDeprecated(): Boolean = KtPsiUtil.isDeprecated(value)
 
     override fun canRepresent(element: Any?): Boolean {
         if (!isValid) {
@@ -109,5 +109,5 @@ class KtClassOrObjectTreeNode(project: Project?, ktClassOrObject: KtClassOrObjec
         return false
     }
 
-    override fun getWeight() = 20
+    override fun getWeight(): Int = 20
 }

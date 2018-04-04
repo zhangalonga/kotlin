@@ -35,7 +35,7 @@ open class KotlinMetadataStubBuilder(
         private val serializerProtocol: SerializerExtensionProtocol,
         private val readFile: (ByteArray, VirtualFile) -> FileWithMetadata?
 ) : ClsStubBuilder() {
-    override fun getStubVersion() = ClassFileStubBuilder.STUB_VERSION + version
+    override fun getStubVersion(): Int = ClassFileStubBuilder.STUB_VERSION + version
 
     override fun buildFileStub(content: FileContent): PsiFileStub<*>? {
         val virtualFile = content.file

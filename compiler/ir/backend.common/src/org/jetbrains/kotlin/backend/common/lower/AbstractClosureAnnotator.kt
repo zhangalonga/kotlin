@@ -41,8 +41,8 @@ class ClosureAnnotator   {
         declaration.acceptChildrenVoid(ClosureCollectorVisitor())
     }
 
-    fun getFunctionClosure(descriptor: FunctionDescriptor) = getClosure(descriptor)
-    fun getClassClosure(descriptor: ClassDescriptor) = getClosure(descriptor)
+    fun getFunctionClosure(descriptor: FunctionDescriptor): Closure = getClosure(descriptor)
+    fun getClassClosure(descriptor: ClassDescriptor): Closure = getClosure(descriptor)
 
     private fun getClosure(descriptor: DeclarationDescriptor) : Closure {
         closureBuilders.values.forEach { it.processed = false }

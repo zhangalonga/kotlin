@@ -34,7 +34,7 @@ abstract class ReplaceMathMethodsWithKotlinNativeMethodsIntention(
         target.replaced(newExpression)
     }
 
-    override fun isApplicableTo(element: KtCallExpression) =
+    override fun isApplicableTo(element: KtCallExpression): Boolean =
             element.calleeExpression?.text == mathMethodName &&
             element.valueArguments.size == 2 &&
             element.isMethodCall("java.lang.Math.$mathMethodName")

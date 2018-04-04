@@ -27,7 +27,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> copyBean(bean: T) =
+fun <T : Any> copyBean(bean: T): T =
         copyProperties(bean, bean::class.java.newInstance()!!, true, collectProperties(bean::class as KClass<T>, false))
 
 fun <From : Any, To : From> mergeBeans(from: From, to: To): To {
@@ -37,11 +37,11 @@ fun <From : Any, To : From> mergeBeans(from: From, to: To): To {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <From : Any, To : Any> copyInheritedFields(from: From, to: To) =
+fun <From : Any, To : Any> copyInheritedFields(from: From, to: To): To =
         copyProperties(from, to, true, collectProperties(from::class as KClass<From>, true))
 
 @Suppress("UNCHECKED_CAST")
-fun <From : Any, To : Any> copyFieldsSatisfying(from: From, to: To, predicate: (KProperty1<From, Any?>) -> Boolean) =
+fun <From : Any, To : Any> copyFieldsSatisfying(from: From, to: To, predicate: (KProperty1<From, Any?>) -> Boolean): To =
         copyProperties(from, to, true, collectProperties(from::class as KClass<From>, false).filter(predicate))
 
 private fun <From : Any, To : Any> copyProperties(

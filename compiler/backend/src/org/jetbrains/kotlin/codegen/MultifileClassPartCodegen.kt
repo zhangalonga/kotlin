@@ -188,7 +188,7 @@ class MultifileClassPartCodegen(
         private val CLINIT_SYNC_NAME = "\$\$clinitSync"
         private val DEFERRED_PART_CLINIT_NAME = "\$\$clinit"
 
-        @JvmStatic fun isStaticInitTrigger(insn: AbstractInsnNode) =
+        @JvmStatic fun isStaticInitTrigger(insn: AbstractInsnNode): Boolean =
                 insn.opcode == Opcodes.INVOKESTATIC
                 && insn is MethodInsnNode
                 && insn.owner.endsWith(STATIC_INIT_CLASS_SUFFIX)

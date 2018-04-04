@@ -40,7 +40,7 @@ enum class ConstraintPositionKind {
     }
 }
 
-fun valueParameterPosition(index: Int) = ConstraintPositionKind.VALUE_PARAMETER_POSITION.position(index)
+fun valueParameterPosition(index: Int): ConstraintPosition = ConstraintPositionKind.VALUE_PARAMETER_POSITION.position(index)
 
 interface ConstraintPosition {
     val kind: ConstraintPositionKind
@@ -66,9 +66,9 @@ class CompoundConstraintPosition(vararg positions: ConstraintPosition) : Constra
     val positions: Collection<ConstraintPosition> =
         positions.flatMap { (it as? CompoundConstraintPosition)?.positions ?: listOf(it) }.toSet()
 
-    override fun isStrong() = positions.any { it.isStrong() }
+    override fun isStrong(): Boolean = positions.any { it.isStrong() }
 
-    override fun toString() = "$kind(${positions.joinToString()})"
+    override fun toString(): String = "$kind(${positions.joinToString()})"
 }
 
 fun ConstraintPosition.derivedFrom(kind: ConstraintPositionKind): Boolean {

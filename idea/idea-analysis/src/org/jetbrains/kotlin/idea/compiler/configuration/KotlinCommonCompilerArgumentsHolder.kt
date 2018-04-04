@@ -47,10 +47,10 @@ class KotlinCommonCompilerArgumentsHolder(project: Project) : BaseKotlinCompiler
         }
     }
 
-    override fun createSettings() = CommonCompilerArguments.DummyImpl()
+    override fun createSettings(): CommonCompilerArguments.DummyImpl = CommonCompilerArguments.DummyImpl()
 
     companion object {
-        fun getInstance(project: Project) =
+        fun getInstance(project: Project): KotlinCommonCompilerArgumentsHolder =
                 ServiceManager.getService<KotlinCommonCompilerArgumentsHolder>(project, KotlinCommonCompilerArgumentsHolder::class.java)!!
     }
 }

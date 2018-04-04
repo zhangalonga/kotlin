@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.types.DynamicTypesSettings
 import java.util.*
 
 abstract class TargetPlatform(val platformName: String) {
-    override fun toString() = platformName
+    override fun toString(): String = platformName
 
     abstract val platformConfigurator: PlatformConfigurator
     abstract fun getDefaultImports(includeKotlinComparisons: Boolean): List<ImportPath>
@@ -53,7 +53,7 @@ abstract class TargetPlatform(val platformName: String) {
 
         override fun getDefaultImports(includeKotlinComparisons: Boolean): List<ImportPath> = defaultImports(includeKotlinComparisons)
 
-        override val platformConfigurator =
+        override val platformConfigurator: PlatformConfigurator =
             object : PlatformConfigurator(
                 DynamicTypesSettings(), listOf(), listOf(), listOf(), listOf(), listOf(),
                 IdentifierChecker.Default, OverloadFilter.Default, PlatformToKotlinClassMap.EMPTY, DelegationFilter.Default,
@@ -128,7 +128,7 @@ abstract class PlatformConfigurator(
 
     abstract fun configureModuleComponents(container: StorageComponentContainer)
 
-    val platformSpecificContainer = composeContainer(this::class.java.simpleName) {
+    val platformSpecificContainer: StorageComponentContainer = composeContainer(this::class.java.simpleName) {
         useInstance(dynamicTypesSettings)
         declarationCheckers.forEach { useInstance(it) }
         callCheckers.forEach { useInstance(it) }
@@ -144,7 +144,7 @@ abstract class PlatformConfigurator(
     }
 }
 
-fun createContainer(id: String, platform: TargetPlatform, init: StorageComponentContainer.() -> Unit) =
+fun createContainer(id: String, platform: TargetPlatform, init: StorageComponentContainer.() -> Unit): StorageComponentContainer =
     composeContainer(id, platform.platformConfigurator.platformSpecificContainer, init)
 
 

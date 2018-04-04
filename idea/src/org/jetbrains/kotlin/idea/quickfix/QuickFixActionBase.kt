@@ -35,7 +35,7 @@ abstract class QuickFixActionBase<out T : PsiElement>(element: T) : IntentionAct
 
     open val isCrossLanguageFix: Boolean = false
 
-    protected open fun isAvailableImpl(project: Project, editor: Editor?, file: PsiFile) = true
+    protected open fun isAvailableImpl(project: Project, editor: Editor?, file: PsiFile): Boolean = true
 
     final override fun isAvailable(project: Project, editor: Editor?, file: PsiFile): Boolean {
         if (ApplicationManager.getApplication().isUnitTestMode) {
@@ -54,5 +54,5 @@ abstract class QuickFixActionBase<out T : PsiElement>(element: T) : IntentionAct
         }
     }
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 }

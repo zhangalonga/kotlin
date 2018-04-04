@@ -48,7 +48,7 @@ val Type.typeSignature: String
 val GenerateAttribute.signature: String
     get() = "$name:${type.typeSignature}"
 
-fun GenerateAttribute.dynamicIfUnknownType(allTypes : Set<String>, standardTypes : Set<Type> = standardTypes()) = copy(type = type.dynamicIfUnknownType(allTypes, standardTypes))
+fun GenerateAttribute.dynamicIfUnknownType(allTypes : Set<String>, standardTypes : Set<Type> = standardTypes()): GenerateAttribute = copy(type = type.dynamicIfUnknownType(allTypes, standardTypes))
 fun List<GenerateAttribute>.dynamicIfUnknownType(allTypes : Set<String>, standardTypes : Set<Type> = standardTypes()) = map { it.dynamicIfUnknownType(allTypes, standardTypes) }
 
 enum class NativeGetterOrSetter {
@@ -95,7 +95,7 @@ fun GenerateFunction.dynamicIfUnknownType(allTypes : Set<String>) = standardType
 }
 
 fun InterfaceDefinition.findExtendedAttributes(name: String) = extendedAttributes.filter { it.call == name }
-fun InterfaceDefinition?.hasExtendedAttribute(name: String) = this?.findExtendedAttributes(name)?.isNotEmpty() ?: false
+fun InterfaceDefinition?.hasExtendedAttribute(name: String): Boolean = this?.findExtendedAttributes(name)?.isNotEmpty() ?: false
 fun InterfaceDefinition.findConstructors() = findExtendedAttributes("Constructor")
 
 data class GenerateUnionTypes(

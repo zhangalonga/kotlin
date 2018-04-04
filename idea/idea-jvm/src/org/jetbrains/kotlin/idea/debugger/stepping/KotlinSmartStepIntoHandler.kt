@@ -47,7 +47,7 @@ import org.jetbrains.kotlin.resolve.inline.InlineUtil
 
 class KotlinSmartStepIntoHandler : JvmSmartStepIntoHandler() {
 
-    override fun isAvailable(position: SourcePosition?) = position?.file is KtFile
+    override fun isAvailable(position: SourcePosition?): Boolean = position?.file is KtFile
 
     override fun findSmartStepTargets(position: SourcePosition): List<SmartStepTarget> {
         val file = position.file

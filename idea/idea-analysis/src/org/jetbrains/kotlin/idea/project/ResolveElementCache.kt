@@ -119,7 +119,7 @@ class ResolveElementCache(
         }
     }
 
-    override fun resolveFunctionBody(function: KtNamedFunction) = getElementsAdditionalResolve(function, null, BodyResolveMode.FULL)
+    override fun resolveFunctionBody(function: KtNamedFunction): BindingContext = getElementsAdditionalResolve(function, null, BodyResolveMode.FULL)
 
     fun resolvePrimaryConstructorParametersDefaultValues(ktClass: KtClass): BindingContext {
         return constructorAdditionalResolve(

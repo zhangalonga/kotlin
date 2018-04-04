@@ -64,11 +64,11 @@ open class ESConstant private constructor(open val constantReference: ConstantRe
     override fun toString(): String = constantReference.name
 
     companion object {
-        val TRUE = ESConstant(BooleanConstantReference.TRUE, DefaultBuiltIns.Instance.booleanType)
-        val FALSE = ESConstant(BooleanConstantReference.FALSE, DefaultBuiltIns.Instance.booleanType)
-        val NULL = ESConstant(ConstantReference.NULL, DefaultBuiltIns.Instance.nothingType.makeNullable())
-        val NOT_NULL = ESConstant(ConstantReference.NOT_NULL, DefaultBuiltIns.Instance.anyType)
-        val WILDCARD = ESConstant(ConstantReference.WILDCARD, DefaultBuiltIns.Instance.anyType.makeNullable())
+        val TRUE: ESConstant = ESConstant(BooleanConstantReference.TRUE, DefaultBuiltIns.Instance.booleanType)
+        val FALSE: ESConstant = ESConstant(BooleanConstantReference.FALSE, DefaultBuiltIns.Instance.booleanType)
+        val NULL: ESConstant = ESConstant(ConstantReference.NULL, DefaultBuiltIns.Instance.nothingType.makeNullable())
+        val NOT_NULL: ESConstant = ESConstant(ConstantReference.NOT_NULL, DefaultBuiltIns.Instance.anyType)
+        val WILDCARD: ESConstant = ESConstant(ConstantReference.WILDCARD, DefaultBuiltIns.Instance.anyType.makeNullable())
     }
 
     fun isNullConstant(): Boolean = this == NULL || this == NOT_NULL

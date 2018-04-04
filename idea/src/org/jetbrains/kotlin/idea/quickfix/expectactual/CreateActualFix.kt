@@ -53,13 +53,13 @@ sealed class CreateActualFix<out D : KtNamedDeclaration>(
     private val generateIt: KtPsiFactory.(Project, D) -> D?
 ) : KotlinQuickFixAction<D>(declaration) {
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     protected abstract val elementType: String
 
-    override fun getText() = "Create actual $elementType for module ${actualModule.name} (${actualPlatform.platform})"
+    override fun getText(): String = "Create actual $elementType for module ${actualModule.name} (${actualPlatform.platform})"
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     final override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return
@@ -162,7 +162,7 @@ class CreateActualClassFix(
     generateClassOrObjectByExpectedClass(project, element, actualNeeded = true)
 }) {
 
-    override val elementType = run {
+    override val elementType: String = run {
         val element = element
         when (element) {
             is KtObjectDeclaration -> "object"
@@ -186,7 +186,7 @@ class CreateActualPropertyFix(
     descriptor?.let { generateProperty(project, element, descriptor, actualNeeded = true) }
 }) {
 
-    override val elementType = "property"
+    override val elementType: String = "property"
 }
 
 class CreateActualFunctionFix(
@@ -198,7 +198,7 @@ class CreateActualFunctionFix(
     descriptor?.let { generateFunction(project, element, descriptor, actualNeeded = true) }
 }) {
 
-    override val elementType = "function"
+    override val elementType: String = "function"
 }
 
 private fun KtModifierListOwner.replaceExpectModifier(actualNeeded: Boolean) {

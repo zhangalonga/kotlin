@@ -23,7 +23,7 @@ open class BasicMapsOwner(val cachesDir: File) {
     private val maps = arrayListOf<BasicMap<*, *>>()
 
     companion object {
-        val CACHE_EXTENSION = "tab"
+        val CACHE_EXTENSION: String = "tab"
     }
 
     protected val String.storageFile: File

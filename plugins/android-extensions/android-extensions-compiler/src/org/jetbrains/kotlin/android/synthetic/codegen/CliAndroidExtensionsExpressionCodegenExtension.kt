@@ -23,7 +23,7 @@ class CliAndroidExtensionsExpressionCodegenExtension(
         val isExperimental: Boolean,
         private val globalCacheImpl: CacheImplementation
 ) : AbstractAndroidExtensionsExpressionCodegenExtension() {
-    override fun isExperimental(element: KtElement?) = isExperimental
-    override fun isEnabled(element: KtElement?) = true
-    override fun getGlobalCacheImpl(element: KtElement?) = globalCacheImpl
+    override fun isExperimental(element: KtElement?): Boolean = isExperimental
+    override fun isEnabled(element: KtElement?): Boolean = true
+    override fun getGlobalCacheImpl(element: KtElement?): CacheImplementation = globalCacheImpl
 }

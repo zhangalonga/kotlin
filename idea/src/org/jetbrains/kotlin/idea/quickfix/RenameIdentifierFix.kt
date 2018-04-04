@@ -27,8 +27,8 @@ import com.intellij.refactoring.RefactoringFactory
 import com.intellij.refactoring.rename.RenameHandlerRegistry
 
 open class RenameIdentifierFix : LocalQuickFix {
-    override fun getName() = "Rename"
-    override fun getFamilyName() = name
+    override fun getName(): String = "Rename"
+    override fun getFamilyName(): String = name
 
     override fun startInWriteAction(): Boolean = false
 

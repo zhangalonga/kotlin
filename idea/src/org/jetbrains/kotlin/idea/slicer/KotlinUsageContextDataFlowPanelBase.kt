@@ -123,7 +123,7 @@ class KotlinUsageContextDataInflowPanel(
             return KotlinUsageContextDataInflowPanel((usageView as UsageViewImpl).project, usageView.getPresentation())
         }
 
-        override fun getTabTitle() = "Dataflow to Here"
+        override fun getTabTitle(): String = "Dataflow to Here"
     }
 }
 
@@ -136,6 +136,6 @@ class KotlinUsageContextDataOutflowPanel(
             return KotlinUsageContextDataOutflowPanel((usageView as UsageViewImpl).project, usageView.getPresentation())
         }
 
-        override fun getTabTitle() = "Dataflow from Here"
+        override fun getTabTitle(): String = "Dataflow from Here"
     }
 }

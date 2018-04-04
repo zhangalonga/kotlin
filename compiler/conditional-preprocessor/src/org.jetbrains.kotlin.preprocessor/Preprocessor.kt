@@ -47,7 +47,7 @@ fun createProfile(name: String, targetRoot: File): Profile {
 
 class Preprocessor(val logger: Logger = SystemOutLogger) {
 
-    val fileType = KotlinFileType.INSTANCE
+    val fileType: KotlinFileType = KotlinFileType.INSTANCE
     val jetPsiFactory: KtPsiFactory
 
     init {
@@ -68,7 +68,7 @@ class Preprocessor(val logger: Logger = SystemOutLogger) {
             override fun toString(): String = "Modify(${modifications.size})"
         }
 
-        override fun toString() = this::class.java.simpleName
+        override fun toString(): String = this::class.java.simpleName
     }
 
     fun processSources(sourceRoot: File, profile: Profile) {
@@ -152,7 +152,7 @@ fun String.convertLineSeparators(): String = StringUtil.convertLineSeparators(th
 
 fun File.isTextEqualTo(content: String): Boolean = readText().lines() == content.lines()
 
-fun File.makeRelativeTo(from: File, to: File) = File(to, toRelativeString(from))
+fun File.makeRelativeTo(from: File, to: File): File = File(to, toRelativeString(from))
 
 fun File.mkdirsOrFail() {
     if (!mkdirs() && !exists()) {

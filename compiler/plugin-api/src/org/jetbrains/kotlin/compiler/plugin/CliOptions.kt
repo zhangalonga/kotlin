@@ -60,7 +60,7 @@ data class CliOptionValue(
         val optionName: String,
         val value: String
 ) {
-    override fun toString() = "$pluginId:$optionName=$value"
+    override fun toString(): String = "$pluginId:$optionName=$value"
 }
 
 fun parsePluginOption(argumentValue: String): CliOptionValue? {

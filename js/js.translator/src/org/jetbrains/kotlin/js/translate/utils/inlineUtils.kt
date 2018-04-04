@@ -73,7 +73,7 @@ fun setInlineCallMetadata(
         psiElement: KtExpression,
         resolvedCall: ResolvedCall<*>,
         context: TranslationContext
-) = setInlineCallMetadata(expression, psiElement, PsiUtils.getFunctionDescriptor(resolvedCall), context)
+): Unit = setInlineCallMetadata(expression, psiElement, PsiUtils.getFunctionDescriptor(resolvedCall), context)
 
 fun setInlineCallMetadata(
         nameRef: JsNameRef,

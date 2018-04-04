@@ -130,7 +130,7 @@ class BinaryJavaAnnotation private constructor(
         get() = classifierResolutionResult.classifier.safeAs<JavaClass>()?.classId
                 ?: ClassId.topLevel(FqName(classifierResolutionResult.qualifiedName))
 
-    override fun resolve() = classifierResolutionResult.classifier as? JavaClass
+    override fun resolve(): JavaClass? = classifierResolutionResult.classifier as? JavaClass
 }
 
 class BinaryJavaAnnotationVisitor(
@@ -197,7 +197,7 @@ class PlainJavaClassObjectAnnotationArgument(
         private val signatureParser: BinaryClassSignatureParser,
         private val context: ClassifierResolutionContext
 ) : PlainJavaAnnotationArgument(name), JavaClassObjectAnnotationArgument {
-    override fun getReferencedType() = signatureParser.mapAsmType(type, context)
+    override fun getReferencedType(): JavaType = signatureParser.mapAsmType(type, context)
 }
 
 class PlainJavaArrayAnnotationArgument(
@@ -211,7 +211,7 @@ class PlainJavaAnnotationAsAnnotationArgument(
         name: String?,
         private val annotation: JavaAnnotation
 ) : PlainJavaAnnotationArgument(name), JavaAnnotationAsAnnotationArgument {
-    override fun getAnnotation() = annotation
+    override fun getAnnotation(): JavaAnnotation = annotation
 }
 
 class PlainJavaEnumValueAnnotationArgument(
@@ -219,5 +219,5 @@ class PlainJavaEnumValueAnnotationArgument(
         override val enumClassId: ClassId,
         entryName: String
 ) : PlainJavaAnnotationArgument(name), JavaEnumValueAnnotationArgument {
-    override val entryName = Name.identifier(entryName)
+    override val entryName: Name = Name.identifier(entryName)
 }

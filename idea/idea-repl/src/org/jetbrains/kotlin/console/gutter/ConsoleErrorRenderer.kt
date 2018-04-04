@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.console.gutter
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import org.jetbrains.kotlin.console.SeverityDetails
 import org.jetbrains.kotlin.diagnostics.Severity
+import javax.swing.Icon
 
 class ConsoleErrorRenderer(private val messages: List<SeverityDetails>) : GutterIconRenderer() {
     private fun msgType(severity: Severity) = when (severity) {
@@ -32,7 +33,7 @@ class ConsoleErrorRenderer(private val messages: List<SeverityDetails>) : Gutter
         return "<html>${htmlTooltips.joinToString("<hr size=1 noshade>")}</html>"
     }
 
-    override fun getIcon() = ReplIcons.COMPILER_ERROR
-    override fun hashCode() = System.identityHashCode(this)
-    override fun equals(other: Any?) = this === other
+    override fun getIcon(): Icon = ReplIcons.COMPILER_ERROR
+    override fun hashCode(): Int = System.identityHashCode(this)
+    override fun equals(other: Any?): Boolean = this === other
 }

@@ -42,10 +42,10 @@ class KotlinSuppressIntentionAction private constructor(
                 suppressKey: String,
                 kind: AnnotationHostKind) : this(suppressAt as PsiElement, suppressKey, kind)
 
-    override fun getFamilyName() = KotlinBundle.message("suppress.warnings.family")
-    override fun getText() = KotlinBundle.message("suppress.warning.for", suppressKey, kind.kind, kind.name)
+    override fun getFamilyName(): String = KotlinBundle.message("suppress.warnings.family")
+    override fun getText(): String = KotlinBundle.message("suppress.warning.for", suppressKey, kind.kind, kind.name)
 
-    override fun isAvailable(project: Project, editor: Editor?, element: PsiElement) = element.isValid
+    override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean = element.isValid
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
         if (!FileModificationService.getInstance().preparePsiElementForWrite(element)) return

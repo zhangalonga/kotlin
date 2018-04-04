@@ -26,8 +26,8 @@ import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
 
 class AddRunToLambdaFix(element: KtLambdaExpression) : KotlinQuickFixAction<KtLambdaExpression>(element) {
-    override fun getText() = "Add 'run' before the lambda expression"
-    override fun getFamilyName() = text
+    override fun getText(): String = "Add 'run' before the lambda expression"
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

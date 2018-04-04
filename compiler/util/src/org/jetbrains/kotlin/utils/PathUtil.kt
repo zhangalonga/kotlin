@@ -23,52 +23,52 @@ import java.io.File
 import java.util.regex.Pattern
 
 object PathUtil {
-    const val JS_LIB_NAME = "kotlin-stdlib-js"
-    const val JS_LIB_JAR_NAME = "$JS_LIB_NAME.jar"
+    const val JS_LIB_NAME: String = "kotlin-stdlib-js"
+    const val JS_LIB_JAR_NAME: String = "$JS_LIB_NAME.jar"
 
-    const val JS_LIB_10_JAR_NAME = "kotlin-jslib.jar"
-    const val ALLOPEN_PLUGIN_JAR_NAME = "allopen-compiler-plugin.jar"
-    const val NOARG_PLUGIN_JAR_NAME = "noarg-compiler-plugin.jar"
-    const val SAM_WITH_RECEIVER_PLUGIN_JAR_NAME = "sam-with-receiver-compiler-plugin.jar"
-    const val JS_LIB_SRC_JAR_NAME = "kotlin-stdlib-js-sources.jar"
+    const val JS_LIB_10_JAR_NAME: String = "kotlin-jslib.jar"
+    const val ALLOPEN_PLUGIN_JAR_NAME: String = "allopen-compiler-plugin.jar"
+    const val NOARG_PLUGIN_JAR_NAME: String = "noarg-compiler-plugin.jar"
+    const val SAM_WITH_RECEIVER_PLUGIN_JAR_NAME: String = "sam-with-receiver-compiler-plugin.jar"
+    const val JS_LIB_SRC_JAR_NAME: String = "kotlin-stdlib-js-sources.jar"
 
-    const val KOTLIN_JAVA_RUNTIME_JRE7_NAME = "kotlin-stdlib-jre7"
-    const val KOTLIN_JAVA_RUNTIME_JRE7_JAR = "$KOTLIN_JAVA_RUNTIME_JRE7_NAME.jar"
-    const val KOTLIN_JAVA_RUNTIME_JRE7_SRC_JAR = "$KOTLIN_JAVA_RUNTIME_JRE7_NAME-sources.jar"
+    const val KOTLIN_JAVA_RUNTIME_JRE7_NAME: String = "kotlin-stdlib-jre7"
+    const val KOTLIN_JAVA_RUNTIME_JRE7_JAR: String = "$KOTLIN_JAVA_RUNTIME_JRE7_NAME.jar"
+    const val KOTLIN_JAVA_RUNTIME_JRE7_SRC_JAR: String = "$KOTLIN_JAVA_RUNTIME_JRE7_NAME-sources.jar"
 
-    const val KOTLIN_JAVA_RUNTIME_JDK7_NAME = "kotlin-stdlib-jdk7"
-    const val KOTLIN_JAVA_RUNTIME_JDK7_JAR = "$KOTLIN_JAVA_RUNTIME_JDK7_NAME.jar"
-    const val KOTLIN_JAVA_RUNTIME_JDK7_SRC_JAR = "$KOTLIN_JAVA_RUNTIME_JDK7_NAME-sources.jar"
+    const val KOTLIN_JAVA_RUNTIME_JDK7_NAME: String = "kotlin-stdlib-jdk7"
+    const val KOTLIN_JAVA_RUNTIME_JDK7_JAR: String = "$KOTLIN_JAVA_RUNTIME_JDK7_NAME.jar"
+    const val KOTLIN_JAVA_RUNTIME_JDK7_SRC_JAR: String = "$KOTLIN_JAVA_RUNTIME_JDK7_NAME-sources.jar"
 
-    const val KOTLIN_JAVA_RUNTIME_JRE8_NAME = "kotlin-stdlib-jre8"
-    const val KOTLIN_JAVA_RUNTIME_JRE8_JAR = "$KOTLIN_JAVA_RUNTIME_JRE8_NAME.jar"
-    const val KOTLIN_JAVA_RUNTIME_JRE8_SRC_JAR = "$KOTLIN_JAVA_RUNTIME_JRE8_NAME-sources.jar"
+    const val KOTLIN_JAVA_RUNTIME_JRE8_NAME: String = "kotlin-stdlib-jre8"
+    const val KOTLIN_JAVA_RUNTIME_JRE8_JAR: String = "$KOTLIN_JAVA_RUNTIME_JRE8_NAME.jar"
+    const val KOTLIN_JAVA_RUNTIME_JRE8_SRC_JAR: String = "$KOTLIN_JAVA_RUNTIME_JRE8_NAME-sources.jar"
 
-    const val KOTLIN_JAVA_RUNTIME_JDK8_NAME = "kotlin-stdlib-jdk8"
-    const val KOTLIN_JAVA_RUNTIME_JDK8_JAR = "$KOTLIN_JAVA_RUNTIME_JDK8_NAME.jar"
-    const val KOTLIN_JAVA_RUNTIME_JDK8_SRC_JAR = "$KOTLIN_JAVA_RUNTIME_JDK8_NAME-sources.jar"
+    const val KOTLIN_JAVA_RUNTIME_JDK8_NAME: String = "kotlin-stdlib-jdk8"
+    const val KOTLIN_JAVA_RUNTIME_JDK8_JAR: String = "$KOTLIN_JAVA_RUNTIME_JDK8_NAME.jar"
+    const val KOTLIN_JAVA_RUNTIME_JDK8_SRC_JAR: String = "$KOTLIN_JAVA_RUNTIME_JDK8_NAME-sources.jar"
 
-    const val KOTLIN_JAVA_STDLIB_NAME = "kotlin-stdlib"
-    const val KOTLIN_JAVA_STDLIB_JAR = "$KOTLIN_JAVA_STDLIB_NAME.jar"
-    const val KOTLIN_JAVA_STDLIB_SRC_JAR = "$KOTLIN_JAVA_STDLIB_NAME-sources.jar"
+    const val KOTLIN_JAVA_STDLIB_NAME: String = "kotlin-stdlib"
+    const val KOTLIN_JAVA_STDLIB_JAR: String = "$KOTLIN_JAVA_STDLIB_NAME.jar"
+    const val KOTLIN_JAVA_STDLIB_SRC_JAR: String = "$KOTLIN_JAVA_STDLIB_NAME-sources.jar"
 
-    const val KOTLIN_JAVA_REFLECT_NAME = "kotlin-reflect"
-    const val KOTLIN_JAVA_REFLECT_JAR = "$KOTLIN_JAVA_REFLECT_NAME.jar"
-    const val KOTLIN_REFLECT_SRC_JAR = "$KOTLIN_JAVA_REFLECT_NAME-sources.jar"
+    const val KOTLIN_JAVA_REFLECT_NAME: String = "kotlin-reflect"
+    const val KOTLIN_JAVA_REFLECT_JAR: String = "$KOTLIN_JAVA_REFLECT_NAME.jar"
+    const val KOTLIN_REFLECT_SRC_JAR: String = "$KOTLIN_JAVA_REFLECT_NAME-sources.jar"
 
-    const val KOTLIN_JAVA_SCRIPT_RUNTIME_JAR = "kotlin-script-runtime.jar"
+    const val KOTLIN_JAVA_SCRIPT_RUNTIME_JAR: String = "kotlin-script-runtime.jar"
 
-    const val KOTLIN_TEST_NAME = "kotlin-test"
-    const val KOTLIN_TEST_JAR = "$KOTLIN_TEST_NAME.jar"
-    const val KOTLIN_TEST_SRC_JAR = "$KOTLIN_TEST_NAME-sources.jar"
+    const val KOTLIN_TEST_NAME: String = "kotlin-test"
+    const val KOTLIN_TEST_JAR: String = "$KOTLIN_TEST_NAME.jar"
+    const val KOTLIN_TEST_SRC_JAR: String = "$KOTLIN_TEST_NAME-sources.jar"
 
-    const val KOTLIN_TEST_JS_NAME = "kotlin-test-js"
-    const val KOTLIN_TEST_JS_JAR = "$KOTLIN_TEST_JS_NAME.jar"
+    const val KOTLIN_TEST_JS_NAME: String = "kotlin-test-js"
+    const val KOTLIN_TEST_JS_JAR: String = "$KOTLIN_TEST_JS_NAME.jar"
 
-    const val KOTLIN_JAVA_STDLIB_SRC_JAR_OLD = "kotlin-runtime-sources.jar"
+    const val KOTLIN_JAVA_STDLIB_SRC_JAR_OLD: String = "kotlin-runtime-sources.jar"
 
-    const val KOTLIN_COMPILER_NAME = "kotlin-compiler"
-    const val KOTLIN_COMPILER_JAR = "$KOTLIN_COMPILER_NAME.jar"
+    const val KOTLIN_COMPILER_NAME: String = "kotlin-compiler"
+    const val KOTLIN_COMPILER_JAR: String = "$KOTLIN_COMPILER_NAME.jar"
 
     @JvmField
     val KOTLIN_RUNTIME_JAR_PATTERN: Pattern = Pattern.compile("kotlin-(stdlib|runtime)(-\\d[\\d.]+(-.+)?)?\\.jar")
@@ -76,7 +76,7 @@ object PathUtil {
     val KOTLIN_STDLIB_COMMON_JAR_PATTERN: Pattern = Pattern.compile("kotlin-stdlib-common.*\\.jar")
     val KOTLIN_JS_LIBRARY_JAR_PATTERN: Pattern = Pattern.compile("kotlin-js-library.*\\.jar")
 
-    const val HOME_FOLDER_NAME = "kotlinc"
+    const val HOME_FOLDER_NAME: String = "kotlinc"
     private val NO_PATH = File("<no_path>")
 
     @JvmStatic

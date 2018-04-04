@@ -64,9 +64,9 @@ class JavaClassesSerializerExtension : KotlinSerializerExtensionBase(BuiltInSeri
         }
     }
 
-    override fun shouldUseNormalizedVisibility() = true
+    override fun shouldUseNormalizedVisibility(): Boolean = true
 
-    override val customClassMembersProducer =
+    override val customClassMembersProducer: ClassMembersProducer =
             object : ClassMembersProducer {
                 override fun getCallableMembers(classDescriptor: ClassDescriptor) =
                         arrayListOf<CallableMemberDescriptor>().apply {

@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.psi.KtSimpleNameExpression
 
 class PrimitiveRangeRangeValue(private val rangeExpression: KtExpression) : ReversableRangeValue {
 
-    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression) =
+    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression): ForInRangeInstanceLoopGenerator =
         ForInRangeInstanceLoopGenerator(codegen, forExpression, rangeExpression, reversed = false)
 
     override fun createInExpressionGenerator(codegen: ExpressionCodegen, operatorReference: KtSimpleNameExpression): InExpressionGenerator =

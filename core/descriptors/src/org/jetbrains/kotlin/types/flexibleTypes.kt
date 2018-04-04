@@ -82,7 +82,7 @@ fun KotlinType.upperIfFlexible(): SimpleType = with(unwrap()) {
 class FlexibleTypeImpl(lowerBound: SimpleType, upperBound: SimpleType) : FlexibleType(lowerBound, upperBound), CustomTypeVariable {
     companion object {
         @JvmField
-        var RUN_SLOW_ASSERTIONS = false
+        var RUN_SLOW_ASSERTIONS: Boolean = false
     }
 
     // These assertions are needed for checking invariants of flexible types.

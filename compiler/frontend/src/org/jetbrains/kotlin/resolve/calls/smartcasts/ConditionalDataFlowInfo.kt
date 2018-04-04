@@ -30,6 +30,6 @@ class ConditionalDataFlowInfo(val thenInfo: DataFlowInfo, val elseInfo: DataFlow
     }
 
     companion object {
-        val EMPTY = ConditionalDataFlowInfo(DataFlowInfo.EMPTY)
+        val EMPTY: ConditionalDataFlowInfo = ConditionalDataFlowInfo(DataFlowInfo.EMPTY)
     }
 }

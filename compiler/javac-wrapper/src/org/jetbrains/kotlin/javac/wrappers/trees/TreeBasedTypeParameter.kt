@@ -40,7 +40,7 @@ class TreeBasedTypeParameter(
         tree.annotations().map { TreeBasedAnnotation(it, compilationUnit, javac, containingElement) }
     }
 
-    override fun findAnnotation(fqName: FqName) =
+    override fun findAnnotation(fqName: FqName): JavaAnnotation? =
             annotations.firstOrNull { it.classId?.asSingleFqName() == fqName }
 
     override val isDeprecatedInJavaDoc: Boolean

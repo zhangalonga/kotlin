@@ -39,8 +39,7 @@ import org.jetbrains.kotlin.resolve.findOriginalTopMostOverriddenDescriptors
 import org.jetbrains.kotlin.types.typeUtil.isNothing
 
 object PriorityWeigher : LookupElementWeigher("kotlin.priority") {
-    override fun weigh(element: LookupElement, context: WeighingContext)
-            = element.getUserData(ITEM_PRIORITY_KEY) ?: ItemPriority.DEFAULT
+    override fun weigh(element: LookupElement, context: WeighingContext): ItemPriority = element.getUserData(ITEM_PRIORITY_KEY) ?: ItemPriority.DEFAULT
 }
 
 object PreferDslMembers : LookupElementWeigher("kotlin.preferDsl") {
@@ -109,8 +108,7 @@ object KotlinLookupElementProximityWeigher : CompletionWeigher() {
 }
 
 object SmartCompletionPriorityWeigher : LookupElementWeigher("kotlin.smartCompletionPriority") {
-    override fun weigh(element: LookupElement, context: WeighingContext)
-            = element.getUserData(SMART_COMPLETION_ITEM_PRIORITY_KEY) ?: SmartCompletionItemPriority.DEFAULT
+    override fun weigh(element: LookupElement, context: WeighingContext): SmartCompletionItemPriority = element.getUserData(SMART_COMPLETION_ITEM_PRIORITY_KEY) ?: SmartCompletionItemPriority.DEFAULT
 }
 
 object KindWeigher : LookupElementWeigher("kotlin.kind") {
@@ -276,8 +274,8 @@ class SmartCompletionInBasicWeigher(
 ) : LookupElementWeigher("kotlin.smartInBasic", true, false) {
 
     companion object {
-        val KEYWORD_VALUE_MATCHED_KEY = Key<Unit>("SmartCompletionInBasicWeigher.KEYWORD_VALUE_MATCHED_KEY")
-        val NAMED_ARGUMENT_KEY = Key<Unit>("SmartCompletionInBasicWeigher.NAMED_ARGUMENT_KEY")
+        val KEYWORD_VALUE_MATCHED_KEY: Key<Unit> = Key<Unit>("SmartCompletionInBasicWeigher.KEYWORD_VALUE_MATCHED_KEY")
+        val NAMED_ARGUMENT_KEY: Key<Unit> = Key<Unit>("SmartCompletionInBasicWeigher.NAMED_ARGUMENT_KEY")
     }
 
     private val descriptorsToSkip = smartCompletion.descriptorsToSkip

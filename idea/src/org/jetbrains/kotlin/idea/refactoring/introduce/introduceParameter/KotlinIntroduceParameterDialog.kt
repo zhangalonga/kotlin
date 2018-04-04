@@ -99,7 +99,7 @@ class KotlinIntroduceParameterDialog private constructor(
         typeField.addDataChangedListener { validateButtons() }
     }
 
-    override fun getPreferredFocusedComponent() = nameField.focusableComponent
+    override fun getPreferredFocusedComponent(): JComponent? = nameField.focusableComponent
 
     private fun updateRemoveParamCheckBoxes() {
         val enableParamRemove = (replaceAllCheckBox?.isSelected ?: true) && (!defaultValueCheckBox!!.isSelected)
@@ -227,7 +227,7 @@ class KotlinIntroduceParameterDialog private constructor(
         return panel
     }
 
-    override fun createCenterPanel() = null
+    override fun createCenterPanel(): Nothing? = null
 
     override fun canRun() {
         val psiFactory = KtPsiFactory(myProject)

@@ -45,7 +45,7 @@ class PackageQualifier(
     override val classValueReceiver: ReceiverValue? get() = null
     override val staticScope: MemberScope get() = descriptor.memberScope
 
-    override fun toString() = "Package{$descriptor}"
+    override fun toString(): String = "Package{$descriptor}"
 }
 
 class TypeParameterQualifier(
@@ -55,7 +55,7 @@ class TypeParameterQualifier(
     override val classValueReceiver: ReceiverValue? get() = null
     override val staticScope: MemberScope get() = MemberScope.Empty
 
-    override fun toString() = "TypeParameter{$descriptor}"
+    override fun toString(): String = "TypeParameter{$descriptor}"
 }
 
 interface ClassifierQualifier : Qualifier {
@@ -83,7 +83,7 @@ class ClassQualifier(
             return ChainedMemberScope("Static scope for ${descriptor.name} as class or object", scopes)
         }
 
-    override fun toString() = "Class{$descriptor}"
+    override fun toString(): String = "Class{$descriptor}"
 }
 
 class TypeAliasQualifier(
@@ -124,10 +124,10 @@ class TypeAliasQualifier(
 }
 
 class ClassValueReceiver(val classQualifier: ClassifierQualifier, private val type: KotlinType) : ExpressionReceiver {
-    override fun getType() = type
+    override fun getType(): KotlinType = type
 
     override val expression: KtExpression
         get() = classQualifier.expression
 
-    override fun replaceType(newType: KotlinType) = ClassValueReceiver(classQualifier, newType)
+    override fun replaceType(newType: KotlinType): ClassValueReceiver = ClassValueReceiver(classQualifier, newType)
 }

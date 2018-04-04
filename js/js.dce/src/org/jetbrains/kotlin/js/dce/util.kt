@@ -21,9 +21,9 @@ import org.jetbrains.kotlin.js.backend.ast.metadata.SpecialFunction
 import org.jetbrains.kotlin.js.backend.ast.metadata.specialFunction
 import org.jetbrains.kotlin.js.dce.Context.Node
 
-fun Context.isObjectDefineProperty(function: JsExpression) = isObjectFunction(function, "defineProperty")
+fun Context.isObjectDefineProperty(function: JsExpression): Boolean = isObjectFunction(function, "defineProperty")
 
-fun Context.isObjectGetOwnPropertyDescriptor(function: JsExpression) = isObjectFunction(function, "getOwnPropertyDescriptor")
+fun Context.isObjectGetOwnPropertyDescriptor(function: JsExpression): Boolean = isObjectFunction(function, "getOwnPropertyDescriptor")
 
 fun Context.isDefineModule(function: JsExpression): Boolean = isKotlinFunction(function, "defineModule")
 

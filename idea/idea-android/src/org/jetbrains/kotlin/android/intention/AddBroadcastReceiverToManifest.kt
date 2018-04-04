@@ -31,7 +31,7 @@ class AddBroadcastReceiverToManifest : AbstractRegisterComponentAction("Add broa
     override fun isApplicableTo(element: KtClass, manifest: Manifest): Boolean =
         element.isSubclassOfBroadcastReceiver() && !element.isRegisteredBroadcastReceiver(manifest)
 
-    override fun applyTo(element: KtClass, manifest: Manifest) = runWriteAction {
+    override fun applyTo(element: KtClass, manifest: Manifest): Unit = runWriteAction {
         val psiClass = element.toLightClass() ?: return@runWriteAction
         manifest.application.addReceiver().receiverClass.value = psiClass
     }

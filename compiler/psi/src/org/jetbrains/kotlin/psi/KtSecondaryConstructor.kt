@@ -25,13 +25,13 @@ class KtSecondaryConstructor : KtConstructor<KtSecondaryConstructor> {
     constructor(node: ASTNode) : super(node)
     constructor(stub: KotlinPlaceHolderStub<KtSecondaryConstructor>) : super(stub, KtStubElementTypes.SECONDARY_CONSTRUCTOR)
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitSecondaryConstructor(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitSecondaryConstructor(this, data)
 
-    override fun getContainingClassOrObject() = parent.parent as KtClassOrObject
+    override fun getContainingClassOrObject(): KtClassOrObject = parent.parent as KtClassOrObject
 
-    override fun getBodyExpression() = findChildByClass(KtBlockExpression::class.java)
+    override fun getBodyExpression(): KtBlockExpression? = findChildByClass(KtBlockExpression::class.java)
 
-    override fun getConstructorKeyword() = notNullChild<PsiElement>(super.getConstructorKeyword())
+    override fun getConstructorKeyword(): PsiElement = notNullChild<PsiElement>(super.getConstructorKeyword())
 
     fun getDelegationCall(): KtConstructorDelegationCall = findNotNullChildByClass(KtConstructorDelegationCall::class.java)
 

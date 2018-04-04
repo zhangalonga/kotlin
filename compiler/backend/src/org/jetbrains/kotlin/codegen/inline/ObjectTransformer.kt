@@ -31,7 +31,7 @@ abstract class ObjectTransformer<out T : TransformationInfo>(@JvmField val trans
     abstract fun doTransform(parentRemapper: FieldRemapper): InlineResult
 
     @JvmField
-    protected val transformationResult = InlineResult.create()
+    protected val transformationResult: InlineResult = InlineResult.create()
 
     protected fun createRemappingClassBuilderViaFactory(inliningContext: InliningContext): ClassBuilder {
         val classBuilder = state.factory.newVisitor(

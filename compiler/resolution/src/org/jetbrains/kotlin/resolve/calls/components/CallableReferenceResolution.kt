@@ -71,8 +71,8 @@ class CallableReferenceCandidate(
     val numDefaults: Int,
     val diagnostics: List<KotlinCallDiagnostic>
 ) : Candidate {
-    override val resultingApplicability = getResultApplicability(diagnostics)
-    override val isSuccessful get() = resultingApplicability.isSuccess
+    override val resultingApplicability: ResolutionCandidateApplicability = getResultApplicability(diagnostics)
+    override val isSuccessful: Boolean get() = resultingApplicability.isSuccess
 
     var freshSubstitutor: FreshVariableNewTypeSubstitutor? = null
         internal set
@@ -166,7 +166,7 @@ class CallableReferencesCandidateFactory(
     val expectedType: UnwrappedType?
 ) : CandidateFactory<CallableReferenceCandidate> {
 
-    fun createCallableProcessor(explicitReceiver: DetailedReceiver?) =
+    fun createCallableProcessor(explicitReceiver: DetailedReceiver?): SimpleScopeTowerProcessor<CallableReferenceCandidate> =
         createCallableReferenceProcessor(scopeTower, argument.rhsName, this, explicitReceiver)
 
     override fun createCandidate(

@@ -33,7 +33,7 @@ class UastAnalysisHandlerExtension : AnalysisHandlerExtension {
     private var context: BindingContext? = null
     private var typeMapper: KotlinTypeMapper? = null
 
-    fun getBindingContext() = context
+    fun getBindingContext(): BindingContext? = context
 
     fun getTypeMapper(): KotlinTypeMapper? {
         if (typeMapper != null) return typeMapper

@@ -62,7 +62,7 @@ fun KtCallExpression.isMethodCall(fqMethodName: String): Boolean {
     return resolvedCall.resultingDescriptor.fqNameUnsafe.asString() == fqMethodName
 }
 
-fun isAutoCreatedItUsage(expression: KtNameReferenceExpression) = resolveToAutoCreatedItDescriptor(expression) != null
+fun isAutoCreatedItUsage(expression: KtNameReferenceExpression): Boolean = resolveToAutoCreatedItDescriptor(expression) != null
 
 fun resolveToAutoCreatedItDescriptor(expression: KtNameReferenceExpression): ValueParameterDescriptor? {
     if (expression.getReferencedName() != "it") return null
@@ -71,7 +71,7 @@ fun resolveToAutoCreatedItDescriptor(expression: KtNameReferenceExpression): Val
     return if (context[BindingContext.AUTO_CREATED_IT, target] == true) target else null
 }
 
-fun getLambdaByImplicitItReference(expression: KtNameReferenceExpression) =
+fun getLambdaByImplicitItReference(expression: KtNameReferenceExpression): KtFunctionLiteral? =
     resolveToAutoCreatedItDescriptor(expression)?.containingDeclaration?.source?.getPsi() as? KtFunctionLiteral
 
 // returns assignment which replaces initializer
@@ -233,9 +233,9 @@ fun ResolvedCall<out CallableDescriptor>.resolvedToArrayType(): Boolean =
         type != null && (KotlinBuiltIns.isArray(type) || KotlinBuiltIns.isPrimitiveArray(type))
     }
 
-fun KtElement?.isZero() = this?.text == "0"
+fun KtElement?.isZero(): Boolean = this?.text == "0"
 
-fun KtElement?.isOne() = this?.text == "1"
+fun KtElement?.isOne(): Boolean = this?.text == "1"
 
 private fun KtExpression.isExpressionOfTypeOrSubtype(predicate: (KotlinType) -> Boolean): Boolean {
     val returnType = resolveToCall()?.resultingDescriptor?.returnType

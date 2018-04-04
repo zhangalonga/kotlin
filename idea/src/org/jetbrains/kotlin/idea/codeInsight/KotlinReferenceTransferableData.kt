@@ -27,9 +27,9 @@ class KotlinReferenceTransferableData(
         val data: Array<KotlinReferenceData>
 ) : TextBlockTransferableData, Cloneable, Serializable {
 
-    override fun getFlavor() = KotlinReferenceData.dataFlavor
+    override fun getFlavor(): DataFlavor? = KotlinReferenceData.dataFlavor
 
-    override fun getOffsetCount() = data.size * 2
+    override fun getOffsetCount(): Int = data.size * 2
 
     override fun getOffsets(offsets: IntArray, index: Int): Int {
         var i = index
@@ -49,7 +49,7 @@ class KotlinReferenceTransferableData(
         return i
     }
 
-    public override fun clone() = KotlinReferenceTransferableData(Array(data.size, {  data[it].clone() }))
+    public override fun clone(): KotlinReferenceTransferableData = KotlinReferenceTransferableData(Array(data.size, {  data[it].clone() }))
 }
 
 class KotlinReferenceData(

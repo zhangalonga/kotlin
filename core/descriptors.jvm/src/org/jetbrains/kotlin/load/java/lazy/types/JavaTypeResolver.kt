@@ -299,7 +299,7 @@ data class JavaTypeAttributes(
         // Current type is upper bound of this type parameter
         val upperBoundOfTypeParameter: TypeParameterDescriptor? = null
 ) {
-    fun withFlexibility(flexibility: JavaTypeFlexibility) = copy(flexibility = flexibility)
+    fun withFlexibility(flexibility: JavaTypeFlexibility): JavaTypeAttributes = copy(flexibility = flexibility)
 }
 
 enum class JavaTypeFlexibility {
@@ -311,7 +311,7 @@ enum class JavaTypeFlexibility {
 fun TypeUsage.toAttributes(
         isForAnnotationParameter: Boolean = false,
         upperBoundForTypeParameter: TypeParameterDescriptor? = null
-) = JavaTypeAttributes(
+): JavaTypeAttributes = JavaTypeAttributes(
         this,
         isForAnnotationParameter = isForAnnotationParameter,
         upperBoundOfTypeParameter = upperBoundForTypeParameter

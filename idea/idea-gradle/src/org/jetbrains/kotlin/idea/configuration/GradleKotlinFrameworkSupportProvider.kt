@@ -115,9 +115,9 @@ open class GradleKotlinJavaFrameworkSupportProvider(
     displayName: String = "Kotlin (Java)"
 ) : GradleKotlinFrameworkSupportProvider(frameworkTypeId, displayName, KotlinIcons.SMALL_LOGO) {
 
-    override fun getPluginId() = KotlinGradleModuleConfigurator.KOTLIN
+    override fun getPluginId(): String = KotlinGradleModuleConfigurator.KOTLIN
 
-    override fun getDependencies(sdk: Sdk?) = listOf(getStdlibArtifactId(sdk, bundledRuntimeVersion()))
+    override fun getDependencies(sdk: Sdk?): List<String> = listOf(getStdlibArtifactId(sdk, bundledRuntimeVersion()))
 
     override fun addSupport(buildScriptData: BuildScriptDataBuilder, sdk: Sdk?) {
         super.addSupport(buildScriptData, sdk)
@@ -129,7 +129,7 @@ open class GradleKotlinJavaFrameworkSupportProvider(
         }
     }
 
-    override fun getDescription() = "A Kotlin library or application targeting the JVM"
+    override fun getDescription(): String = "A Kotlin library or application targeting the JVM"
 }
 
 open class GradleKotlinJSFrameworkSupportProvider(
@@ -137,31 +137,31 @@ open class GradleKotlinJSFrameworkSupportProvider(
     displayName: String = "Kotlin (JavaScript)"
 ) : GradleKotlinFrameworkSupportProvider(frameworkTypeId, displayName, KotlinIcons.JS) {
 
-    override fun getPluginId() = KotlinJsGradleModuleConfigurator.KOTLIN_JS
+    override fun getPluginId(): String = KotlinJsGradleModuleConfigurator.KOTLIN_JS
 
-    override fun getDependencies(sdk: Sdk?) = listOf(MAVEN_JS_STDLIB_ID)
+    override fun getDependencies(sdk: Sdk?): List<String> = listOf(MAVEN_JS_STDLIB_ID)
 
-    override fun getTestDependencies() = listOf(MAVEN_JS_TEST_ID)
+    override fun getTestDependencies(): List<String> = listOf(MAVEN_JS_TEST_ID)
 
-    override fun getDescription() = "A Kotlin library or application targeting JavaScript"
+    override fun getDescription(): String = "A Kotlin library or application targeting JavaScript"
 }
 
 open class GradleKotlinMPPCommonFrameworkSupportProvider :
     GradleKotlinFrameworkSupportProvider("KOTLIN_MPP_COMMON", "Kotlin (Multiplatform Common - Experimental)", KotlinIcons.MPP) {
-    override fun getPluginId() = "kotlin-platform-common"
+    override fun getPluginId(): String = "kotlin-platform-common"
 
-    override fun getDependencies(sdk: Sdk?) = listOf(MAVEN_COMMON_STDLIB_ID)
-    override fun getTestDependencies() = listOf(MAVEN_COMMON_TEST_ID, MAVEN_COMMON_TEST_ANNOTATIONS_ID)
+    override fun getDependencies(sdk: Sdk?): List<String> = listOf(MAVEN_COMMON_STDLIB_ID)
+    override fun getTestDependencies(): List<String> = listOf(MAVEN_COMMON_TEST_ID, MAVEN_COMMON_TEST_ANNOTATIONS_ID)
 
-    override fun getDescription() = "Shared code for a Kotlin multiplatform project (targeting JVM and JS)"
+    override fun getDescription(): String = "Shared code for a Kotlin multiplatform project (targeting JVM and JS)"
 }
 
 class GradleKotlinMPPJavaFrameworkSupportProvider
     : GradleKotlinJavaFrameworkSupportProvider("KOTLIN_MPP_JVM", "Kotlin (Multiplatform JVM - Experimental)") {
 
-    override fun getPluginId() = "kotlin-platform-jvm"
-    override fun getDescription() = "JVM-specific code for a Kotlin multiplatform project"
-    override fun getTestDependencies() = listOf(MAVEN_TEST_ID, MAVEN_TEST_JUNIT_ID, "junit:junit:4.12")
+    override fun getPluginId(): String = "kotlin-platform-jvm"
+    override fun getDescription(): String = "JVM-specific code for a Kotlin multiplatform project"
+    override fun getTestDependencies(): List<String> = listOf(MAVEN_TEST_ID, MAVEN_TEST_JUNIT_ID, "junit:junit:4.12")
 
     override fun addSupport(buildScriptData: BuildScriptDataBuilder, sdk: Sdk?) {
         super.addSupport(buildScriptData, sdk)
@@ -177,6 +177,6 @@ class GradleKotlinMPPJavaFrameworkSupportProvider
 class GradleKotlinMPPJSFrameworkSupportProvider
     : GradleKotlinJSFrameworkSupportProvider("KOTLIN_MPP_JS", "Kotlin (Multiplatform JS - Experimental)") {
 
-    override fun getPluginId() = "kotlin-platform-js"
-    override fun getDescription() = "JavaScript-specific code for a Kotlin multiplatform project"
+    override fun getPluginId(): String = "kotlin-platform-js"
+    override fun getDescription(): String = "JavaScript-specific code for a Kotlin multiplatform project"
 }

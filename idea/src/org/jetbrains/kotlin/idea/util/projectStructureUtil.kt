@@ -32,7 +32,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import java.io.File
 
-fun Project.allModules() = ModuleManager.getInstance(this).modules.toList()
+fun Project.allModules(): List<Module> = ModuleManager.getInstance(this).modules.toList()
 
 fun Module.findLibrary(predicate: (Library) -> Boolean): Library? = OrderEnumerator.orderEntries(this).findLibrary(predicate)
 
@@ -74,7 +74,7 @@ fun Library.ModifiableModel.replaceFileRoot(oldFile: File, newFile: File) {
     replaceInRootType(OrderRootType.SOURCES)
 }
 
-fun VirtualFile.getModule(project: Project) = ModuleUtilCore.findModuleForFile(this, project)
+fun VirtualFile.getModule(project: Project): Module? = ModuleUtilCore.findModuleForFile(this, project)
 
-val PsiElement.module
+val PsiElement.module: Module?
     get() = ModuleUtilCore.findModuleForPsiElement(this)

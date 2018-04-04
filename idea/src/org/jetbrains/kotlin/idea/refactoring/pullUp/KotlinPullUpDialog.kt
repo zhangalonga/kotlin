@@ -135,19 +135,19 @@ class KotlinPullUpDialog(
 
     private val sourceClass: KtClassOrObject get() = myClass as KtClassOrObject
 
-    override fun getDimensionServiceKey() = "#" + this::class.java.name
+    override fun getDimensionServiceKey(): String = "#" + this::class.java.name
 
-    override fun getSuperClass() = super.getSuperClass()
+    override fun getSuperClass(): PsiNamedElement? = super.getSuperClass()
 
     override fun createMemberInfoModel(): MemberInfoModel<KtNamedDeclaration, KotlinMemberInfo> =
             MemberInfoModelImpl(sourceClass, preselection, getInterfaceContainmentVerifier { selectedMemberInfos })
 
-    override fun getPreselection() = mySuperClasses.firstOrNull { !it.isInterfaceClass() } ?: mySuperClasses.firstOrNull()
+    override fun getPreselection(): PsiNamedElement? = mySuperClasses.firstOrNull { !it.isInterfaceClass() } ?: mySuperClasses.firstOrNull()
 
-    override fun createMemberSelectionTable(infos: MutableList<KotlinMemberInfo>) =
+    override fun createMemberSelectionTable(infos: MutableList<KotlinMemberInfo>): KotlinMemberSelectionTable =
             KotlinMemberSelectionTable(infos, null, "Make abstract")
 
-    override fun isOKActionEnabled() = selectedMemberInfos.size > 0
+    override fun isOKActionEnabled(): Boolean = selectedMemberInfos.size > 0
 
     override fun doAction() {
         val selectedMembers = selectedMemberInfos

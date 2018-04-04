@@ -37,7 +37,7 @@ class ReceiverExpressionKotlinCallArgument private constructor(
 ) : ExpressionKotlinCallArgument {
     override val isSpread: Boolean get() = false
     override val argumentName: Name? get() = null
-    override fun toString() = "$receiver" + if (isSafeCall) "?" else ""
+    override fun toString(): String = "$receiver" + if (isSafeCall) "?" else ""
 
     companion object {
         // we create ReceiverArgument and fix capture types
@@ -45,6 +45,6 @@ class ReceiverExpressionKotlinCallArgument private constructor(
             receiver: ReceiverValueWithSmartCastInfo,
             isSafeCall: Boolean = false,
             isVariableReceiverForInvoke: Boolean = false
-        ) = ReceiverExpressionKotlinCallArgument(receiver.prepareReceiverRegardingCaptureTypes(), isSafeCall, isVariableReceiverForInvoke)
+        ): ReceiverExpressionKotlinCallArgument = ReceiverExpressionKotlinCallArgument(receiver.prepareReceiverRegardingCaptureTypes(), isSafeCall, isVariableReceiverForInvoke)
     }
 }

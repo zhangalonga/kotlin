@@ -45,6 +45,6 @@ class DecompiledTextIndex(private val indexers: Collection<DecompiledTextIndexer
     }
 
     companion object {
-        val Empty = DecompiledTextIndex(listOf())
+        val Empty: DecompiledTextIndex = DecompiledTextIndex(listOf())
     }
 }

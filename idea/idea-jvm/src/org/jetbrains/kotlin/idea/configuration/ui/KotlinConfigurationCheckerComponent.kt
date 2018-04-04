@@ -108,7 +108,7 @@ class KotlinConfigurationCheckerComponent(project: Project) : AbstractProjectCom
     }
 
     companion object {
-        const val CONFIGURE_NOTIFICATION_GROUP_ID = "Configure Kotlin in Project"
+        const val CONFIGURE_NOTIFICATION_GROUP_ID: String = "Configure Kotlin in Project"
 
         fun getInstance(project: Project): KotlinConfigurationCheckerComponent =
             project.getComponent(KotlinConfigurationCheckerComponent::class.java)

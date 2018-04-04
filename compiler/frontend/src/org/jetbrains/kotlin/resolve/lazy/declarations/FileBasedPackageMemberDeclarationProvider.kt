@@ -43,10 +43,10 @@ class FileBasedPackageMemberDeclarationProvider(
 
     override fun getAllDeclaredSubPackages(nameFilter: (Name) -> Boolean): Collection<FqName> = allDeclaredSubPackages()
 
-    override fun getPackageFiles() = packageFiles
+    override fun getPackageFiles(): Collection<KtFile> = packageFiles
 
-    override fun containsFile(file: KtFile) = file in packageFiles
+    override fun containsFile(file: KtFile): Boolean = file in packageFiles
 
-    override fun toString() = "Declarations for package $fqName with files ${packageFiles.map { it.name }} " +
+    override fun toString(): String = "Declarations for package $fqName with files ${packageFiles.map { it.name }} " +
             "with declarations inside ${packageFiles.flatMap { it.declarations }.map { it.name ?: "???" }}"
 }

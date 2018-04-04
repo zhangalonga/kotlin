@@ -143,4 +143,4 @@ val Module.sourceRoots: Array<VirtualFile>
 val PsiElement.module: Module?
     get() = ModuleUtilCore.findModuleForPsiElement(this)
 
-fun VirtualFile.findModule(project: Project) = ModuleUtilCore.findModuleForFile(this, project)
+fun VirtualFile.findModule(project: Project): Module? = ModuleUtilCore.findModuleForFile(this, project)

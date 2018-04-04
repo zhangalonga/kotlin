@@ -65,7 +65,7 @@ import java.lang.AssertionError
 
 object KotlinIntroduceTypeParameterHandler : RefactoringActionHandler {
     @JvmField
-    val REFACTORING_NAME = "Introduce Type Parameter"
+    val REFACTORING_NAME: String = "Introduce Type Parameter"
 
     fun selectElements(editor: Editor, file: KtFile, continuation: (elements: List<PsiElement>, targetParent: PsiElement) -> Unit) {
         selectElementsWithTargetParent(
@@ -172,5 +172,5 @@ object KotlinIntroduceTypeParameterHandler : RefactoringActionHandler {
 }
 
 class IntroduceTypeParameterAction : AbstractIntroduceAction() {
-    override fun getRefactoringHandler(provider: RefactoringSupportProvider) = KotlinIntroduceTypeParameterHandler
+    override fun getRefactoringHandler(provider: RefactoringSupportProvider): KotlinIntroduceTypeParameterHandler = KotlinIntroduceTypeParameterHandler
 }

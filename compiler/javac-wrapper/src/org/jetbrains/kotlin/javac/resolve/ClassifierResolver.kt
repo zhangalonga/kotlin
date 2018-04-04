@@ -247,4 +247,4 @@ private class CurrentClassAndInnerScope(javac: JavacWrapper,
 
 }
 
-fun classId(packageName: String = "", className: String) = ClassId(FqName(packageName), Name.identifier(className))
+fun classId(packageName: String = "", className: String): ClassId = ClassId(FqName(packageName), Name.identifier(className))

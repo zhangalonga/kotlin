@@ -26,8 +26,8 @@ import org.jetbrains.kotlin.idea.project.languageVersionSettings
 import org.jetbrains.kotlin.psi.*
 
 class RenameToUnderscoreFix(element: KtCallableDeclaration) : KotlinQuickFixAction<KtCallableDeclaration>(element) {
-    override fun getText() = "Rename to _"
-    override fun getFamilyName() = text
+    override fun getText(): String = "Rename to _"
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         element?.nameIdentifier?.replace(KtPsiFactory(project).createIdentifier("_"))

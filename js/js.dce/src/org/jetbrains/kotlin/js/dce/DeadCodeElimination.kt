@@ -39,10 +39,10 @@ import java.io.File
 import java.io.InputStreamReader
 
 class DeadCodeElimination(private val logConsumer: (DCELogLevel, String) -> Unit) {
-    val moduleMapping = mutableMapOf<JsBlock, String>()
+    val moduleMapping: MutableMap<JsBlock, String> = mutableMapOf()
     private val reachableNames = mutableSetOf<String>()
 
-    var reachableNodes = setOf<Node>()
+    var reachableNodes: Set<Node> = setOf()
         private set
 
     fun apply(root: JsNode) {

@@ -46,7 +46,7 @@ class MoveToKotlinFileProcessor @JvmOverloads constructor (
                                     searchInNonJavaFiles,
                                     moveCallback,
                                     prepareSuccessfulCallback) {
-    override fun getCommandName() = "Move ${sourceFile.name}"
+    override fun getCommandName(): String = "Move ${sourceFile.name}"
 
     override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptor {
         return MoveFilesWithDeclarationsViewDescriptor(arrayOf(sourceFile), targetDirectory)

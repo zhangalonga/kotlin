@@ -38,7 +38,7 @@ interface IrMemberAccessExpression : IrExpression {
     fun removeValueArgument(index: Int)
 }
 
-fun IrMemberAccessExpression.getTypeArgumentOrDefault(typeParameterDescriptor: TypeParameterDescriptor) =
+fun IrMemberAccessExpression.getTypeArgumentOrDefault(typeParameterDescriptor: TypeParameterDescriptor): KotlinType =
     getTypeArgument(typeParameterDescriptor) ?: typeParameterDescriptor.defaultType
 
 interface IrFunctionAccessExpression : IrMemberAccessExpression, IrDeclarationReference {
@@ -46,7 +46,7 @@ interface IrFunctionAccessExpression : IrMemberAccessExpression, IrDeclarationRe
     override val symbol: IrFunctionSymbol
 }
 
-fun IrMemberAccessExpression.getValueArgument(valueParameterDescriptor: ValueParameterDescriptor) =
+fun IrMemberAccessExpression.getValueArgument(valueParameterDescriptor: ValueParameterDescriptor): IrExpression? =
     getValueArgument(valueParameterDescriptor.index)
 
 fun IrMemberAccessExpression.putValueArgument(valueParameterDescriptor: ValueParameterDescriptor, valueArgument: IrExpression?) {

@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.name.FqName
 class FirDefaultStarImportingScope(session: FirSession, lookupInFir: Boolean = false) :
     FirAbstractStarImportingScope(session, lookupInFir) {
     // TODO: move relevant code in TargetPlatform from compiler:frontend and use here
-    override val starImports = listOf(
+    override val starImports: List<FirResolvedPackageStarImport> = listOf(
         "kotlin",
         "kotlin.annotation",
         "kotlin.collections",

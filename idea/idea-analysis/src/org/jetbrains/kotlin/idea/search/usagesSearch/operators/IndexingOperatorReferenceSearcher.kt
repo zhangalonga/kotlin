@@ -45,7 +45,7 @@ class IndexingOperatorReferenceSearcher(
         processReferenceElement(accessExpression)
     }
 
-    override fun isReferenceToCheck(ref: PsiReference) = ref is KtArrayAccessReference && checkAccessExpression(ref.element as KtArrayAccessExpression)
+    override fun isReferenceToCheck(ref: PsiReference): Boolean = ref is KtArrayAccessReference && checkAccessExpression(ref.element as KtArrayAccessExpression)
 
     override fun extractReference(element: KtElement): PsiReference? {
         val accessExpression = element as? KtArrayAccessExpression ?: return null

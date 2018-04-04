@@ -77,7 +77,7 @@ interface ParameterReplacement : Replacement {
 }
 
 class RenameReplacement(override val parameter: Parameter): ParameterReplacement {
-    override fun copy(parameter: Parameter) = RenameReplacement(parameter)
+    override fun copy(parameter: Parameter): RenameReplacement = RenameReplacement(parameter)
 
     override fun invoke(descriptor: ExtractableCodeDescriptor, e: KtElement): KtElement {
         var expressionToReplace = (e.parent as? KtThisExpression ?: e).let { it.getQualifiedExpressionForSelector() ?: it }
@@ -109,7 +109,7 @@ class WrapParameterInWithReplacement(override val parameter: Parameter): WrapInW
     override val argumentText: String
         get() = parameter.name
 
-    override fun copy(parameter: Parameter) = WrapParameterInWithReplacement(parameter)
+    override fun copy(parameter: Parameter): WrapParameterInWithReplacement = WrapParameterInWithReplacement(parameter)
 }
 
 class WrapObjectInWithReplacement(val descriptor: ClassDescriptor): WrapInWithReplacement() {
@@ -118,7 +118,7 @@ class WrapObjectInWithReplacement(val descriptor: ClassDescriptor): WrapInWithRe
 }
 
 class AddPrefixReplacement(override val parameter: Parameter): ParameterReplacement {
-    override fun copy(parameter: Parameter) = AddPrefixReplacement(parameter)
+    override fun copy(parameter: Parameter): AddPrefixReplacement = AddPrefixReplacement(parameter)
 
     override fun invoke(descriptor: ExtractableCodeDescriptor, e: KtElement): KtElement {
         if (descriptor.receiverParameter == parameter) return e
@@ -303,7 +303,7 @@ data class ControlFlow(
         val boxerFactory: (List<OutputValue>) -> OutputValueBoxer,
         val declarationsToCopy: List<KtDeclaration>
 ) {
-    val outputValueBoxer = boxerFactory(outputValues)
+    val outputValueBoxer: OutputValueBoxer = boxerFactory(outputValues)
 
     val defaultOutputValue: ExpressionValue? = with(outputValues.filterIsInstance<ExpressionValue>()) {
         if (size > 1) throw IllegalArgumentException("Multiple expression values: ${outputValues.joinToString()}") else firstOrNull()
@@ -398,7 +398,7 @@ fun ExtractableCodeDescriptor.copy(
 
 enum class ExtractionTarget(val targetName: String) {
     FUNCTION("function") {
-        override fun isAvailable(descriptor: ExtractableCodeDescriptor) = true
+        override fun isAvailable(descriptor: ExtractableCodeDescriptor): Boolean = true
     },
 
     FAKE_LAMBDALIKE_FUNCTION("lambda parameter") {
@@ -472,7 +472,7 @@ data class ExtractionGeneratorOptions(
         val delayInitialOccurrenceReplacement: Boolean = false
 ) {
     companion object {
-        @JvmField val DEFAULT = ExtractionGeneratorOptions()
+        @JvmField val DEFAULT: ExtractionGeneratorOptions = ExtractionGeneratorOptions()
     }
 }
 
@@ -486,7 +486,7 @@ data class ExtractionResult(
         val declaration: KtNamedDeclaration,
         val duplicateReplacers: Map<KotlinPsiRange, () -> Unit>
 ) : Disposable {
-    override fun dispose() = unmarkReferencesInside(declaration)
+    override fun dispose(): Unit = unmarkReferencesInside(declaration)
 }
 
 class AnalysisResult (

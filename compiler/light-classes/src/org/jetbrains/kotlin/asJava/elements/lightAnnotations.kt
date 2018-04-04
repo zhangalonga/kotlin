@@ -21,6 +21,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
+import com.intellij.psi.meta.PsiMetaData
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.kotlin.asJava.LightClassGenerationSupport
@@ -45,21 +46,21 @@ private val LOG = Logger.getInstance("#org.jetbrains.kotlin.asJava.elements.ligh
 
 abstract class KtLightAbstractAnnotation(parent: PsiElement, computeDelegate: () -> PsiAnnotation) :
         KtLightElementBase(parent), PsiAnnotation, KtLightElement<KtCallElement, PsiAnnotation> {
-    override val clsDelegate by lazyPub(computeDelegate)
+    override val clsDelegate: PsiAnnotation by lazyPub(computeDelegate)
 
-    override fun getNameReferenceElement() = clsDelegate.nameReferenceElement
+    override fun getNameReferenceElement(): PsiJavaCodeReferenceElement? = clsDelegate.nameReferenceElement
 
-    override fun getOwner() = parent as? PsiAnnotationOwner
+    override fun getOwner(): PsiAnnotationOwner? = parent as? PsiAnnotationOwner
 
-    override fun getMetaData() = clsDelegate.metaData
+    override fun getMetaData(): PsiMetaData? = clsDelegate.metaData
 
-    override fun getParameterList() = clsDelegate.parameterList
+    override fun getParameterList(): PsiAnnotationParameterList = clsDelegate.parameterList
 
     override fun canNavigate(): Boolean = super<KtLightElementBase>.canNavigate()
 
     override fun canNavigateToSource(): Boolean = super<KtLightElementBase>.canNavigateToSource()
 
-    override fun navigate(requestFocus: Boolean) = super<KtLightElementBase>.navigate(requestFocus)
+    override fun navigate(requestFocus: Boolean): Unit = super<KtLightElementBase>.navigate(requestFocus)
 
     open fun fqNameMatches(fqName: String): Boolean = qualifiedName == fqName
 }
@@ -73,7 +74,7 @@ class KtLightAnnotationForSourceEntry(
         computeDelegate: () -> PsiAnnotation
 ) : KtLightAbstractAnnotation(parent, computeDelegate) {
 
-    override fun getQualifiedName() = qualifiedName
+    override fun getQualifiedName(): String = qualifiedName
 
     open inner class LightElementValue<out D : PsiElement>(
             val delegate: D,
@@ -91,14 +92,14 @@ class KtLightAnnotationForSourceEntry(
             return context[BindingContext.COMPILE_TIME_VALUE, expression]?.getValue(TypeUtils.NO_EXPECTED_TYPE)
         }
 
-        override fun getReference() = references.singleOrNull()
-        override fun getReferences() = originalExpression?.references.orEmpty()
-        override fun getLanguage() = KotlinLanguage.INSTANCE
-        override fun getNavigationElement() = originalExpression
+        override fun getReference(): PsiReference? = references.singleOrNull()
+        override fun getReferences(): Array<out PsiReference> = originalExpression?.references.orEmpty()
+        override fun getLanguage(): KotlinLanguage = KotlinLanguage.INSTANCE
+        override fun getNavigationElement(): PsiElement? = originalExpression
         override fun isPhysical(): Boolean = originalExpression?.containingFile == kotlinOrigin.containingFile
-        override fun getTextRange() = originalExpression?.textRange ?: TextRange.EMPTY_RANGE
-        override fun getParent() = parent
-        override fun getText() = originalExpression?.text.orEmpty()
+        override fun getTextRange(): TextRange = originalExpression?.textRange ?: TextRange.EMPTY_RANGE
+        override fun getParent(): PsiElement = parent
+        override fun getText(): String = originalExpression?.text.orEmpty()
         override fun getContainingFile(): PsiFile? = if (isPhysical) kotlinOrigin.containingFile else delegate.containingFile
 
         override fun replace(newElement: PsiElement): PsiElement {
@@ -181,7 +182,7 @@ class KtLightAnnotationForSourceEntry(
             parent: PsiElement,
             valueOrigin: AnnotationValueOrigin
     ) : LightExpressionValue<PsiLiteralExpression>(delegate, parent, valueOrigin), PsiLiteralExpression {
-        override fun getValue() = delegate.value
+        override fun getValue(): Any? = delegate.value
     }
 
     inner class LightClassLiteral(
@@ -189,7 +190,7 @@ class KtLightAnnotationForSourceEntry(
             parent: PsiElement,
             valueOrigin: AnnotationValueOrigin
     ) : LightExpressionValue<PsiClassObjectAccessExpression>(delegate, parent, valueOrigin), PsiClassObjectAccessExpression {
-        override fun getType() = delegate.type
+        override fun getType(): PsiType = delegate.type
         override fun getOperand(): PsiTypeElement = delegate.operand
     }
 
@@ -225,7 +226,7 @@ class KtLightAnnotationForSourceEntry(
             }.toTypedArray()
         }
 
-        override fun getInitializers() = _initializers
+        override fun getInitializers(): Array<PsiAnnotationMemberValue> = _initializers
     }
 
     private fun wrapAnnotationValue(value: PsiAnnotationMemberValue, parent: PsiElement, ktOrigin: AnnotationValueOrigin): PsiAnnotationMemberValue =
@@ -249,23 +250,23 @@ class KtLightAnnotationForSourceEntry(
                 else -> LightElementValue(value, parent, ktOrigin)
             }
 
-    override fun isPhysical() = true
+    override fun isPhysical(): Boolean = true
 
-    override fun getName() = null
+    override fun getName(): Nothing? = null
 
     private fun wrapAnnotationValue(value: PsiAnnotationMemberValue): PsiAnnotationMemberValue = wrapAnnotationValue(value, this, {
         getMemberValueAsCallArgument(value, kotlinOrigin)
     })
 
-    override fun findAttributeValue(name: String?) = clsDelegate.findAttributeValue(name)?.let { wrapAnnotationValue(it) }
+    override fun findAttributeValue(name: String?): PsiAnnotationMemberValue? = clsDelegate.findAttributeValue(name)?.let { wrapAnnotationValue(it) }
 
-    override fun findDeclaredAttributeValue(name: String?) = clsDelegate.findDeclaredAttributeValue(name)?.let { wrapAnnotationValue(it) }
+    override fun findDeclaredAttributeValue(name: String?): PsiAnnotationMemberValue? = clsDelegate.findDeclaredAttributeValue(name)?.let { wrapAnnotationValue(it) }
 
     override fun getParameterList(): PsiAnnotationParameterList = KtLightAnnotationParameterList(super.getParameterList())
 
     inner class KtLightAnnotationParameterList(private val list: PsiAnnotationParameterList) : KtLightElementBase(this),
         PsiAnnotationParameterList {
-        override val kotlinOrigin get() = null
+        override val kotlinOrigin: Nothing? get() = null
         override fun getAttributes(): Array<PsiNameValuePair> = list.attributes.map { KtLightPsiNameValuePair(it) }.toTypedArray()
 
         inner class KtLightPsiNameValuePair(private val psiNameValuePair: PsiNameValuePair) : KtLightElementBase(this),
@@ -280,9 +281,9 @@ class KtLightAnnotationForSourceEntry(
     }
 
 
-    override fun delete() = kotlinOrigin.delete()
+    override fun delete(): Unit = kotlinOrigin.delete()
 
-    override fun toString() = "@$qualifiedName"
+    override fun toString(): String = "@$qualifiedName"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -290,44 +291,44 @@ class KtLightAnnotationForSourceEntry(
         return kotlinOrigin == (other as KtLightAnnotationForSourceEntry).kotlinOrigin
     }
 
-    override fun hashCode() = kotlinOrigin.hashCode()
+    override fun hashCode(): Int = kotlinOrigin.hashCode()
 
-    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?) = cannotModify()
+    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?): Nothing = cannotModify()
 }
 
 class KtLightNonSourceAnnotation(
         parent: PsiElement, clsDelegate: PsiAnnotation
 ) : KtLightAbstractAnnotation(parent, { clsDelegate }) {
     override val kotlinOrigin: KtAnnotationEntry? get() = null
-    override fun getQualifiedName() = clsDelegate.qualifiedName
-    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?) = cannotModify()
-    override fun findAttributeValue(attributeName: String?) = clsDelegate.findAttributeValue(attributeName)
-    override fun findDeclaredAttributeValue(attributeName: String?) = clsDelegate.findDeclaredAttributeValue(attributeName)
+    override fun getQualifiedName(): String? = clsDelegate.qualifiedName
+    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?): Nothing = cannotModify()
+    override fun findAttributeValue(attributeName: String?): PsiAnnotationMemberValue? = clsDelegate.findAttributeValue(attributeName)
+    override fun findDeclaredAttributeValue(attributeName: String?): PsiAnnotationMemberValue? = clsDelegate.findDeclaredAttributeValue(attributeName)
 }
 
 class KtLightNonExistentAnnotation(parent: KtLightElement<*, *>) : KtLightElementBase(parent), PsiAnnotation {
-    override val kotlinOrigin get() = null
-    override fun toString() = this.javaClass.name
+    override val kotlinOrigin: Nothing? get() = null
+    override fun toString(): String = this.javaClass.name
 
-    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?) = cannotModify()
+    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?): Nothing = cannotModify()
 
-    override fun getNameReferenceElement() = null
-    override fun findAttributeValue(attributeName: String?) = null
-    override fun getQualifiedName() = null
-    override fun getOwner() = parent as? PsiAnnotationOwner
-    override fun findDeclaredAttributeValue(attributeName: String?) = null
-    override fun getMetaData() = null
-    override fun getParameterList() = KtLightEmptyAnnotationParameterList(this)
+    override fun getNameReferenceElement(): Nothing? = null
+    override fun findAttributeValue(attributeName: String?): Nothing? = null
+    override fun getQualifiedName(): Nothing? = null
+    override fun getOwner(): PsiAnnotationOwner? = parent as? PsiAnnotationOwner
+    override fun findDeclaredAttributeValue(attributeName: String?): Nothing? = null
+    override fun getMetaData(): Nothing? = null
+    override fun getParameterList(): KtLightEmptyAnnotationParameterList = KtLightEmptyAnnotationParameterList(this)
 
     override fun canNavigate(): Boolean = super<KtLightElementBase>.canNavigate()
 
     override fun canNavigateToSource(): Boolean = super<KtLightElementBase>.canNavigateToSource()
 
-    override fun navigate(requestFocus: Boolean) = super<KtLightElementBase>.navigate(requestFocus)
+    override fun navigate(requestFocus: Boolean): Unit = super<KtLightElementBase>.navigate(requestFocus)
 }
 
 class KtLightEmptyAnnotationParameterList(parent: PsiElement) : KtLightElementBase(parent), PsiAnnotationParameterList {
-    override val kotlinOrigin get() = null
+    override val kotlinOrigin: Nothing? get() = null
     override fun getAttributes(): Array<PsiNameValuePair> = emptyArray()
 }
 
@@ -343,14 +344,14 @@ class KtLightNullabilityAnnotation(member: KtLightElement<*, PsiModifierListOwne
         return super.fqNameMatches(fqName)
     }
 
-    override val kotlinOrigin get() = null
-    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?) = cannotModify()
+    override val kotlinOrigin: Nothing? get() = null
+    override fun <T : PsiAnnotationMemberValue?> setDeclaredAttributeValue(attributeName: String?, value: T?): Nothing = cannotModify()
 
-    override fun findAttributeValue(attributeName: String?) = null
+    override fun findAttributeValue(attributeName: String?): Nothing? = null
 
     override fun getQualifiedName(): String? = clsDelegate.qualifiedName
 
-    override fun findDeclaredAttributeValue(attributeName: String?) = null
+    override fun findDeclaredAttributeValue(attributeName: String?): Nothing? = null
 }
 
 internal fun isNullabilityAnnotation(qualifiedName: String?) = qualifiedName in backendNullabilityAnnotations

@@ -55,7 +55,7 @@ class JvmDependenciesDynamicCompoundIndex : JvmDependenciesIndex {
             packageFqName: FqName,
             acceptedRootTypes: Set<JavaRoot.RootType>,
             continueSearch: (VirtualFile, JavaRoot.RootType) -> Boolean
-    ) = lock.read {
+    ): Unit = lock.read {
         indices.forEach { it.traverseDirectoriesInPackage(packageFqName, acceptedRootTypes, continueSearch) }
     }
 }

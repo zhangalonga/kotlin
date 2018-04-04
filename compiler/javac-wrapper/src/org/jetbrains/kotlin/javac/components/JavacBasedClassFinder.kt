@@ -18,6 +18,8 @@ package org.jetbrains.kotlin.javac.components
 
 import org.jetbrains.kotlin.javac.JavacWrapper
 import org.jetbrains.kotlin.load.java.AbstractJavaClassFinder
+import org.jetbrains.kotlin.load.java.structure.JavaClass
+import org.jetbrains.kotlin.load.java.structure.JavaPackage
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.BindingTrace
@@ -32,10 +34,10 @@ class JavacBasedClassFinder : AbstractJavaClassFinder() {
         super.initialize(trace, codeAnalyzer)
     }
 
-    override fun findClass(classId: ClassId) = javac.findClass(classId, javaSearchScope)
+    override fun findClass(classId: ClassId): JavaClass? = javac.findClass(classId, javaSearchScope)
 
-    override fun findPackage(fqName: FqName) = javac.findPackage(fqName, javaSearchScope)
+    override fun findPackage(fqName: FqName): JavaPackage? = javac.findPackage(fqName, javaSearchScope)
 
-    override fun knownClassNamesInPackage(packageFqName: FqName) = javac.knownClassNamesInPackage(packageFqName)
+    override fun knownClassNamesInPackage(packageFqName: FqName): Set<String> = javac.knownClassNamesInPackage(packageFqName)
 
 }

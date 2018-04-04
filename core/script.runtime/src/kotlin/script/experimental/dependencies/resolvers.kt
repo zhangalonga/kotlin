@@ -27,7 +27,7 @@ interface DependenciesResolver : ScriptDependenciesResolver {
     fun resolve(scriptContents: ScriptContents, environment: Environment): ResolveResult
 
     object NoDependencies : DependenciesResolver {
-        override fun resolve(scriptContents: ScriptContents, environment: Environment) = ScriptDependencies.Empty.asSuccess()
+        override fun resolve(scriptContents: ScriptContents, environment: Environment): ResolveResult.Success = ScriptDependencies.Empty.asSuccess()
     }
 
     sealed class ResolveResult {

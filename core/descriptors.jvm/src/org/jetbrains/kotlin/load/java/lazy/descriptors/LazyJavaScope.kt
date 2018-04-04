@@ -68,7 +68,7 @@ abstract class LazyJavaScope(protected val c: LazyJavaResolverContext) : MemberS
 
     protected val declaredMemberIndex: NotNullLazyValue<DeclaredMemberIndex> = c.storageManager.createLazyValue { computeMemberIndex() }
 
-    fun wasContentRequested() = declaredMemberIndex.isComputed()
+    fun wasContentRequested(): Boolean = declaredMemberIndex.isComputed()
 
     protected abstract fun computeMemberIndex(): DeclaredMemberIndex
 
@@ -96,7 +96,7 @@ abstract class LazyJavaScope(protected val c: LazyJavaResolverContext) : MemberS
         c.components.signatureEnhancement.enhanceSignatures(c, result).toList()
     }
 
-    open protected fun JavaMethodDescriptor.isVisibleAsFunction() = true
+    open protected fun JavaMethodDescriptor.isVisibleAsFunction(): Boolean = true
 
     protected data class MethodSignatureData(
             val returnType: KotlinType,
@@ -229,9 +229,9 @@ abstract class LazyJavaScope(protected val c: LazyJavaResolverContext) : MemberS
     private val propertyNamesLazy by c.storageManager.createLazyValue { computePropertyNames(DescriptorKindFilter.VARIABLES, null) }
     private val classNamesLazy by c.storageManager.createLazyValue { computeClassNames(DescriptorKindFilter.CLASSIFIERS, null) }
 
-    override fun getFunctionNames() = functionNamesLazy
-    override fun getVariableNames() = propertyNamesLazy
-    override fun getClassifierNames() = classNamesLazy
+    override fun getFunctionNames(): Set<Name> = functionNamesLazy
+    override fun getVariableNames(): Set<Name> = propertyNamesLazy
+    override fun getClassifierNames(): Set<Name> = classNamesLazy
 
     override fun definitelyDoesNotContainName(name: Name): Boolean {
         return name !in functionNamesLazy && name !in propertyNamesLazy && name !in classNamesLazy
@@ -320,7 +320,7 @@ abstract class LazyJavaScope(protected val c: LazyJavaResolverContext) : MemberS
         return properties(name)
     }
 
-    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean) = allDescriptors()
+    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> = allDescriptors()
 
     protected fun computeDescriptors(
             kindFilter: DescriptorKindFilter,
@@ -359,7 +359,7 @@ abstract class LazyJavaScope(protected val c: LazyJavaResolverContext) : MemberS
 
     protected abstract fun computeClassNames(kindFilter: DescriptorKindFilter, nameFilter: ((Name) -> Boolean)?): Set<Name>
 
-    override fun toString() = "Lazy scope for $ownerDescriptor"
+    override fun toString(): String = "Lazy scope for $ownerDescriptor"
 
     override fun printScopeStructure(p: Printer) {
         p.println(this::class.java.simpleName, " {")

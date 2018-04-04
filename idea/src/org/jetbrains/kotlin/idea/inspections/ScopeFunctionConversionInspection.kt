@@ -110,7 +110,7 @@ class Replacement<T : PsiElement> private constructor(
         }
     }
 
-    val endOffset
+    val endOffset: Int
         get() = elementPointer.element!!.endOffset
 }
 
@@ -139,11 +139,11 @@ class ReplacementCollection {
         }
     }
 
-    fun isNotEmpty() = replacements.isNotEmpty()
+    fun isNotEmpty(): Boolean = replacements.isNotEmpty()
 }
 
 abstract class ConvertScopeFunctionFix(private val counterpartName: String) : LocalQuickFix {
-    override fun getFamilyName() = "Convert to '$counterpartName'"
+    override fun getFamilyName(): String = "Convert to '$counterpartName'"
 
     override fun applyFix(project: Project, problemDescriptor: ProblemDescriptor) {
         val callee = problemDescriptor.psiElement as KtNameReferenceExpression

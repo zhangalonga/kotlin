@@ -23,13 +23,13 @@ import org.jetbrains.kotlin.serialization.deserialization.BinaryVersion
  * internal member name mangling specifics, property getter/setter names, etc.
  */
 class JvmBytecodeBinaryVersion(vararg numbers: Int) : BinaryVersion(*numbers) {
-    override fun isCompatible() = this.isCompatibleTo(INSTANCE)
+    override fun isCompatible(): Boolean = this.isCompatibleTo(INSTANCE)
 
     companion object {
         @JvmField
-        val INSTANCE = JvmBytecodeBinaryVersion(1, 0, 2)
+        val INSTANCE: JvmBytecodeBinaryVersion = JvmBytecodeBinaryVersion(1, 0, 2)
 
         @JvmField
-        val INVALID_VERSION = JvmBytecodeBinaryVersion()
+        val INVALID_VERSION: JvmBytecodeBinaryVersion = JvmBytecodeBinaryVersion()
     }
 }

@@ -45,9 +45,9 @@ class MigrateDiagnosticSuppressionInspection : AbstractKotlinInspection(), Clean
     }
 
     class ReplaceDiagnosticNameFix(private val diagnosticFactory: DiagnosticFactory<*>) : LocalQuickFix {
-        override fun getName() = "$familyName with ${diagnosticFactory.name}"
+        override fun getName(): String = "$familyName with ${diagnosticFactory.name}"
 
-        override fun getFamilyName() = "Replace diagnostic name"
+        override fun getFamilyName(): String = "Replace diagnostic name"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val expression = descriptor.psiElement as? KtStringTemplateExpression ?: return

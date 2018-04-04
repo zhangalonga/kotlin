@@ -82,7 +82,7 @@ class MoveMemberOutOfCompanionObjectIntention : MoveMemberOutOfObjectIntention("
 
     }
 
-    override fun getDestination(element: KtNamedDeclaration) = element.containingClassOrObject!!.containingClassOrObject!!
+    override fun getDestination(element: KtNamedDeclaration): KtClassOrObject = element.containingClassOrObject!!.containingClassOrObject!!
 
     override fun applicabilityRange(element: KtNamedDeclaration): TextRange? {
         if (element !is KtNamedFunction && element !is KtProperty && element !is KtClassOrObject) return null

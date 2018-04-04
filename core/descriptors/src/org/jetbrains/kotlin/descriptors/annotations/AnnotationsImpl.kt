@@ -34,7 +34,7 @@ class AnnotationsImpl : Annotations {
         this.annotations = targetedAnnotations.filter { it.target == null }.map { it.annotation }
     }
 
-    override fun isEmpty() = targetedAnnotations.isEmpty()
+    override fun isEmpty(): Boolean = targetedAnnotations.isEmpty()
 
     override fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget> {
         return targetedAnnotations
@@ -42,11 +42,11 @@ class AnnotationsImpl : Annotations {
                 .map { AnnotationWithTarget(it.annotation, it.target!!) }
     }
 
-    override fun getAllAnnotations() = targetedAnnotations
+    override fun getAllAnnotations(): List<AnnotationWithTarget> = targetedAnnotations
 
-    override fun iterator() = annotations.iterator()
+    override fun iterator(): Iterator<AnnotationDescriptor> = annotations.iterator()
 
-    override fun toString() = annotations.toString()
+    override fun toString(): String = annotations.toString()
 
     companion object {
         @JvmStatic

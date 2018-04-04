@@ -37,10 +37,10 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 
 class KotlinInlineFunctionHandler: InlineActionHandler() {
-    override fun isEnabledForLanguage(language: Language) = language == KotlinLanguage.INSTANCE
+    override fun isEnabledForLanguage(language: Language): Boolean = language == KotlinLanguage.INSTANCE
 
     //TODO: overrides etc
-    override fun canInlineElement(element: PsiElement) = element is KtNamedFunction && element.hasBody()
+    override fun canInlineElement(element: PsiElement): Boolean = element is KtNamedFunction && element.hasBody()
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         element as KtNamedFunction

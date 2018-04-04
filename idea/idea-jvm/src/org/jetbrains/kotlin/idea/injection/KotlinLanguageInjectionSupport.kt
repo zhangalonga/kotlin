@@ -40,14 +40,14 @@ import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
-@NonNls val KOTLIN_SUPPORT_ID = "kotlin"
+@NonNls val KOTLIN_SUPPORT_ID: String = "kotlin"
 
 class KotlinLanguageInjectionSupport : AbstractLanguageInjectionSupport() {
     override fun getId(): String = KOTLIN_SUPPORT_ID
 
-    override fun getPatternClasses() = arrayOf(KotlinPatterns::class.java)
+    override fun getPatternClasses(): Array<Class<KotlinPatterns>> = arrayOf(KotlinPatterns::class.java)
 
-    override fun isApplicableTo(host: PsiLanguageInjectionHost?) = host is KtElement
+    override fun isApplicableTo(host: PsiLanguageInjectionHost?): Boolean = host is KtElement
 
     override fun useDefaultInjector(host: PsiLanguageInjectionHost?): Boolean = false
 

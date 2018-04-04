@@ -535,7 +535,7 @@ object Elements : TemplateGroupBase() {
         }
     }
 
-    val f_lastOrNull = fn("lastOrNull()") {
+    val f_lastOrNull: FamilyPrimitiveMemberDefinition = fn("lastOrNull()") {
         includeDefault()
         include(Lists, CharSequences)
     } builder {

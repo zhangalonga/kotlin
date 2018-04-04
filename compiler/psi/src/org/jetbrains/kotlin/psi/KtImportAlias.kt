@@ -36,7 +36,7 @@ class KtImportAlias : KtElementImplStub<KotlinImportAliasStub>, PsiNameIdentifie
     val importDirective: KtImportDirective?
         get() = parent as? KtImportDirective
 
-    override fun getName() = stub?.getName() ?: nameIdentifier?.text
+    override fun getName(): String? = stub?.getName() ?: nameIdentifier?.text
 
     override fun setName(name: String): PsiElement {
         nameIdentifier?.replace(KtPsiFactory(this).createNameIdentifier(name))
@@ -45,7 +45,7 @@ class KtImportAlias : KtElementImplStub<KotlinImportAliasStub>, PsiNameIdentifie
 
     override fun getNameIdentifier(): PsiElement? = findChildByType(KtTokens.IDENTIFIER)
 
-    override fun getTextOffset() = nameIdentifier?.textOffset ?: startOffset
+    override fun getTextOffset(): Int = nameIdentifier?.textOffset ?: startOffset
 
-    override fun getUseScope() = LocalSearchScope(containingFile)
+    override fun getUseScope(): LocalSearchScope = LocalSearchScope(containingFile)
 }

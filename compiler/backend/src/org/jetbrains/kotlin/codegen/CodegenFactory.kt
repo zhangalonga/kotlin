@@ -69,10 +69,10 @@ object DefaultCodegenFactory : CodegenFactory {
         }
     }
 
-    override fun createPackageCodegen(state: GenerationState, files: Collection<KtFile>, fqName: FqName, registry: PackagePartRegistry) =
+    override fun createPackageCodegen(state: GenerationState, files: Collection<KtFile>, fqName: FqName, registry: PackagePartRegistry): PackageCodegenImpl =
             PackageCodegenImpl(state, files, fqName, registry)
 
-    override fun createMultifileClassCodegen(state: GenerationState, files: Collection<KtFile>, fqName: FqName, registry: PackagePartRegistry) =
+    override fun createMultifileClassCodegen(state: GenerationState, files: Collection<KtFile>, fqName: FqName, registry: PackagePartRegistry): MultifileClassCodegenImpl =
             MultifileClassCodegenImpl(state, files, fqName, registry)
 
     private fun generateMultifileClass(

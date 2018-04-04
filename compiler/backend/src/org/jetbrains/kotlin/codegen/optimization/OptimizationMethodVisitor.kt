@@ -54,12 +54,12 @@ class OptimizationMethodVisitor(
     companion object {
         private val MEMORY_LIMIT_BY_METHOD_MB = 50
 
-        val normalizationMethodTransformer = CompositeMethodTransformer(
+        val normalizationMethodTransformer: CompositeMethodTransformer = CompositeMethodTransformer(
             FixStackWithLabelNormalizationMethodTransformer(),
             MethodVerifier("AFTER mandatory stack transformations")
         )
 
-        val optimizationTransformer = CompositeMethodTransformer(
+        val optimizationTransformer: CompositeMethodTransformer = CompositeMethodTransformer(
             CapturedVarsOptimizationMethodTransformer(),
             RedundantNullCheckMethodTransformer(),
             RedundantCheckCastEliminationMethodTransformer(),

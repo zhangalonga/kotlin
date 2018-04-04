@@ -26,5 +26,5 @@ class CompositionTypeSubstitution(
         private val outer: TypeSubstitution, private val inner: Map<TypeParameterDescriptor, TypeParameterDescriptor>
 ) : DelegatedTypeSubstitution(outer) {
 
-    override fun get(key: KotlinType) = inner[key.constructor.declarationDescriptor]?.let { outer[it.defaultType] } ?: outer[key]
+    override fun get(key: KotlinType): TypeProjection? = inner[key.constructor.declarationDescriptor]?.let { outer[it.defaultType] } ?: outer[key]
 }

@@ -35,9 +35,9 @@ class ChangeAccessorTypeFix(element: KtPropertyAccessor) : KotlinQuickFixAction<
     private fun getType(): KotlinType? =
             (element!!.property.resolveToDescriptorIfAny() as? VariableDescriptor)?.type?.takeUnless(KotlinType::isError)
 
-    override fun isAvailable(project: Project, editor: Editor?, file: KtFile) = getType() != null
+    override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean = getType() != null
 
-    override fun getFamilyName() = "Change accessor type"
+    override fun getFamilyName(): String = "Change accessor type"
 
     override fun getText(): String {
         val element = element ?: return ""

@@ -225,6 +225,6 @@ class NewKotlinActivityAction: AnAction(KotlinIcons.ACTIVITY) {
         }
     }
 
-    override fun hashCode() = 0
-    override fun equals(other: Any?) = other is NewKotlinActivityAction
+    override fun hashCode(): Int = 0
+    override fun equals(other: Any?): Boolean = other is NewKotlinActivityAction
 }

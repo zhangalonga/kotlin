@@ -32,7 +32,7 @@ class InlinedLocalFunctionDeclarationInstruction(
 ) : LocalFunctionDeclarationInstruction(element, body, blockScope) {
     override fun createCopy(): InstructionImpl = InlinedLocalFunctionDeclarationInstruction(element, body, blockScope, kind)
 
-    override fun accept(visitor: InstructionVisitor) = visitor.visitInlinedLocalFunctionDeclarationInstruction(this)
+    override fun accept(visitor: InstructionVisitor): Unit = visitor.visitInlinedLocalFunctionDeclarationInstruction(this)
 
     override fun <R> accept(visitor: InstructionVisitorWithResult<R>): R = visitor.visitInlinedFunctionDeclarationInstruction(this)
 

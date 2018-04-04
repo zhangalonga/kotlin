@@ -89,21 +89,21 @@ class ReplOutputProcessor(
         printWarningMessage(compilerWarningMessage, true)
     }
 
-    fun printInitialPrompt(command: String) = consoleView.print(command, ReplColors.INITIAL_PROMPT_CONTENT_TYPE)
+    fun printInitialPrompt(command: String): Unit = consoleView.print(command, ReplColors.INITIAL_PROMPT_CONTENT_TYPE)
 
-    fun printHelp(help: String) = WriteCommandAction.runWriteCommandAction(project) {
+    fun printHelp(help: String): Unit = WriteCommandAction.runWriteCommandAction(project) {
         printOutput(help, ConsoleViewContentType.SYSTEM_OUTPUT, ReplIcons.SYSTEM_HELP)
     }
 
-    fun printUserOutput(command: String) = WriteCommandAction.runWriteCommandAction(project) {
+    fun printUserOutput(command: String): Unit = WriteCommandAction.runWriteCommandAction(project) {
         consoleView.print(command, ReplColors.USER_OUTPUT_CONTENT_TYPE)
     }
 
-    fun printResultWithGutterIcon(result: String) = WriteCommandAction.runWriteCommandAction(project) {
+    fun printResultWithGutterIcon(result: String): Unit = WriteCommandAction.runWriteCommandAction(project) {
         printOutput(result, ConsoleViewContentType.NORMAL_OUTPUT, ReplIcons.RESULT)
     }
 
-    fun highlightCompilerErrors(compilerMessages: List<SeverityDetails>) = WriteCommandAction.runWriteCommandAction(project) {
+    fun highlightCompilerErrors(compilerMessages: List<SeverityDetails>): Unit = WriteCommandAction.runWriteCommandAction(project) {
         val commandHistory = runner.commandHistory
         val lastUnprocessedHistoryEntry = commandHistory.lastUnprocessedEntry() ?: return@runWriteCommandAction logError(
                 ReplOutputProcessor::class.java,
@@ -141,11 +141,11 @@ class ReplOutputProcessor(
         }
     }
 
-    fun printRuntimeError(errorText: String) = WriteCommandAction.runWriteCommandAction(project) {
+    fun printRuntimeError(errorText: String): Unit = WriteCommandAction.runWriteCommandAction(project) {
         printOutput(errorText, ConsoleViewContentType.ERROR_OUTPUT, ReplIcons.RUNTIME_EXCEPTION)
     }
 
-    fun printInternalErrorMessage(internalErrorText: String) = WriteCommandAction.runWriteCommandAction(project) {
+    fun printInternalErrorMessage(internalErrorText: String): Unit = WriteCommandAction.runWriteCommandAction(project) {
         val promptText = "Internal error occurred. Please, send report to developers.\n"
         printOutput(promptText, ConsoleViewContentType.ERROR_OUTPUT, ReplIcons.RUNTIME_EXCEPTION)
         logError(this::class.java, internalErrorText)

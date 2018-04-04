@@ -14,7 +14,7 @@ class ParametersBuilder private constructor() {
 
     private var valueParamFirstIndex = 0
 
-    var nextParameterOffset = 0
+    var nextParameterOffset: Int = 0
         private set
 
     private var nextValueParameterIndex = 0

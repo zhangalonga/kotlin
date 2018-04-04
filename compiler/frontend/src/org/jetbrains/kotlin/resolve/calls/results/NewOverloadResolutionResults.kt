@@ -21,17 +21,17 @@ import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.kotlin.resolve.calls.results.OverloadResolutionResults.Code
 
 abstract class AbstractOverloadResolutionResults<D : CallableDescriptor> : OverloadResolutionResults<D> {
-    override fun isSuccess() = resultCode.isSuccess
-    override fun isSingleResult() = resultingCalls.size == 1 && resultCode != OverloadResolutionResults.Code.CANDIDATES_WITH_WRONG_RECEIVER
-    override fun isNothing() = resultCode == OverloadResolutionResults.Code.NAME_NOT_FOUND
-    override fun isAmbiguity() = resultCode == OverloadResolutionResults.Code.AMBIGUITY
-    override fun isIncomplete() = resultCode == OverloadResolutionResults.Code.INCOMPLETE_TYPE_INFERENCE
+    override fun isSuccess(): Boolean = resultCode.isSuccess
+    override fun isSingleResult(): Boolean = resultingCalls.size == 1 && resultCode != OverloadResolutionResults.Code.CANDIDATES_WITH_WRONG_RECEIVER
+    override fun isNothing(): Boolean = resultCode == OverloadResolutionResults.Code.NAME_NOT_FOUND
+    override fun isAmbiguity(): Boolean = resultCode == OverloadResolutionResults.Code.AMBIGUITY
+    override fun isIncomplete(): Boolean = resultCode == OverloadResolutionResults.Code.INCOMPLETE_TYPE_INFERENCE
 }
 
 class SingleOverloadResolutionResult<D : CallableDescriptor>(val result: ResolvedCall<D>) : AbstractOverloadResolutionResults<D>() {
     override fun getAllCandidates(): Collection<ResolvedCall<D>>? = null
     override fun getResultingCalls(): Collection<ResolvedCall<D>> = listOf(result)
-    override fun getResultingCall() = result
+    override fun getResultingCall(): ResolvedCall<D> = result
 
     override fun getResultingDescriptor(): D = result.resultingDescriptor
 
@@ -46,9 +46,9 @@ class SingleOverloadResolutionResult<D : CallableDescriptor>(val result: Resolve
 open class NameNotFoundResolutionResult<D : CallableDescriptor> : AbstractOverloadResolutionResults<D>() {
     override fun getAllCandidates(): Collection<ResolvedCall<D>>? = null
     override fun getResultingCalls(): Collection<ResolvedCall<D>> = emptyList()
-    override fun getResultingCall() = error("No candidates")
-    override fun getResultingDescriptor() = error("No candidates")
-    override fun getResultCode() = Code.NAME_NOT_FOUND
+    override fun getResultingCall(): Nothing = error("No candidates")
+    override fun getResultingDescriptor(): Nothing = error("No candidates")
+    override fun getResultCode(): Code = Code.NAME_NOT_FOUND
 }
 
 class ManyCandidates<D : CallableDescriptor>(
@@ -56,9 +56,9 @@ class ManyCandidates<D : CallableDescriptor>(
 ) : AbstractOverloadResolutionResults<D>() {
     override fun getAllCandidates(): Collection<ResolvedCall<D>>? = null
     override fun getResultingCalls(): Collection<ResolvedCall<D>> = candidates
-    override fun getResultingCall() = error("Many candidates")
-    override fun getResultingDescriptor() = error("Many candidates")
-    override fun getResultCode() =
+    override fun getResultingCall(): Nothing = error("Many candidates")
+    override fun getResultingDescriptor(): Nothing = error("Many candidates")
+    override fun getResultCode(): Code =
         when (candidates.first().status) {
             ResolutionStatus.RECEIVER_TYPE_ERROR -> Code.CANDIDATES_WITH_WRONG_RECEIVER
             ResolutionStatus.SUCCESS -> Code.AMBIGUITY
@@ -69,5 +69,5 @@ class ManyCandidates<D : CallableDescriptor>(
 
 
 class AllCandidates<D : CallableDescriptor>(private val allCandidates: Collection<ResolvedCall<D>>) : NameNotFoundResolutionResult<D>() {
-    override fun getAllCandidates() = allCandidates
+    override fun getAllCandidates(): Collection<ResolvedCall<D>> = allCandidates
 }

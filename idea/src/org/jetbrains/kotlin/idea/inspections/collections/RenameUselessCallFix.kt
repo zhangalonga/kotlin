@@ -25,9 +25,9 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.KtQualifiedExpression
 
 class RenameUselessCallFix(val newName: String) : LocalQuickFix {
-    override fun getName() = "Rename useless call to '$newName'"
+    override fun getName(): String = "Rename useless call to '$newName'"
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         (descriptor.psiElement as? KtQualifiedExpression)?.let {

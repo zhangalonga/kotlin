@@ -41,13 +41,13 @@ interface CallHandle {
 }
 
 class CallBasedCallHandle(val call: Call) : CallHandle {
-    override fun equals(other: Any?) =
+    override fun equals(other: Any?): Boolean =
         other is CallBasedCallHandle && call === other.call
 
-    override fun hashCode() =
+    override fun hashCode(): Int =
         System.identityHashCode(call)
 
-    override fun toString() =
+    override fun toString(): String =
         call.toString()
 }
 

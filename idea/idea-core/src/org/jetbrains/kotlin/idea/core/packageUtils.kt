@@ -32,5 +32,5 @@ fun PsiDirectory.getFqNameWithImplicitPrefix(): FqName {
 
 fun KtFile.packageMatchesDirectory(): Boolean = packageFqName == getFqNameByDirectory()
 
-fun KtFile.packageMatchesDirectoryOrImplicit() =
+fun KtFile.packageMatchesDirectoryOrImplicit(): Boolean =
     packageFqName == getFqNameByDirectory() || packageFqName == parent?.getFqNameWithImplicitPrefix()

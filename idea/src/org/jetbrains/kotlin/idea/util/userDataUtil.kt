@@ -21,13 +21,13 @@ import com.intellij.openapi.util.Key
 import kotlin.reflect.KProperty
 
 class CopyableDataNodeUserDataProperty<in R : DataNode<*>, T : Any>(val key: Key<T>) {
-    operator fun getValue(thisRef: R, property: KProperty<*>) = thisRef.getCopyableUserData(key)
+    operator fun getValue(thisRef: R, property: KProperty<*>): T = thisRef.getCopyableUserData(key)
 
-    operator fun setValue(thisRef: R, property: KProperty<*>, value: T?) = thisRef.putCopyableUserData(key, value)
+    operator fun setValue(thisRef: R, property: KProperty<*>, value: T?): Unit = thisRef.putCopyableUserData(key, value)
 }
 
 class NotNullableCopyableDataNodeUserDataProperty<in R : DataNode<*>, T : Any>(val key: Key<T>, val defaultValue: T) {
-    operator fun getValue(thisRef: R, property: KProperty<*>) = thisRef.getCopyableUserData(key) ?: defaultValue
+    operator fun getValue(thisRef: R, property: KProperty<*>): T = thisRef.getCopyableUserData(key) ?: defaultValue
 
     operator fun setValue(thisRef: R, property: KProperty<*>, value: T) {
         thisRef.putCopyableUserData(key, if (value != defaultValue) value else null)

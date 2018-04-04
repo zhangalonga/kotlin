@@ -82,7 +82,7 @@ class KotlinCreateTestIntention : SelfTargetingRangeIntention<KtNamedDeclaration
         return null
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtNamedDeclaration, editor: Editor?) {
         if (editor == null) throw IllegalArgumentException("This intention requires an editor")

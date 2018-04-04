@@ -11,14 +11,14 @@ import org.jetbrains.kotlin.fir.FirElement
 inline class CompositeTransformResult<out T : Any>(val a: Any) {
 
     companion object {
-        fun <T : Any> empty() = CompositeTransformResult<T>(emptyList<T>())
-        fun <T : Any> single(t: T) = CompositeTransformResult<T>(t)
-        fun <T : Any> many(l: List<T>) = CompositeTransformResult<T>(l)
+        fun <T : Any> empty(): CompositeTransformResult<T> = CompositeTransformResult(emptyList<T>())
+        fun <T : Any> single(t: T): CompositeTransformResult<T> = CompositeTransformResult(t)
+        fun <T : Any> many(l: List<T>): CompositeTransformResult<T> = CompositeTransformResult(l)
     }
 
 
-    val isSingle get() = a !is List<*>
-    val isEmpty get() = a is List<*> && a.isEmpty()
+    val isSingle: Boolean get() = a !is List<*>
+    val isEmpty: Boolean get() = a is List<*> && a.isEmpty()
 
     val single: T
         get() {
@@ -33,4 +33,4 @@ inline class CompositeTransformResult<out T : Any>(val a: Any) {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T : FirElement> T.compose() = CompositeTransformResult.single(this)
+inline fun <T : FirElement> T.compose(): CompositeTransformResult<T> = CompositeTransformResult.single(this)

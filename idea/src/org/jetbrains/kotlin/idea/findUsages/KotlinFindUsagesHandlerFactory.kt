@@ -39,12 +39,12 @@ import org.jetbrains.kotlin.psi.psiUtil.parameterIndex
 import java.lang.IllegalArgumentException
 
 class KotlinFindUsagesHandlerFactory(project: Project) : FindUsagesHandlerFactory() {
-    val javaHandlerFactory = JavaFindUsagesHandlerFactory(project)
+    val javaHandlerFactory: JavaFindUsagesHandlerFactory = JavaFindUsagesHandlerFactory(project)
 
     val findFunctionOptions: KotlinFunctionFindUsagesOptions = KotlinFunctionFindUsagesOptions(project)
-    val findPropertyOptions = KotlinPropertyFindUsagesOptions(project)
-    val findClassOptions = KotlinClassFindUsagesOptions(project)
-    val defaultOptions = FindUsagesOptions(project)
+    val findPropertyOptions: KotlinPropertyFindUsagesOptions = KotlinPropertyFindUsagesOptions(project)
+    val findClassOptions: KotlinClassFindUsagesOptions = KotlinClassFindUsagesOptions(project)
+    val defaultOptions: FindUsagesOptions = FindUsagesOptions(project)
 
     override fun canFindUsages(element: PsiElement): Boolean =
             element is KtClassOrObject ||

@@ -80,7 +80,7 @@ class PatternMatchingTypingVisitor internal constructor(facade: ExpressionTyping
         return resultTypeInfo
     }
 
-    override fun visitWhenExpression(expression: KtWhenExpression, context: ExpressionTypingContext) =
+    override fun visitWhenExpression(expression: KtWhenExpression, context: ExpressionTypingContext): KotlinTypeInfo =
         visitWhenExpression(expression, context, false)
 
     fun visitWhenExpression(

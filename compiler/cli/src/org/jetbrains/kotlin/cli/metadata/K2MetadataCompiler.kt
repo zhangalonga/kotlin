@@ -38,7 +38,7 @@ import org.jetbrains.kotlin.utils.KotlinPaths
 import java.io.File
 
 class K2MetadataCompiler : CLICompiler<K2MetadataCompilerArguments>() {
-    override fun createArguments() = K2MetadataCompilerArguments()
+    override fun createArguments(): K2MetadataCompilerArguments = K2MetadataCompilerArguments()
 
     override fun setupPlatformSpecificArgumentsAndServices(
             configuration: CompilerConfiguration, arguments: K2MetadataCompilerArguments, services: Services

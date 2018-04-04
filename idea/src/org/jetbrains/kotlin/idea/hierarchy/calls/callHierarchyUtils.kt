@@ -36,7 +36,7 @@ fun isCallHierarchyElement(e: PsiElement): Boolean {
            e is KtFile
 }
 
-fun getCallHierarchyElement(element: PsiElement) = element.parentsWithSelf.firstOrNull(::isCallHierarchyElement) as? KtElement
+fun getCallHierarchyElement(element: PsiElement): KtElement? = element.parentsWithSelf.firstOrNull(::isCallHierarchyElement) as? KtElement
 
 private fun NodeDescriptor<*>.incrementUsageCount() {
     when (this) {

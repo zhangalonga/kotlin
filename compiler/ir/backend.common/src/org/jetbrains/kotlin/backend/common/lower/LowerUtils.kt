@@ -26,10 +26,7 @@ import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
-import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
@@ -60,49 +57,49 @@ class DeclarationIrBuilder(
 
 fun BackendContext.createIrBuilder(symbol: IrSymbol,
                                    startOffset: Int = UNDEFINED_OFFSET,
-                                   endOffset: Int = UNDEFINED_OFFSET) =
+                                   endOffset: Int = UNDEFINED_OFFSET): DeclarationIrBuilder =
         DeclarationIrBuilder(this, symbol, startOffset, endOffset)
 
 
-fun <T : IrBuilder> T.at(element: IrElement) = this.at(element.startOffset, element.endOffset)
+fun <T : IrBuilder> T.at(element: IrElement): T = this.at(element.startOffset, element.endOffset)
 
 /**
  * Builds [IrBlock] to be used instead of given expression.
  */
 inline fun IrGeneratorWithScope.irBlock(expression: IrExpression, origin: IrStatementOrigin? = null,
                                         resultType: KotlinType? = expression.type,
-                                        body: IrBlockBuilder.() -> Unit) =
+                                        body: IrBlockBuilder.() -> Unit): IrExpression =
         this.irBlock(expression.startOffset, expression.endOffset, origin, resultType, body)
 
-inline fun IrGeneratorWithScope.irBlockBody(irElement: IrElement, body: IrBlockBodyBuilder.() -> Unit) =
+inline fun IrGeneratorWithScope.irBlockBody(irElement: IrElement, body: IrBlockBodyBuilder.() -> Unit): IrBlockBody =
         this.irBlockBody(irElement.startOffset, irElement.endOffset, body)
 
-fun IrBuilderWithScope.irIfThen(condition: IrExpression, thenPart: IrExpression) =
+fun IrBuilderWithScope.irIfThen(condition: IrExpression, thenPart: IrExpression): IrIfThenElseImpl =
         IrIfThenElseImpl(startOffset, endOffset, context.builtIns.unitType, condition, thenPart, null)
 
-fun IrBuilderWithScope.irNot(arg: IrExpression) =
+fun IrBuilderWithScope.irNot(arg: IrExpression): IrExpression =
         primitiveOp1(startOffset, endOffset, context.irBuiltIns.booleanNotSymbol, IrStatementOrigin.EXCL, arg)
 
-fun IrBuilderWithScope.irThrow(arg: IrExpression) =
+fun IrBuilderWithScope.irThrow(arg: IrExpression): IrThrowImpl =
         IrThrowImpl(startOffset, endOffset, context.builtIns.nothingType, arg)
 
-fun IrBuilderWithScope.irCatch(catchParameter: IrVariable) =
+fun IrBuilderWithScope.irCatch(catchParameter: IrVariable): IrCatchImpl =
         IrCatchImpl(
                 startOffset, endOffset,
                 catchParameter
         )
 
-fun IrBuilderWithScope.irCast(arg: IrExpression, type: KotlinType, typeOperand: KotlinType) =
+fun IrBuilderWithScope.irCast(arg: IrExpression, type: KotlinType, typeOperand: KotlinType): IrTypeOperatorCallImpl =
         IrTypeOperatorCallImpl(startOffset, endOffset, type, IrTypeOperator.CAST, typeOperand, arg)
 
-fun IrBuilderWithScope.irImplicitCoercionToUnit(arg: IrExpression) =
+fun IrBuilderWithScope.irImplicitCoercionToUnit(arg: IrExpression): IrTypeOperatorCallImpl =
         IrTypeOperatorCallImpl(startOffset, endOffset, context.builtIns.unitType,
                 IrTypeOperator.IMPLICIT_COERCION_TO_UNIT, context.builtIns.unitType, arg)
 
-fun IrBuilderWithScope.irGetField(receiver: IrExpression, symbol: IrFieldSymbol) =
+fun IrBuilderWithScope.irGetField(receiver: IrExpression, symbol: IrFieldSymbol): IrGetFieldImpl =
         IrGetFieldImpl(startOffset, endOffset, symbol, receiver)
 
-fun IrBuilderWithScope.irSetField(receiver: IrExpression, symbol: IrFieldSymbol, value: IrExpression) =
+fun IrBuilderWithScope.irSetField(receiver: IrExpression, symbol: IrFieldSymbol, value: IrExpression): IrSetFieldImpl =
         IrSetFieldImpl(startOffset, endOffset, symbol, receiver, value)
 
 open class IrBuildingTransformer(private val context: BackendContext) : IrElementTransformerVoid() {
@@ -188,7 +185,7 @@ class SimpleMemberScope(val members: List<DeclarationDescriptor>) : MemberScopeI
                                            nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> =
             members.filter { kindFilter.accepts(it) && nameFilter(it.name) }
 
-    override fun printScopeStructure(p: Printer) = TODO("not implemented")
+    override fun printScopeStructure(p: Printer): Nothing = TODO("not implemented")
 
 }
 
@@ -219,8 +216,7 @@ fun IrConstructor.callsSuper(): Boolean {
     return callsSuper
 }
 
-fun ParameterDescriptor.copyAsValueParameter(newOwner: CallableDescriptor, index: Int)
-        = when (this) {
+fun ParameterDescriptor.copyAsValueParameter(newOwner: CallableDescriptor, index: Int): ValueParameterDescriptor = when (this) {
     is ValueParameterDescriptor -> this.copy(newOwner, name, index)
     is ReceiverParameterDescriptor -> ValueParameterDescriptorImpl(
             containingDeclaration = newOwner,

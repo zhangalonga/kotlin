@@ -28,7 +28,7 @@ class KtAnnotationUseSiteTarget : KtElementImplStub<KotlinAnnotationUseSiteTarge
 
     constructor(stub: KotlinAnnotationUseSiteTargetStub) : super(stub, KtStubElementTypes.ANNOTATION_TARGET)
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitAnnotationUseSiteTarget(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitAnnotationUseSiteTarget(this, data)
 
     fun getAnnotationUseSiteTarget(): AnnotationUseSiteTarget {
         val targetString = stub?.getUseSiteTarget()

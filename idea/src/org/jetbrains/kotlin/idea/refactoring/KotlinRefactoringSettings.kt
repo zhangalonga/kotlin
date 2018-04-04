@@ -24,12 +24,12 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 
 @State(name = "KotlinRefactoringSettings", storages = arrayOf(Storage("kotlinRefactoring.xml")))
 class KotlinRefactoringSettings : PersistentStateComponent<KotlinRefactoringSettings> {
-    @JvmField var MOVE_TO_UPPER_LEVEL_SEARCH_IN_COMMENTS = false
-    @JvmField var MOVE_TO_UPPER_LEVEL_SEARCH_FOR_TEXT = false
+    @JvmField var MOVE_TO_UPPER_LEVEL_SEARCH_IN_COMMENTS: Boolean = false
+    @JvmField var MOVE_TO_UPPER_LEVEL_SEARCH_FOR_TEXT: Boolean = false
 
-    override fun getState() = this
+    override fun getState(): KotlinRefactoringSettings = this
 
-    override fun loadState(state: KotlinRefactoringSettings) = XmlSerializerUtil.copyBean(state, this)
+    override fun loadState(state: KotlinRefactoringSettings): Unit = XmlSerializerUtil.copyBean(state, this)
 
     companion object {
         @JvmStatic

@@ -32,12 +32,12 @@ import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 
 abstract class AbstractAndroidExtensionsExpressionCodegenExtension : ExpressionCodegenExtension {
     companion object {
-        val PROPERTY_NAME = "_\$_findViewCache"
-        val CACHED_FIND_VIEW_BY_ID_METHOD_NAME = "_\$_findCachedViewById"
-        val CLEAR_CACHE_METHOD_NAME = "_\$_clearFindViewByIdCache"
-        val ON_DESTROY_METHOD_NAME = "onDestroyView"
+        val PROPERTY_NAME: String = "_\$_findViewCache"
+        val CACHED_FIND_VIEW_BY_ID_METHOD_NAME: String = "_\$_findCachedViewById"
+        val CLEAR_CACHE_METHOD_NAME: String = "_\$_clearFindViewByIdCache"
+        val ON_DESTROY_METHOD_NAME: String = "onDestroyView"
 
-        fun shouldCacheResource(resource: PropertyDescriptor) = (resource as? AndroidSyntheticProperty)?.shouldBeCached == true
+        fun shouldCacheResource(resource: PropertyDescriptor): Boolean = (resource as? AndroidSyntheticProperty)?.shouldBeCached == true
     }
 
     private class SyntheticPartsGenerateContext(

@@ -43,9 +43,9 @@ class ReplaceRangeToWithUntilInspection : AbstractPrimitiveRangeToInspection() {
 
     class ReplaceWithUntilQuickFix : LocalQuickFix {
 
-        override fun getName() = "Replace with until"
+        override fun getName(): String = "Replace with until"
 
-        override fun getFamilyName() = name
+        override fun getFamilyName(): String = name
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as KtExpression

@@ -41,8 +41,8 @@ class AddGenericUpperBoundFix(
 ) : KotlinQuickFixAction<KtTypeParameter>(typeParameter) {
     private val renderedUpperBound: String = IdeDescriptorRenderers.SOURCE_CODE.renderType(upperBound)
 
-    override fun getText() = element?.let { "Add '$renderedUpperBound' as upper bound for ${it.name}" } ?: ""
-    override fun getFamilyName() = "Add generic upper bound"
+    override fun getText(): String = element?.let { "Add '$renderedUpperBound' as upper bound for ${it.name}" } ?: ""
+    override fun getFamilyName(): String = "Add generic upper bound"
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         val element = element ?: return false

@@ -20,8 +20,8 @@ import org.jetbrains.kotlin.psi.*
 
 class ConvertToWithIntention : ConvertDotQualifiedToScopeIntention("Convert to with") {
 
-    override fun createScopeExpression(factory: KtPsiFactory, element: KtDotQualifiedExpression) =
+    override fun createScopeExpression(factory: KtPsiFactory, element: KtDotQualifiedExpression): KtExpression =
             factory.createExpressionByPattern("with($0) {}", element.getLeftMostReceiverExpression())
 
-    override fun findCallExpressionFrom(scopeExpression: KtExpression) = scopeExpression as? KtCallExpression
+    override fun findCallExpressionFrom(scopeExpression: KtExpression): KtCallExpression? = scopeExpression as? KtCallExpression
 }

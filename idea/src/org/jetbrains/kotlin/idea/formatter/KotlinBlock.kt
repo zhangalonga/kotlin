@@ -95,7 +95,7 @@ class KotlinBlock(
 
     override fun isLeaf(): Boolean = kotlinDelegationBlock.isLeaf()
 
-    override fun getTextRange() = kotlinDelegationBlock.getTextRange()
+    override fun getTextRange(): TextRange = kotlinDelegationBlock.getTextRange()
 }
 
 object KotlinSpacingBuilderUtilImpl : KotlinSpacingBuilderUtil {

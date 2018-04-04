@@ -20,5 +20,5 @@ import com.intellij.codeInsight.template.JavaPsiElementResult
 import com.intellij.psi.PsiNamedElement
 
 class KotlinPsiElementResult(element: PsiNamedElement) : JavaPsiElementResult(element) {
-    override fun toString() = (element as PsiNamedElement).name ?: ""
+    override fun toString(): String = (element as PsiNamedElement).name ?: ""
 }

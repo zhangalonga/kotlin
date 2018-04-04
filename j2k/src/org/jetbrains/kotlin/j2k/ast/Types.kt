@@ -27,7 +27,7 @@ enum class Nullability {
     Default
 }
 
-fun Nullability.isNullable(settings: ConverterSettings) = when(this) {
+fun Nullability.isNullable(settings: ConverterSettings): Boolean = when(this) {
     Nullability.Nullable -> true
     Nullability.NotNull -> false
     Nullability.Default -> !settings.forceNotNullTypes
@@ -39,7 +39,7 @@ enum class Mutability {
     Default
 }
 
-fun Mutability.isMutable(settings: ConverterSettings) = when(this) {
+fun Mutability.isMutable(settings: ConverterSettings): Boolean = when(this) {
     Mutability.Mutable -> true
     Mutability.NonMutable -> false
     Mutability.Default -> false //TODO: setting?
@@ -101,7 +101,7 @@ class ClassType(val referenceElement: ReferenceElement, nullability: Nullability
     override fun toNotNullType(): Type = ClassType(referenceElement, Nullability.NotNull, settings).assignPrototypesFrom(this)
     override fun toNullableType(): Type = ClassType(referenceElement, Nullability.Nullable, settings).assignPrototypesFrom(this)
 
-    fun isAnonymous() = referenceElement.name.isEmpty
+    fun isAnonymous(): Boolean = referenceElement.name.isEmpty
 }
 
 class ArrayType(val elementType: Type, nullability: Nullability, settings: ConverterSettings)

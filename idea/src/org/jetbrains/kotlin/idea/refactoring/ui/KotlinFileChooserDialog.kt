@@ -58,5 +58,5 @@ class KotlinFileChooserDialog(
         return FilenameIndex.getFilesByName(project, name, searchScope).filterIsInstance<KtFile>()
     }
 
-    override fun createChooseByNameModel() = GotoFileModel(this.project)
+    override fun createChooseByNameModel(): GotoFileModel = GotoFileModel(this.project)
 }

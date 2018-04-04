@@ -45,20 +45,20 @@ class ScriptDependenciesCache(private val project: Project) {
 
     operator fun get(virtualFile: VirtualFile): ScriptDependencies? = cacheLock.read { cache[virtualFile] }
 
-    val allScriptsClasspath by ClearableLazyValue(cacheLock) {
+    val allScriptsClasspath: List<VirtualFile> by ClearableLazyValue(cacheLock) {
         val files = cache.entrySet().flatMap { it.value.classpath }.distinct()
         ScriptDependenciesManager.toVfsRoots(files)
     }
 
-    val allScriptsClasspathScope by ClearableLazyValue(cacheLock) {
+    val allScriptsClasspathScope: NonClasspathDirectoriesScope by ClearableLazyValue(cacheLock) {
         NonClasspathDirectoriesScope(allScriptsClasspath)
     }
 
-    val allLibrarySources by ClearableLazyValue(cacheLock) {
+    val allLibrarySources: List<VirtualFile> by ClearableLazyValue(cacheLock) {
         ScriptDependenciesManager.toVfsRoots(cache.entrySet().flatMap { it.value.sources }.distinct())
     }
 
-    val allLibrarySourcesScope by ClearableLazyValue(cacheLock) {
+    val allLibrarySourcesScope: NonClasspathDirectoriesScope by ClearableLazyValue(cacheLock) {
         NonClasspathDirectoriesScope(allLibrarySources)
     }
 

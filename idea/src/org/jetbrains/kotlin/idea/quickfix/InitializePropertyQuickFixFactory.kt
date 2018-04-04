@@ -52,8 +52,8 @@ import java.util.*
 
 object InitializePropertyQuickFixFactory : KotlinIntentionActionsFactory() {
     class AddInitializerFix(property: KtProperty) : KotlinQuickFixAction<KtProperty>(property) {
-        override fun getText() = "Add initializer"
-        override fun getFamilyName() = text
+        override fun getText(): String = "Add initializer"
+        override fun getFamilyName(): String = text
 
         override fun invoke(project: Project, editor: Editor?, file: KtFile) {
             val element = element ?: return
@@ -69,8 +69,8 @@ object InitializePropertyQuickFixFactory : KotlinIntentionActionsFactory() {
     }
 
     class MoveToConstructorParameters(property: KtProperty) : KotlinQuickFixAction<KtProperty>(property) {
-        override fun getText() = "Move to constructor parameters"
-        override fun getFamilyName() = text
+        override fun getText(): String = "Move to constructor parameters"
+        override fun getFamilyName(): String = text
 
         override fun startInWriteAction(): Boolean = false
 
@@ -126,8 +126,8 @@ object InitializePropertyQuickFixFactory : KotlinIntentionActionsFactory() {
     }
 
     class InitializeWithConstructorParameter(property: KtProperty) : KotlinQuickFixAction<KtProperty>(property) {
-        override fun getText() = "Initialize with constructor parameter"
-        override fun getFamilyName() = text
+        override fun getText(): String = "Initialize with constructor parameter"
+        override fun getFamilyName(): String = text
 
         override fun startInWriteAction(): Boolean = false
 

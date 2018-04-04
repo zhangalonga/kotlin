@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.idea.vfilefinder
 import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.IOUtil
+import com.intellij.util.io.KeyDescriptor
 import org.jetbrains.kotlin.load.kotlin.ModuleMapping
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.serialization.deserialization.DeserializationConfiguration
@@ -28,13 +29,13 @@ object KotlinJvmModuleAnnotationsIndex : FileBasedIndexExtension<String, List<Cl
             IOUtil.writeStringList(out, value.map(ClassId::asString))
     }
 
-    override fun getName() = KEY
+    override fun getName(): ID<String, List<ClassId>> = KEY
 
-    override fun dependsOnFileContent() = true
+    override fun dependsOnFileContent(): Boolean = true
 
-    override fun getKeyDescriptor() = KEY_DESCRIPTOR
+    override fun getKeyDescriptor(): KeyDescriptor<String> = KEY_DESCRIPTOR
 
-    override fun getValueExternalizer() = VALUE_EXTERNALIZER
+    override fun getValueExternalizer(): DataExternalizer<List<ClassId>> = VALUE_EXTERNALIZER
 
     override fun getInputFilter(): FileBasedIndex.InputFilter =
         FileBasedIndex.InputFilter { file -> file.extension == ModuleMapping.MAPPING_FILE_EXT }

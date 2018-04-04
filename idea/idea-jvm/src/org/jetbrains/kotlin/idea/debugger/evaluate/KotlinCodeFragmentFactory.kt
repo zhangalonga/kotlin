@@ -278,7 +278,7 @@ class KotlinCodeFragmentFactory : CodeFragmentFactory() {
 
     override fun getFileType(): KotlinFileType = KotlinFileType.INSTANCE
 
-    override fun getEvaluatorBuilder() = KotlinEvaluationBuilder
+    override fun getEvaluatorBuilder(): KotlinEvaluationBuilder = KotlinEvaluationBuilder
 
     companion object {
         private val LOG = Logger.getInstance(this::class.java)

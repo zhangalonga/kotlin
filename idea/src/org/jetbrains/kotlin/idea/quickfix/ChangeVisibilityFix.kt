@@ -38,8 +38,8 @@ open class ChangeVisibilityFix(
         private val visibilityModifier: KtModifierKeywordToken
 ) : KotlinQuickFixAction<KtModifierListOwner>(element) {
 
-    override fun getText() = "Make '$elementName' $visibilityModifier"
-    override fun getFamilyName() = "Make $visibilityModifier"
+    override fun getText(): String = "Make '$elementName' $visibilityModifier"
+    override fun getFamilyName(): String = "Make $visibilityModifier"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         element?.setVisibility(visibilityModifier)

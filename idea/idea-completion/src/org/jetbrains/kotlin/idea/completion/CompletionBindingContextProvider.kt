@@ -60,7 +60,7 @@ class CompletionBindingContextProvider(project: Project) {
         fun getInstance(project: Project): CompletionBindingContextProvider
                 = project.getComponent(CompletionBindingContextProvider::class.java)
 
-        var ENABLED = true
+        var ENABLED: Boolean = true
     }
 
     private class CompletionData(

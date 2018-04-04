@@ -50,9 +50,9 @@ class ReplaceProtectedToPublishedApiCallFix(
         val isPublishedMemberAlreadyExists: Boolean
 ) : KotlinQuickFixAction<KtExpression>(element)  {
 
-    override fun getFamilyName() = "Replace with @PublishedApi bridge call"
+    override fun getFamilyName(): String = "Replace with @PublishedApi bridge call"
 
-    override fun getText() = "Replace with generated @PublishedApi bridge call '${originalName.newNameQuoted}${if (!isProperty) "(...)" else ""}'"
+    override fun getText(): String = "Replace with generated @PublishedApi bridge call '${originalName.newNameQuoted}${if (!isProperty) "(...)" else ""}'"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

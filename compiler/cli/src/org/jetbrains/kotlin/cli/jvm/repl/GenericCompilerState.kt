@@ -64,11 +64,11 @@ abstract class GenericReplCheckerState: IReplStageState<ScriptDescriptor> {
 
 class GenericReplCompilerState(environment: KotlinCoreEnvironment, override val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()) : IReplStageState<ScriptDescriptor>, GenericReplCheckerState() {
 
-    override val history = ReplCompilerStageHistory(this)
+    override val history: ReplCompilerStageHistory = ReplCompilerStageHistory(this)
 
     override val currentGeneration: Int get() = (history as BasicReplStageHistory<*>).currentGeneration.get()
 
-    val analyzerEngine = ReplCodeAnalyzer(environment)
+    val analyzerEngine: ReplCodeAnalyzer = ReplCodeAnalyzer(environment)
 
     var lastDependencies: ScriptDependencies? = null
 }

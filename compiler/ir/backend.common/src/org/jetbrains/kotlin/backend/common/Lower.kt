@@ -59,7 +59,7 @@ fun ClassLoweringPass.runOnFilePostfix(irFile: IrFile) {
     })
 }
 
-fun DeclarationContainerLoweringPass.asClassLoweringPass() = object : ClassLoweringPass {
+fun DeclarationContainerLoweringPass.asClassLoweringPass(): ClassLoweringPass = object : ClassLoweringPass {
     override fun lower(irClass: IrClass) {
         this@asClassLoweringPass.lower(irClass)
     }

@@ -35,7 +35,7 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.types.TypeUtils
 
 object JsExternalChecker : DeclarationChecker {
-    val DEFINED_EXTERNALLY_PROPERTY_NAMES = setOf(FqNameUnsafe("kotlin.js.noImpl"), FqNameUnsafe("kotlin.js.definedExternally"))
+    val DEFINED_EXTERNALLY_PROPERTY_NAMES: Set<FqNameUnsafe> = setOf(FqNameUnsafe("kotlin.js.noImpl"), FqNameUnsafe("kotlin.js.definedExternally"))
 
     override fun check(declaration: KtDeclaration, descriptor: DeclarationDescriptor, context: DeclarationCheckerContext) {
         if (!AnnotationsUtils.isNativeObject(descriptor)) return

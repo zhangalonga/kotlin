@@ -26,11 +26,11 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.util.OperatorNameConventions
 
 object DataClassDescriptorResolver {
-    val EQUALS_METHOD_NAME = OperatorNameConventions.EQUALS
-    val HASH_CODE_METHOD_NAME = Name.identifier("hashCode")
-    val TO_STRING_METHOD_NAME = Name.identifier("toString")
+    val EQUALS_METHOD_NAME: Name = OperatorNameConventions.EQUALS
+    val HASH_CODE_METHOD_NAME: Name = Name.identifier("hashCode")
+    val TO_STRING_METHOD_NAME: Name = Name.identifier("toString")
 
-    val COPY_METHOD_NAME = Name.identifier("copy")
+    val COPY_METHOD_NAME: Name = Name.identifier("copy")
 
     private val COMPONENT_FUNCTION_NAME_PREFIX = "component"
 

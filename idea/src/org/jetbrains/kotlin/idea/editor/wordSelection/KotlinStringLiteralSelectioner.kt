@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 class KotlinStringLiteralSelectioner : ExtendWordSelectionHandlerBase() {
-    override fun canSelect(e: PsiElement) = e is KtStringTemplateExpression
+    override fun canSelect(e: PsiElement): Boolean = e is KtStringTemplateExpression
 
     override fun select(e: PsiElement, editorText: CharSequence, cursorOffset: Int, editor: Editor): List<TextRange>? {
         val entries = (e as KtStringTemplateExpression).entries

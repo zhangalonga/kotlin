@@ -34,7 +34,7 @@ interface CompletionBenchmarkSink {
             _instance = Empty
         }
 
-        val instance get() = _instance
+        val instance: CompletionBenchmarkSink get() = _instance
         private var _instance: CompletionBenchmarkSink = Empty
     }
 
@@ -48,19 +48,19 @@ interface CompletionBenchmarkSink {
 
     class Impl : CompletionBenchmarkSink {
         private val pendingSessions = mutableListOf<CompletionSession>()
-        val channel = ConflatedChannel<CompletionBenchmarkResults>()
+        val channel: ConflatedChannel<CompletionBenchmarkResults> = ConflatedChannel()
 
         private val perSessionResults = LinkedHashMap<CompletionSession, PerSessionResults>()
         private var start: Long = 0
 
-        override fun onCompletionStarted(completionSession: CompletionSession) = synchronized(this) {
+        override fun onCompletionStarted(completionSession: CompletionSession): Unit = synchronized(this) {
             if (pendingSessions.isEmpty())
                 start = currentTimeMillis()
             pendingSessions += completionSession
             perSessionResults[completionSession] = PerSessionResults()
         }
 
-        override fun onCompletionEnded(completionSession: CompletionSession, canceled: Boolean) = synchronized(this) {
+        override fun onCompletionEnded(completionSession: CompletionSession, canceled: Boolean): Unit = synchronized(this) {
             pendingSessions -= completionSession
             perSessionResults[completionSession]?.onEnd(canceled)
             if (pendingSessions.isEmpty()) {
@@ -71,12 +71,12 @@ interface CompletionBenchmarkSink {
             }
         }
 
-        override fun onFlush(completionSession: CompletionSession) = synchronized(this) {
+        override fun onFlush(completionSession: CompletionSession): Unit = synchronized(this) {
             perSessionResults[completionSession]?.onFirstFlush()
             Unit
         }
 
-        fun reset() = synchronized(this) {
+        fun reset(): Unit = synchronized(this) {
             pendingSessions.clear()
             perSessionResults.clear()
         }

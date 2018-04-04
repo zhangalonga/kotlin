@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.types.TypeUtils
 import org.jetbrains.kotlin.types.typeUtil.isBooleanOrNullableBoolean
 
 class NullableBooleanElvisInspection : AbstractKotlinInspection(), CleanupLocalInspectionTool {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
         binaryExpressionVisitor(fun(expression) {
             if (expression.operationToken != KtTokens.ELVIS) return
             val lhs = expression.left ?: return

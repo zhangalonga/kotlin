@@ -82,9 +82,9 @@ class Annotations(val annotations: List<Annotation>) : Element() {
     override val isEmpty: Boolean
         get() = annotations.isEmpty()
 
-    operator fun plus(other: Annotations) = Annotations(annotations + other.annotations).assignNoPrototype()
+    operator fun plus(other: Annotations): Annotations = Annotations(annotations + other.annotations).assignNoPrototype()
 
     companion object {
-        val Empty = Annotations(listOf())
+        val Empty: Annotations = Annotations(listOf())
     }
 }

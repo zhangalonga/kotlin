@@ -19,10 +19,7 @@ package org.jetbrains.kotlin.resolve.constants
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.types.ErrorUtils
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.KotlinTypeFactory
-import org.jetbrains.kotlin.types.TypeUtils
+import org.jetbrains.kotlin.types.*
 
 interface CompileTimeConstant<out T> {
     val isError: Boolean
@@ -99,16 +96,16 @@ class IntegerValueTypeConstant(
         }
     }
 
-    val unknownIntegerType = KotlinTypeFactory.simpleTypeWithNonTrivialMemberScope(
+    val unknownIntegerType: SimpleType = KotlinTypeFactory.simpleTypeWithNonTrivialMemberScope(
             Annotations.EMPTY, typeConstructor, emptyList(), false,
             ErrorUtils.createErrorScope("Scope for number value type ($typeConstructor)", true)
     )
 
     fun getType(expectedType: KotlinType): KotlinType = TypeUtils.getPrimitiveNumberType(typeConstructor, expectedType)
 
-    override fun toString() = typeConstructor.toString()
+    override fun toString(): String = typeConstructor.toString()
 
-    override fun equals(other: Any?) = other is IntegerValueTypeConstant && value == other.value
+    override fun equals(other: Any?): Boolean = other is IntegerValueTypeConstant && value == other.value
 
-    override fun hashCode() = value.hashCode()
+    override fun hashCode(): Int = value.hashCode()
 }

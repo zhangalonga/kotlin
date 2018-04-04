@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.idea.references
 
 import com.google.common.collect.Lists
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.MultiRangeReference
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
@@ -39,7 +40,7 @@ class KtArrayAccessReference(
     override val resolvesByNames: Collection<Name>
         get() = NAMES
 
-    override fun getRangeInElement() = element.textRange.shiftRight(-element.textOffset)
+    override fun getRangeInElement(): TextRange = element.textRange.shiftRight(-element.textOffset)
 
     override fun getTargetDescriptors(context: BindingContext): Collection<DeclarationDescriptor> {
         val getFunctionDescriptor = context[INDEXED_LVALUE_GET, expression]?.candidateDescriptor
@@ -50,9 +51,9 @@ class KtArrayAccessReference(
     private fun getBracketRange(bracketToken: KtToken) =
         expression.indicesNode.node.findChildByType(bracketToken)?.textRange?.shiftRight(-expression.textOffset)
 
-    override fun getRanges() = listOfNotNull(getBracketRange(KtTokens.LBRACKET), getBracketRange(KtTokens.RBRACKET))
+    override fun getRanges(): List<TextRange> = listOfNotNull(getBracketRange(KtTokens.LBRACKET), getBracketRange(KtTokens.RBRACKET))
 
-    override fun canRename() = true
+    override fun canRename(): Boolean = true
 
     override fun handleElementRename(newElementName: String?): PsiElement? {
         val arrayAccessExpression = expression

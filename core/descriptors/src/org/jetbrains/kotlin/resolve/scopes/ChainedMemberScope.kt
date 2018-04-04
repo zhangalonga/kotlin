@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.resolve.scopes
 
 import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.incremental.components.LookupLocation
@@ -38,18 +39,17 @@ class ChainedMemberScope(
     override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor>
             = getFromAllScopes(scopes) { it.getContributedFunctions(name, location) }
 
-    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean)
-            = getFromAllScopes(scopes) { it.getContributedDescriptors(kindFilter, nameFilter) }
+    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> = getFromAllScopes(scopes) { it.getContributedDescriptors(kindFilter, nameFilter) }
 
-    override fun getFunctionNames() = scopes.flatMapTo(mutableSetOf()) { it.getFunctionNames() }
-    override fun getVariableNames() = scopes.flatMapTo(mutableSetOf()) { it.getVariableNames() }
+    override fun getFunctionNames(): MutableSet<Name> = scopes.flatMapTo(mutableSetOf()) { it.getFunctionNames() }
+    override fun getVariableNames(): MutableSet<Name> = scopes.flatMapTo(mutableSetOf()) { it.getVariableNames() }
     override fun getClassifierNames(): Set<Name>? = scopes.flatMapClassifierNamesOrNull()
 
     override fun recordLookup(name: Name, location: LookupLocation) {
         scopes.forEach { it.recordLookup(name, location) }
     }
 
-    override fun toString() = debugName
+    override fun toString(): String = debugName
 
     override fun printScopeStructure(p: Printer) {
         p.println(this::class.java.simpleName, ": ", debugName, " {")

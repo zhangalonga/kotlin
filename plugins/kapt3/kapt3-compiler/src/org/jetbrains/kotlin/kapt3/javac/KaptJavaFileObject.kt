@@ -18,7 +18,9 @@ package org.jetbrains.kotlin.kapt3.javac
 
 import com.sun.tools.javac.tree.JCTree
 import org.jetbrains.kotlin.kapt3.util.getPackageNameJava9Aware
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.StringReader
 import java.net.URI
 import java.net.URL
 import javax.lang.model.element.Modifier
@@ -31,14 +33,14 @@ class KaptJavaFileObject(
         val file: File? = null,
         val timestamp: Long = System.currentTimeMillis()
 ) : JavaFileObject {
-    override fun toString() = "${javaClass.simpleName}[$name]"
+    override fun toString(): String = "${javaClass.simpleName}[$name]"
 
     override fun isNameCompatible(simpleName: String?, kind: JavaFileObject.Kind?): Boolean {
         if (simpleName == null || kind == null) return false
         return this.kind == kind && simpleName == clazz.simpleName.toString()
     }
 
-    override fun getKind() = JavaFileObject.Kind.SOURCE
+    override fun getKind(): JavaFileObject.Kind = JavaFileObject.Kind.SOURCE
 
     override fun getName(): String {
         val packageName = compilationUnit.getPackageNameJava9Aware()
@@ -56,23 +58,23 @@ class KaptJavaFileObject(
         return null
     }
 
-    override fun openInputStream() = getCharContent(false).byteInputStream()
+    override fun openInputStream(): ByteArrayInputStream = getCharContent(false).byteInputStream()
 
-    override fun getCharContent(ignoreEncodingErrors: Boolean) = compilationUnit.toString()
+    override fun getCharContent(ignoreEncodingErrors: Boolean): String = compilationUnit.toString()
 
-    override fun getNestingKind() = NestingKind.TOP_LEVEL
+    override fun getNestingKind(): NestingKind = NestingKind.TOP_LEVEL
 
     override fun toUri(): URI? = file?.toURI()
 
-    override fun openReader(ignoreEncodingErrors: Boolean) = getCharContent(ignoreEncodingErrors).reader()
+    override fun openReader(ignoreEncodingErrors: Boolean): StringReader = getCharContent(ignoreEncodingErrors).reader()
 
-    override fun openWriter() = throw UnsupportedOperationException()
+    override fun openWriter(): Nothing = throw UnsupportedOperationException()
 
-    override fun getLastModified() = timestamp
+    override fun getLastModified(): Long = timestamp
 
-    override fun openOutputStream() = throw UnsupportedOperationException()
+    override fun openOutputStream(): Nothing = throw UnsupportedOperationException()
 
-    override fun delete() = throw UnsupportedOperationException()
+    override fun delete(): Nothing = throw UnsupportedOperationException()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

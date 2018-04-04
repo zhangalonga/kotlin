@@ -49,7 +49,7 @@ open class KotlinJvmReplService(
         protected val operationsTracer: RemoteOperationsTracer?
 ) : ReplCompileAction, ReplCheckAction, CreateReplStageStateAction {
 
-    protected val configuration = CompilerConfiguration().apply {
+    protected val configuration: CompilerConfiguration = CompilerConfiguration().apply {
         addJvmClasspathRoots(PathUtil.kotlinPathsForCompiler.let { listOf(it.stdlibPath, it.reflectPath, it.scriptRuntimePath) })
         addJvmClasspathRoots(templateClasspath)
         put(CommonConfigurationKeys.MODULE_NAME, "kotlin-script")
@@ -84,10 +84,10 @@ open class KotlinJvmReplService(
         else GenericReplCompiler(disposable, scriptDef, configuration, messageCollector)
     }
 
-    protected val statesLock = ReentrantReadWriteLock()
+    protected val statesLock: ReentrantReadWriteLock = ReentrantReadWriteLock()
     // TODO: consider using values here for session cleanup
-    protected val states = WeakHashMap<RemoteReplStateFacadeServer, Boolean>() // used as (missing) WeakHashSet
-    protected val stateIdCounter = AtomicInteger()
+    protected val states: WeakHashMap<RemoteReplStateFacadeServer, Boolean> = WeakHashMap<RemoteReplStateFacadeServer, Boolean>() // used as (missing) WeakHashSet
+    protected val stateIdCounter: AtomicInteger = AtomicInteger()
     @Deprecated("remove after removal state-less check/compile/eval methods")
     protected val defaultStateFacade: RemoteReplStateFacadeServer by lazy { createRemoteState() }
 

@@ -56,7 +56,7 @@ class MoveMemberToTopLevelIntention : MoveMemberOutOfObjectIntention("Move to to
         }
     }
 
-    override fun getDestination(element: KtNamedDeclaration) = element.containingKtFile
+    override fun getDestination(element: KtNamedDeclaration): KtFile = element.containingKtFile
 
     override fun applicabilityRange(element: KtNamedDeclaration): TextRange? {
         if (element !is KtNamedFunction && element !is KtProperty) return null

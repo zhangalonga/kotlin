@@ -47,7 +47,7 @@ class AddJvmStaticIntention : SelfTargetingRangeIntention<KtNamedDeclaration>(
     private val JvmStaticFqName = FqName("kotlin.jvm.JvmStatic")
     private val JvmFieldFqName = FqName("kotlin.jvm.JvmField")
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applicabilityRange(element: KtNamedDeclaration): TextRange? {
         if (element !is KtNamedFunction && element !is KtProperty) return null

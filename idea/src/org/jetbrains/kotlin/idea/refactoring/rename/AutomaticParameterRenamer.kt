@@ -55,21 +55,21 @@ class AutomaticParameterRenamer(element: KtParameter, newName: String) : Automat
         suggestAllNames(element.name, newName.quoteIfNeeded())
     }
 
-    override fun getDialogTitle() = "Rename Parameters"
+    override fun getDialogTitle(): String = "Rename Parameters"
 
-    override fun getDialogDescription() = "Rename parameter in hierarchy to:"
+    override fun getDialogDescription(): String = "Rename parameter in hierarchy to:"
 
-    override fun entityName() = "Parameter"
+    override fun entityName(): String = "Parameter"
 
-    override fun isSelectedByDefault() = true
+    override fun isSelectedByDefault(): Boolean = true
 }
 
 class AutomaticParameterRenamerFactory : AutomaticRenamerFactory {
-    override fun isApplicable(element: PsiElement) = element is KtParameter && element.ownerFunction is KtNamedFunction
+    override fun isApplicable(element: PsiElement): Boolean = element is KtParameter && element.ownerFunction is KtNamedFunction
 
-    override fun getOptionName() = RefactoringBundle.message("rename.parameters.hierarchy")!!
+    override fun getOptionName(): String = RefactoringBundle.message("rename.parameters.hierarchy")!!
 
-    override fun isEnabled() = JavaRefactoringSettings.getInstance().isRenameParameterInHierarchy
+    override fun isEnabled(): Boolean = JavaRefactoringSettings.getInstance().isRenameParameterInHierarchy
 
     override fun setEnabled(enabled: Boolean) {
         JavaRefactoringSettings.getInstance().isRenameParameterInHierarchy = enabled

@@ -22,5 +22,5 @@ import org.jetbrains.kotlin.psi.KtElement
 class CliAndroidOnDestroyClassBuilderInterceptorExtension(
         private val globalCacheImpl: CacheImplementation
 ) : AbstractAndroidOnDestroyClassBuilderInterceptorExtension() {
-    override fun getGlobalCacheImpl(element: KtElement) = globalCacheImpl
+    override fun getGlobalCacheImpl(element: KtElement): CacheImplementation = globalCacheImpl
 }

@@ -22,6 +22,6 @@ import com.google.gwt.dev.js.parserExceptions.*
 object ThrowExceptionOnErrorReporter : ErrorReporter {
     override fun warning(message: String, startPosition: CodePosition, endPosition: CodePosition) {}
 
-    override fun error(message: String, startPosition: CodePosition, endPosition: CodePosition) =
+    override fun error(message: String, startPosition: CodePosition, endPosition: CodePosition): Nothing =
         throw JsParserException(message, startPosition)
 }

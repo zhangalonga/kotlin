@@ -141,7 +141,7 @@ abstract class Slicer(
         }
     }
 
-    protected val pseudocodeCache = PseudocodeCache()
+    protected val pseudocodeCache: PseudocodeCache = PseudocodeCache()
 
     protected fun PsiElement.passToProcessor(
             lambdaLevel: Int = parentUsage.lambdaLevel,

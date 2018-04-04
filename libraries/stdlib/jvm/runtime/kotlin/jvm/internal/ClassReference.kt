@@ -85,12 +85,12 @@ public class ClassReference(override val jClass: Class<*>) : KClass<Any>, ClassB
 
     private fun error(): Nothing = throw KotlinReflectionNotSupportedError()
 
-    override fun equals(other: Any?) =
+    override fun equals(other: Any?): Boolean =
             other is ClassReference && javaObjectType == other.javaObjectType
 
-    override fun hashCode() =
+    override fun hashCode(): Int =
             javaObjectType.hashCode()
 
-    override fun toString() =
+    override fun toString(): String =
             jClass.toString() + Reflection.REFLECTION_NOT_AVAILABLE
 }

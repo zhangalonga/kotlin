@@ -45,11 +45,9 @@ fun KtExpression.isConstant(): Boolean {
     return ConstantExpressionEvaluator.getConstant(this, bindingContext) != null
 }
 
-fun KtExpression?.isTrueConstant()
-        = this != null && node?.elementType == KtNodeTypes.BOOLEAN_CONSTANT && text == "true"
+fun KtExpression?.isTrueConstant(): Boolean = this != null && node?.elementType == KtNodeTypes.BOOLEAN_CONSTANT && text == "true"
 
-fun KtExpression?.isFalseConstant()
-        = this != null && node?.elementType == KtNodeTypes.BOOLEAN_CONSTANT && text == "false"
+fun KtExpression?.isFalseConstant(): Boolean = this != null && node?.elementType == KtNodeTypes.BOOLEAN_CONSTANT && text == "false"
 
 private val ZERO_VALUES = setOf(0, 0L, 0f, 0.0)
 

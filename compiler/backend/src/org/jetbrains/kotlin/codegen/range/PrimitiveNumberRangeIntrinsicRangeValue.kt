@@ -36,9 +36,9 @@ import org.jetbrains.org.objectweb.asm.Type
 abstract class PrimitiveNumberRangeIntrinsicRangeValue(
     rangeCall: ResolvedCall<out CallableDescriptor>
 ) : CallIntrinsicRangeValue(rangeCall) {
-    protected val asmElementType = getAsmRangeElementTypeForPrimitiveRangeOrProgression(rangeCall.resultingDescriptor)
+    protected val asmElementType: Type = getAsmRangeElementTypeForPrimitiveRangeOrProgression(rangeCall.resultingDescriptor)
 
-    override fun isIntrinsicInCall(resolvedCallForIn: ResolvedCall<out CallableDescriptor>) =
+    override fun isIntrinsicInCall(resolvedCallForIn: ResolvedCall<out CallableDescriptor>): Boolean =
         resolvedCallForIn.resultingDescriptor.let {
             isPrimitiveRangeContains(it) ||
                     isClosedFloatingPointRangeContains(it) ||

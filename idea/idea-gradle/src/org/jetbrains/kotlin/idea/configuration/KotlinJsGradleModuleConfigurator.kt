@@ -26,10 +26,10 @@ class KotlinJsGradleModuleConfigurator : KotlinWithGradleConfigurator() {
     override val presentableText: String = "Gradle (JavaScript)"
     override val targetPlatform: TargetPlatform = JsPlatform
     override val kotlinPluginName: String = KOTLIN_JS
-    override fun getMinimumSupportedVersion() = "1.1.0"
+    override fun getMinimumSupportedVersion(): String = "1.1.0"
     override fun getStdlibArtifactName(sdk: Sdk?, version: String): String = MAVEN_JS_STDLIB_ID
 
     companion object {
-        val KOTLIN_JS = "kotlin2js"
+        val KOTLIN_JS: String = "kotlin2js"
     }
 }

@@ -143,5 +143,5 @@ class KotlinCallerTreeStructure(
         }
     }
 
-    override fun isAlwaysShowPlus() = true
+    override fun isAlwaysShowPlus(): Boolean = true
 }

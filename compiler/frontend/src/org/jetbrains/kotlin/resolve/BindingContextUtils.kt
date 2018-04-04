@@ -105,7 +105,7 @@ fun KtExpression.getReferenceTargets(context: BindingContext): Collection<Declar
     return targetDescriptor?.let { listOf(it) } ?: context[BindingContext.AMBIGUOUS_REFERENCE_TARGET, this].orEmpty()
 }
 
-fun KtTypeReference.getAbbreviatedTypeOrType(context: BindingContext) =
+fun KtTypeReference.getAbbreviatedTypeOrType(context: BindingContext): KotlinType? =
     context[BindingContext.ABBREVIATED_TYPE, this] ?: context[BindingContext.TYPE, this]
 
 fun KtTypeElement.getAbbreviatedTypeOrType(context: BindingContext): KotlinType? {

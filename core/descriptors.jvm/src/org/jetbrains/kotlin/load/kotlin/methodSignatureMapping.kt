@@ -29,8 +29,7 @@ import org.jetbrains.kotlin.resolve.jvm.JvmClassName
 import org.jetbrains.kotlin.resolve.jvm.JvmPrimitiveType
 import org.jetbrains.kotlin.types.KotlinType
 
-fun FunctionDescriptor.computeJvmDescriptor(withReturnType: Boolean = true)
-        = StringBuilder().apply {
+fun FunctionDescriptor.computeJvmDescriptor(withReturnType: Boolean = true): String = StringBuilder().apply {
             append(if (this@computeJvmDescriptor is ConstructorDescriptor) "<init>" else name.asString())
             append("(")
 
@@ -107,7 +106,7 @@ sealed class JvmType {
     class Object(val internalName: String) : JvmType()
     class Array(val elementType: JvmType) : JvmType()
 
-    override fun toString() = JvmTypeFactoryImpl.toString(this)
+    override fun toString(): String = JvmTypeFactoryImpl.toString(this)
 }
 
 private object JvmTypeFactoryImpl : JvmTypeFactory<JvmType> {

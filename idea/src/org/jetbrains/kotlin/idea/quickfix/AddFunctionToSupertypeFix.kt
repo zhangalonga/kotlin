@@ -69,7 +69,7 @@ class AddFunctionToSupertypeFix private constructor(
             "Add function to supertype..."
     }
 
-    override fun getFamilyName() = "Add function to supertype"
+    override fun getFamilyName(): String = "Add function to supertype"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         CommandProcessor.getInstance().runUndoTransparentAction {

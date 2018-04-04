@@ -28,8 +28,8 @@ abstract class BoxedBasicValue(type: Type) : StrictBasicValue(type) {
     abstract val descriptor: BoxedValueDescriptor
     abstract fun taint(): BoxedBasicValue
 
-    override fun equals(other: Any?) = this === other
-    override fun hashCode() = System.identityHashCode(this)
+    override fun equals(other: Any?): Boolean = this === other
+    override fun hashCode(): Int = System.identityHashCode(this)
 }
 
 
@@ -38,7 +38,7 @@ class CleanBoxedValue(
     boxingInsn: AbstractInsnNode,
     progressionIterator: ProgressionIteratorBasicValue?
 ) : BoxedBasicValue(boxedType) {
-    override val descriptor = BoxedValueDescriptor(boxedType, boxingInsn, progressionIterator)
+    override val descriptor: BoxedValueDescriptor = BoxedValueDescriptor(boxedType, boxingInsn, progressionIterator)
 
     private var tainted: TaintedBoxedValue? = null
     override fun taint(): BoxedBasicValue = tainted ?: TaintedBoxedValue(this).also { tainted = it }
@@ -46,7 +46,7 @@ class CleanBoxedValue(
 
 
 class TaintedBoxedValue(private val boxedBasicValue: CleanBoxedValue) : BoxedBasicValue(boxedBasicValue.type) {
-    override val descriptor get() = boxedBasicValue.descriptor
+    override val descriptor: BoxedValueDescriptor get() = boxedBasicValue.descriptor
 
     override fun taint(): BoxedBasicValue = this
 }
@@ -62,10 +62,10 @@ class BoxedValueDescriptor(
     private val associatedVariables = HashSet<Int>()
     private val mergedWith = HashSet<BoxedValueDescriptor>()
 
-    var isSafeToRemove = true; private set
+    var isSafeToRemove: Boolean = true; private set
     val unboxedType: Type = getUnboxedType(boxedType)
 
-    fun getAssociatedInsns() = associatedInsns.toList()
+    fun getAssociatedInsns(): List<AbstractInsnNode> = associatedInsns.toList()
 
     fun addInsn(insnNode: AbstractInsnNode) {
         associatedInsns.add(insnNode)
@@ -89,9 +89,9 @@ class BoxedValueDescriptor(
         isSafeToRemove = false
     }
 
-    fun isDoubleSize() = unboxedType.size == 2
+    fun isDoubleSize(): Boolean = unboxedType.size == 2
 
-    fun isFromProgressionIterator() = progressionIterator != null
+    fun isFromProgressionIterator(): Boolean = progressionIterator != null
 
     fun addUnboxingWithCastTo(insn: AbstractInsnNode, type: Type) {
         unboxingWithCastInsns.add(Pair.create(insn, type))

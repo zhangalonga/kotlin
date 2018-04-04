@@ -74,19 +74,19 @@ class GenerationState private constructor(
         private val configuration: CompilerConfiguration
     ) {
         private var generateDeclaredClassFilter: GenerateClassFilter = GenerateClassFilter.GENERATE_ALL
-        fun generateDeclaredClassFilter(v: GenerateClassFilter) =
+        fun generateDeclaredClassFilter(v: GenerateClassFilter): Builder =
             apply { generateDeclaredClassFilter = v }
 
         private var codegenFactory: CodegenFactory = DefaultCodegenFactory
-        fun codegenFactory(v: CodegenFactory) =
+        fun codegenFactory(v: CodegenFactory): Builder =
             apply { codegenFactory = v }
 
         private var targetId: TargetId? = null
-        fun targetId(v: TargetId?) =
+        fun targetId(v: TargetId?): Builder =
             apply { targetId = v }
 
         private var moduleName: String? = configuration[CommonConfigurationKeys.MODULE_NAME]
-        fun moduleName(v: String?) =
+        fun moduleName(v: String?): Builder =
             apply { moduleName = v }
 
         // 'outDirectory' is a hack to correctly determine if a compiled class is from the same module as the callee during
@@ -94,18 +94,18 @@ class GenerationState private constructor(
         // TODO: get rid of it with the proper module infrastructure
         private var outDirectory: File? = null
 
-        fun outDirectory(v: File?) =
+        fun outDirectory(v: File?): Builder =
             apply { outDirectory = v }
 
         private var onIndependentPartCompilationEnd: GenerationStateEventCallback = GenerationStateEventCallback.DO_NOTHING
-        fun onIndependentPartCompilationEnd(v: GenerationStateEventCallback) =
+        fun onIndependentPartCompilationEnd(v: GenerationStateEventCallback): Builder =
             apply { onIndependentPartCompilationEnd = v }
 
         private var wantsDiagnostics: Boolean = true
-        fun wantsDiagnostics(v: Boolean) =
+        fun wantsDiagnostics(v: Boolean): Builder =
             apply { wantsDiagnostics = v }
 
-        fun build() =
+        fun build(): GenerationState =
             GenerationState(
                 project, builderFactory, module, bindingContext, files, configuration,
                 generateDeclaredClassFilter, codegenFactory, targetId,
@@ -118,7 +118,7 @@ class GenerationState private constructor(
         abstract fun shouldGenerateClass(processingClassOrObject: KtClassOrObject): Boolean
         abstract fun shouldGeneratePackagePart(ktFile: KtFile): Boolean
         abstract fun shouldGenerateScript(script: KtScript): Boolean
-        open fun shouldGenerateClassMembers(processingClassOrObject: KtClassOrObject) = shouldGenerateClass(processingClassOrObject)
+        open fun shouldGenerateClassMembers(processingClassOrObject: KtClassOrObject): Boolean = shouldGenerateClass(processingClassOrObject)
 
         companion object {
             @JvmField
@@ -142,7 +142,7 @@ class GenerationState private constructor(
     val deserializationConfiguration: DeserializationConfiguration =
         CompilerDeserializationConfiguration(configuration.languageVersionSettings)
 
-    val deprecationProvider = DeprecationResolver(LockBasedStorageManager.NO_LOCKS, configuration.languageVersionSettings)
+    val deprecationProvider: DeprecationResolver = DeprecationResolver(LockBasedStorageManager.NO_LOCKS, configuration.languageVersionSettings)
 
     init {
         val icComponents = configuration.get(JVMConfigurationKeys.INCREMENTAL_COMPILATION_COMPONENTS)
@@ -173,9 +173,9 @@ class GenerationState private constructor(
         extraJvmDiagnosticsTrace.bindingContext.diagnostics
     }
 
-    val languageVersionSettings = configuration.languageVersionSettings
+    val languageVersionSettings: LanguageVersionSettings = configuration.languageVersionSettings
 
-    val target = configuration.get(JVMConfigurationKeys.JVM_TARGET) ?: JvmTarget.DEFAULT
+    val target: JvmTarget = configuration.get(JVMConfigurationKeys.JVM_TARGET) ?: JvmTarget.DEFAULT
     val isJvm8Target: Boolean = target == JvmTarget.JVM_1_8
     val isJvm8TargetWithDefaults: Boolean = isJvm8Target && configuration.getBoolean(JVMConfigurationKeys.JVM8_TARGET_WITH_DEFAULTS)
     val generateDefaultImplsForJvm8: Boolean = configuration.getBoolean(JVMConfigurationKeys.INTERFACE_COMPATIBILITY)
@@ -203,7 +203,7 @@ class GenerationState private constructor(
     val factory: ClassFileFactory
     private lateinit var duplicateSignatureFactory: BuilderFactoryForDuplicateSignatureDiagnostics
 
-    val replSpecific = ForRepl()
+    val replSpecific: ForRepl = ForRepl()
 
     //TODO: should be refactored out
     class ForRepl {
@@ -228,9 +228,9 @@ class GenerationState private constructor(
 
     val generateParametersMetadata: Boolean = configuration.getBoolean(JVMConfigurationKeys.PARAMETERS_METADATA)
 
-    val shouldInlineConstVals = languageVersionSettings.supportsFeature(LanguageFeature.InlineConstVals)
+    val shouldInlineConstVals: Boolean = languageVersionSettings.supportsFeature(LanguageFeature.InlineConstVals)
 
-    val constructorCallNormalizationMode = configuration.get(
+    val constructorCallNormalizationMode: JVMConstructorCallNormalizationMode = configuration.get(
         JVMConfigurationKeys.CONSTRUCTOR_CALL_NORMALIZATION_MODE,
         JVMConstructorCallNormalizationMode.DEFAULT
     )
@@ -305,7 +305,7 @@ private class LazyJvmDiagnostics(compute: () -> Diagnostics) : Diagnostics {
 
 interface GenerationStateEventCallback : (GenerationState) -> Unit {
     companion object {
-        val DO_NOTHING = GenerationStateEventCallback { }
+        val DO_NOTHING: GenerationStateEventCallback = GenerationStateEventCallback { }
     }
 }
 

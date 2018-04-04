@@ -40,7 +40,7 @@ class ParametricTransformerGenerator(data: DataCollector.ReferencesData) : Abstr
         return "$TRANSFORMER_RESULT_NAME<$type>"
     }
 
-    val baseTypes = mutableMapOf<String, String>().also {
+    val baseTypes: MutableMap<String, String> = mutableMapOf<String, String>().also {
         for (baseTransformedType in referencesData.baseTransformedTypes) {
             it[baseTransformedType] = baseTransformedType
         }

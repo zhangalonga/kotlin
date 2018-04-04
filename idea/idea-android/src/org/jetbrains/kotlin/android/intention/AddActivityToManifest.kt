@@ -31,7 +31,7 @@ class AddActivityToManifest : AbstractRegisterComponentAction("Add activity to m
     override fun isApplicableTo(element: KtClass, manifest: Manifest): Boolean =
             element.isSubclassOfActivity() && !element.isRegisteredActivity(manifest)
 
-    override fun applyTo(element: KtClass, manifest: Manifest) = runWriteAction {
+    override fun applyTo(element: KtClass, manifest: Manifest): Unit = runWriteAction {
         val psiClass = element.toLightClass() ?: return@runWriteAction
         manifest.application.addActivity().activityClass.value = psiClass
     }

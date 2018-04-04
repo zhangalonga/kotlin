@@ -44,11 +44,11 @@ class RemoveModifierFix(
         }
     }
 
-    override fun getFamilyName() = "Remove modifier"
+    override fun getFamilyName(): String = "Remove modifier"
 
-    override fun getText() = text
+    override fun getText(): String = text
 
-    override fun isAvailable(project: Project, editor: Editor?, file: KtFile) =
+    override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean =
             (element?.hasModifier(modifier) ?: false)
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {

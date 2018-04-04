@@ -19,6 +19,7 @@ package org.jetbrains.uast.kotlin
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiType
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
@@ -39,9 +40,9 @@ open class KotlinUSimpleReferenceExpression(
 ) : KotlinAbstractUExpression(givenParent), USimpleNameReferenceExpression, KotlinUElementWithType, KotlinEvaluatableUElement {
     private val resolvedDeclaration by lz { psi.resolveCallToDeclaration(this) }
 
-    override val identifier get() = psi.getReferencedName()
+    override val identifier: String get() = psi.getReferencedName()
 
-    override fun resolve() = resolvedDeclaration
+    override fun resolve(): PsiElement? = resolvedDeclaration
 
     override val resolvedName: String?
         get() = (resolvedDeclaration as? PsiNamedElement)?.name
@@ -120,7 +121,7 @@ open class KotlinUSimpleReferenceExpression(
         override val annotations: List<UAnnotation>
             get() = emptyList()
 
-        override val receiverType by lz {
+        override val receiverType: PsiType? by lz {
             val type = (resolvedCall.dispatchReceiver ?: resolvedCall.extensionReceiver)?.type ?: return@lz null
             type.toPsiType(this, psi, boxed = true)
         }
@@ -134,7 +135,7 @@ open class KotlinUSimpleReferenceExpression(
         override val valueArgumentCount: Int
             get() = if (setterValue != null) 1 else 0
 
-        override val valueArguments by lz {
+        override val valueArguments: List<UExpression> by lz {
             if (setterValue != null)
                 listOf(KotlinConverter.convertOrEmpty(setterValue, this))
             else
@@ -144,11 +145,11 @@ open class KotlinUSimpleReferenceExpression(
         override val typeArgumentCount: Int
             get() = resolvedCall.typeArguments.size
 
-        override val typeArguments by lz {
+        override val typeArguments: List<PsiType> by lz {
             resolvedCall.typeArguments.values.map { it.toPsiType(this, psi, true) }
         }
 
-        override val returnType by lz {
+        override val returnType: PsiType? by lz {
             (accessorDescriptor as? CallableDescriptor)?.returnType?.toPsiType(this, psi, boxed = false)
         }
 
@@ -214,7 +215,7 @@ class KotlinStringUSimpleReferenceExpression(
 ) : KotlinAbstractUExpression(givenParent), USimpleNameReferenceExpression {
     override val psi: PsiElement?
         get() = null
-    override fun resolve() = null
+    override fun resolve(): Nothing? = null
     override val resolvedName: String?
         get() = identifier
 }

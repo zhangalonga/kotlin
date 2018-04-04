@@ -111,7 +111,7 @@ class JavaIncompatibilityRulesOverridabilityCondition : ExternalOverridabilityCo
     }
 
 
-    override fun getContract() = ExternalOverridabilityCondition.Contract.CONFLICTS_ONLY
+    override fun getContract(): ExternalOverridabilityCondition.Contract = ExternalOverridabilityCondition.Contract.CONFLICTS_ONLY
 
     companion object {
         /**

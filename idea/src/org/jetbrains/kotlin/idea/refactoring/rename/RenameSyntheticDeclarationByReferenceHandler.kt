@@ -26,7 +26,7 @@ class RenameSyntheticDeclarationByReferenceHandler : RenameHandler {
         return (refExpression.resolveToCall()?.resultingDescriptor)?.isSynthesized ?: false
     }
 
-    override fun isRenaming(dataContext: DataContext?) = isAvailableOnDataContext(dataContext)
+    override fun isRenaming(dataContext: DataContext?): Boolean = isAvailableOnDataContext(dataContext)
 
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext?) {
         CodeInsightUtils.showErrorHint(project, editor, "Rename is not applicable to synthetic declaration", "Rename", null)

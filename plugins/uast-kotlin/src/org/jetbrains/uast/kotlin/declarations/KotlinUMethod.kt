@@ -16,10 +16,7 @@
 
 package org.jetbrains.uast.kotlin.declarations
 
-import com.intellij.psi.PsiCodeBlock
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import org.jetbrains.kotlin.asJava.elements.KtLightElement
 import org.jetbrains.kotlin.asJava.elements.KtLightMethod
 import org.jetbrains.kotlin.asJava.elements.isGetter
@@ -38,13 +35,13 @@ open class KotlinUMethod(
 ) : KotlinAbstractUElement(givenParent), UAnnotationMethod, JavaUElementWithComments, PsiMethod by psi {
     override val psi: KtLightMethod = unwrap<UMethod, KtLightMethod>(psi)
 
-    override val javaPsi = psi
+    override val javaPsi: KtLightMethod = psi
 
-    override val sourcePsi = psi.kotlinOrigin
+    override val sourcePsi: KtDeclaration? = psi.kotlinOrigin
 
-    override fun getSourceElement() = sourcePsi ?: this
+    override fun getSourceElement(): NavigatablePsiElement = sourcePsi ?: this
 
-    override val uastDefaultValue by lz {
+    override val uastDefaultValue: UExpression? by lz {
         val annotationParameter = psi.kotlinOrigin as? KtParameter ?: return@lz null
         val defaultValue = annotationParameter.defaultValue ?: return@lz null
         getLanguagePlugin().convertElement(defaultValue, this) as? UExpression
@@ -54,9 +51,9 @@ open class KotlinUMethod(
 
     override fun getContainingFile(): PsiFile? = unwrapFakeFileForLightClass(psi.containingFile)
 
-    override fun getNameIdentifier() = UastLightIdentifier(psi, kotlinOrigin as KtNamedDeclaration?)
+    override fun getNameIdentifier(): UastLightIdentifier = UastLightIdentifier(psi, kotlinOrigin as KtNamedDeclaration?)
 
-    override val annotations by lz {
+    override val annotations: List<KotlinUAnnotation> by lz {
         psi.annotations
                 .mapNotNull { (it as? KtLightElement<*, *>)?.kotlinOrigin as? KtAnnotationEntry }
                 .map { KotlinUAnnotation(it, this) }
@@ -64,7 +61,7 @@ open class KotlinUMethod(
 
     private val receiver by lz { (sourcePsi as? KtCallableDeclaration)?.receiverTypeReference }
 
-    override val uastParameters by lz {
+    override val uastParameters: List<UParameter> by lz {
         val lightParams = psi.parameterList.parameters
         val receiver = receiver ?: return@lz lightParams.map {
             KotlinUParameter(it, (it as? KtLightElement<*, *>)?.kotlinOrigin, this)
@@ -79,7 +76,7 @@ open class KotlinUMethod(
         get() = UIdentifier(nameIdentifier, this)
 
 
-    override val uastBody by lz {
+    override val uastBody: UExpression? by lz {
         val bodyExpression = when (kotlinOrigin) {
             is KtFunction -> kotlinOrigin.bodyExpression
             is KtProperty -> when {
@@ -100,10 +97,10 @@ open class KotlinUMethod(
 
     override fun getOriginalElement(): PsiElement? = super.getOriginalElement()
 
-    override fun equals(other: Any?) = other is KotlinUMethod && psi == other.psi
+    override fun equals(other: Any?): Boolean = other is KotlinUMethod && psi == other.psi
 
     companion object {
-        fun create(psi: KtLightMethod, containingElement: UElement?) =
+        fun create(psi: KtLightMethod, containingElement: UElement?): KotlinUMethod =
                 if (psi.kotlinOrigin is KtConstructor<*>) {
                     KotlinConstructorUMethod(
                             psi.kotlinOrigin?.containingClassOrObject,

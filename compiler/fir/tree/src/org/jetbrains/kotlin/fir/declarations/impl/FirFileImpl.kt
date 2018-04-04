@@ -22,9 +22,9 @@ class FirFileImpl(
     override val name: String,
     override val packageFqName: FqName
 ) : FirAbstractAnnotatedDeclaration(session, psi, IrDeclarationKind.FILE), FirFile {
-    override val imports = mutableListOf<FirImport>()
+    override val imports: MutableList<FirImport> = mutableListOf()
 
-    override val declarations = mutableListOf<FirDeclaration>()
+    override val declarations: MutableList<FirDeclaration> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         annotations.transformInplace(transformer, data)

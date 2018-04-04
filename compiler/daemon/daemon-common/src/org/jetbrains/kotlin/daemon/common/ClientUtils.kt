@@ -125,4 +125,4 @@ class FileAgeComparator : Comparator<File> {
     }
 }
 
-const val LOG_PREFIX_ASSUMING_OTHER_DAEMONS_HAVE = "Assuming other daemons have"
+const val LOG_PREFIX_ASSUMING_OTHER_DAEMONS_HAVE: String = "Assuming other daemons have"

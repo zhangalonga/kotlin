@@ -24,8 +24,8 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 class KotlinFunctionNameMacro : KotlinMacro() {
-    override fun getName() = "kotlinFunctionName"
-    override fun getPresentableName() = "kotlinFunctionName()"
+    override fun getName(): String = "kotlinFunctionName"
+    override fun getPresentableName(): String = "kotlinFunctionName()"
 
     override fun calculateResult(params: Array<Expression>, context: ExpressionContext): Result? {
         val element = context.psiElementAtStartOffset?.getNonStrictParentOfType<KtNamedFunction>()

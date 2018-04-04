@@ -16,9 +16,7 @@
 
 package org.jetbrains.kotlin.resolve.lazy.descriptors
 
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptorVisitor
-import org.jetbrains.kotlin.descriptors.ScriptDescriptor
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
@@ -31,6 +29,7 @@ import org.jetbrains.kotlin.script.KotlinScriptDefinition
 import org.jetbrains.kotlin.script.ScriptHelper
 import org.jetbrains.kotlin.script.ScriptPriorities
 import org.jetbrains.kotlin.script.getScriptDefinition
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeSubstitutor
 import org.jetbrains.kotlin.utils.ifEmpty
 
@@ -52,11 +51,11 @@ class LazyScriptDescriptor(
 
     private val sourceElement = scriptInfo.script.toSourceElement()
 
-    override fun getSource() = sourceElement
+    override fun getSource(): SourceElement = sourceElement
 
     private val priority: Int = ScriptPriorities.getScriptPriority(scriptInfo.script)
 
-    override fun getPriority() = priority
+    override fun getPriority(): Int = priority
 
     val scriptDefinition: KotlinScriptDefinition
             by lazy {
@@ -64,7 +63,7 @@ class LazyScriptDescriptor(
                 getScriptDefinition(file) ?: throw RuntimeException("file ${file.name} is not a script")
             }
 
-    override fun substitute(substitutor: TypeSubstitutor) = this
+    override fun substitute(substitutor: TypeSubstitutor): LazyScriptDescriptor = this
 
     override fun <R, D> accept(visitor: DeclarationDescriptorVisitor<R, D>, data: D): R =
         visitor.visitScriptDescriptor(this, data)
@@ -78,8 +77,8 @@ class LazyScriptDescriptor(
             c.trace
         )
 
-    override fun getUnsubstitutedPrimaryConstructor() = super.getUnsubstitutedPrimaryConstructor()!!
+    override fun getUnsubstitutedPrimaryConstructor(): ClassConstructorDescriptor = super.getUnsubstitutedPrimaryConstructor()!!
 
-    override fun computeSupertypes() =
+    override fun computeSupertypes(): List<KotlinType> =
         listOf(ScriptHelper.getInstance().getKotlinType(this, scriptDefinition.template)).ifEmpty { listOf(builtIns.anyType) }
 }

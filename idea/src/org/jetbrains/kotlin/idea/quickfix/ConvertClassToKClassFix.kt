@@ -55,10 +55,10 @@ class ConvertClassToKClassFix(element: KtDotQualifiedExpression, type: KotlinTyp
         return@run firstChildType.isSubtypeOf(type)
     }
 
-    override fun getText() = element?.let { "Remove '.${it.children.lastOrNull()?.text}'" } ?: ""
-    override fun getFamilyName() = "Remove conversion from 'KClass' to 'Class'"
+    override fun getText(): String = element?.let { "Remove '.${it.children.lastOrNull()?.text}'" } ?: ""
+    override fun getFamilyName(): String = "Remove conversion from 'KClass' to 'Class'"
 
-    override fun isAvailable(project: Project, editor: Editor?, file: KtFile) = isApplicable
+    override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean = isApplicable
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

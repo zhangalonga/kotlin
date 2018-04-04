@@ -27,7 +27,7 @@ object Numeric : TemplateGroupBase() {
     // TODO: use just numericPrimitives
     private val numericPrimitivesDefaultOrder = PrimitiveType.defaultPrimitives intersect PrimitiveType.numericPrimitives
 
-    val f_sum = fn("sum()") {
+    val f_sum: FamilyPrimitiveMemberDefinition = fn("sum()") {
         Family.defaultFamilies.forEach { family -> include(family, numericPrimitivesDefaultOrder) }
     } builder {
 
@@ -45,7 +45,7 @@ object Numeric : TemplateGroupBase() {
         }
     }
 
-    val f_average = fn("average()") {
+    val f_average: FamilyPrimitiveMemberDefinition = fn("average()") {
         Family.defaultFamilies.forEach { family -> include(family, numericPrimitivesDefaultOrder) }
     } builder {
         doc { "Returns an average value of elements in the ${f.collection}."}

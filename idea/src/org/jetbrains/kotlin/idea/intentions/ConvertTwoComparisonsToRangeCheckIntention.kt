@@ -43,7 +43,7 @@ class ConvertTwoComparisonsToRangeCheckIntention : SelfTargetingOffsetIndependen
 
     private data class RangeExpressionData(val value: KtExpression, val min: String, val max: String)
 
-    override fun isApplicableTo(element: KtBinaryExpression) = generateRangeExpressionData(element) != null
+    override fun isApplicableTo(element: KtBinaryExpression): Boolean = generateRangeExpressionData(element) != null
 
     override fun applyTo(element: KtBinaryExpression, editor: Editor?) {
         val rangeData = generateRangeExpressionData(element) ?: return

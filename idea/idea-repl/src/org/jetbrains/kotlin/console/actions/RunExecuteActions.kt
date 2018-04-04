@@ -34,7 +34,7 @@ fun errorNotification(project: Project?, message: String) {
     Notifications.Bus.notify(Notification(errorTag, errorTitle, message, NotificationType.ERROR), project)
 }
 
-fun logError(cl: Class<*>, message: String) = with(Logger.getInstance(cl)) { error(message) }
+fun logError(cl: Class<*>, message: String): Unit = with(Logger.getInstance(cl)) { error(message) }
 
 class RunKotlinConsoleAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -57,5 +57,5 @@ class BuildAndRestartConsoleAction(
         private val runner: KotlinConsoleRunner
 ) : AnAction("Build and restart", "Build module '${runner.module.name}' and restart", AllIcons.Actions.Restart) {
 
-    override fun actionPerformed(e: AnActionEvent) = runner.compilerHelper.compileModule()
+    override fun actionPerformed(e: AnActionEvent): Unit = runner.compilerHelper.compileModule()
 }

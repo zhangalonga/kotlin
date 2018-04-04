@@ -24,6 +24,7 @@ import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.util.CachedValue
 import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.annotations.NonNls
+import org.jetbrains.kotlin.asJava.builder.LightClassData
 import org.jetbrains.kotlin.asJava.builder.LightClassDataHolder
 import org.jetbrains.kotlin.asJava.builder.LightClassDataProviderForScript
 import org.jetbrains.kotlin.asJava.elements.FakeFileForLightClass
@@ -59,31 +60,31 @@ class KtLightClassForScript private constructor(
 
     val fqName: FqName = script.fqName
 
-    override fun getModifierList() = modifierList
+    override fun getModifierList(): PsiModifierList = modifierList
 
-    override fun hasModifierProperty(@NonNls name: String) = modifierList.hasModifierProperty(name)
+    override fun hasModifierProperty(@NonNls name: String): Boolean = modifierList.hasModifierProperty(name)
 
-    override fun isDeprecated() = false
+    override fun isDeprecated(): Boolean = false
 
-    override fun isInterface() = false
+    override fun isInterface(): Boolean = false
 
-    override fun isAnnotationType() = false
+    override fun isAnnotationType(): Boolean = false
 
-    override fun isEnum() = false
+    override fun isEnum(): Boolean = false
 
-    override fun getContainingClass() = null
+    override fun getContainingClass(): Nothing? = null
 
-    override fun getContainingFile() = _containingFile
+    override fun getContainingFile(): FakeFileForLightClass = _containingFile
 
-    override fun hasTypeParameters() = false
+    override fun hasTypeParameters(): Boolean = false
 
     override fun getTypeParameters(): Array<PsiTypeParameter> = PsiTypeParameter.EMPTY_ARRAY
 
-    override fun getTypeParameterList() = null
+    override fun getTypeParameterList(): Nothing? = null
 
-    override fun getDocComment() = null
+    override fun getDocComment(): Nothing? = null
 
-    override fun getImplementsList() = implementsList
+    override fun getImplementsList(): LightEmptyImplementsList = implementsList
 
     override fun getImplementsListTypes(): Array<PsiClassType> = PsiClassType.EMPTY_ARRAY
 
@@ -100,24 +101,24 @@ class KtLightClassForScript private constructor(
 
     override fun getInitializers(): Array<PsiClassInitializer> = PsiClassInitializer.EMPTY_ARRAY
 
-    override fun getName() = script.fqName.shortName().asString()
+    override fun getName(): String = script.fqName.shortName().asString()
 
-    override fun getQualifiedName() = script.fqName.asString()
+    override fun getQualifiedName(): String = script.fqName.asString()
 
-    override fun isValid() = script.isValid
+    override fun isValid(): Boolean = script.isValid
 
-    override fun copy() = KtLightClassForScript(script, lightClassDataCache)
+    override fun copy(): KtLightClassForScript = KtLightClassForScript(script, lightClassDataCache)
 
-    override val lightClassData = lightClassDataCache.value.findDataForScript(script.fqName)
+    override val lightClassData: LightClassData = lightClassDataCache.value.findDataForScript(script.fqName)
 
-    override fun getNavigationElement() = script
+    override fun getNavigationElement(): KtScript = script
 
     override fun isEquivalentTo(another: PsiElement?): Boolean =
             another is PsiClass && Comparing.equal(another.qualifiedName, qualifiedName)
 
     override fun getElementIcon(flags: Int): Icon? = throw UnsupportedOperationException("This should be done by JetIconProvider")
 
-    override fun hashCode() = hashCode
+    override fun hashCode(): Int = hashCode
 
     private fun computeHashCode(): Int {
         var result = manager.hashCode()
@@ -140,7 +141,7 @@ class KtLightClassForScript private constructor(
         return true
     }
 
-    override fun toString() = "${KtLightClassForScript::class.java.simpleName}:${script.fqName}"
+    override fun toString(): String = "${KtLightClassForScript::class.java.simpleName}:${script.fqName}"
 
     companion object {
 

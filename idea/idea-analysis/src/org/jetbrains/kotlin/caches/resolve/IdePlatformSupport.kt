@@ -47,13 +47,13 @@ abstract class IdePlatformSupport {
     abstract fun isModuleForPlatform(module: Module): Boolean
 
     companion object {
-        val EP_NAME = ExtensionPointName.create<IdePlatformSupport>("org.jetbrains.kotlin.idePlatformSupport")
+        val EP_NAME: ExtensionPointName<IdePlatformSupport> = ExtensionPointName.create<IdePlatformSupport>("org.jetbrains.kotlin.idePlatformSupport")
 
-        val platformSupport by lazy {
+        val platformSupport: Map<TargetPlatform, IdePlatformSupport> by lazy {
             Extensions.getExtensions(EP_NAME).associateBy { it.platform }
         }
 
-        val facades by lazy {
+        val facades: Map<TargetPlatform, AnalyzerFacade> by lazy {
             Extensions.getExtensions(EP_NAME).map { it.platform to it.analyzerFacade }.toMap()
         }
 

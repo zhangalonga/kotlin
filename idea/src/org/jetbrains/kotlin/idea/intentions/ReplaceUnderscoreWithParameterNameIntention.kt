@@ -39,7 +39,7 @@ class ReplaceUnderscoreWithParameterNameIntention : SelfTargetingOffsetIndepende
         KtCallableDeclaration::class.java,
         "Replace '_' with parameter name"
 ) {
-    override fun isApplicableTo(element: KtCallableDeclaration) =
+    override fun isApplicableTo(element: KtCallableDeclaration): Boolean =
             element.name == "_" && (element is KtDestructuringDeclarationEntry || element is KtParameter)
 
     override fun applyTo(element: KtCallableDeclaration, editor: Editor?) {

@@ -93,7 +93,7 @@ abstract class AbstractKotlinInplaceIntroducer<D: KtNamedDeclaration>(
                 ?.replaced(KtPsiFactory(myProject).createExpression(occurrenceExprText))
     }
 
-    override fun updateTitle(declaration: D?) = updateTitle(declaration, null)
+    override fun updateTitle(declaration: D?): Unit = updateTitle(declaration, null)
 
     override fun saveSettings(declaration: D) {
 

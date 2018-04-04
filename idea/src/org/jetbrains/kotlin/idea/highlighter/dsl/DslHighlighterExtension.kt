@@ -41,13 +41,13 @@ class DslHighlighterExtension : HighlighterExtension() {
             TextAttributesKey.createTextAttributesKey(externalKeyName(index), defaultKeys[index - 1])
         }
 
-        fun externalKeyName(index: Int) = "KOTLIN_DSL_STYLE$index"
+        fun externalKeyName(index: Int): String = "KOTLIN_DSL_STYLE$index"
 
-        val descriptionsToStyles = (1..numStyles).associate { index ->
+        val descriptionsToStyles: Map<String, TextAttributesKey> = (1..numStyles).associate { index ->
             "Dsl//${styleOptionDisplayName(index)}" to styles[index - 1]
         }
 
-        fun styleOptionDisplayName(index: Int) = "Style$index"
+        fun styleOptionDisplayName(index: Int): String = "Style$index"
 
         fun styleIdByMarkerAnnotation(markerAnnotation: ClassDescriptor): Int? {
             val markerAnnotationFqName = markerAnnotation.fqNameSafe

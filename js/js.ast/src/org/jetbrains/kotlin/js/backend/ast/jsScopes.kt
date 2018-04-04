@@ -21,7 +21,7 @@ import java.util.*
 class JsObjectScope(parent: JsScope, description: String) : JsScope(parent, description)
 
 object JsDynamicScope : JsScope(null, "Scope for dynamic declarations") {
-    override fun doCreateName(name: String) = JsName(name, false)
+    override fun doCreateName(name: String): JsName = JsName(name, false)
 }
 
 open class JsFunctionScope(parent: JsScope, description: String) : JsDeclarationScope(parent, description) {
@@ -123,7 +123,7 @@ class DelegatingJsFunctionScopeWithTemporaryParent(
     override fun enterLabel(label: String, outputName: String): JsName =
             delegatingScope.enterLabel(label, outputName)
 
-    override fun exitLabel() =
+    override fun exitLabel(): Unit =
             delegatingScope.exitLabel()
 
     override fun findLabel(label: String): JsName? =

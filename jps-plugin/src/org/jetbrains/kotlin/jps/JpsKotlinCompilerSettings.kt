@@ -51,7 +51,7 @@ class JpsKotlinCompilerSettings : JpsElementBase<JpsKotlinCompilerSettings>() {
     companion object {
         internal val ROLE = JpsElementChildRoleBase.create<JpsKotlinCompilerSettings>("Kotlin Compiler Settings")
 
-        fun getSettings(project: JpsProject) = project.container.getChild(ROLE) ?: JpsKotlinCompilerSettings()
+        fun getSettings(project: JpsProject): JpsKotlinCompilerSettings = project.container.getChild(ROLE) ?: JpsKotlinCompilerSettings()
 
         fun getOrCreateSettings(project: JpsProject): JpsKotlinCompilerSettings {
             var settings = project.container.getChild(ROLE)

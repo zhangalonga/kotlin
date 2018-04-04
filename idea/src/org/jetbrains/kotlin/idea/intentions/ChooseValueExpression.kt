@@ -50,13 +50,13 @@ abstract class ChooseValueExpression<in T : Any>(
         }
     }.toTypedArray()
 
-    override fun calculateLookupItems(context: ExpressionContext) = if (lookupItems.size > 1) lookupItems else null
+    override fun calculateLookupItems(context: ExpressionContext): Array<LookupElement>? = if (lookupItems.size > 1) lookupItems else null
 
-    override fun calculateQuickResult(context: ExpressionContext) = calculateResult(context)
+    override fun calculateQuickResult(context: ExpressionContext): TextResult = calculateResult(context)
 
-    override fun calculateResult(context: ExpressionContext) = TextResult(defaultItemString)
+    override fun calculateResult(context: ExpressionContext): TextResult = TextResult(defaultItemString)
 
-    override fun getAdvertisingText() = advertisementText
+    override fun getAdvertisingText(): String? = advertisementText
 }
 
 class ChooseStringExpression(
@@ -64,6 +64,6 @@ class ChooseStringExpression(
         default: String = suggestions.first(),
         advertisementText: String? = null
 ) : ChooseValueExpression<String>(suggestions, default, advertisementText) {
-    override fun getLookupString(element: String) = element
-    override fun getResult(element: String) = element
+    override fun getLookupString(element: String): String = element
+    override fun getResult(element: String): String = element
 }

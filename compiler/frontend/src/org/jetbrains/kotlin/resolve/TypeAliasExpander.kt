@@ -30,13 +30,13 @@ class TypeAliasExpander(
     private val shouldCheckBounds: Boolean
 ) {
 
-    fun expand(typeAliasExpansion: TypeAliasExpansion, annotations: Annotations) =
+    fun expand(typeAliasExpansion: TypeAliasExpansion, annotations: Annotations): SimpleType =
         expandRecursively(
             typeAliasExpansion, annotations,
             isNullable = false, recursionDepth = 0, withAbbreviatedType = true
         )
 
-    fun expandWithoutAbbreviation(typeAliasExpansion: TypeAliasExpansion, annotations: Annotations) =
+    fun expandWithoutAbbreviation(typeAliasExpansion: TypeAliasExpansion, annotations: Annotations): SimpleType =
         expandRecursively(
             typeAliasExpansion, annotations,
             isNullable = false, recursionDepth = 0, withAbbreviatedType = false
@@ -270,6 +270,6 @@ class TypeAliasExpander(
             }
         }
 
-        val NON_REPORTING = TypeAliasExpander(TypeAliasExpansionReportStrategy.DO_NOTHING, false)
+        val NON_REPORTING: TypeAliasExpander = TypeAliasExpander(TypeAliasExpansionReportStrategy.DO_NOTHING, false)
     }
 }

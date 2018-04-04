@@ -44,10 +44,10 @@ class KotlinShortenFQNamesProcessor : TemplateOptionalProcessor {
         return CodeInsightBundle.message("dialog.edit.template.checkbox.shorten.fq.names")!!
     }
 
-    override fun isEnabled(template: Template) = template.isToShortenLongNames
+    override fun isEnabled(template: Template): Boolean = template.isToShortenLongNames
 
     override fun setEnabled(template: Template, value: Boolean) {
     }
 
-    override fun isVisible(template: Template) = false
+    override fun isVisible(template: Template): Boolean = false
 }

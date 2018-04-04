@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.pill.POrderRoot.*
 import java.io.File
 
 class PArtifact(val artifactName: String, val outputDir: File, private val contents: ArtifactElement.Root) {
-    fun render(context: PathContext) = xml("component", "name" to "ArtifactManager") {
+    fun render(context: PathContext): xml = xml("component", "name" to "ArtifactManager") {
         xml("artifact", "name" to artifactName) {
             xml("output-path") {
                 raw(context(outputDir))
@@ -28,7 +28,7 @@ class PArtifact(val artifactName: String, val outputDir: File, private val conte
 
 sealed class ArtifactElement {
     private val myChildren = mutableListOf<ArtifactElement>()
-    val children get() = myChildren
+    val children: MutableList<ArtifactElement> get() = myChildren
 
     fun add(child: ArtifactElement) {
         myChildren += child
@@ -62,35 +62,35 @@ sealed class ArtifactElement {
     }
 
     class Root : ArtifactElement() {
-        override fun render(context: PathContext) = xml("root", "id" to "root")
+        override fun render(context: PathContext): xml = xml("root", "id" to "root")
     }
 
     data class Directory(val name: String) : ArtifactElement() {
-        override fun render(context: PathContext) = xml("element", "id" to "directory", "name" to name)
+        override fun render(context: PathContext): xml = xml("element", "id" to "directory", "name" to name)
     }
 
     data class Archive(val name: String) : ArtifactElement() {
-        override fun render(context: PathContext) = xml("element", "id" to "archive", "name" to name)
+        override fun render(context: PathContext): xml = xml("element", "id" to "archive", "name" to name)
     }
 
     data class ModuleOutput(val moduleName: String) : ArtifactElement() {
-        override fun render(context: PathContext) = xml("element", "id" to "module-output", "name" to moduleName)
+        override fun render(context: PathContext): xml = xml("element", "id" to "module-output", "name" to moduleName)
     }
 
     data class FileCopy(val source: File) : ArtifactElement() {
-        override fun render(context: PathContext) = xml("element", "id" to "file-copy", "path" to context(source))
+        override fun render(context: PathContext): xml = xml("element", "id" to "file-copy", "path" to context(source))
     }
 
     data class DirectoryCopy(val source: File) : ArtifactElement() {
-        override fun render(context: PathContext) = xml("element", "id" to "dir-copy", "path" to context(source))
+        override fun render(context: PathContext): xml = xml("element", "id" to "dir-copy", "path" to context(source))
     }
 
     data class ProjectLibrary(val name: String) : ArtifactElement() {
-        override fun render(context: PathContext) = xml("element", "id" to "library", "level" to "project", "name" to name)
+        override fun render(context: PathContext): xml = xml("element", "id" to "library", "level" to "project", "name" to name)
     }
 
     data class ExtractedDirectory(val archive: File, val pathInJar: String = "/") : ArtifactElement() {
-        override fun render(context: PathContext) =
+        override fun render(context: PathContext): xml =
             xml("element", "id" to "extracted-dir", "path" to context(archive), "path-in-jar" to pathInJar)
     }
 }

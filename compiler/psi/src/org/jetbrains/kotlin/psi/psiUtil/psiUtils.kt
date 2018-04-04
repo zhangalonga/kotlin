@@ -153,9 +153,9 @@ fun PsiElement.getPrevSiblingIgnoringWhitespaceAndComments(withItself: Boolean =
     return siblings(withItself = withItself, forward = false).filter { it !is PsiWhiteSpace && it !is PsiComment }.firstOrNull()
 }
 
-inline fun <reified T : PsiElement> T.nextSiblingOfSameType() = PsiTreeUtil.getNextSiblingOfType(this, T::class.java)
+inline fun <reified T : PsiElement> T.nextSiblingOfSameType(): T? = PsiTreeUtil.getNextSiblingOfType(this, T::class.java)
 
-inline fun <reified T : PsiElement> T.prevSiblingOfSameType() = PsiTreeUtil.getPrevSiblingOfType(this, T::class.java)
+inline fun <reified T : PsiElement> T.prevSiblingOfSameType(): T? = PsiTreeUtil.getPrevSiblingOfType(this, T::class.java)
 
 fun PsiElement?.isAncestor(element: PsiElement, strict: Boolean = false): Boolean {
     return PsiTreeUtil.isAncestor(this, element, strict)
@@ -396,18 +396,18 @@ operator fun SearchScope.contains(element: PsiElement): Boolean = PsiSearchScope
 fun <E : PsiElement> E.createSmartPointer(): SmartPsiElementPointer<E> =
     SmartPointerManager.getInstance(project).createSmartPsiElementPointer(this)
 
-fun PsiElement.before(element: PsiElement) = textRange.endOffset <= element.textRange.startOffset
+fun PsiElement.before(element: PsiElement): Boolean = textRange.endOffset <= element.textRange.startOffset
 
-inline fun <reified T : PsiElement> PsiElement.getLastParentOfTypeInRow() = parents.takeWhile { it is T }.lastOrNull() as? T
+inline fun <reified T : PsiElement> PsiElement.getLastParentOfTypeInRow(): T? = parents.takeWhile { it is T }.lastOrNull() as? T
 
-fun KtModifierListOwner.hasExpectModifier() = hasModifier(KtTokens.HEADER_KEYWORD) || hasModifier(KtTokens.EXPECT_KEYWORD)
-fun KtModifierList.hasExpectModifier() = hasModifier(KtTokens.HEADER_KEYWORD) || hasModifier(KtTokens.EXPECT_KEYWORD)
+fun KtModifierListOwner.hasExpectModifier(): Boolean = hasModifier(KtTokens.HEADER_KEYWORD) || hasModifier(KtTokens.EXPECT_KEYWORD)
+fun KtModifierList.hasExpectModifier(): Boolean = hasModifier(KtTokens.HEADER_KEYWORD) || hasModifier(KtTokens.EXPECT_KEYWORD)
 
-fun KtModifierListOwner.hasActualModifier() = hasModifier(KtTokens.IMPL_KEYWORD) || hasModifier(KtTokens.ACTUAL_KEYWORD)
-fun KtModifierList.hasActualModifier() = hasModifier(KtTokens.IMPL_KEYWORD) || hasModifier(KtTokens.ACTUAL_KEYWORD)
+fun KtModifierListOwner.hasActualModifier(): Boolean = hasModifier(KtTokens.IMPL_KEYWORD) || hasModifier(KtTokens.ACTUAL_KEYWORD)
+fun KtModifierList.hasActualModifier(): Boolean = hasModifier(KtTokens.IMPL_KEYWORD) || hasModifier(KtTokens.ACTUAL_KEYWORD)
 
-fun ASTNode.children() = generateSequence(firstChildNode) { node -> node.treeNext }
-fun ASTNode.parents() = generateSequence(treeParent) { node -> node.treeParent }
+fun ASTNode.children(): Sequence<ASTNode> = generateSequence(firstChildNode) { node -> node.treeNext }
+fun ASTNode.parents(): Sequence<ASTNode> = generateSequence(treeParent) { node -> node.treeParent }
 
 fun ASTNode.siblings(forward: Boolean = true): Sequence<ASTNode> {
     if (forward) {

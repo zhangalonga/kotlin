@@ -82,7 +82,7 @@ class MoveSuspiciousCallableReferenceIntoParenthesesInspection : AbstractKotlinI
             return "$receiver::${callableReference.text}"
         }
 
-        override fun isApplicableTo(element: KtLambdaExpression) = true
+        override fun isApplicableTo(element: KtLambdaExpression): Boolean = true
     }
 }
 

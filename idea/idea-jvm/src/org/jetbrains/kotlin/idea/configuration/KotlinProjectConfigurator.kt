@@ -59,6 +59,6 @@ interface KotlinProjectConfigurator {
     fun addLibraryDependency(module: Module, element: PsiElement, library: ExternalLibraryDescriptor, libraryJarDescriptors: List<LibraryJarDescriptor>)
 
     companion object {
-        val EP_NAME = ExtensionPointName.create<KotlinProjectConfigurator>("org.jetbrains.kotlin.projectConfigurator")
+        val EP_NAME: ExtensionPointName<KotlinProjectConfigurator> = ExtensionPointName.create<KotlinProjectConfigurator>("org.jetbrains.kotlin.projectConfigurator")
     }
 }

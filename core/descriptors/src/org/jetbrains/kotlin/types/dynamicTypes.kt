@@ -34,7 +34,7 @@ class DynamicTypesAllowed: DynamicTypesSettings() {
 
 fun KotlinType.isDynamic(): Boolean = unwrap() is DynamicType
 
-fun createDynamicType(builtIns: KotlinBuiltIns) = DynamicType(builtIns, Annotations.EMPTY)
+fun createDynamicType(builtIns: KotlinBuiltIns): DynamicType = DynamicType(builtIns, Annotations.EMPTY)
 
 class DynamicType(builtIns: KotlinBuiltIns, override val annotations: Annotations) : FlexibleType(builtIns.nothingType, builtIns.nullableAnyType) {
     override val delegate: SimpleType get() = upperBound

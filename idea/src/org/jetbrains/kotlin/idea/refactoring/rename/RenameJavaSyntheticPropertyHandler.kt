@@ -40,7 +40,7 @@ class RenameJavaSyntheticPropertyHandler : AbstractReferenceSubstitutionRenameHa
             propertyWrapper.setter?.let { allRenames[it] = JvmAbi.setterName(newName) }
         }
 
-        override fun canProcessElement(element: PsiElement) = element is SyntheticPropertyWrapper
+        override fun canProcessElement(element: PsiElement): Boolean = element is SyntheticPropertyWrapper
     }
 
     internal class SyntheticPropertyWrapper(

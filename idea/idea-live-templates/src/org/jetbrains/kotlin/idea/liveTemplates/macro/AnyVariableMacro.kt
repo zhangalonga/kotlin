@@ -22,11 +22,11 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class AnyVariableMacro : BaseKotlinVariableMacro<Unit>() {
-    override fun getName() = "kotlinAnyVariable"
-    override fun getPresentableName() = "kotlinAnyVariable()"
+    override fun getName(): String = "kotlinAnyVariable"
+    override fun getPresentableName(): String = "kotlinAnyVariable()"
 
     override fun initState(contextElement: KtElement, bindingContext: BindingContext) {
     }
 
-    override fun isSuitable(variableDescriptor: VariableDescriptor, project: Project, state: Unit) = true
+    override fun isSuitable(variableDescriptor: VariableDescriptor, project: Project, state: Unit): Boolean = true
 }

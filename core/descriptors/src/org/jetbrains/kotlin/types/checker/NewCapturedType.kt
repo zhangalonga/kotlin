@@ -138,10 +138,10 @@ class NewCapturedType(
     override val memberScope: MemberScope // todo what about foo().bar() where foo() return captured type?
         get() = ErrorUtils.createErrorScope("No member resolution should be done on captured type!", true)
 
-    override fun replaceAnnotations(newAnnotations: Annotations) =
+    override fun replaceAnnotations(newAnnotations: Annotations): NewCapturedType =
             NewCapturedType(captureStatus, constructor, lowerType, newAnnotations, isMarkedNullable)
 
-    override fun makeNullableAsSpecified(newNullability: Boolean) =
+    override fun makeNullableAsSpecified(newNullability: Boolean): NewCapturedType =
             NewCapturedType(captureStatus, constructor, lowerType, annotations, newNullability)
 }
 
@@ -153,13 +153,13 @@ class NewCapturedTypeConstructor(val projection: TypeProjection, private var sup
         this.supertypes = supertypes
     }
 
-    override fun getSupertypes() = supertypes ?: emptyList()
+    override fun getSupertypes(): List<UnwrappedType> = supertypes ?: emptyList()
     override fun getParameters(): List<TypeParameterDescriptor> = emptyList()
 
-    override fun isFinal() = false
-    override fun isDenotable() = false
+    override fun isFinal(): Boolean = false
+    override fun isDenotable(): Boolean = false
     override fun getDeclarationDescriptor(): ClassifierDescriptor? = null
     override fun getBuiltIns(): KotlinBuiltIns = projection.type.builtIns
 
-    override fun toString() = "CapturedType($projection)"
+    override fun toString(): String = "CapturedType($projection)"
 }

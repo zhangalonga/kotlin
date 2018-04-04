@@ -52,7 +52,7 @@ abstract class OverrideImplementMembersHandler : LanguageCodeInsightActionHandle
 
     protected abstract fun getChooserTitle(): String
 
-    protected open fun isValidForClass(classOrObject: KtClassOrObject) = true
+    protected open fun isValidForClass(classOrObject: KtClassOrObject): Boolean = true
 
     override fun isValidFor(editor: Editor, file: PsiFile): Boolean {
         if (file !is KtFile) return false

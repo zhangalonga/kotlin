@@ -16,12 +16,10 @@
 
 package org.jetbrains.kotlin.idea.caches.lightClasses
 
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElementFactory
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiType
+import com.intellij.psi.*
 import com.intellij.psi.impl.light.AbstractLightClass
 import com.intellij.psi.impl.light.LightMethod
+import com.intellij.psi.search.SearchScope
 import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.asJava.classes.LightClassInheritanceHelper
 import org.jetbrains.kotlin.asJava.elements.KtLightElement
@@ -32,6 +30,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 import org.jetbrains.kotlin.resolve.DescriptorUtils
+import javax.swing.Icon
 
 // Used as a placeholder when actual light class does not exist (expect-classes, for example)
 // The main purpose is to allow search of inheritors within hierarchies containing such classes
@@ -41,20 +40,20 @@ class KtFakeLightClass(override val kotlinOrigin: KtClassOrObject) :
     private val _delegate by lazy { PsiElementFactory.SERVICE.getInstance(kotlinOrigin.project).createClass("dummy") }
     private val _containingClass by lazy { kotlinOrigin.containingClassOrObject?.let { KtFakeLightClass(it) } }
 
-    override val clsDelegate get() = _delegate
-    override val originKind get() = LightClassOriginKind.SOURCE
+    override val clsDelegate: PsiClass get() = _delegate
+    override val originKind: LightClassOriginKind get() = LightClassOriginKind.SOURCE
 
-    override fun getName() = kotlinOrigin.name
+    override fun getName(): String? = kotlinOrigin.name
 
-    override fun getDelegate() = _delegate
-    override fun copy() = KtFakeLightClass(kotlinOrigin)
+    override fun getDelegate(): PsiClass = _delegate
+    override fun copy(): KtFakeLightClass = KtFakeLightClass(kotlinOrigin)
 
-    override fun getQualifiedName() = kotlinOrigin.fqName?.asString()
-    override fun getContainingClass() = _containingClass
-    override fun getNavigationElement() = kotlinOrigin
-    override fun getIcon(flags: Int) = kotlinOrigin.getIcon(flags)
-    override fun getContainingFile() = kotlinOrigin.containingFile
-    override fun getUseScope() = kotlinOrigin.useScope
+    override fun getQualifiedName(): String? = kotlinOrigin.fqName?.asString()
+    override fun getContainingClass(): KtFakeLightClass? = _containingClass
+    override fun getNavigationElement(): KtClassOrObject = kotlinOrigin
+    override fun getIcon(flags: Int): Icon? = kotlinOrigin.getIcon(flags)
+    override fun getContainingFile(): PsiFile = kotlinOrigin.containingFile
+    override fun getUseScope(): SearchScope = kotlinOrigin.useScope
 
     override fun isInheritor(baseClass: PsiClass, checkDeep: Boolean): Boolean {
         LightClassInheritanceHelper.getService(project).isInheritor(this, baseClass, checkDeep).ifSure { return it }
@@ -78,14 +77,14 @@ class KtFakeLightMethod private constructor(
     KtFakeLightClass(ktClassOrObject),
     KotlinLanguage.INSTANCE
 ), KtLightElement<KtNamedDeclaration, PsiMethod> {
-    override val kotlinOrigin get() = ktDeclaration
-    override val clsDelegate get() = myMethod
+    override val kotlinOrigin: KtNamedDeclaration get() = ktDeclaration
+    override val clsDelegate: PsiMethod get() = myMethod
 
-    override fun getName() = ktDeclaration.name ?: ""
+    override fun getName(): String = ktDeclaration.name ?: ""
 
-    override fun getNavigationElement() = ktDeclaration
-    override fun getIcon(flags: Int) = ktDeclaration.getIcon(flags)
-    override fun getUseScope() = ktDeclaration.useScope
+    override fun getNavigationElement(): KtNamedDeclaration = ktDeclaration
+    override fun getIcon(flags: Int): Icon? = ktDeclaration.getIcon(flags)
+    override fun getUseScope(): SearchScope = ktDeclaration.useScope
 
     companion object {
         fun get(ktDeclaration: KtNamedDeclaration): KtFakeLightMethod? {

@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.KtNodeType
 
 abstract class KtExpressionImpl(node: ASTNode) : KtElementImpl(node), KtExpression {
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitExpression(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitExpression(this, data)
 
     protected fun findExpressionUnder(type: KtNodeType): KtExpression? {
         val containerNode = findChildByType<KtContainerNode>(type) ?: return null

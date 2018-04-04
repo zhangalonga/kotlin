@@ -26,13 +26,13 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
 
 class DefaultClassObjectIntrinsic( val fqName: FqName): ObjectIntrinsic {
-    override fun apply(context: TranslationContext) = context.getReferenceToIntrinsic(fqName.asString())
+    override fun apply(context: TranslationContext): JsExpression = context.getReferenceToIntrinsic(fqName.asString())
 }
 
 class ObjectIntrinsics {
     private val cache = mutableMapOf<ClassDescriptor, ObjectIntrinsic>()
 
-    fun getIntrinsic(classDescriptor: ClassDescriptor) = cache.getOrPut(classDescriptor) { createIntrinsic(classDescriptor) }
+    fun getIntrinsic(classDescriptor: ClassDescriptor): ObjectIntrinsic = cache.getOrPut(classDescriptor) { createIntrinsic(classDescriptor) }
 
     private fun createIntrinsic(classDescriptor: ClassDescriptor): ObjectIntrinsic {
         if (classDescriptor.fqNameUnsafe == KotlinBuiltIns.FQ_NAMES._enum ||

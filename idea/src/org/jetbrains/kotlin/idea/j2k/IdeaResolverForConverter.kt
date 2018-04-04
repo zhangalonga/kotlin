@@ -16,11 +16,12 @@
 
 package org.jetbrains.kotlin.idea.j2k
 
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.j2k.ResolverForConverter
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptorIfAny
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 object IdeaResolverForConverter : ResolverForConverter {
-    override fun resolveToDescriptor(declaration: KtDeclaration) = declaration.resolveToDescriptorIfAny(BodyResolveMode.FULL)
+    override fun resolveToDescriptor(declaration: KtDeclaration): DeclarationDescriptor? = declaration.resolveToDescriptorIfAny(BodyResolveMode.FULL)
 }

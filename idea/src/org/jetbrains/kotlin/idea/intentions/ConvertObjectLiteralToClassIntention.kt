@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.idea.intentions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.search.searches.ReferencesSearch
@@ -47,9 +48,9 @@ class ConvertObjectLiteralToClassIntention : SelfTargetingRangeIntention<KtObjec
         KtObjectLiteralExpression::class.java,
         "Convert object literal to class"
 ) {
-    override fun applicabilityRange(element: KtObjectLiteralExpression) = element.objectDeclaration.getObjectKeyword()?.textRange
+    override fun applicabilityRange(element: KtObjectLiteralExpression): TextRange? = element.objectDeclaration.getObjectKeyword()?.textRange
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     private fun doApply(editor: Editor, element: KtObjectLiteralExpression, targetParent: KtElement) {
         val project = element.project

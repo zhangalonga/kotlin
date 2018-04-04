@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.psi
 
 import com.intellij.lang.ASTNode
+import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.ItemPresentationProviders
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.KtNodeTypes
@@ -50,5 +51,5 @@ class KtTypeAlias : KtTypeParameterListOwnerStub<KotlinTypeAliasStub>, KtNamedDe
         }
     }
 
-    override fun getPresentation() = ItemPresentationProviders.getItemPresentation(this)
+    override fun getPresentation(): ItemPresentation? = ItemPresentationProviders.getItemPresentation(this)
 }

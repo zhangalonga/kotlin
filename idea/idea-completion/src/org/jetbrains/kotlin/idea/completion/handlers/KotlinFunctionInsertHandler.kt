@@ -60,7 +60,7 @@ sealed class KotlinFunctionInsertHandler(callType: CallType<*>) : KotlinCallable
                 argumentText: String = this.argumentText,
                 lambdaInfo: GenerateLambdaInfo? = this.lambdaInfo,
                 argumentsOnly: Boolean = this.argumentsOnly
-        ) = Normal(callType, inputTypeArguments, inputValueArguments, argumentText, lambdaInfo, argumentsOnly)
+        ): Normal = Normal(callType, inputTypeArguments, inputValueArguments, argumentText, lambdaInfo, argumentsOnly)
 
         override fun handleInsert(context: InsertionContext, item: LookupElement) {
             val psiDocumentManager = PsiDocumentManager.getInstance(context.project)

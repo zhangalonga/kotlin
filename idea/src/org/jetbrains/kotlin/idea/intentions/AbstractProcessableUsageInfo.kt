@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.psi.KtElement
 
 abstract class AbstractProcessableUsageInfo<out T : PsiElement, in D: Any>(element: T) : UsageInfo(element) {
     @Suppress("UNCHECKED_CAST")
-    override fun getElement() = super.getElement() as T?
+    override fun getElement(): T? = super.getElement() as T?
 
     abstract fun process(data: D, elementsToShorten: MutableList<KtElement>)
 }

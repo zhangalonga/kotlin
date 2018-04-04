@@ -48,10 +48,10 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class KotlinChangeSignatureHandler : ChangeSignatureHandler {
 
-    override fun findTargetMember(file: PsiFile, editor: Editor) =
+    override fun findTargetMember(file: PsiFile, editor: Editor): PsiElement? =
             file.findElementAt(editor.caretModel.offset)?.let { findTargetMember(it) }
 
-    override fun findTargetMember(element: PsiElement) =
+    override fun findTargetMember(element: PsiElement): PsiElement? =
             findTargetForRefactoring(element)
 
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext) {
@@ -72,7 +72,7 @@ class KotlinChangeSignatureHandler : ChangeSignatureHandler {
         invokeChangeSignature(element, element, project, editor)
     }
 
-    override fun getTargetNotFoundMessage() =
+    override fun getTargetNotFoundMessage(): String =
             KotlinRefactoringBundle.message("error.wrong.caret.position.function.or.constructor.name")
 
     companion object {

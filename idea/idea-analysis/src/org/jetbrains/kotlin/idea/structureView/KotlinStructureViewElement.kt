@@ -44,7 +44,7 @@ class KotlinStructureViewElement(
                 KotlinStructureElementPresentation(isInherited, element, countDescriptor())
             }
 
-    var isPublic
+    var isPublic: Boolean
             by AssignableLazyProperty {
                 isPublic(countDescriptor())
             }
@@ -134,7 +134,7 @@ private class AssignableLazyProperty<in R, T : Any>(val init: () -> T) : ReadWri
     }
 }
 
-fun KtClassOrObject.getStructureDeclarations() =
+fun KtClassOrObject.getStructureDeclarations(): List<KtDeclaration> =
     (primaryConstructor?.let { listOf(it) } ?: emptyList()) +
             primaryConstructorParameters.filter { it.hasValOrVar() } +
             declarations

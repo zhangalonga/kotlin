@@ -125,17 +125,17 @@ abstract class AnnotatedAsNativeXCallCase(val annotation: PredefinedAnnotation) 
 
     fun canApply(callInfo: FunctionCallInfo): Boolean = AnnotationsUtils.hasAnnotation(callInfo.callableDescriptor, annotation)
 
-    final override fun FunctionCallInfo.dispatchReceiver() = translateCall(dispatchReceiver!!, argumentsInfo)
-    final override fun FunctionCallInfo.extensionReceiver() = translateCall(extensionReceiver!!, argumentsInfo)
+    final override fun FunctionCallInfo.dispatchReceiver(): JsExpression = translateCall(dispatchReceiver!!, argumentsInfo)
+    final override fun FunctionCallInfo.extensionReceiver(): JsExpression = translateCall(extensionReceiver!!, argumentsInfo)
 }
 
 object NativeInvokeCallCase : AnnotatedAsNativeXCallCase(PredefinedAnnotation.NATIVE_INVOKE) {
-    override fun translateCall(receiver: JsExpression, argumentsInfo: CallArgumentTranslator.ArgumentsInfo) =
+    override fun translateCall(receiver: JsExpression, argumentsInfo: CallArgumentTranslator.ArgumentsInfo): JsInvocation =
             JsInvocation(receiver, argumentsInfo.translateArguments)
 }
 
 object NativeGetterCallCase : AnnotatedAsNativeXCallCase(PredefinedAnnotation.NATIVE_GETTER) {
-    override fun translateCall(receiver: JsExpression, argumentsInfo: CallArgumentTranslator.ArgumentsInfo) =
+    override fun translateCall(receiver: JsExpression, argumentsInfo: CallArgumentTranslator.ArgumentsInfo): JsArrayAccess =
             JsArrayAccess(receiver, argumentsInfo.translateArguments[0])
 }
 
@@ -187,11 +187,11 @@ object ConstructorCallCase : FunctionCallCase() {
         return callInfo.callableDescriptor is ConstructorDescriptor
     }
 
-    override fun FunctionCallInfo.noReceivers() = doTranslate { translateArguments }
+    override fun FunctionCallInfo.noReceivers(): JsExpression = doTranslate { translateArguments }
 
-    override fun FunctionCallInfo.dispatchReceiver() = doTranslate { argsWithReceiver(dispatchReceiver!!) }
+    override fun FunctionCallInfo.dispatchReceiver(): JsExpression = doTranslate { argsWithReceiver(dispatchReceiver!!) }
 
-    override fun FunctionCallInfo.extensionReceiver() = doTranslate { argsWithReceiver(extensionReceiver!!) }
+    override fun FunctionCallInfo.extensionReceiver(): JsExpression = doTranslate { argsWithReceiver(extensionReceiver!!) }
 
     private inline fun FunctionCallInfo.doTranslate(
             getArguments: CallArgumentTranslator.ArgumentsInfo.() -> List<JsExpression>

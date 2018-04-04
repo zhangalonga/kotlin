@@ -75,35 +75,35 @@ object KotlinUsageTypeProvider : UsageTypeProviderEx {
 
 object KotlinUsageTypes {
     // types
-    val TYPE_CONSTRAINT = UsageType(KotlinBundle.message("usageType.type.constraint"))
-    val VALUE_PARAMETER_TYPE = UsageType(KotlinBundle.message("usageType.value.parameter.type"))
-    val NON_LOCAL_PROPERTY_TYPE = UsageType(KotlinBundle.message("usageType.nonLocal.property.type"))
-    val FUNCTION_RETURN_TYPE = UsageType(KotlinBundle.message("usageType.function.return.type"))
-    val SUPER_TYPE = UsageType(KotlinBundle.message("usageType.superType"))
-    val IS = UsageType(KotlinBundle.message("usageType.is"))
-    val CLASS_OBJECT_ACCESS = UsageType(KotlinBundle.message("usageType.class.object"))
-    val COMPANION_OBJECT_ACCESS = UsageType(KotlinBundle.message("usageType.companion.object"))
-    val EXTENSION_RECEIVER_TYPE = UsageType(KotlinBundle.message("usageType.extension.receiver.type"))
-    val SUPER_TYPE_QUALIFIER = UsageType(KotlinBundle.message("usageType.super.type.qualifier"))
-    val TYPE_ALIAS = UsageType("Type alias")
+    val TYPE_CONSTRAINT: UsageType = UsageType(KotlinBundle.message("usageType.type.constraint"))
+    val VALUE_PARAMETER_TYPE: UsageType = UsageType(KotlinBundle.message("usageType.value.parameter.type"))
+    val NON_LOCAL_PROPERTY_TYPE: UsageType = UsageType(KotlinBundle.message("usageType.nonLocal.property.type"))
+    val FUNCTION_RETURN_TYPE: UsageType = UsageType(KotlinBundle.message("usageType.function.return.type"))
+    val SUPER_TYPE: UsageType = UsageType(KotlinBundle.message("usageType.superType"))
+    val IS: UsageType = UsageType(KotlinBundle.message("usageType.is"))
+    val CLASS_OBJECT_ACCESS: UsageType = UsageType(KotlinBundle.message("usageType.class.object"))
+    val COMPANION_OBJECT_ACCESS: UsageType = UsageType(KotlinBundle.message("usageType.companion.object"))
+    val EXTENSION_RECEIVER_TYPE: UsageType = UsageType(KotlinBundle.message("usageType.extension.receiver.type"))
+    val SUPER_TYPE_QUALIFIER: UsageType = UsageType(KotlinBundle.message("usageType.super.type.qualifier"))
+    val TYPE_ALIAS: UsageType = UsageType("Type alias")
 
     // functions
-    val FUNCTION_CALL = UsageType(KotlinBundle.message("usageType.function.call"))
-    val IMPLICIT_GET = UsageType(KotlinBundle.message("usageType.implicit.get"))
-    val IMPLICIT_SET = UsageType(KotlinBundle.message("usageType.implicit.set"))
-    val IMPLICIT_INVOKE = UsageType(KotlinBundle.message("usageType.implicit.invoke"))
-    val IMPLICIT_ITERATION = UsageType(KotlinBundle.message("usageType.implicit.iteration"))
-    val PROPERTY_DELEGATION = UsageType(KotlinBundle.message("usageType.property.delegation"))
+    val FUNCTION_CALL: UsageType = UsageType(KotlinBundle.message("usageType.function.call"))
+    val IMPLICIT_GET: UsageType = UsageType(KotlinBundle.message("usageType.implicit.get"))
+    val IMPLICIT_SET: UsageType = UsageType(KotlinBundle.message("usageType.implicit.set"))
+    val IMPLICIT_INVOKE: UsageType = UsageType(KotlinBundle.message("usageType.implicit.invoke"))
+    val IMPLICIT_ITERATION: UsageType = UsageType(KotlinBundle.message("usageType.implicit.iteration"))
+    val PROPERTY_DELEGATION: UsageType = UsageType(KotlinBundle.message("usageType.property.delegation"))
 
     // values
-    val RECEIVER = UsageType(KotlinBundle.message("usageType.receiver"))
-    val DELEGATE = UsageType(KotlinBundle.message("usageType.delegate"))
+    val RECEIVER: UsageType = UsageType(KotlinBundle.message("usageType.receiver"))
+    val DELEGATE: UsageType = UsageType(KotlinBundle.message("usageType.delegate"))
 
     // packages
-    val PACKAGE_DIRECTIVE = UsageType(KotlinBundle.message("usageType.packageDirective"))
-    val PACKAGE_MEMBER_ACCESS = UsageType(KotlinBundle.message("usageType.packageMemberAccess"))
+    val PACKAGE_DIRECTIVE: UsageType = UsageType(KotlinBundle.message("usageType.packageDirective"))
+    val PACKAGE_MEMBER_ACCESS: UsageType = UsageType(KotlinBundle.message("usageType.packageMemberAccess"))
 
     // common usage types
-    val CALLABLE_REFERENCE = UsageType(KotlinBundle.message("usageType.callable.reference"))
-    val NAMED_ARGUMENT = UsageType("Named argument")
+    val CALLABLE_REFERENCE: UsageType = UsageType(KotlinBundle.message("usageType.callable.reference"))
+    val NAMED_ARGUMENT: UsageType = UsageType("Named argument")
 }

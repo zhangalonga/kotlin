@@ -16,16 +16,18 @@
 
 package org.jetbrains.kotlin.allopen.ide
 
+import com.intellij.openapi.util.Key
 import org.jetbrains.kotlin.allopen.AllOpenCommandLineProcessor
 import org.jetbrains.kotlin.annotation.plugin.ide.AbstractGradleImportHandler
 import org.jetbrains.kotlin.utils.PathUtil
+import java.io.File
 
 class AllOpenGradleProjectImportHandler : AbstractGradleImportHandler<AllOpenModel>() {
-    override val compilerPluginId = AllOpenCommandLineProcessor.PLUGIN_ID
-    override val pluginName = "allopen"
-    override val annotationOptionName = AllOpenCommandLineProcessor.ANNOTATION_OPTION.name
-    override val pluginJarFileFromIdea = PathUtil.kotlinPathsForIdeaPlugin.allOpenPluginJarPath
-    override val modelKey = AllOpenProjectResolverExtension.KEY
+    override val compilerPluginId: String = AllOpenCommandLineProcessor.PLUGIN_ID
+    override val pluginName: String = "allopen"
+    override val annotationOptionName: String = AllOpenCommandLineProcessor.ANNOTATION_OPTION.name
+    override val pluginJarFileFromIdea: File = PathUtil.kotlinPathsForIdeaPlugin.allOpenPluginJarPath
+    override val modelKey: Key<AllOpenModel> = AllOpenProjectResolverExtension.KEY
 
     override fun getAnnotationsForPreset(presetName: String): List<String> {
         for ((name, annotations) in AllOpenCommandLineProcessor.SUPPORTED_PRESETS.entries) {

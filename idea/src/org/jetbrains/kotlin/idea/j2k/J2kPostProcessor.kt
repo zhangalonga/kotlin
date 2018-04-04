@@ -56,7 +56,7 @@ class J2kPostProcessor(private val formatCode: Boolean) : PostProcessor {
         PROCESS
     }
 
-    override fun doAdditionalProcessing(file: KtFile, rangeMarker: RangeMarker?) =
+    override fun doAdditionalProcessing(file: KtFile, rangeMarker: RangeMarker?): Unit =
             runBlocking(EDT.ModalityStateElement(ModalityState.defaultModalityState())) {
                 do {
                     var modificationStamp: Long? = file.modificationStamp

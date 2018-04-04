@@ -31,8 +31,7 @@ import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
 class ReplaceItWithExplicitFunctionLiteralParamIntention : SelfTargetingOffsetIndependentIntention<KtNameReferenceExpression> (
         KtNameReferenceExpression::class.java, "Replace 'it' with explicit parameter"
 ), LowPriorityAction {
-    override fun isApplicableTo(element: KtNameReferenceExpression)
-            = isAutoCreatedItUsage(element)
+    override fun isApplicableTo(element: KtNameReferenceExpression): Boolean = isAutoCreatedItUsage(element)
 
     override fun applyTo(element: KtNameReferenceExpression, editor: Editor?) {
         if (editor == null) throw IllegalArgumentException("This intention requires an editor")

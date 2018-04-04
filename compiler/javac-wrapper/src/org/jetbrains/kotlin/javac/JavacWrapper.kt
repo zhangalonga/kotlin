@@ -81,15 +81,15 @@ class JavacWrapper(
                 SymbolBasedClassifierType(it.element.asType(), this)
             }
 
-    val JAVA_LANG_OBJECT by lazy {
+    val JAVA_LANG_OBJECT: SymbolBasedClassifierType<TypeMirror>? by lazy {
         createCommonClassifierType(classId("java.lang", "Object"))
     }
 
-    val JAVA_LANG_ENUM by lazy {
+    val JAVA_LANG_ENUM: SymbolBasedClass? by lazy {
         findClassInSymbols(classId("java.lang", "Enum"))
     }
 
-    val JAVA_LANG_ANNOTATION_ANNOTATION by lazy {
+    val JAVA_LANG_ANNOTATION_ANNOTATION: SymbolBasedClassifierType<TypeMirror>? by lazy {
         createCommonClassifierType(classId("java.lang.annotation", "Annotation"))
     }
 
@@ -260,9 +260,9 @@ class JavacWrapper(
     fun getKotlinClassifier(classId: ClassId): JavaClass? =
             kotlinClassifiersCache.getKotlinClassifier(classId)
 
-    fun isDeprecated(element: Element) = elements.isDeprecated(element)
+    fun isDeprecated(element: Element): Boolean = elements.isDeprecated(element)
 
-    fun isDeprecated(typeMirror: TypeMirror) = isDeprecated(types.asElement(typeMirror))
+    fun isDeprecated(typeMirror: TypeMirror): Boolean = isDeprecated(types.asElement(typeMirror))
 
     fun resolve(tree: JCTree, compilationUnit: CompilationUnitTree, containingElement: JavaElement): JavaClassifier? =
             classifierResolver.resolve(tree, compilationUnit, containingElement)
@@ -280,7 +280,7 @@ class JavacWrapper(
                 }
             }
 
-    fun hasKotlinPackage(fqName: FqName) =
+    fun hasKotlinPackage(fqName: FqName): FqName? =
             if (kotlinClassifiersCache.hasPackage(fqName)) {
                 fqName
             }
@@ -288,7 +288,7 @@ class JavacWrapper(
                 null
             }
 
-    fun isDeprecatedInJavaDoc(tree: JCTree, compilationUnit: CompilationUnitTree) =
+    fun isDeprecatedInJavaDoc(tree: JCTree, compilationUnit: CompilationUnitTree): Boolean =
             (compilationUnit as JCTree.JCCompilationUnit).docComments?.getCommentTree(tree)?.comment?.isDeprecated == true
 
     private inline fun <reified T> Iterable<T>.toJavacList() = JavacList.from(this)

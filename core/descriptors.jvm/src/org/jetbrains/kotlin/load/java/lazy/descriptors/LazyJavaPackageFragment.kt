@@ -53,7 +53,7 @@ class LazyJavaPackageFragment(
             onRecursiveCall = listOf()
     )
 
-    override val annotations =
+    override val annotations: Annotations =
             // Do not resolve package annotations if JSR-305 is disabled
             if (c.components.annotationTypeQualifierResolver.disabled) Annotations.EMPTY
             else c.resolveAnnotations(jPackage)
@@ -82,9 +82,9 @@ class LazyJavaPackageFragment(
 
     fun getFacadeNameForPartName(partName: JvmClassName): JvmClassName? = partToFacade[partName]
 
-    override fun getMemberScope() = scope
+    override fun getMemberScope(): JvmPackageScope = scope
 
-    override fun toString() = "Lazy Java package fragment: $fqName"
+    override fun toString(): String = "Lazy Java package fragment: $fqName"
 
     override fun getSource(): SourceElement = KotlinJvmBinaryPackageSourceElement(this)
 }

@@ -100,6 +100,6 @@ class IncrementalPackageFragmentProvider(
             )
         }
 
-        override fun getMemberScope() = memberScope()
+        override fun getMemberScope(): MemberScope = memberScope()
     }
 }

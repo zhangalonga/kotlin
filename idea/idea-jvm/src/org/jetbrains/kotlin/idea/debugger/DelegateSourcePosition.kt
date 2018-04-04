@@ -29,15 +29,15 @@ abstract class DelegateSourcePosition(private var delegate: SourcePosition) : So
 
     override fun openEditor(requestFocus: Boolean): Editor = delegate.openEditor(requestFocus)
 
-    override fun canNavigate() = delegate.canNavigate()
-    override fun canNavigateToSource() = delegate.canNavigateToSource()
+    override fun canNavigate(): Boolean = delegate.canNavigate()
+    override fun canNavigateToSource(): Boolean = delegate.canNavigateToSource()
 
     override fun navigate(requestFocus: Boolean) {
         delegate.navigate(requestFocus)
     }
 
     override fun hashCode(): Int = delegate.hashCode()
-    override fun equals(other: Any?) = delegate == other
+    override fun equals(other: Any?): Boolean = delegate == other
 
-    override fun toString() = "DSP($delegate)"
+    override fun toString(): String = "DSP($delegate)"
 }

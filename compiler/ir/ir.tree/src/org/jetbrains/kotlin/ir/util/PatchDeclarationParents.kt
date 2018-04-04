@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
 import java.util.*
 
-fun <T : IrElement> T.patchDeclarationParents() =
+fun <T : IrElement> T.patchDeclarationParents(): T =
     apply {
         acceptVoid(PatchDeclarationParentsVisitor())
     }

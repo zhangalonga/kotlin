@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.idea.decompiler.textBuilder
 
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
 import org.jetbrains.kotlin.descriptors.PackageFragmentProvider
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
@@ -51,7 +52,7 @@ abstract class DeserializerForDecompilerBase(val directoryPackageFqName: FqName)
         }
     }
 
-    override fun resolveTopLevelClass(classId: ClassId) = deserializationComponents.deserializeClass(classId)
+    override fun resolveTopLevelClass(classId: ClassId): ClassDescriptor? = deserializationComponents.deserializeClass(classId)
 
     protected fun createDummyPackageFragment(fqName: FqName): MutablePackageFragmentDescriptor =
             MutablePackageFragmentDescriptor(moduleDescriptor, fqName)

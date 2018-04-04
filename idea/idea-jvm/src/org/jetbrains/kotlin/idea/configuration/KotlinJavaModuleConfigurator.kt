@@ -131,7 +131,7 @@ open class KotlinJavaModuleConfigurator protected constructor() : KotlinWithLibr
     }
 
     companion object {
-        const val NAME = "java"
+        const val NAME: String = "java"
 
         val instance: KotlinJavaModuleConfigurator
             get() = Extensions.findExtension(KotlinProjectConfigurator.EP_NAME, KotlinJavaModuleConfigurator::class.java)

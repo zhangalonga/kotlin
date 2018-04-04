@@ -39,10 +39,10 @@ import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.types.isError
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 
-fun KtProperty.mustBeAbstractInInterface() =
+fun KtProperty.mustBeAbstractInInterface(): Boolean =
         hasInitializer() || hasDelegate() || (!hasInitializer() && !hasDelegate() && accessors.isEmpty())
 
-fun KtNamedDeclaration.isAbstractInInterface(originalClass: KtClassOrObject) =
+fun KtNamedDeclaration.isAbstractInInterface(originalClass: KtClassOrObject): Boolean =
         originalClass is KtClass && originalClass.isInterface() && isAbstract()
 
 fun KtNamedDeclaration.canMoveMemberToJavaClass(targetClass: PsiClass): Boolean {

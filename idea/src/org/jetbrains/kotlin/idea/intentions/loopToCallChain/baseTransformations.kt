@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.resolve.scopes.utils.findVariable
  */
 abstract class ReplaceLoopResultTransformation(final override val loop: KtForExpression) : ResultTransformation {
 
-    override val commentSavingRange = PsiChildRange.singleElement(loop.unwrapIfLabeled())
+    override val commentSavingRange: PsiChildRange = PsiChildRange.singleElement(loop.unwrapIfLabeled())
 
     override fun generateExpressionToReplaceLoopAndCheckErrors(resultCallChain: KtExpression): KtExpression {
         return resultCallChain
@@ -53,7 +53,7 @@ abstract class AssignToVariableResultTransformation(
         protected val initialization: VariableInitialization
 ) : ResultTransformation {
 
-    override val commentSavingRange = PsiChildRange(initialization.initializationStatement, loop.unwrapIfLabeled())
+    override val commentSavingRange: PsiChildRange = PsiChildRange(initialization.initializationStatement, loop.unwrapIfLabeled())
 
     override fun generateExpressionToReplaceLoopAndCheckErrors(resultCallChain: KtExpression): KtExpression {
         val psiFactory = KtPsiFactory(resultCallChain)

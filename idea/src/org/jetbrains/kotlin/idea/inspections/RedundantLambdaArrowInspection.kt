@@ -30,7 +30,7 @@ class RedundantLambdaArrowInspection : AbstractKotlinInspection() {
     }
 
     class DeleteFix : LocalQuickFix {
-        override fun getFamilyName() = "Remove arrow"
+        override fun getFamilyName(): String = "Remove arrow"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement

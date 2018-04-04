@@ -94,7 +94,7 @@ abstract class AbstractVisitorGenerator(val referencesData: DataCollector.Refere
         println()
     }
 
-    val String.safeName
+    val String.safeName: String
         get() = when (this) {
             "class" -> "klass"
             else -> this
@@ -117,7 +117,7 @@ abstract class AbstractVisitorGenerator(val referencesData: DataCollector.Refere
     }
 
 
-    fun allElementTypes() =
+    fun allElementTypes(): List<String> =
         referencesData.back.let {
             it.keys + it.values.flatten()
         }.distinct()

@@ -50,7 +50,7 @@ object JavaToKotlinClassMap : PlatformToKotlinClassMap {
         return PlatformMutabilityMapping(classId(T::class.java), kotlinReadOnly, mutableClassId)
     }
 
-    val mutabilityMappings = listOf(
+    val mutabilityMappings: List<PlatformMutabilityMapping> = listOf(
             mutabilityMapping<Iterable<*>>(ClassId.topLevel(FQ_NAMES.iterable), FQ_NAMES.mutableIterable),
             mutabilityMapping<Iterator<*>>(ClassId.topLevel(FQ_NAMES.iterator), FQ_NAMES.mutableIterator),
             mutabilityMapping<Collection<*>>(ClassId.topLevel(FQ_NAMES.collection), FQ_NAMES.mutableCollection),

@@ -62,8 +62,8 @@ class AnnotationTypeQualifierResolver(storageManager: StorageManager, private va
             private val typeQualifier: AnnotationDescriptor,
             private val applicability: Int
     ) {
-        operator fun component1() = typeQualifier
-        operator fun component2() = QualifierApplicabilityType.values().filter(this::isApplicableTo)
+        operator fun component1(): AnnotationDescriptor = typeQualifier
+        operator fun component2(): List<QualifierApplicabilityType> = QualifierApplicabilityType.values().filter(this::isApplicableTo)
 
         private fun isApplicableTo(elementType: QualifierApplicabilityType) =
                 isApplicableConsideringMask(QualifierApplicabilityType.TYPE_USE) || isApplicableConsideringMask(elementType)
@@ -178,7 +178,7 @@ class AnnotationTypeQualifierResolver(storageManager: StorageManager, private va
     val disabled: Boolean = jsr305State.disabled
 }
 
-val BUILT_IN_TYPE_QUALIFIER_FQ_NAMES = setOf(JAVAX_NONNULL_ANNOTATION, JAVAX_CHECKFORNULL_ANNOTATION)
+val BUILT_IN_TYPE_QUALIFIER_FQ_NAMES: Set<FqName> = setOf(JAVAX_NONNULL_ANNOTATION, JAVAX_CHECKFORNULL_ANNOTATION)
 
 private val ClassDescriptor.isAnnotatedWithTypeQualifier: Boolean
     get() = fqNameSafe in BUILT_IN_TYPE_QUALIFIER_FQ_NAMES || annotations.hasAnnotation(TYPE_QUALIFIER_FQNAME)

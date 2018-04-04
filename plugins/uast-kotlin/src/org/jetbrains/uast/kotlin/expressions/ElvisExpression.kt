@@ -93,14 +93,14 @@ class KotlinUElvisExpression(
     override val javaPsi: PsiElement? = null
     override val sourcePsi: PsiElement? = elvisExpression
     override val psi: PsiElement? = sourcePsi
-    override val kind = KotlinSpecialExpressionKinds.ELVIS
+    override val kind: UastSpecialExpressionKind = KotlinSpecialExpressionKinds.ELVIS
     override val annotations: List<UAnnotation> = emptyList()
     override val expressions: List<UExpression> by lz {
         createElvisExpressions(left, right, this, elvisExpression.parent)
     }
 
-    val lhsDeclaration get() = (expressions[0] as UDeclarationsExpression).declarations.single()
-    val rhsIfExpression get() = expressions[1] as UIfExpression
+    val lhsDeclaration: UDeclaration get() = (expressions[0] as UDeclarationsExpression).declarations.single()
+    val rhsIfExpression: UIfExpression get() = expressions[1] as UIfExpression
 
     override fun asRenderString(): String {
         return kind.name + " " +

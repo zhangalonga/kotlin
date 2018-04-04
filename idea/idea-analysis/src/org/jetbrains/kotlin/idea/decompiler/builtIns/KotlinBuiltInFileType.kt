@@ -20,19 +20,20 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.kotlin.builtins.BuiltInSerializerProtocol
 import org.jetbrains.kotlin.idea.KotlinIcons
+import javax.swing.Icon
 
 object KotlinBuiltInFileType : FileType {
-    override fun getName() = "kotlin_builtins"
+    override fun getName(): String = "kotlin_builtins"
 
-    override fun getDescription() = "Kotlin built-in declarations"
+    override fun getDescription(): String = "Kotlin built-in declarations"
 
-    override fun getDefaultExtension() = BuiltInSerializerProtocol.BUILTINS_FILE_EXTENSION
+    override fun getDefaultExtension(): String = BuiltInSerializerProtocol.BUILTINS_FILE_EXTENSION
 
-    override fun getIcon() = KotlinIcons.FILE
+    override fun getIcon(): Icon? = KotlinIcons.FILE
 
-    override fun isBinary() = true
+    override fun isBinary(): Boolean = true
 
-    override fun isReadOnly() = true
+    override fun isReadOnly(): Boolean = true
 
-    override fun getCharset(file: VirtualFile, content: ByteArray) = null
+    override fun getCharset(file: VirtualFile, content: ByteArray): Nothing? = null
 }

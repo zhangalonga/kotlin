@@ -55,6 +55,6 @@ internal data class ParsedGradleVersion(val major: Int, val minor: Int) : Compar
     }
 }
 
-fun isGradleVersionAtLeast(major: Int, minor: Int) =
+fun isGradleVersionAtLeast(major: Int, minor: Int): Boolean =
         ParsedGradleVersion.parse(GradleVersion.current().version)
                 ?.let { it >= ParsedGradleVersion(major, minor) } ?: false

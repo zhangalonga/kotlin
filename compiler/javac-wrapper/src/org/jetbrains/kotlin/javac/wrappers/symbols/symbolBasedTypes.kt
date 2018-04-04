@@ -31,7 +31,7 @@ sealed class SymbolBasedType<out T : TypeMirror>(
 ) : JavaType, JavaAnnotationOwner {
 
     companion object {
-        fun <T : TypeMirror> create(t: T, javac: JavacWrapper) = when {
+        fun <T : TypeMirror> create(t: T, javac: JavacWrapper): SymbolBasedType<TypeMirror> = when {
             t.kind.isPrimitive || t.kind == TypeKind.VOID -> SymbolBasedPrimitiveType(t, javac)
             t.kind == TypeKind.DECLARED || t.kind == TypeKind.TYPEVAR -> SymbolBasedClassifierType(t, javac)
             t.kind == TypeKind.WILDCARD -> SymbolBasedWildcardType(t as WildcardType, javac)
@@ -46,13 +46,13 @@ sealed class SymbolBasedType<out T : TypeMirror>(
     override val isDeprecatedInJavaDoc: Boolean
         get() = javac.isDeprecated(typeMirror)
 
-    override fun findAnnotation(fqName: FqName) = typeMirror.findAnnotation(fqName, javac)
+    override fun findAnnotation(fqName: FqName): SymbolBasedAnnotation? = typeMirror.findAnnotation(fqName, javac)
 
-    override fun equals(other: Any?) = (other as? SymbolBasedType<*>)?.typeMirror == typeMirror
+    override fun equals(other: Any?): Boolean = (other as? SymbolBasedType<*>)?.typeMirror == typeMirror
 
-    override fun hashCode() = typeMirror.hashCode()
+    override fun hashCode(): Int = typeMirror.hashCode()
 
-    override fun toString() = typeMirror.toString()
+    override fun toString(): String = typeMirror.toString()
 
 }
 

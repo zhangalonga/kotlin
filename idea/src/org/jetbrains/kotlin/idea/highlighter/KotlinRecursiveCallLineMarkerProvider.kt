@@ -42,7 +42,7 @@ import org.jetbrains.kotlin.util.OperatorNameConventions
 import java.util.*
 
 class KotlinRecursiveCallLineMarkerProvider : LineMarkerProvider {
-    override fun getLineMarkerInfo(element: PsiElement) = null
+    override fun getLineMarkerInfo(element: PsiElement): Nothing? = null
 
     override fun collectSlowLineMarkers(elements: MutableList<PsiElement>, result: MutableCollection<LineMarkerInfo<*>>) {
         val markedLineNumbers = HashSet<Int>()

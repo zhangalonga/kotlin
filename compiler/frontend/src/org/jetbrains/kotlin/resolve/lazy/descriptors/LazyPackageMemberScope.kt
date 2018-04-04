@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
 import org.jetbrains.kotlin.resolve.lazy.declarations.PackageMemberDeclarationProvider
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
+import org.jetbrains.kotlin.resolve.scopes.LexicalScope
 
 class LazyPackageMemberScope(
     private val resolveSession: ResolveSession,
@@ -44,10 +45,10 @@ class LazyPackageMemberScope(
         return computeDescriptorsFromDeclaredElements(kindFilter, nameFilter, NoLookupLocation.WHEN_GET_ALL_DESCRIPTORS)
     }
 
-    override fun getScopeForMemberDeclarationResolution(declaration: KtDeclaration) =
+    override fun getScopeForMemberDeclarationResolution(declaration: KtDeclaration): LexicalScope =
         resolveSession.fileScopeProvider.getFileResolutionScope(declaration.containingKtFile)
 
-    override fun getScopeForInitializerResolution(declaration: KtDeclaration) =
+    override fun getScopeForInitializerResolution(declaration: KtDeclaration): LexicalScope =
         getScopeForMemberDeclarationResolution(declaration)
 
     override fun getNonDeclaredClasses(name: Name, result: MutableSet<ClassDescriptor>) {
@@ -67,9 +68,9 @@ class LazyPackageMemberScope(
     }
 
     override fun getClassifierNames(): Set<Name>? = declarationProvider.getDeclarationNames()
-    override fun getFunctionNames() = declarationProvider.getDeclarationNames()
-    override fun getVariableNames() = declarationProvider.getDeclarationNames()
+    override fun getFunctionNames(): Set<Name> = declarationProvider.getDeclarationNames()
+    override fun getVariableNames(): Set<Name> = declarationProvider.getDeclarationNames()
 
     // Do not add details here, they may compromise the laziness during debugging
-    override fun toString() = "lazy scope for package " + thisDescriptor.name
+    override fun toString(): String = "lazy scope for package " + thisDescriptor.name
 }

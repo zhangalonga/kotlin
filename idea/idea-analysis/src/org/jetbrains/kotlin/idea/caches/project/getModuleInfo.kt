@@ -47,13 +47,13 @@ fun getModuleInfoByVirtualFile(project: Project, virtualFile: VirtualFile): Idea
         onOccurrence = { return@getModuleInfoByVirtualFile it }
     )
 
-fun getBinaryLibrariesModuleInfos(project: Project, virtualFile: VirtualFile) =
+fun getBinaryLibrariesModuleInfos(project: Project, virtualFile: VirtualFile): Collection<BinaryModuleInfo> =
     collectModuleInfosByType<BinaryModuleInfo>(
         project,
         virtualFile
     )
 
-fun getLibrarySourcesModuleInfos(project: Project, virtualFile: VirtualFile) =
+fun getLibrarySourcesModuleInfos(project: Project, virtualFile: VirtualFile): Collection<LibrarySourceInfo> =
     collectModuleInfosByType<LibrarySourceInfo>(
         project,
         virtualFile

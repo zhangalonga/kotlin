@@ -71,7 +71,7 @@ open class IrBranchImpl(startOffset: Int, endOffset: Int, override var condition
     }
 
     companion object {
-        fun elseBranch(result: IrExpression) =
+        fun elseBranch(result: IrExpression): IrElseBranchImpl =
             IrElseBranchImpl(
                 IrConstImpl.boolean(result.startOffset, result.endOffset, result.type.builtIns.booleanType, true),
                 result

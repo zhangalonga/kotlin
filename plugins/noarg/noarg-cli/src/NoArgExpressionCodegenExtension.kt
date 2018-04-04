@@ -33,7 +33,7 @@ import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodSignature
 import org.jetbrains.org.objectweb.asm.Opcodes
 
 class NoArgExpressionCodegenExtension(val invokeInitializers: Boolean = false) : ExpressionCodegenExtension {
-    override fun generateClassSyntheticParts(codegen: ImplementationBodyCodegen) = with(codegen) {
+    override fun generateClassSyntheticParts(codegen: ImplementationBodyCodegen): Unit = with(codegen) {
         if (shouldGenerateNoArgConstructor()) {
             generateNoArgConstructor()
         }

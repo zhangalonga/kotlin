@@ -17,10 +17,7 @@
 package org.jetbrains.kotlin.javac.wrappers.symbols
 
 import org.jetbrains.kotlin.javac.JavacWrapper
-import org.jetbrains.kotlin.load.java.structure.JavaAnnotation
-import org.jetbrains.kotlin.load.java.structure.JavaPackage
-import org.jetbrains.kotlin.load.java.structure.MapBasedJavaAnnotationOwner
-import org.jetbrains.kotlin.load.java.structure.buildLazyValueForMap
+import org.jetbrains.kotlin.load.java.structure.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import javax.lang.model.element.PackageElement
@@ -42,9 +39,9 @@ class SymbolBasedPackage(
 
     override val annotationsByFqName: Map<FqName?, JavaAnnotation> by buildLazyValueForMap()
 
-    override fun getClasses(nameFilter: (Name) -> Boolean) =
+    override fun getClasses(nameFilter: (Name) -> Boolean): List<JavaClass> =
             javac.findClassesFromPackage(fqName).filter { nameFilter(it.name) }
 
-    override fun toString() = element.qualifiedName.toString()
+    override fun toString(): String = element.qualifiedName.toString()
 
 }

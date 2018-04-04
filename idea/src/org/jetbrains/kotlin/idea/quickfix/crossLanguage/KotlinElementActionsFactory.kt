@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.idea.quickfix.createFromUsage.callableBuilder.*
 import org.jetbrains.kotlin.idea.quickfix.createFromUsage.createCallable.CreateCallableFromUsageFix
 import org.jetbrains.kotlin.idea.resolve.ResolutionFacade
 import org.jetbrains.kotlin.idea.util.approximateFlexibleTypes
+import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.load.java.components.TypeUsage
 import org.jetbrains.kotlin.load.java.lazy.JavaResolverComponents
@@ -64,7 +65,7 @@ import org.jetbrains.kotlin.types.typeUtil.supertypes
 
 class KotlinElementActionsFactory : JvmElementActionsFactory() {
     companion object {
-        val javaPsiModifiersMapping = mapOf(
+        val javaPsiModifiersMapping: Map<JvmModifier, KtModifierKeywordToken> = mapOf(
                 JvmModifier.PRIVATE to KtTokens.PRIVATE_KEYWORD,
                 JvmModifier.PUBLIC to KtTokens.PUBLIC_KEYWORD,
                 JvmModifier.PROTECTED to KtTokens.PUBLIC_KEYWORD,
@@ -133,7 +134,7 @@ class KotlinElementActionsFactory : JvmElementActionsFactory() {
             contextElement: KtElement,
             propertyInfo: PropertyInfo
     ) : CreateCallableFromUsageFix<KtElement>(contextElement, listOf(propertyInfo)) {
-        override fun getFamilyName() = "Add property"
+        override fun getFamilyName(): String = "Add property"
         override fun getText(): String {
             val info = callableInfos.first() as PropertyInfo
             return buildString {

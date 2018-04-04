@@ -21,6 +21,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.search.NonClasspathDirectoriesScope
 import com.intellij.util.io.URLUtil
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.kotlin.script.ScriptDefinitionProvider
@@ -46,10 +47,10 @@ class ScriptDependenciesManager internal constructor(
     fun getScriptClasspath(file: VirtualFile): List<VirtualFile> = toVfsRoots(cacheUpdater.getCurrentDependencies(file).classpath)
     fun getScriptDependencies(file: VirtualFile): ScriptDependencies = cacheUpdater.getCurrentDependencies(file)
 
-    fun getAllScriptsClasspathScope() = cache.allScriptsClasspathScope
-    fun getAllLibrarySourcesScope() = cache.allLibrarySourcesScope
-    fun getAllLibrarySources() = cache.allLibrarySources
-    fun getAllScriptsClasspath() = cache.allScriptsClasspath
+    fun getAllScriptsClasspathScope(): NonClasspathDirectoriesScope = cache.allScriptsClasspathScope
+    fun getAllLibrarySourcesScope(): NonClasspathDirectoriesScope = cache.allLibrarySourcesScope
+    fun getAllLibrarySources(): List<VirtualFile> = cache.allLibrarySources
+    fun getAllScriptsClasspath(): List<VirtualFile> = cache.allScriptsClasspath
 
     companion object {
         @JvmStatic

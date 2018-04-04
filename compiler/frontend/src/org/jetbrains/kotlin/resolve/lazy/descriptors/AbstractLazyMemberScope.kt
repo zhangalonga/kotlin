@@ -234,7 +234,7 @@ protected constructor(
     // a generic implementation can't do this properly
     abstract override fun toString(): String
 
-    fun toProviderString() = (declarationProvider as? AbstractPsiBasedDeclarationProvider)?.toInfoString()
+    fun toProviderString(): String = (declarationProvider as? AbstractPsiBasedDeclarationProvider)?.toInfoString()
             ?: declarationProvider.toString()
 
     override fun printScopeStructure(p: Printer) {

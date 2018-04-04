@@ -49,8 +49,7 @@ class JoinDeclarationAndAssignmentHandler : JoinRawLinesHandlerDelegate {
         return property.textRange!!.startOffset
     }
 
-    override fun tryJoinLines(document: Document, file: PsiFile, start: Int, end: Int)
-            = -1
+    override fun tryJoinLines(document: Document, file: PsiFile, start: Int, end: Int): Int = -1
 
     private fun getPropertyAndAssignment(element: PsiElement): Pair<KtProperty, KtBinaryExpression>? {
         val property = element as? KtProperty ?: return null

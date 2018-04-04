@@ -29,8 +29,8 @@ class AddInlineModifierFix(
         modifier: KtModifierKeywordToken
 ) : AddModifierFix(parameter, modifier) {
 
-    override fun getText() = element?.let { "Add '${modifier.value}' to parameter '${it.name}'" } ?: ""
-    override fun getFamilyName() = "Add '${modifier.value}' to parameter"
+    override fun getText(): String = element?.let { "Add '${modifier.value}' to parameter '${it.name}'" } ?: ""
+    override fun getFamilyName(): String = "Add '${modifier.value}' to parameter"
 
     companion object {
         private fun KtElement.findParameterWithName(name: String): KtParameter? {

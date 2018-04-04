@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.diagnostics.rendering.DiagnosticFactoryToRendererMap
 
 object DefaultErrorMessagesNoArg : DefaultErrorMessages.Extension {
     private val MAP = DiagnosticFactoryToRendererMap("AnnotationProcessing")
-    override fun getMap() = MAP
+    override fun getMap(): DiagnosticFactoryToRendererMap = MAP
 
     init {
         MAP.put(ErrorsNoArg.NO_NOARG_CONSTRUCTOR_IN_SUPERCLASS, "Zero-argument constructor was not found in the superclass")

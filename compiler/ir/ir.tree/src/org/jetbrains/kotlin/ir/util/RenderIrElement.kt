@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.renderer.OverrideRenderingPolicy
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.addIfNotNull
 
-fun IrElement.render() = accept(RenderIrElementVisitor(), null)
+fun IrElement.render(): String = accept(RenderIrElementVisitor(), null)
 
 class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
     override fun visitElement(element: IrElement, data: Nothing?): String =
@@ -317,7 +317,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
         "ERROR_CALL '${expression.description}' type=${expression.type.render()}"
 
     companion object {
-        val DECLARATION_RENDERER = DescriptorRenderer.withOptions {
+        val DECLARATION_RENDERER: DescriptorRenderer = DescriptorRenderer.withOptions {
             withDefinedIn = false
             overrideRenderingPolicy = OverrideRenderingPolicy.RENDER_OPEN_OVERRIDE
             includePropertyConstant = true
@@ -326,7 +326,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
             modifiers = DescriptorRendererModifier.ALL
         }
 
-        val REFERENCE_RENDERER = DescriptorRenderer.ONLY_NAMES_WITH_SHORT_TYPES
+        val REFERENCE_RENDERER: DescriptorRenderer = DescriptorRenderer.ONLY_NAMES_WITH_SHORT_TYPES
 
         internal fun IrDeclaration.name(): String =
             descriptor.name.toString()

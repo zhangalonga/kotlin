@@ -47,7 +47,7 @@ import kotlin.concurrent.getOrSet
  */
 class MultiplatformGradleProjectTaskRunner : GradleProjectTaskRunner() {
 
-    override fun canRun(projectTask: ProjectTask) =
+    override fun canRun(projectTask: ProjectTask): Boolean =
         when (projectTask) {
             is ModuleBuildTask ->
                 projectTask.module.isMultiplatformModule()
@@ -170,7 +170,7 @@ class MultiplatformGradleOrderEnumeratorHandler(val factory: MultiplatformGradle
             activeSet.get()?.remove(module)
         }
 
-        fun isEnumerating(module: Module) = activeSet.get()?.contains(module) ?: false
+        fun isEnumerating(module: Module): Boolean = activeSet.get()?.contains(module) ?: false
 
         override fun isApplicable(module: Module): Boolean {
             return ExternalSystemApiUtil.isExternalSystemAwareModule(GradleConstants.SYSTEM_ID, module) &&

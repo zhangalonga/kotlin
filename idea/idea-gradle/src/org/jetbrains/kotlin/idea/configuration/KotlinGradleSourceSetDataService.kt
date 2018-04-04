@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.idea.configuration
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.externalSystem.model.DataNode
+import com.intellij.openapi.externalSystem.model.Key
 import com.intellij.openapi.externalSystem.model.ProjectKeys
 import com.intellij.openapi.externalSystem.model.project.LibraryData
 import com.intellij.openapi.externalSystem.model.project.ModuleData
@@ -63,7 +64,7 @@ interface GradleProjectImportHandler {
 }
 
 class KotlinGradleSourceSetDataService : AbstractProjectDataService<GradleSourceSetData, Void>() {
-    override fun getTargetDataKey() = GradleSourceSetData.KEY
+    override fun getTargetDataKey(): Key<GradleSourceSetData> = GradleSourceSetData.KEY
 
     override fun postProcess(
         toImport: Collection<DataNode<GradleSourceSetData>>,
@@ -83,7 +84,7 @@ class KotlinGradleSourceSetDataService : AbstractProjectDataService<GradleSource
 }
 
 class KotlinGradleProjectDataService : AbstractProjectDataService<ModuleData, Void>() {
-    override fun getTargetDataKey() = ProjectKeys.MODULE
+    override fun getTargetDataKey(): Key<ModuleData> = ProjectKeys.MODULE
 
     override fun postProcess(
         toImport: MutableCollection<DataNode<ModuleData>>,
@@ -104,7 +105,7 @@ class KotlinGradleProjectDataService : AbstractProjectDataService<ModuleData, Vo
 }
 
 class KotlinGradleLibraryDataService : AbstractProjectDataService<LibraryData, Void>() {
-    override fun getTargetDataKey() = ProjectKeys.LIBRARY
+    override fun getTargetDataKey(): Key<LibraryData> = ProjectKeys.LIBRARY
 
     override fun postProcess(
         toImport: MutableCollection<DataNode<LibraryData>>,
@@ -149,9 +150,9 @@ class KotlinGradleLibraryDataService : AbstractProjectDataService<LibraryData, V
     }
 
     companion object {
-        val LOG = Logger.getInstance(KotlinGradleLibraryDataService::class.java)
+        val LOG: Logger = Logger.getInstance(KotlinGradleLibraryDataService::class.java)
 
-        val nonJvmSuffixes = listOf("-common", "-js", "-native", "-kjsm")
+        val nonJvmSuffixes: List<String> = listOf("-common", "-js", "-native", "-kjsm")
     }
 }
 

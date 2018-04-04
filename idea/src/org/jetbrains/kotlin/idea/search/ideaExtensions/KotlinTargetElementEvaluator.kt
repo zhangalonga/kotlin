@@ -39,8 +39,8 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 
 class KotlinTargetElementEvaluator : TargetElementEvaluatorEx, TargetElementUtilExtender {
     companion object {
-        const val DO_NOT_UNWRAP_LABELED_EXPRESSION = 0x100
-        const val BYPASS_IMPORT_ALIAS = 0x200
+        const val DO_NOT_UNWRAP_LABELED_EXPRESSION: Int = 0x100
+        const val BYPASS_IMPORT_ALIAS: Int = 0x200
 
         // Place caret after the open curly brace in lambda for generated 'it'
         fun findLambdaOpenLBraceForGeneratedIt(ref: PsiReference): PsiElement? {
@@ -70,11 +70,11 @@ class KotlinTargetElementEvaluator : TargetElementEvaluatorEx, TargetElementUtil
         }
     }
 
-    override fun getAdditionalDefinitionSearchFlags() = 0
+    override fun getAdditionalDefinitionSearchFlags(): Int = 0
 
-    override fun getAdditionalReferenceSearchFlags() = DO_NOT_UNWRAP_LABELED_EXPRESSION or BYPASS_IMPORT_ALIAS
+    override fun getAdditionalReferenceSearchFlags(): Int = DO_NOT_UNWRAP_LABELED_EXPRESSION or BYPASS_IMPORT_ALIAS
 
-    override fun getAllAdditionalFlags() = additionalDefinitionSearchFlags + additionalReferenceSearchFlags
+    override fun getAllAdditionalFlags(): Int = additionalDefinitionSearchFlags + additionalReferenceSearchFlags
 
     override fun includeSelfInGotoImplementation(element: PsiElement): Boolean = !(element is KtClass && element.isAbstract())
 

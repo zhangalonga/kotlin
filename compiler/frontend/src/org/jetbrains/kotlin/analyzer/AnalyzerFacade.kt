@@ -64,7 +64,7 @@ abstract class ResolverForProject<M : ModuleInfo> {
     abstract val allModules: Collection<M>
     abstract val builtIns: KotlinBuiltIns
 
-    override fun toString() = name
+    override fun toString(): String = name
 }
 
 class EmptyResolverForProject<M : ModuleInfo> : ResolverForProject<M>() {
@@ -75,10 +75,10 @@ class EmptyResolverForProject<M : ModuleInfo> : ResolverForProject<M>() {
     override fun resolverForModuleDescriptor(descriptor: ModuleDescriptor): ResolverForModule =
         throw IllegalStateException("$descriptor is not contained in this resolver")
 
-    override fun descriptorForModule(moduleInfo: M) = diagnoseUnknownModuleInfo(listOf(moduleInfo))
+    override fun descriptorForModule(moduleInfo: M): Nothing = diagnoseUnknownModuleInfo(listOf(moduleInfo))
     override val allModules: Collection<M> = listOf()
-    override fun diagnoseUnknownModuleInfo(infos: List<ModuleInfo>) = throw IllegalStateException("Should not be called for $infos")
-    override val builtIns get() = DefaultBuiltIns.Instance
+    override fun diagnoseUnknownModuleInfo(infos: List<ModuleInfo>): Nothing = throw IllegalStateException("Should not be called for $infos")
+    override val builtIns: DefaultBuiltIns get() = DefaultBuiltIns.Instance
 }
 
 class ResolverForProjectImpl<M : ModuleInfo>(
@@ -116,7 +116,7 @@ class ResolverForProjectImpl<M : ModuleInfo>(
     // Protected by ("projectContext.storageManager.lock")
     private val moduleInfoByDescriptor = mutableMapOf<ModuleDescriptorImpl, M>()
 
-    val modules = modules.toSet()
+    val modules: Set<M> = modules.toSet()
 
     override fun tryGetResolverForModule(moduleInfo: M): ResolverForModule? {
         if (!isCorrectModuleInfo(moduleInfo)) {
@@ -190,7 +190,7 @@ class ResolverForProjectImpl<M : ModuleInfo>(
         return doGetDescriptorForModule(moduleInfo)
     }
 
-    override fun diagnoseUnknownModuleInfo(infos: List<ModuleInfo>) =
+    override fun diagnoseUnknownModuleInfo(infos: List<ModuleInfo>): Nothing =
         throw AssertionError("$name does not know how to resolve $infos")
 
     private fun checkModuleIsCorrect(moduleInfo: M) {
@@ -273,7 +273,7 @@ interface ModuleInfo {
     enum class DependencyOnBuiltIns { NONE, AFTER_SDK, LAST }
 
     companion object {
-        val Capability = ModuleDescriptor.Capability<ModuleInfo>("ModuleInfo")
+        val Capability: ModuleDescriptor.Capability<ModuleInfo> = ModuleDescriptor.Capability("ModuleInfo")
     }
 }
 
@@ -323,7 +323,7 @@ class LazyModuleDependencies<M : ModuleInfo>(
 
     override val allDependencies: List<ModuleDescriptorImpl> get() = dependencies()
 
-    override val expectedByDependencies by storageManager.createLazyValue {
+    override val expectedByDependencies: List<ModuleDescriptorImpl> by storageManager.createLazyValue {
         module.expectedBy.map { resolverForProject.descriptorForModule(it as M) }
     }
 
@@ -375,7 +375,7 @@ interface PackageOracleFactory {
     fun createOracle(moduleInfo: ModuleInfo): PackageOracle
 
     object OptimisticFactory : PackageOracleFactory {
-        override fun createOracle(moduleInfo: ModuleInfo) = PackageOracle.Optimistic
+        override fun createOracle(moduleInfo: ModuleInfo): PackageOracle.Optimistic = PackageOracle.Optimistic
     }
 }
 
@@ -385,7 +385,8 @@ interface LanguageSettingsProvider {
     fun getTargetPlatform(moduleInfo: ModuleInfo): TargetPlatformVersion
 
     object Default : LanguageSettingsProvider {
-        override fun getLanguageVersionSettings(moduleInfo: ModuleInfo, project: Project) = LanguageVersionSettingsImpl.DEFAULT
+        override fun getLanguageVersionSettings(moduleInfo: ModuleInfo, project: Project): LanguageVersionSettingsImpl =
+            LanguageVersionSettingsImpl.DEFAULT
 
         override fun getTargetPlatform(moduleInfo: ModuleInfo): TargetPlatformVersion = TargetPlatformVersion.NoVersion
     }

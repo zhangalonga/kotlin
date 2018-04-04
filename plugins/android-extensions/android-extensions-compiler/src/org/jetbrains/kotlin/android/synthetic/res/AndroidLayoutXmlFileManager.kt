@@ -33,7 +33,7 @@ class AndroidVariantData(val variant: AndroidVariant, val layouts: Map<String, L
 
 class AndroidModuleData(val module: AndroidModule, val variants: List<AndroidVariantData>) {
     companion object {
-        val EMPTY = AndroidModuleData(AndroidModule("android", listOf()), listOf())
+        val EMPTY: AndroidModuleData = AndroidModuleData(AndroidModule("android", listOf()), listOf())
     }
 }
 

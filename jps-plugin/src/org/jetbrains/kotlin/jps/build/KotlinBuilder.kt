@@ -68,15 +68,16 @@ import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.util.*
+import kotlin.collections.ArrayList
 
 class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
     companion object {
         @JvmField val KOTLIN_BUILDER_NAME: String = "Kotlin Builder"
 
-        val LOG = Logger.getInstance("#org.jetbrains.kotlin.jps.build.KotlinBuilder")
-        const val JVM_BUILD_META_INFO_FILE_NAME = "jvm-build-meta-info.txt"
-        const val SKIP_CACHE_VERSION_CHECK_PROPERTY = "kotlin.jps.skip.cache.version.check"
-        const val JPS_KOTLIN_HOME_PROPERTY = "jps.kotlin.home"
+        val LOG: Logger = Logger.getInstance("#org.jetbrains.kotlin.jps.build.KotlinBuilder")
+        const val JVM_BUILD_META_INFO_FILE_NAME: String = "jvm-build-meta-info.txt"
+        const val SKIP_CACHE_VERSION_CHECK_PROPERTY: String = "kotlin.jps.skip.cache.version.check"
+        const val JPS_KOTLIN_HOME_PROPERTY: String = "jps.kotlin.home"
 
         val classesToLoadByParent: ClassCondition
             get() = ClassCondition { className ->
@@ -94,9 +95,9 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
     private val statisticsLogger = TeamcityStatisticsLogger()
 
-    override fun getPresentableName() = KOTLIN_BUILDER_NAME
+    override fun getPresentableName(): String = KOTLIN_BUILDER_NAME
 
-    override fun getCompilableFileExtensions() = arrayListOf("kt")
+    override fun getCompilableFileExtensions(): ArrayList<String> = arrayListOf("kt")
 
     override fun buildStarted(context: CompileContext) {
         LOG.debug("==========================================")

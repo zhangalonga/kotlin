@@ -40,7 +40,7 @@ class KtLightPsiReferenceList (
             override val clsDelegate: PsiJavaCodeReferenceElement
     ) : KtLightElement<KtSuperTypeListEntry, PsiJavaCodeReferenceElement>, PsiJavaCodeReferenceElement by clsDelegate {
 
-        override val kotlinOrigin by lazyPub {
+        override val kotlinOrigin: KtSuperTypeListEntry? by lazyPub {
             val superTypeList = this@KtLightPsiReferenceList.kotlinOrigin ?: return@lazyPub null
             val fqNameToFind = clsDelegate.qualifiedName ?: return@lazyPub null
             val context = LightClassGenerationSupport.getInstance(project).analyzeWithContent(superTypeList.parent as KtClassOrObject)
@@ -50,7 +50,7 @@ class KtLightPsiReferenceList (
             }
         }
 
-        override fun getParent() = this@KtLightPsiReferenceList
+        override fun getParent(): KtLightPsiReferenceList = this@KtLightPsiReferenceList
 
         override fun delete() {
             val superTypeList = this@KtLightPsiReferenceList.kotlinOrigin ?: return
@@ -68,9 +68,9 @@ class KtLightPsiReferenceList (
         clsDelegate.referenceElements.map { KtLightSuperTypeReference(it) }.toTypedArray()
     }
 
-    override fun getParent() = owner
+    override fun getParent(): KtLightClass = owner
 
-    override fun getReferenceElements() = _referenceElements
+    override fun getReferenceElements(): Array<KtLightSuperTypeReference> = _referenceElements
 
     override fun add(element: PsiElement): PsiElement? {
         if (element !is KtLightSuperTypeReference) throw UnsupportedOperationException("Unexpected element: ${element.getElementTextWithContext()}")

@@ -32,9 +32,9 @@ open class ConstantReference(val name: String) : ContractDescriptionValue {
         contractDescriptionVisitor.visitConstantDescriptor(this, data)
 
     companion object {
-        val NULL = ConstantReference("NULL")
-        val WILDCARD = ConstantReference("WILDCARD")
-        val NOT_NULL = ConstantReference("NOT_NULL")
+        val NULL: ConstantReference = ConstantReference("NULL")
+        val WILDCARD: ConstantReference = ConstantReference("WILDCARD")
+        val NOT_NULL: ConstantReference = ConstantReference("NOT_NULL")
     }
 }
 
@@ -43,13 +43,13 @@ class BooleanConstantReference(name: String) : ConstantReference(name), BooleanE
         contractDescriptionVisitor.visitBooleanConstantDescriptor(this, data)
 
     companion object {
-        val TRUE = BooleanConstantReference("TRUE")
-        val FALSE = BooleanConstantReference("FALSE")
+        val TRUE: BooleanConstantReference = BooleanConstantReference("TRUE")
+        val FALSE: BooleanConstantReference = BooleanConstantReference("FALSE")
     }
 }
 
 open class VariableReference(val descriptor: ParameterDescriptor) : ContractDescriptionValue {
-    override fun <R, D> accept(contractDescriptionVisitor: ContractDescriptionVisitor<R, D>, data: D) =
+    override fun <R, D> accept(contractDescriptionVisitor: ContractDescriptionVisitor<R, D>, data: D): R =
         contractDescriptionVisitor.visitVariableReference(this, data)
 }
 

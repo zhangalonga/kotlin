@@ -22,9 +22,9 @@ import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.kotlin.resolve.source.getPsi
 
 object DeleteEqualsAndHashCodeFix : LocalQuickFix {
-    override fun getName() = "Delete equals()/hashCode()"
+    override fun getName(): String = "Delete equals()/hashCode()"
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
@@ -37,16 +37,16 @@ object DeleteEqualsAndHashCodeFix : LocalQuickFix {
 
 sealed class GenerateEqualsOrHashCodeFix : LocalQuickFix {
     object Equals : GenerateEqualsOrHashCodeFix() {
-        override fun getName() = "Generate 'equals()'"
+        override fun getName(): String = "Generate 'equals()'"
     }
 
     object HashCode : GenerateEqualsOrHashCodeFix() {
-        override fun getName() = "Generate 'hashCode()'"
+        override fun getName(): String = "Generate 'hashCode()'"
     }
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return

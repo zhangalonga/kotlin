@@ -199,7 +199,7 @@ fun<T> Project.addArtifact(configuration: Configuration, task: Task, artifactRef
     }
 }
 
-fun<T> Project.addArtifact(configurationName: String, task: Task, artifactRef: T, body: ConfigurablePublishArtifact.() -> Unit = {}) =
+fun<T> Project.addArtifact(configurationName: String, task: Task, artifactRef: T, body: ConfigurablePublishArtifact.() -> Unit = {}): Unit =
         addArtifact(configurations.getOrCreate(configurationName), task, artifactRef, body)
 
 fun Project.cleanArtifacts() {

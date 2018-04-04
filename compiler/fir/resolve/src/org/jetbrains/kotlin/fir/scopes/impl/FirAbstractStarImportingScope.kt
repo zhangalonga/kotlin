@@ -19,7 +19,7 @@ abstract class FirAbstractStarImportingScope(val session: FirSession, lookupInFi
 
     protected abstract val starImports: List<FirResolvedImport>
 
-    val provider = FirSymbolProvider.getInstance(session).let {
+    val provider: FirSymbolProvider = FirSymbolProvider.getInstance(session).let {
         when {
             it is FirCompositeSymbolProvider && !lookupInFir -> FirCompositeSymbolProvider(it.providers.filter { !it.doesLookupInFir })
             else -> it

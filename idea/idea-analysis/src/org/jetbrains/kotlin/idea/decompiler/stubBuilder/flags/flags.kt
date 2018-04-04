@@ -51,18 +51,18 @@ val VISIBILITY: FlagsToModifiers = object : FlagsToModifiers() {
     }
 }
 
-val INNER = createBooleanFlagToModifier(Flags.IS_INNER, KtTokens.INNER_KEYWORD)
-val CONST = createBooleanFlagToModifier(Flags.IS_CONST, KtTokens.CONST_KEYWORD)
-val LATEINIT = createBooleanFlagToModifier(Flags.IS_LATEINIT, KtTokens.LATEINIT_KEYWORD)
-val OPERATOR = createBooleanFlagToModifier(Flags.IS_OPERATOR, KtTokens.OPERATOR_KEYWORD)
-val INFIX = createBooleanFlagToModifier(Flags.IS_INFIX, KtTokens.INFIX_KEYWORD)
-val DATA = createBooleanFlagToModifier(Flags.IS_DATA, KtTokens.DATA_KEYWORD)
-val EXTERNAL_FUN = createBooleanFlagToModifier(Flags.IS_EXTERNAL_FUNCTION, KtTokens.EXTERNAL_KEYWORD)
-val EXTERNAL_PROPERTY = createBooleanFlagToModifier(Flags.IS_EXTERNAL_PROPERTY, KtTokens.EXTERNAL_KEYWORD)
-val EXTERNAL_CLASS = createBooleanFlagToModifier(Flags.IS_EXTERNAL_CLASS, KtTokens.EXTERNAL_KEYWORD)
-val INLINE = createBooleanFlagToModifier(Flags.IS_INLINE, KtTokens.INLINE_KEYWORD)
-val TAILREC = createBooleanFlagToModifier(Flags.IS_TAILREC, KtTokens.TAILREC_KEYWORD)
-val SUSPEND = createBooleanFlagToModifier(Flags.IS_SUSPEND, KtTokens.SUSPEND_KEYWORD)
+val INNER: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_INNER, KtTokens.INNER_KEYWORD)
+val CONST: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_CONST, KtTokens.CONST_KEYWORD)
+val LATEINIT: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_LATEINIT, KtTokens.LATEINIT_KEYWORD)
+val OPERATOR: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_OPERATOR, KtTokens.OPERATOR_KEYWORD)
+val INFIX: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_INFIX, KtTokens.INFIX_KEYWORD)
+val DATA: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_DATA, KtTokens.DATA_KEYWORD)
+val EXTERNAL_FUN: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_EXTERNAL_FUNCTION, KtTokens.EXTERNAL_KEYWORD)
+val EXTERNAL_PROPERTY: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_EXTERNAL_PROPERTY, KtTokens.EXTERNAL_KEYWORD)
+val EXTERNAL_CLASS: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_EXTERNAL_CLASS, KtTokens.EXTERNAL_KEYWORD)
+val INLINE: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_INLINE, KtTokens.INLINE_KEYWORD)
+val TAILREC: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_TAILREC, KtTokens.TAILREC_KEYWORD)
+val SUSPEND: FlagsToModifiers = createBooleanFlagToModifier(Flags.IS_SUSPEND, KtTokens.SUSPEND_KEYWORD)
 
 private fun createBooleanFlagToModifier(
         flagField: Flags.BooleanFlagField, ktModifierKeywordToken: KtModifierKeywordToken

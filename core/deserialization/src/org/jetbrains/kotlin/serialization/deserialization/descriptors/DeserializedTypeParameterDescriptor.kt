@@ -36,7 +36,7 @@ class DeserializedTypeParameterDescriptor(
     c.storageManager, c.containingDeclaration, c.nameResolver.getName(proto.name),
     ProtoEnumFlags.variance(proto.variance), proto.reified, index, SourceElement.NO_SOURCE, SupertypeLoopChecker.EMPTY
 ) {
-    override val annotations = DeserializedAnnotations(c.storageManager) {
+    override val annotations: DeserializedAnnotations = DeserializedAnnotations(c.storageManager) {
         c.components.annotationAndConstantLoader.loadTypeParameterAnnotations(proto, c.nameResolver).toList()
     }
 
@@ -50,6 +50,6 @@ class DeserializedTypeParameterDescriptor(
         }
     }
 
-    override fun reportSupertypeLoopError(type: KotlinType) = throw IllegalStateException(
+    override fun reportSupertypeLoopError(type: KotlinType): Nothing = throw IllegalStateException(
             "There should be no cycles for deserialized type parameters, but found for: $this")
 }

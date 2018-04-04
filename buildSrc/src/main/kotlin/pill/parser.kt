@@ -46,7 +46,7 @@ data class PSourceRoot(
     enum class Kind {
         PRODUCTION, TEST, RESOURCES, TEST_RESOURCES;
 
-        val isResources get() = this == RESOURCES || this == TEST_RESOURCES
+        val isResources: Boolean get() = this == RESOURCES || this == TEST_RESOURCES
     }
 }
 

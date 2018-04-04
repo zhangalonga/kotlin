@@ -34,7 +34,7 @@ interface Diagnostics : Iterable<Diagnostic> {
 
     fun noSuppression(): Diagnostics
 
-    override fun iterator() = all().iterator()
+    override fun iterator(): Iterator<Diagnostic> = all().iterator()
 
     companion object {
         val EMPTY: Diagnostics = object : Diagnostics {

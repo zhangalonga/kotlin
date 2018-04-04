@@ -55,9 +55,9 @@ abstract class AbstractCoroutineCodegen(
         FailingFunctionGenerationStrategy,
         outerExpressionCodegen.parentCodegen, classBuilder
 ) {
-    protected val classDescriptor = closureContext.contextDescriptor
+    protected val classDescriptor: ClassDescriptor = closureContext.contextDescriptor
 
-    protected val doResumeDescriptor =
+    protected val doResumeDescriptor: SimpleFunctionDescriptorImpl =
             SimpleFunctionDescriptorImpl.create(
                     classDescriptor, Annotations.EMPTY, Name.identifier(DO_RESUME_METHOD_NAME), CallableMemberDescriptor.Kind.DECLARATION,
                     funDescriptor.source
@@ -220,7 +220,7 @@ class CoroutineCodegenForLambda private constructor(
         areturn(AsmTypes.OBJECT_TYPE)
     }
 
-    override val passArityToSuperClass get() = true
+    override val passArityToSuperClass: Boolean get() = true
 
     override fun generateConstructor(): Method {
         constructorToUseFromInvoke = super.generateConstructor()
@@ -358,7 +358,7 @@ class CoroutineCodegenForNamedFunction private constructor(
     private val suspendFunctionJvmView =
             bindingContext[CodegenBinding.SUSPEND_FUNCTION_TO_JVM_VIEW, originalSuspendFunctionDescriptor]!!
 
-    override val passArityToSuperClass get() = false
+    override val passArityToSuperClass: Boolean get() = false
 
     override fun generateBridges() {
         // Do not generate any closure bridges

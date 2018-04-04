@@ -81,10 +81,10 @@ class AddMavenDependencyQuickFix(
     private val smartPsiElementPointer: SmartPsiElementPointer<KtSimpleNameExpression>
 ) :
     IntentionAction, LowPriorityAction {
-    override fun getText() = "Add Maven dependency..."
-    override fun getFamilyName() = text
-    override fun startInWriteAction() = false
-    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?) =
+    override fun getText(): String = "Add Maven dependency..."
+    override fun getFamilyName(): String = text
+    override fun startInWriteAction(): Boolean = false
+    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean =
         smartPsiElementPointer.element.let { it != null && it.isValid } && file != null && MavenDomUtil.findContainingProject(file) != null
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {

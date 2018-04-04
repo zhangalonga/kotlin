@@ -24,11 +24,9 @@ import com.intellij.psi.tree.IElementType
 
 class LeafElementFilter(private val elementType: IElementType) : ElementFilter {
 
-    override fun isAcceptable(element: Any?, context: PsiElement?)
-            = element is LeafPsiElement && element.elementType == elementType
+    override fun isAcceptable(element: Any?, context: PsiElement?): Boolean = element is LeafPsiElement && element.elementType == elementType
 
-    override fun isClassAcceptable(hintClass: Class<*>)
-            = LEAF_CLASS_FILTER.isClassAcceptable(hintClass)
+    override fun isClassAcceptable(hintClass: Class<*>): Boolean = LEAF_CLASS_FILTER.isClassAcceptable(hintClass)
 
     companion object {
         private val LEAF_CLASS_FILTER = ClassFilter(LeafPsiElement::class.java)

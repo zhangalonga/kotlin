@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.resolve.scopes.LexicalScope
 import org.jetbrains.kotlin.resolve.source.toSourceElement
 import org.jetbrains.kotlin.storage.StorageManager
 import org.jetbrains.kotlin.storage.getValue
+import org.jetbrains.kotlin.types.KotlinType
 
 abstract class LazyAnnotationsContext(
     val annotationResolver: AnnotationResolver,
@@ -53,7 +54,7 @@ class LazyAnnotations(
     val c: LazyAnnotationsContext,
     val annotationEntries: List<KtAnnotationEntry>
 ) : Annotations, LazyEntity {
-    override fun isEmpty() = annotationEntries.isEmpty()
+    override fun isEmpty(): Boolean = annotationEntries.isEmpty()
 
     private val annotation = c.storageManager.createMemoizedFunction { entry: KtAnnotationEntry ->
 
@@ -70,7 +71,7 @@ class LazyAnnotations(
             }
     }
 
-    override fun getAllAnnotations() = annotationEntries.map(annotation)
+    override fun getAllAnnotations(): List<AnnotationWithTarget> = annotationEntries.map(annotation)
 
     override fun iterator(): Iterator<AnnotationDescriptor> {
         return annotationEntries
@@ -96,11 +97,11 @@ class LazyAnnotationDescriptor(
         c.trace.record(BindingContext.ANNOTATION, annotationEntry, this)
     }
 
-    override val type by c.storageManager.createLazyValue {
+    override val type: KotlinType by c.storageManager.createLazyValue {
         c.annotationResolver.resolveAnnotationType(scope, annotationEntry, c.trace)
     }
 
-    override val source = annotationEntry.toSourceElement()
+    override val source: SourceElement = annotationEntry.toSourceElement()
 
     private val scope = if (c.scope.ownerDescriptor is PackageFragmentDescriptor) {
         LexicalScope.Base(c.scope, FileDescriptorForVisibilityChecks(source, c.scope.ownerDescriptor))
@@ -108,7 +109,7 @@ class LazyAnnotationDescriptor(
         c.scope
     }
 
-    override val allValueArguments by c.storageManager.createLazyValue {
+    override val allValueArguments: Map<Name, ConstantValue<*>> by c.storageManager.createLazyValue {
         val resolutionResults = c.annotationResolver.resolveAnnotationCall(annotationEntry, scope, c.trace)
         AnnotationResolverImpl.checkAnnotationType(annotationEntry, c.trace, resolutionResults)
 

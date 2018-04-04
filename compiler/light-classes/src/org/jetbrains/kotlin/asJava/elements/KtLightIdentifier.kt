@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.asJava.elements
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiCompiledElement
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.light.LightIdentifier
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
@@ -39,10 +40,10 @@ open class KtLightIdentifier(
             else -> ktDeclaration?.nameIdentifier
         }
 
-    override fun getMirror() = ((lightOwner as? KtLightElement<*, *>)?.clsDelegate as? PsiNameIdentifierOwner)?.nameIdentifier
+    override fun getMirror(): PsiElement? = ((lightOwner as? KtLightElement<*, *>)?.clsDelegate as? PsiNameIdentifierOwner)?.nameIdentifier
 
-    override fun isPhysical() = true
-    override fun getParent() = lightOwner
-    override fun getContainingFile() = lightOwner.containingFile
-    override fun getTextRange() = origin?.textRange ?: TextRange.EMPTY_RANGE
+    override fun isPhysical(): Boolean = true
+    override fun getParent(): PsiNameIdentifierOwner = lightOwner
+    override fun getContainingFile(): PsiFile = lightOwner.containingFile
+    override fun getTextRange(): TextRange = origin?.textRange ?: TextRange.EMPTY_RANGE
 }

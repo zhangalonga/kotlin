@@ -56,7 +56,7 @@ open class KnownClassDescriptor(
                 modality: Modality = Modality.FINAL,
                 visibility: Visibility = Visibilities.PUBLIC,
                 annotations: Annotations = Annotations.EMPTY
-        ) =
+        ): KnownClassDescriptor =
                 KnownClassDescriptor(
                         name, containingDeclaration,
                         SourceElement.NO_SOURCE, ClassKind.CLASS,
@@ -92,7 +92,7 @@ open class KnownClassDescriptor(
                 modality: Modality = Modality.FINAL,
                 visibility: Visibility = Visibilities.PUBLIC,
                 annotations: Annotations = Annotations.EMPTY
-        ) =
+        ): KnownClassDescriptor =
                 createClassWithTypeParameters(name, containingDeclaration, supertypes, modality, visibility, annotations) { classDescriptor ->
                     typeParameterNames.mapIndexed { index, name ->
                         TypeParameterDescriptorImpl.createWithDefaultBound(

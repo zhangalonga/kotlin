@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.builtins.JvmBuiltInClassDescriptorFactory
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.deserialization.AdditionalClassPartsProvider
+import org.jetbrains.kotlin.descriptors.deserialization.ClassDescriptorFactory
 import org.jetbrains.kotlin.descriptors.deserialization.PlatformDependentDeclarationFilter
 import org.jetbrains.kotlin.load.kotlin.JvmBuiltInsSettings
 import org.jetbrains.kotlin.storage.StorageManager
@@ -61,6 +62,6 @@ class JvmBuiltIns @JvmOverloads constructor(
 
     override fun getAdditionalClassPartsProvider(): AdditionalClassPartsProvider = settings
 
-    override fun getClassDescriptorFactories() =
+    override fun getClassDescriptorFactories(): List<ClassDescriptorFactory> =
             super.getClassDescriptorFactories() + JvmBuiltInClassDescriptorFactory(storageManager, builtInsModule)
 }

@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 class NoArgGradleSubplugin : Plugin<Project> {
     companion object {
-        fun isEnabled(project: Project) = project.plugins.findPlugin(NoArgGradleSubplugin::class.java) != null
+        fun isEnabled(project: Project): Boolean = project.plugins.findPlugin(NoArgGradleSubplugin::class.java) != null
 
         fun getNoArgExtension(project: Project): NoArgExtension {
             return project.extensions.getByType(NoArgExtension::class.java)
@@ -66,15 +66,15 @@ class NoArgGradleSubplugin : Plugin<Project> {
 
 class NoArgKotlinGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
     companion object {
-        val NOARG_GROUP_NAME = "org.jetbrains.kotlin"
-        val NOARG_ARTIFACT_NAME = "kotlin-noarg"
+        val NOARG_GROUP_NAME: String = "org.jetbrains.kotlin"
+        val NOARG_ARTIFACT_NAME: String = "kotlin-noarg"
 
         private val ANNOTATION_ARG_NAME = "annotation"
         private val PRESET_ARG_NAME = "preset"
         private val INVOKE_INITIALIZERS_ARG_NAME = "invokeInitializers"
     }
 
-    override fun isApplicable(project: Project, task: AbstractCompile) = NoArgGradleSubplugin.isEnabled(project)
+    override fun isApplicable(project: Project, task: AbstractCompile): Boolean = NoArgGradleSubplugin.isEnabled(project)
 
     override fun apply(
             project: Project,
@@ -105,7 +105,7 @@ class NoArgKotlinGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         return options
     }
 
-    override fun getArtifactName() = "kotlin-noarg"
-    override fun getGroupName() = "org.jetbrains.kotlin"
-    override fun getCompilerPluginId() = "org.jetbrains.kotlin.noarg"
+    override fun getArtifactName(): String = "kotlin-noarg"
+    override fun getGroupName(): String = "org.jetbrains.kotlin"
+    override fun getCompilerPluginId(): String = "org.jetbrains.kotlin.noarg"
 }

@@ -49,19 +49,19 @@ open class FakeCallableDescriptorForObject(
 
     override fun getReturnType(): KotlinType? = type
 
-    override fun hasSynthesizedParameterNames() = false
+    override fun hasSynthesizedParameterNames(): Boolean = false
 
-    override fun hasStableParameterNames() = false
+    override fun hasStableParameterNames(): Boolean = false
 
     override fun getOverriddenDescriptors(): Set<CallableDescriptor> = Collections.emptySet()
 
     override fun getType(): KotlinType = classDescriptor.classValueType!!
 
-    override fun isVar() = false
+    override fun isVar(): Boolean = false
 
     override fun getOriginal(): CallableDescriptor = this
 
-    override fun getCompileTimeInitializer() = null
+    override fun getCompileTimeInitializer(): Nothing? = null
 
     override fun getSource(): SourceElement = classDescriptor.source
 
@@ -69,11 +69,11 @@ open class FakeCallableDescriptorForObject(
 
     override fun isLateInit(): Boolean = false
 
-    override fun equals(other: Any?) = other is FakeCallableDescriptorForObject && classDescriptor == other.classDescriptor
+    override fun equals(other: Any?): Boolean = other is FakeCallableDescriptorForObject && classDescriptor == other.classDescriptor
 
-    override fun hashCode() = classDescriptor.hashCode()
+    override fun hashCode(): Int = classDescriptor.hashCode()
 
-    override fun getContainingDeclaration() = classDescriptor.getClassObjectReferenceTarget().containingDeclaration
+    override fun getContainingDeclaration(): DeclarationDescriptor = classDescriptor.getClassObjectReferenceTarget().containingDeclaration
 
-    override fun substitute(substitutor: TypeSubstitutor) = this
+    override fun substitute(substitutor: TypeSubstitutor): FakeCallableDescriptorForObject = this
 }

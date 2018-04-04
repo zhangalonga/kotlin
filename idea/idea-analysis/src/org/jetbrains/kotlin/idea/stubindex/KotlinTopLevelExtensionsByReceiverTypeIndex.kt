@@ -20,14 +20,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
+import com.intellij.psi.stubs.StubIndexKey
 import org.jetbrains.kotlin.psi.KtCallableDeclaration
 
 class KotlinTopLevelExtensionsByReceiverTypeIndex private constructor() : StringStubIndexExtension<KtCallableDeclaration>() {
 
-    override fun getKey() = KEY
+    override fun getKey(): StubIndexKey<String, KtCallableDeclaration> = KEY
 
-    override fun get(s: String, project: Project, scope: GlobalSearchScope)
-            = StubIndex.getElements(KEY, s, project, scope, KtCallableDeclaration::class.java)
+    override fun get(s: String, project: Project, scope: GlobalSearchScope): MutableCollection<KtCallableDeclaration> = StubIndex.getElements(KEY, s, project, scope, KtCallableDeclaration::class.java)
 
     companion object {
         private val KEY = KotlinIndexUtil.createIndexKey<String, KtCallableDeclaration>(KotlinTopLevelExtensionsByReceiverTypeIndex::class.java)

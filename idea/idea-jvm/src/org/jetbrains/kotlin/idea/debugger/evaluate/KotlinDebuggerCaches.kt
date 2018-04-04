@@ -86,7 +86,7 @@ class KotlinDebuggerCaches(project: Project) {
     companion object {
         private val LOG = Logger.getLogger(KotlinDebuggerCaches::class.java)!!
 
-        fun getInstance(project: Project) = ServiceManager.getService(project, KotlinDebuggerCaches::class.java)!!
+        fun getInstance(project: Project): KotlinDebuggerCaches = ServiceManager.getService(project, KotlinDebuggerCaches::class.java)!!
 
         fun getOrCreateCompiledData(
                 codeFragment: KtCodeFragment,
@@ -230,24 +230,24 @@ class KotlinDebuggerCaches(project: Project) {
             list.add(Parameter(name, jetType, value))
         }
 
-        override fun iterator() = list.iterator()
+        override fun iterator(): MutableIterator<Parameter> = list.iterator()
     }
 
     data class Parameter(val callText: String, val type: KotlinType, val value: Value? = null)
 
     class ComputedClassNames(val classNames: List<String>, val shouldBeCached: Boolean) {
         companion object {
-            val EMPTY = ComputedClassNames.Cached(emptyList())
+            val EMPTY: ComputedClassNames = ComputedClassNames.Cached(emptyList())
 
-            fun Cached(classNames: List<String>) = ComputedClassNames(classNames, true)
-            fun Cached(className: String) = ComputedClassNames(Collections.singletonList(className), true)
+            fun Cached(classNames: List<String>): ComputedClassNames = ComputedClassNames(classNames, true)
+            fun Cached(className: String): ComputedClassNames = ComputedClassNames(Collections.singletonList(className), true)
 
-            fun NonCached(classNames: List<String>) = ComputedClassNames(classNames, false)
+            fun NonCached(classNames: List<String>): ComputedClassNames = ComputedClassNames(classNames, false)
         }
 
-        fun distinct() = ComputedClassNames(classNames.distinct(), shouldBeCached)
+        fun distinct(): ComputedClassNames = ComputedClassNames(classNames.distinct(), shouldBeCached)
 
-        operator fun plus(other: ComputedClassNames) = ComputedClassNames(
+        operator fun plus(other: ComputedClassNames): ComputedClassNames = ComputedClassNames(
                 classNames + other.classNames, shouldBeCached && other.shouldBeCached)
     }
 }

@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.KtModifierListOwner
 class SamWithReceiverResolverExtension(
         private val annotations: List<String>
 ) : SamWithReceiverResolver, AnnotationBasedExtension {
-    override fun getAnnotationFqNames(modifierListOwner: KtModifierListOwner?) = annotations
+    override fun getAnnotationFqNames(modifierListOwner: KtModifierListOwner?): List<String> = annotations
 
     override fun shouldConvertFirstSamParameterToReceiver(function: FunctionDescriptor): Boolean {
         return (function.containingDeclaration as? ClassDescriptor)?.hasSpecialAnnotation(null) ?: false

@@ -126,7 +126,7 @@ fun Module.findImplementedModuleNames(modelsProvider: IdeModifiableModelsProvide
     return facet?.configuration?.settings?.implementedModuleNames ?: emptyList()
 }
 
-fun Module.findImplementedModules(modelsProvider: IdeModifiableModelsProvider) =
+fun Module.findImplementedModules(modelsProvider: IdeModifiableModelsProvider): List<Module> =
     findImplementedModuleNames(modelsProvider).mapNotNull { modelsProvider.findIdeModule(it) }
 
 interface ModuleSourceInfo : IdeaModuleInfo, TrackableModuleInfo {
@@ -134,7 +134,7 @@ interface ModuleSourceInfo : IdeaModuleInfo, TrackableModuleInfo {
 
     override val expectedBy: List<ModuleSourceInfo>
 
-    override val displayedName get() = module.name
+    override val displayedName: String get() = module.name
 
     override val moduleOrigin: ModuleOrigin
         get() = ModuleOrigin.MODULE
@@ -170,11 +170,11 @@ data class ModuleProductionSourceInfo internal constructor(
     override val module: Module
 ) : ModuleSourceInfoWithExpectedBy(forProduction = true) {
 
-    override val name = Name.special("<production sources for module ${module.name}>")
+    override val name: Name = Name.special("<production sources for module ${module.name}>")
 
     override fun contentScope(): GlobalSearchScope = ModuleProductionSourceScope(module)
 
-    override fun <T> createCachedValueProvider(f: () -> CachedValueProvider.Result<T>) = CachedValueProvider { f() }
+    override fun <T> createCachedValueProvider(f: () -> CachedValueProvider.Result<T>): CachedValueProvider<T> = CachedValueProvider { f() }
 }
 
 //TODO: (module refactoring) do not create ModuleTestSourceInfo when there are no test roots for module
@@ -182,13 +182,13 @@ data class ModuleTestSourceInfo internal constructor(
     override val module: Module
 ) : ModuleSourceInfoWithExpectedBy(forProduction = false) {
 
-    override val name = Name.special("<test sources for module ${module.name}>")
+    override val name: Name = Name.special("<test sources for module ${module.name}>")
 
-    override val displayedName get() = module.name + " (test)"
+    override val displayedName: String get() = module.name + " (test)"
 
     override fun contentScope(): GlobalSearchScope = ModuleTestSourceScope(module)
 
-    override fun modulesWhoseInternalsAreVisible() = module.cached(CachedValueProvider {
+    override fun modulesWhoseInternalsAreVisible(): SmartList<ModuleInfo> = module.cached(CachedValueProvider {
         val list = SmartList<ModuleInfo>()
 
         list.addIfNotNull(module.productionSourceInfo())
@@ -200,7 +200,7 @@ data class ModuleTestSourceInfo internal constructor(
         CachedValueProvider.Result(list, ProjectRootModificationTracker.getInstance(module.project))
     })
 
-    override fun <T> createCachedValueProvider(f: () -> CachedValueProvider.Result<T>) = CachedValueProvider { f() }
+    override fun <T> createCachedValueProvider(f: () -> CachedValueProvider.Result<T>): CachedValueProvider<T> = CachedValueProvider { f() }
 }
 
 internal fun ModuleSourceInfo.isTests() = this is ModuleTestSourceInfo
@@ -290,7 +290,7 @@ class LibraryInfo(val project: Project, val library: Library) : IdeaModuleInfo, 
     override fun getLibraryRoots(): Collection<String> =
         library.getFiles(OrderRootType.CLASSES).mapNotNull(PathUtil::getLocalPath)
 
-    override fun toString() = "LibraryInfo(libraryName=${library.name})"
+    override fun toString(): String = "LibraryInfo(libraryName=${library.name})"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -317,7 +317,7 @@ data class LibrarySourceInfo(val project: Project, val library: Library) : IdeaM
     override val binariesModuleInfo: BinaryModuleInfo
         get() = LibraryInfo(project, library)
 
-    override fun toString() = "LibrarySourceInfo(libraryName=${library.name})"
+    override fun toString(): String = "LibrarySourceInfo(libraryName=${library.name})"
 }
 
 //TODO: (module refactoring) there should be separate SdkSourceInfo but there are no kotlin source in existing sdks for now :)
@@ -338,7 +338,7 @@ object NotUnderContentRootModuleInfo : IdeaModuleInfo {
 
     override val name: Name = Name.special("<special module for files not under source root>")
 
-    override fun contentScope() = GlobalSearchScope.EMPTY_SCOPE
+    override fun contentScope(): GlobalSearchScope = GlobalSearchScope.EMPTY_SCOPE
 
     //TODO: (module refactoring) dependency on runtime can be of use here
     override fun dependencies(): List<IdeaModuleInfo> = listOf(this)
@@ -381,7 +381,7 @@ private class SdkScope(project: Project, private val sdk: Sdk) :
 
 internal fun IdeaModuleInfo.isLibraryClasses() = this is SdkInfo || this is LibraryInfo
 
-val OriginCapability = ModuleDescriptor.Capability<ModuleOrigin>("MODULE_ORIGIN")
+val OriginCapability: ModuleDescriptor.Capability<ModuleOrigin> = ModuleDescriptor.Capability("MODULE_ORIGIN")
 
 enum class ModuleOrigin {
     MODULE,
@@ -408,7 +408,7 @@ interface SourceForBinaryModuleInfo : IdeaModuleInfo {
     // see KotlinCacheServiceImpl#createFacadeForSyntheticFiles
     override fun contentScope(): GlobalSearchScope = GlobalSearchScope.EMPTY_SCOPE
 
-    override fun dependencies() = listOf(this) + binariesModuleInfo.dependencies()
+    override fun dependencies(): List<IdeaModuleInfo> = listOf(this) + binariesModuleInfo.dependencies()
 
     override val moduleOrigin: ModuleOrigin
         get() = ModuleOrigin.OTHER

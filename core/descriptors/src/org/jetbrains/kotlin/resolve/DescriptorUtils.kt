@@ -203,7 +203,7 @@ fun FunctionDescriptor.hasOrInheritsParametersWithDefaultValue(): Boolean = DFS.
         { it.hasOwnParametersWithDefaultValue() }
 )
 
-fun FunctionDescriptor.hasOwnParametersWithDefaultValue() = original.valueParameters.any { it.declaresDefaultValue() }
+fun FunctionDescriptor.hasOwnParametersWithDefaultValue(): Boolean = original.valueParameters.any { it.declaresDefaultValue() }
 
 fun Annotated.isRepeatableAnnotation(): Boolean =
         annotations.findAnnotation(KotlinBuiltIns.FQ_NAMES.repeatable) != null
@@ -278,7 +278,7 @@ fun <D : CallableDescriptor> D.overriddenTreeUniqueAsSequence(useOriginal: Boole
     return doBuildOverriddenTreeAsSequence()
 }
 
-fun CallableDescriptor.varargParameterPosition() =
+fun CallableDescriptor.varargParameterPosition(): Int =
         valueParameters.indexOfFirst { it.varargElementType != null }
 
 /**
@@ -343,7 +343,7 @@ fun FunctionDescriptor.isEnumValueOfMethod(): Boolean {
 val DeclarationDescriptor.isExtensionProperty: Boolean
     get() = this is PropertyDescriptor && extensionReceiverParameter != null
 
-fun ClassDescriptor.getAllSuperclassesWithoutAny() =
+fun ClassDescriptor.getAllSuperclassesWithoutAny(): SmartList<ClassDescriptor> =
         generateSequence(getSuperClassNotAny(), ClassDescriptor::getSuperClassNotAny).toCollection(SmartList<ClassDescriptor>())
 
 fun ClassifierDescriptor.getAllSuperClassifiers(): Sequence<ClassifierDescriptor> {

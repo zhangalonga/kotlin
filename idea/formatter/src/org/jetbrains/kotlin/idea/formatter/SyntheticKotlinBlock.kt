@@ -35,14 +35,14 @@ class SyntheticKotlinBlock(
             subBlocks.last().textRange.endOffset)
 
     override fun getTextRange(): TextRange = textRange
-    override fun getSubBlocks() = subBlocks
-    override fun getWrap() = wrap
-    override fun getIndent() = indent
-    override fun getAlignment() = alignment
-    override fun getChildAttributes(newChildIndex: Int) = ChildAttributes(getIndent(), null)
-    override fun isIncomplete() = getSubBlocks().last().isIncomplete
-    override fun isLeaf() = false
-    override fun getNode() = node
+    override fun getSubBlocks(): List<ASTBlock> = subBlocks
+    override fun getWrap(): Wrap? = wrap
+    override fun getIndent(): Indent? = indent
+    override fun getAlignment(): Alignment? = alignment
+    override fun getChildAttributes(newChildIndex: Int): ChildAttributes = ChildAttributes(getIndent(), null)
+    override fun isIncomplete(): Boolean = getSubBlocks().last().isIncomplete
+    override fun isLeaf(): Boolean = false
+    override fun getNode(): ASTNode = node
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
         return spacingBuilder.getSpacing(createSyntheticSpacingNodeBlock(node.treeParent!!), child1, child2)
     }

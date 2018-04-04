@@ -270,11 +270,11 @@ private fun findCallsOnPosition(sourcePosition: SourcePosition, filter: (KtCallE
 sealed class Action(val position: XSourcePositionImpl? = null,
                     val stepOverInlineData: StepOverFilterData? = null) {
     class STEP_OVER : Action() {
-        override fun apply(debugProcess: DebugProcessImpl, suspendContext: SuspendContextImpl, ignoreBreakpoints: Boolean) =
+        override fun apply(debugProcess: DebugProcessImpl, suspendContext: SuspendContextImpl, ignoreBreakpoints: Boolean): Unit =
                 debugProcess.createStepOverCommand(suspendContext, ignoreBreakpoints).contextAction(suspendContext)
     }
     class STEP_OUT : Action() {
-        override fun apply(debugProcess: DebugProcessImpl, suspendContext: SuspendContextImpl, ignoreBreakpoints: Boolean) =
+        override fun apply(debugProcess: DebugProcessImpl, suspendContext: SuspendContextImpl, ignoreBreakpoints: Boolean): Unit =
             debugProcess.createStepOutCommand(suspendContext).contextAction(suspendContext)
     }
     class RUN_TO_CURSOR(position: XSourcePositionImpl) : Action(position) {
@@ -574,11 +574,11 @@ private fun findReturnFromDexBytecode(method: Method): Long {
 }
 
 object DexBytecode {
-    val RETURN_VOID = 0x0e
-    val RETURN = 0x0f
-    val RETURN_WIDE = 0x10
-    val RETURN_OBJECT = 0x11
+    val RETURN_VOID: Int = 0x0e
+    val RETURN: Int = 0x0f
+    val RETURN_WIDE: Int = 0x10
+    val RETURN_OBJECT: Int = 0x11
 
-    val GOTO = 0x28
-    val MOVE = 0x01
+    val GOTO: Int = 0x28
+    val MOVE: Int = 0x01
 }

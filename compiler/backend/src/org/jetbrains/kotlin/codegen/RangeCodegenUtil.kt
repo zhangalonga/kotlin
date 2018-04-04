@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.resolve.jvm.AsmTypes
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.org.objectweb.asm.Type
 
-val supportedRangeTypes = listOf(PrimitiveType.CHAR, PrimitiveType.INT, PrimitiveType.LONG)
+val supportedRangeTypes: List<PrimitiveType> = listOf(PrimitiveType.CHAR, PrimitiveType.INT, PrimitiveType.LONG)
 
 private val RANGE_TO_ELEMENT_TYPE: Map<FqName, PrimitiveType> =
     supportedRangeTypes.associateBy {
@@ -44,10 +44,10 @@ private val PROGRESSION_TO_ELEMENT_TYPE: Map<FqName, PrimitiveType> =
         RANGES_PACKAGE_FQ_NAME.child(Name.identifier(it.typeName.toString() + "Progression"))
     }
 
-fun isPrimitiveRange(rangeType: KotlinType) =
+fun isPrimitiveRange(rangeType: KotlinType): Boolean =
     !rangeType.isMarkedNullable && getPrimitiveRangeElementType(rangeType) != null
 
-fun isPrimitiveProgression(rangeType: KotlinType) =
+fun isPrimitiveProgression(rangeType: KotlinType): Boolean =
     !rangeType.isMarkedNullable && getPrimitiveProgressionElementType(rangeType) != null
 
 fun getPrimitiveRangeElementType(rangeType: KotlinType): PrimitiveType? =
@@ -101,10 +101,10 @@ fun BindingContext.getElementType(forExpression: KtForExpression): KotlinType {
 fun getPrimitiveRangeOrProgressionElementType(rangeOrProgressionName: FqName): PrimitiveType? =
     RANGE_TO_ELEMENT_TYPE[rangeOrProgressionName] ?: PROGRESSION_TO_ELEMENT_TYPE[rangeOrProgressionName]
 
-fun isRangeOrProgression(className: FqName) =
+fun isRangeOrProgression(className: FqName): Boolean =
     getPrimitiveRangeOrProgressionElementType(className) != null
 
-fun isPrimitiveNumberRangeTo(rangeTo: CallableDescriptor) =
+fun isPrimitiveNumberRangeTo(rangeTo: CallableDescriptor): Boolean =
     "rangeTo" == rangeTo.name.asString() && isPrimitiveNumberClassDescriptor(rangeTo.containingDeclaration) ||
             isPrimitiveRangeToExtension(rangeTo)
 
@@ -123,53 +123,53 @@ private fun isPrimitiveRangeToExtension(descriptor: CallableDescriptor) =
         KotlinBuiltIns.isPrimitiveType(it)
     }
 
-fun isPrimitiveNumberDownTo(descriptor: CallableDescriptor) =
+fun isPrimitiveNumberDownTo(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("downTo", "kotlin.ranges") {
         isPrimitiveNumberClassDescriptor(it.constructor.declarationDescriptor)
     }
 
-fun isPrimitiveNumberUntil(descriptor: CallableDescriptor) =
+fun isPrimitiveNumberUntil(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("until", "kotlin.ranges") {
         isPrimitiveNumberClassDescriptor(it.constructor.declarationDescriptor)
     }
 
-fun isArrayOrPrimitiveArrayIndices(descriptor: CallableDescriptor) =
+fun isArrayOrPrimitiveArrayIndices(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("indices", "kotlin.collections") {
         KotlinBuiltIns.isArray(it) || KotlinBuiltIns.isPrimitiveArray(it)
     }
 
-fun isArrayOrPrimitiveArrayWithIndex(descriptor: CallableDescriptor) =
+fun isArrayOrPrimitiveArrayWithIndex(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("withIndex", "kotlin.collections") {
         KotlinBuiltIns.isArray(it) || KotlinBuiltIns.isPrimitiveArray(it)
     }
 
-fun isCollectionIndices(descriptor: CallableDescriptor) =
+fun isCollectionIndices(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("indices", "kotlin.collections") {
         KotlinBuiltIns.isCollectionOrNullableCollection(it)
     }
 
-fun isIterableWithIndex(descriptor: CallableDescriptor) =
+fun isIterableWithIndex(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("withIndex", "kotlin.collections") {
         KotlinBuiltIns.isIterableOrNullableIterable(it)
     }
 
-fun isSequenceWithIndex(descriptor: CallableDescriptor) =
+fun isSequenceWithIndex(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("withIndex", "kotlin.sequences") {
         val typeDescriptor = it.constructor.declarationDescriptor ?: return false
         typeDescriptor.isTopLevelInPackage("Sequence", "kotlin.sequences")
     }
 
-fun isCharSequenceIndices(descriptor: CallableDescriptor) =
+fun isCharSequenceIndices(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("indices", "kotlin.text") {
         KotlinBuiltIns.isCharSequenceOrNullableCharSequence(it)
     }
 
-fun isCharSequenceWithIndex(descriptor: CallableDescriptor) =
+fun isCharSequenceWithIndex(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("withIndex", "kotlin.text") {
         KotlinBuiltIns.isCharSequenceOrNullableCharSequence(it)
     }
 
-fun isComparableRangeTo(descriptor: CallableDescriptor) =
+fun isComparableRangeTo(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("rangeTo", "kotlin.ranges") {
         val extensionReceiverTypeDescriptor = it.constructor.declarationDescriptor as? TypeParameterDescriptor ?: return false
         val upperBoundType = extensionReceiverTypeDescriptor.upperBounds.singleOrNull() ?: return false
@@ -207,7 +207,7 @@ fun isPrimitiveNumberRangeExtensionContainsPrimitiveNumber(descriptor: CallableD
     return true
 }
 
-fun isPrimitiveProgressionReverse(descriptor: CallableDescriptor) =
+fun isPrimitiveProgressionReverse(descriptor: CallableDescriptor): Boolean =
     descriptor.isTopLevelExtensionOnType("reversed", "kotlin.ranges") {
         isPrimitiveProgression(it)
     }

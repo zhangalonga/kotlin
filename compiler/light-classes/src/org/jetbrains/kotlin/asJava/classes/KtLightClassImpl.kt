@@ -16,16 +16,17 @@
 
 package org.jetbrains.kotlin.asJava.classes
 
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
 // light class for top level or (inner/nested of top level) source declarations
 class KtLightClassImpl(classOrObject: KtClassOrObject) : KtLightClassForSourceDeclaration(classOrObject) {
-    override fun getQualifiedName() = classOrObject.fqName?.asString()
+    override fun getQualifiedName(): String? = classOrObject.fqName?.asString()
 
-    override fun getParent() = if (classOrObject.isTopLevel())
+    override fun getParent(): PsiElement? = if (classOrObject.isTopLevel())
         containingFile
     else
         containingClass
 
-    override fun copy() = KtLightClassImpl(classOrObject.copy() as KtClassOrObject)
+    override fun copy(): KtLightClassImpl = KtLightClassImpl(classOrObject.copy() as KtClassOrObject)
 }

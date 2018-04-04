@@ -17,11 +17,13 @@
 package org.jetbrains.kotlin.psi
 
 import com.intellij.lang.ASTNode
+import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.ItemPresentationProviders
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.SearchScope
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.stubs.KotlinPlaceHolderStub
 import org.jetbrains.kotlin.psi.stubs.elements.KtPlaceHolderStubElementType
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
@@ -32,53 +34,53 @@ abstract class KtConstructor<T : KtConstructor<T>> : KtDeclarationStub<KotlinPla
 
     abstract fun getContainingClassOrObject(): KtClassOrObject
 
-    override fun isLocal() = false
+    override fun isLocal(): Boolean = false
 
-    override fun getValueParameterList() = getStubOrPsiChild(KtStubElementTypes.VALUE_PARAMETER_LIST)
+    override fun getValueParameterList(): KtParameterList? = getStubOrPsiChild(KtStubElementTypes.VALUE_PARAMETER_LIST)
 
-    override fun getValueParameters() = valueParameterList?.parameters ?: emptyList()
+    override fun getValueParameters(): List<KtParameter> = valueParameterList?.parameters ?: emptyList()
 
-    override fun getReceiverTypeReference() = null
+    override fun getReceiverTypeReference(): Nothing? = null
 
-    override fun getTypeReference() = null
+    override fun getTypeReference(): Nothing? = null
 
     @Throws(IncorrectOperationException::class)
-    override fun setTypeReference(typeRef: KtTypeReference?) = throw IncorrectOperationException("setTypeReference to constructor")
+    override fun setTypeReference(typeRef: KtTypeReference?): Nothing = throw IncorrectOperationException("setTypeReference to constructor")
 
-    override fun getColon() = findChildByType<PsiElement>(KtTokens.COLON)
+    override fun getColon(): PsiElement? = findChildByType<PsiElement>(KtTokens.COLON)
 
     override fun getBodyExpression(): KtBlockExpression? = null
 
-    override fun getEqualsToken() = null
+    override fun getEqualsToken(): Nothing? = null
 
-    override fun hasBlockBody() = bodyExpression != null
+    override fun hasBlockBody(): Boolean = bodyExpression != null
 
-    override fun hasBody() = bodyExpression != null
+    override fun hasBody(): Boolean = bodyExpression != null
 
-    override fun hasDeclaredReturnType() = false
+    override fun hasDeclaredReturnType(): Boolean = false
 
-    override fun getTypeParameterList() = null
+    override fun getTypeParameterList(): Nothing? = null
 
-    override fun getTypeConstraintList() = null
+    override fun getTypeConstraintList(): Nothing? = null
 
-    override fun getTypeConstraints() = emptyList<KtTypeConstraint>()
+    override fun getTypeConstraints(): List<KtTypeConstraint> = emptyList<KtTypeConstraint>()
 
-    override fun getTypeParameters() = emptyList<KtTypeParameter>()
+    override fun getTypeParameters(): List<KtTypeParameter> = emptyList<KtTypeParameter>()
 
     override fun getName(): String? = getContainingClassOrObject().name
 
-    override fun getNameAsSafeName() = KtPsiUtil.safeName(name)
+    override fun getNameAsSafeName(): Name = KtPsiUtil.safeName(name)
 
-    override fun getFqName() = null
+    override fun getFqName(): Nothing? = null
 
-    override fun getNameAsName() = nameAsSafeName
+    override fun getNameAsName(): Name = nameAsSafeName
 
-    override fun getNameIdentifier() = null
+    override fun getNameIdentifier(): Nothing? = null
 
     @Throws(IncorrectOperationException::class)
     override fun setName(name: String): PsiElement = throw IncorrectOperationException("setName to constructor")
 
-    override fun getPresentation() = ItemPresentationProviders.getItemPresentation(this)
+    override fun getPresentation(): ItemPresentation? = ItemPresentationProviders.getItemPresentation(this)
 
     open fun getConstructorKeyword(): PsiElement? = findChildByType(KtTokens.CONSTRUCTOR_KEYWORD)
 

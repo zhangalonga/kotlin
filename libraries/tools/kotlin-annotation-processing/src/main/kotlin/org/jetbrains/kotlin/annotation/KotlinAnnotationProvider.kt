@@ -25,8 +25,8 @@ open class KotlinAnnotationProvider(annotationsReader: Reader) {
     constructor(annotationsFile: File) : this(annotationsFile.reader().buffered())
     constructor() : this(StringReader(""))
 
-    protected val kotlinClassesInternal = linkedSetOf<String>()
-    protected val annotatedKotlinElementsInternal = linkedMapOf<String, MutableSet<AnnotatedElement>>()
+    protected val kotlinClassesInternal: LinkedHashSet<String> = linkedSetOf<String>()
+    protected val annotatedKotlinElementsInternal: LinkedHashMap<String, MutableSet<AnnotatedElement>> = linkedMapOf<String, MutableSet<AnnotatedElement>>()
 
     init {
         readAnnotations(annotationsReader)

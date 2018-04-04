@@ -26,9 +26,9 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class AddAnnotationTargetFix(annotationEntry: KtAnnotationEntry) : KotlinQuickFixAction<KtAnnotationEntry>(annotationEntry) {
 
-    override fun getText() = "Add annotation target"
+    override fun getText(): String = "Add annotation target"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val annotationEntry = element ?: return

@@ -25,5 +25,5 @@ class CustomFramesMethodAnalyzer<V : Value>(
     owner: String, method: MethodNode, interpreter: Interpreter<V>,
     private val frameFactory: (Int, Int) -> Frame<V>
 ) : MethodAnalyzer<V>(owner, method, interpreter) {
-    override fun newFrame(nLocals: Int, nStack: Int) = frameFactory(nLocals, nStack)
+    override fun newFrame(nLocals: Int, nStack: Int): Frame<V> = frameFactory(nLocals, nStack)
 }

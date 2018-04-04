@@ -76,7 +76,7 @@ open class CompilerCallbackServicesFacadeServer(
         incrementalCompilationComponents!!.getIncrementalCache(target).close()
     }
 
-    override fun lookupTracker_requiresPosition() = lookupTracker!!.requiresPosition
+    override fun lookupTracker_requiresPosition(): Boolean = lookupTracker!!.requiresPosition
 
     override fun lookupTracker_record(lookups: Collection<LookupInfo>) {
         val lookupTracker = lookupTracker!!

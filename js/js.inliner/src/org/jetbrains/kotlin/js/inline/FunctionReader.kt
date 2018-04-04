@@ -39,6 +39,7 @@ import org.jetbrains.kotlin.utils.JsLibraryUtils
 import org.jetbrains.kotlin.utils.sure
 import java.io.File
 import java.io.StringReader
+import java.util.regex.Pattern
 
 // TODO: add hash checksum to defineModule?
 /**
@@ -81,9 +82,9 @@ class FunctionReader(
             val sourceMap: SourceMap?,
             val outputDir: File?
     ) {
-        val offsetToSourceMapping by lazy(offsetToSourceMappingProvider)
+        val offsetToSourceMapping: OffsetToSourceMapping by lazy(offsetToSourceMappingProvider)
 
-        val wrapFunctionRegex = specialFunctions.entries
+        val wrapFunctionRegex: Pattern? = specialFunctions.entries
                 .singleOrNull { (_, v) -> v == SpecialFunction.WRAP_FUNCTION }?.key
                 ?.let { Regex("\\s*$it\\s*\\(\\s*").toPattern() }
     }

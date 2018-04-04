@@ -35,9 +35,9 @@ abstract class ReflectJavaType : JavaType {
         }
     }
 
-    override fun equals(other: Any?) = other is ReflectJavaType && reflectType == other.reflectType
+    override fun equals(other: Any?): Boolean = other is ReflectJavaType && reflectType == other.reflectType
 
-    override fun hashCode() = reflectType.hashCode()
+    override fun hashCode(): Int = reflectType.hashCode()
 
-    override fun toString() = this::class.java.name + ": " + reflectType
+    override fun toString(): String = this::class.java.name + ": " + reflectType
 }

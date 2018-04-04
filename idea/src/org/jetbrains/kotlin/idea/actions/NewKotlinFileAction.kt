@@ -88,7 +88,7 @@ class NewKotlinFileAction
                 .addKind("Object", KotlinIcons.OBJECT, "Kotlin Object")
     }
 
-    override fun getActionName(directory: PsiDirectory, newName: String, templateName: String) = "Kotlin File/Class"
+    override fun getActionName(directory: PsiDirectory, newName: String, templateName: String): String = "Kotlin File/Class"
 
     override fun isAvailable(dataContext: DataContext): Boolean {
         if (super.isAvailable(dataContext)) {
@@ -108,9 +108,9 @@ class NewKotlinFileAction
         return obj is NewKotlinFileAction
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
-    override fun createFileFromTemplate(name: String, template: FileTemplate, dir: PsiDirectory) =
+    override fun createFileFromTemplate(name: String, template: FileTemplate, dir: PsiDirectory): PsiFile? =
             Companion.createFileFromTemplate(name, template, dir)
 
     companion object {

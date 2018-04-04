@@ -31,7 +31,7 @@ typealias ReportError = (element: IrElement, message: String) -> Unit
 
 class CheckIrElementVisitor(val builtIns: KotlinBuiltIns, val reportError: ReportError, val ensureAllNodesAreDifferent: Boolean) : IrElementVisitorVoid {
 
-    val set = mutableSetOf<IrElement>()
+    val set: MutableSet<IrElement> = mutableSetOf()
 
     override fun visitElement(element: IrElement) {
         if (ensureAllNodesAreDifferent) {

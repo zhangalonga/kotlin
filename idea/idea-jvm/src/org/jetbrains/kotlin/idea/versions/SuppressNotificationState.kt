@@ -13,11 +13,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
 import org.jetbrains.kotlin.idea.configuration.ModuleSourceRootGroup
 import org.jetbrains.kotlin.idea.configuration.toModuleGroup
+import java.util.*
 
 @State(name = "SuppressABINotification")
 class SuppressNotificationState : PersistentStateComponent<SuppressNotificationState> {
     var isSuppressed: Boolean = false
-    var modulesWithSuppressedNotConfigured = sortedSetOf<String>()
+    var modulesWithSuppressedNotConfigured: TreeSet<String> = sortedSetOf<String>()
 
     override fun getState(): SuppressNotificationState = this
 
@@ -26,7 +27,8 @@ class SuppressNotificationState : PersistentStateComponent<SuppressNotificationS
     }
 
     companion object {
-        fun getInstance(project: Project) = ServiceManager.getService(project, SuppressNotificationState::class.java)
+        fun getInstance(project: Project): SuppressNotificationState =
+            ServiceManager.getService(project, SuppressNotificationState::class.java)
 
         fun isKotlinNotConfiguredSuppressed(moduleGroup: ModuleSourceRootGroup): Boolean {
             val baseModule = moduleGroup.baseModule

@@ -77,5 +77,5 @@ fun InstructionAdapter.asNotNull() {
     PseudoInsn.AS_NOT_NULL.emit(this)
 }
 
-fun AbstractInsnNode.isPseudo(pseudoInsn: PseudoInsn) =
+fun AbstractInsnNode.isPseudo(pseudoInsn: PseudoInsn): Boolean =
         pseudoInsn.isa(this)

@@ -26,9 +26,9 @@ import org.jetbrains.kotlin.psi.psiUtil.PsiChildRange
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 class RemoveFunctionBodyFix(element: KtFunction) : KotlinQuickFixAction<KtFunction>(element) {
-    override fun getFamilyName() = "Remove function body"
+    override fun getFamilyName(): String = "Remove function body"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         val element = element ?: return false

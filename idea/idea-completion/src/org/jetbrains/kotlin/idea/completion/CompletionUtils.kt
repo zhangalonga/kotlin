@@ -22,6 +22,7 @@ import com.intellij.codeInsight.completion.OffsetMap
 import com.intellij.codeInsight.completion.PrefixMatcher
 import com.intellij.codeInsight.lookup.*
 import com.intellij.openapi.util.Key
+import com.intellij.patterns.CharPattern
 import com.intellij.patterns.ElementPattern
 import com.intellij.patterns.StandardPatterns
 import com.intellij.psi.PsiDocumentManager
@@ -78,7 +79,7 @@ enum class ItemPriority {
     STATIC_MEMBER
 }
 
-val ITEM_PRIORITY_KEY = Key<ItemPriority>("ITEM_PRIORITY_KEY")
+val ITEM_PRIORITY_KEY: Key<ItemPriority> = Key("ITEM_PRIORITY_KEY")
 var LookupElement.isDslMember: Boolean? by UserDataProperty(Key.create("DSL_LOOKUP_ITEM"))
 
 fun LookupElement.assignPriority(priority: ItemPriority): LookupElement {
@@ -86,11 +87,11 @@ fun LookupElement.assignPriority(priority: ItemPriority): LookupElement {
     return this
 }
 
-val STATISTICS_INFO_CONTEXT_KEY = Key<String>("STATISTICS_INFO_CONTEXT_KEY")
+val STATISTICS_INFO_CONTEXT_KEY: Key<String> = Key("STATISTICS_INFO_CONTEXT_KEY")
 
-val NOT_IMPORTED_KEY = Key<Unit>("NOT_IMPORTED_KEY")
+val NOT_IMPORTED_KEY: Key<Unit> = Key("NOT_IMPORTED_KEY")
 
-fun LookupElement.suppressAutoInsertion() = AutoCompletionPolicy.NEVER_AUTOCOMPLETE.applyPolicy(this)
+fun LookupElement.suppressAutoInsertion(): LookupElement = AutoCompletionPolicy.NEVER_AUTOCOMPLETE.applyPolicy(this)
 
 fun LookupElement.withReceiverCast(): LookupElement {
     return object: LookupElementDecorator<LookupElement>(this) {
@@ -101,7 +102,7 @@ fun LookupElement.withReceiverCast(): LookupElement {
     }
 }
 
-val KEEP_OLD_ARGUMENT_LIST_ON_TAB_KEY = Key<Unit>("KEEP_OLD_ARGUMENT_LIST_ON_TAB_KEY")
+val KEEP_OLD_ARGUMENT_LIST_ON_TAB_KEY: Key<Unit> = Key("KEEP_OLD_ARGUMENT_LIST_ON_TAB_KEY")
 
 fun LookupElement.keepOldArgumentListOnTab(): LookupElement {
     putUserData(KEEP_OLD_ARGUMENT_LIST_ON_TAB_KEY, Unit)
@@ -112,7 +113,7 @@ fun PrefixMatcher.asNameFilter(): (Name) -> Boolean {
     return { name -> !name.isSpecial && prefixMatches(name.identifier) }
 }
 
-fun PrefixMatcher.asStringNameFilter() = { name: String -> prefixMatches(name) }
+fun PrefixMatcher.asStringNameFilter(): (String) -> Boolean = { name: String -> prefixMatches(name) }
 
 fun ((String) -> Boolean).toNameFilter(): (Name) -> Boolean {
     return { name -> !name.isSpecial && this(name.identifier) }
@@ -141,13 +142,13 @@ enum class CallableWeightEnum {
 
 class CallableWeight(val enum: CallableWeightEnum, val receiverIndex: Int?) {
     companion object {
-        val local = CallableWeight(CallableWeightEnum.local, null)
-        val globalOrStatic = CallableWeight(CallableWeightEnum.globalOrStatic, null)
-        val receiverCastRequired = CallableWeight(CallableWeightEnum.receiverCastRequired, null)
+        val local: CallableWeight = CallableWeight(CallableWeightEnum.local, null)
+        val globalOrStatic: CallableWeight = CallableWeight(CallableWeightEnum.globalOrStatic, null)
+        val receiverCastRequired: CallableWeight = CallableWeight(CallableWeightEnum.receiverCastRequired, null)
     }
 }
 
-val CALLABLE_WEIGHT_KEY = Key<CallableWeight>("CALLABLE_WEIGHT_KEY")
+val CALLABLE_WEIGHT_KEY: Key<CallableWeight> = Key("CALLABLE_WEIGHT_KEY")
 
 fun InsertionContext.isAfterDot(): Boolean {
     var offset = startOffset
@@ -171,7 +172,7 @@ fun shouldCompleteThisItems(prefixMatcher: PrefixMatcher): Boolean {
 
 class ThisItemLookupObject(val receiverParameter: ReceiverParameterDescriptor, val labelName: Name?) : KeywordLookupObject()
 
-fun ThisItemLookupObject.createLookupElement() = createKeywordElement("this", labelName.labelNameToTail(), lookupObject = this)
+fun ThisItemLookupObject.createLookupElement(): LookupElementBuilder = createKeywordElement("this", labelName.labelNameToTail(), lookupObject = this)
         .withTypeText(BasicLookupElementFactory.SHORT_NAMES_RENDERER.renderType(receiverParameter.type))
 
 fun thisExpressionItems(bindingContext: BindingContext, position: KtExpression, prefix: String, resolutionFacade: ResolutionFacade): Collection<ThisItemLookupObject> {
@@ -347,11 +348,11 @@ fun shortenReferences(context: InsertionContext, startOffset: Int, endOffset: In
     ShortenReferences.DEFAULT.process(context.file as KtFile, startOffset, endOffset)
 }
 
-infix fun <T> ElementPattern<T>.and(rhs: ElementPattern<T>) = StandardPatterns.and(this, rhs)
-fun <T> ElementPattern<T>.andNot(rhs: ElementPattern<T>) = StandardPatterns.and(this, StandardPatterns.not(rhs))
-infix fun <T> ElementPattern<T>.or(rhs: ElementPattern<T>) = StandardPatterns.or(this, rhs)
+infix fun <T> ElementPattern<T>.and(rhs: ElementPattern<T>): ElementPattern<T> = StandardPatterns.and(this, rhs)
+fun <T> ElementPattern<T>.andNot(rhs: ElementPattern<T>): ElementPattern<T> = StandardPatterns.and(this, StandardPatterns.not(rhs))
+infix fun <T> ElementPattern<T>.or(rhs: ElementPattern<T>): ElementPattern<T> = StandardPatterns.or(this, rhs)
 
-fun singleCharPattern(char: Char) = StandardPatterns.character().equalTo(char)
+fun singleCharPattern(char: Char): CharPattern = StandardPatterns.character().equalTo(char)
 
 fun LookupElement.decorateAsStaticMember(
         memberDescriptor: DeclarationDescriptor,

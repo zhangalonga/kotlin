@@ -36,7 +36,7 @@ abstract class PropertyLValueBase(
     val callReceiver: CallReceiver,
     val superQualifier: IrClassSymbol?
 ) : LValue, AssignmentReceiver {
-    override fun assign(withLValue: (LValue) -> IrExpression) =
+    override fun assign(withLValue: (LValue) -> IrExpression): IrExpression =
         callReceiver.call { dispatchReceiverValue, extensionReceiverValue ->
             val dispatchReceiverVariable2 = dispatchReceiverValue?.let {
                 scope.createTemporaryVariable(dispatchReceiverValue.load(), "this")
@@ -84,7 +84,7 @@ class FieldPropertyLValue(
             )
         }
 
-    override fun store(irExpression: IrExpression) =
+    override fun store(irExpression: IrExpression): IrExpression =
         callReceiver.call { dispatchReceiverValue, extensionReceiverValue ->
             assert(extensionReceiverValue == null) { "Field can't have an extension receiver: ${field.descriptor}" }
             IrSetFieldImpl(
@@ -133,7 +133,7 @@ class AccessorPropertyLValue(
             )
         }
 
-    override fun store(irExpression: IrExpression) =
+    override fun store(irExpression: IrExpression): IrExpression =
         callReceiver.call { dispatchReceiverValue, extensionReceiverValue ->
             IrSetterCallImpl(
                 startOffset, endOffset,

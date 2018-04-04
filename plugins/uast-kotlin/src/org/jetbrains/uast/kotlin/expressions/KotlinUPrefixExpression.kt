@@ -19,23 +19,20 @@ package org.jetbrains.uast.kotlin
 import com.intellij.psi.PsiMethod
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtPrefixExpression
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UIdentifier
-import org.jetbrains.uast.UPrefixExpression
-import org.jetbrains.uast.UastPrefixOperator
+import org.jetbrains.uast.*
 
 class KotlinUPrefixExpression(
         override val psi: KtPrefixExpression,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UPrefixExpression, KotlinUElementWithType, KotlinEvaluatableUElement {
-    override val operand by lz { KotlinConverter.convertOrEmpty(psi.baseExpression, this) }
+    override val operand: UExpression by lz { KotlinConverter.convertOrEmpty(psi.baseExpression, this) }
 
     override val operatorIdentifier: UIdentifier?
         get() = UIdentifier(psi.operationReference, this)
 
-    override fun resolveOperator() = psi.operationReference.resolveCallToDeclaration(context = this) as? PsiMethod
+    override fun resolveOperator(): PsiMethod? = psi.operationReference.resolveCallToDeclaration(context = this) as? PsiMethod
 
-    override val operator = when (psi.operationToken) {
+    override val operator: UastPrefixOperator = when (psi.operationToken) {
         KtTokens.EXCL -> UastPrefixOperator.LOGICAL_NOT
         KtTokens.PLUS -> UastPrefixOperator.UNARY_PLUS
         KtTokens.MINUS -> UastPrefixOperator.UNARY_MINUS

@@ -67,27 +67,27 @@ interface Check {
 
 sealed class MemberKindCheck(override val description: String) : Check {
     object MemberOrExtension : MemberKindCheck("must be a member or an extension function") {
-        override fun check(functionDescriptor: FunctionDescriptor) =
+        override fun check(functionDescriptor: FunctionDescriptor): Boolean =
                 functionDescriptor.dispatchReceiverParameter != null || functionDescriptor.extensionReceiverParameter != null
     }
     object Member : MemberKindCheck("must be a member function") {
-        override fun check(functionDescriptor: FunctionDescriptor) =
+        override fun check(functionDescriptor: FunctionDescriptor): Boolean =
                 functionDescriptor.dispatchReceiverParameter != null
     }
 }
 
 sealed class ValueParameterCountCheck(override val description: String) : Check {
     object NoValueParameters : ValueParameterCountCheck("must have no value parameters") {
-        override fun check(functionDescriptor: FunctionDescriptor) = functionDescriptor.valueParameters.isEmpty()
+        override fun check(functionDescriptor: FunctionDescriptor): Boolean = functionDescriptor.valueParameters.isEmpty()
     }
     object SingleValueParameter : ValueParameterCountCheck("must have a single value parameter") {
-        override fun check(functionDescriptor: FunctionDescriptor) = functionDescriptor.valueParameters.size == 1
+        override fun check(functionDescriptor: FunctionDescriptor): Boolean = functionDescriptor.valueParameters.size == 1
     }
     class AtLeast(val n: Int) : ValueParameterCountCheck("must have at least $n value parameter" + (if (n > 1) "s" else "")) {
-        override fun check(functionDescriptor: FunctionDescriptor) = functionDescriptor.valueParameters.size >= n
+        override fun check(functionDescriptor: FunctionDescriptor): Boolean = functionDescriptor.valueParameters.size >= n
     }
     class Equals(val n: Int) : ValueParameterCountCheck("must have exactly $n value parameters") {
-        override fun check(functionDescriptor: FunctionDescriptor) = functionDescriptor.valueParameters.size == n
+        override fun check(functionDescriptor: FunctionDescriptor): Boolean = functionDescriptor.valueParameters.size == n
     }
 }
 
@@ -106,8 +106,8 @@ private object IsKPropertyCheck : Check {
 }
 
 sealed class ReturnsCheck(val name: String, val type: KotlinBuiltIns.() -> KotlinType) : Check {
-    override val description = "must return $name"
-    override fun check(functionDescriptor: FunctionDescriptor) = functionDescriptor.returnType == functionDescriptor.builtIns.type()
+    override val description: String = "must return $name"
+    override fun check(functionDescriptor: FunctionDescriptor): Boolean = functionDescriptor.returnType == functionDescriptor.builtIns.type()
 
     object ReturnsBoolean : ReturnsCheck("Boolean", { booleanType })
     object ReturnsInt : ReturnsCheck("Int", { intType })
@@ -157,7 +157,7 @@ internal class Checks private constructor(
 abstract class AbstractModifierChecks {
     abstract internal val checks: List<Checks>
 
-    inline fun ensure(cond: Boolean, msg: () -> String) = if (!cond) msg() else null
+    inline fun ensure(cond: Boolean, msg: () -> String): String? = if (!cond) msg() else null
 
     fun check(functionDescriptor: FunctionDescriptor): CheckResult {
         for (check in checks) {
@@ -208,4 +208,4 @@ object InfixChecks : AbstractModifierChecks() {
             Checks(MemberKindCheck.MemberOrExtension, SingleValueParameter, NoDefaultAndVarargsCheck))
 }
 
-fun FunctionDescriptor.isValidOperator() = isOperator && OperatorChecks.check(this).isSuccess
+fun FunctionDescriptor.isValidOperator(): Boolean = isOperator && OperatorChecks.check(this).isSuccess

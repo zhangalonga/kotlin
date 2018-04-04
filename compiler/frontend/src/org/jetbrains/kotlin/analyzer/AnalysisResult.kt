@@ -40,11 +40,11 @@ open class AnalysisResult protected constructor(
         return result
     }
 
-    operator fun component1() = bindingContext
+    operator fun component1(): BindingContext = bindingContext
 
-    operator fun component2() = moduleDescriptor
+    operator fun component2(): ModuleDescriptor = moduleDescriptor
 
-    operator fun component3() = shouldGenerateCode
+    operator fun component3(): Boolean = shouldGenerateCode
 
     val error: Throwable
         get() = if (this is InternalError) this.exception else throw IllegalStateException("Should only be called for error analysis result")

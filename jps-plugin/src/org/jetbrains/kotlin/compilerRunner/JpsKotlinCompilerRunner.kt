@@ -70,7 +70,7 @@ class JpsKotlinCompilerRunner : KotlinCompilerRunner<JpsCompilerEnvironment>() {
             return _jpsCompileServiceSession
         }
 
-        const val FAIL_ON_FALLBACK_PROPERTY = "test.kotlin.jps.compiler.runner.fail.on.fallback"
+        const val FAIL_ON_FALLBACK_PROPERTY: String = "test.kotlin.jps.compiler.runner.fail.on.fallback"
     }
 
     fun runK2JvmCompiler(

@@ -39,7 +39,7 @@ var JsExpression.localAlias: JsName? by MetadataProperty(default = null)
 // TODO: move this to module 'js.inliner' and change dependency on 'frontend' to dependency on 'descriptors'
 var JsInvocation.inlineStrategy: InlineStrategy? by MetadataProperty(default = null)
 
-var JsInvocation.isCallableReference by MetadataProperty(default = false)
+var JsInvocation.isCallableReference: Boolean by MetadataProperty(default = false)
 
 var JsInvocation.callableReferenceReceiver: JsExpression? by MetadataProperty(default = null)
 
@@ -100,24 +100,24 @@ var JsExpression.isSuspend: Boolean by MetadataProperty(default = false)
  * Denotes a reference to coroutine's `result` field that contains result of
  * last suspended invocation.
  */
-var JsNameRef.coroutineResult by MetadataProperty(default = false)
+var JsNameRef.coroutineResult: Boolean by MetadataProperty(default = false)
 
 /**
  * Denotes a reference to coroutine's `interceptor` field that contains coroutines's interceptor
  */
-var JsNameRef.coroutineController by MetadataProperty(default = false)
+var JsNameRef.coroutineController: Boolean by MetadataProperty(default = false)
 
 /**
  * Denotes a reference to coroutine's receiver. It's later rewritten to `this`. Required to distinguish between `this` for
  * function's dispatch receiver and coroutine's state receiver.
  */
-var JsNameRef.coroutineReceiver by MetadataProperty(default = false)
+var JsNameRef.coroutineReceiver: Boolean by MetadataProperty(default = false)
 
-var JsFunction.forceStateMachine by MetadataProperty(default = false)
+var JsFunction.forceStateMachine: Boolean by MetadataProperty(default = false)
 
-var JsFunction.isInlineableCoroutineBody by MetadataProperty(default = false)
+var JsFunction.isInlineableCoroutineBody: Boolean by MetadataProperty(default = false)
 
-var JsName.imported by MetadataProperty(default = false)
+var JsName.imported: Boolean by MetadataProperty(default = false)
 
 var JsFunction.coroutineMetadata: CoroutineMetadata? by MetadataProperty(default = null)
 

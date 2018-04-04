@@ -94,7 +94,7 @@ class ClassFileToSourceStubConverter(
     val bindings: Map<String, KaptJavaFileObject>
         get() = _bindings
 
-    val treeMaker = TreeMaker.instance(kaptContext.context) as KaptTreeMaker
+    val treeMaker: KaptTreeMaker = TreeMaker.instance(kaptContext.context) as KaptTreeMaker
 
     private val signatureParser = SignatureParser(treeMaker)
 

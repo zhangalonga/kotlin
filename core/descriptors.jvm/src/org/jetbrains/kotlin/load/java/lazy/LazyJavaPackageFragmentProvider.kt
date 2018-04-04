@@ -39,8 +39,8 @@ class LazyJavaPackageFragmentProvider(
         }
     }
 
-    override fun getPackageFragments(fqName: FqName) = listOfNotNull(getPackageFragment(fqName))
+    override fun getPackageFragments(fqName: FqName): List<LazyJavaPackageFragment> = listOfNotNull(getPackageFragment(fqName))
 
-    override fun getSubPackagesOf(fqName: FqName, nameFilter: (Name) -> Boolean) =
+    override fun getSubPackagesOf(fqName: FqName, nameFilter: (Name) -> Boolean): List<FqName> =
             getPackageFragment(fqName)?.getSubPackageFqNames().orEmpty()
 }

@@ -45,8 +45,8 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 class MigrateExternalExtensionFix(declaration: KtNamedDeclaration)
     : KotlinQuickFixAction<KtNamedDeclaration>(declaration), CleanupFix {
 
-    override fun getText() = "Fix with 'asDynamic'"
-    override fun getFamilyName() = text
+    override fun getText(): String = "Fix with 'asDynamic'"
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val declaration = element ?: return

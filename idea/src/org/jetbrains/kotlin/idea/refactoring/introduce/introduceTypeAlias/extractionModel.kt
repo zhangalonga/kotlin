@@ -21,6 +21,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.util.containers.MultiMap
 import org.jetbrains.kotlin.idea.caches.resolve.getResolutionFacade
+import org.jetbrains.kotlin.idea.resolve.ResolutionFacade
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.forEachDescendantOfType
@@ -37,8 +38,8 @@ class IntroduceTypeAliasData(
         val targetSibling: PsiElement,
         val extractTypeConstructor: Boolean = false
 ) : Disposable {
-    val resolutionFacade = originalTypeElement.getResolutionFacade()
-    val bindingContext = resolutionFacade.analyze(originalTypeElement, BodyResolveMode.PARTIAL)
+    val resolutionFacade: ResolutionFacade = originalTypeElement.getResolutionFacade()
+    val bindingContext: BindingContext = resolutionFacade.analyze(originalTypeElement, BodyResolveMode.PARTIAL)
 
     init {
         markReferences()

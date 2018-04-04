@@ -87,7 +87,7 @@ abstract class ChangeCallableReturnTypeFix(
     }
 
     class OnType(element: KtFunction, type: KotlinType) : ChangeCallableReturnTypeFix(element, type), HighPriorityAction {
-        override fun functionPresentation() = null
+        override fun functionPresentation(): Nothing? = null
     }
 
     class ForEnclosing(element: KtFunction, type: KotlinType) : ChangeCallableReturnTypeFix(element, type), HighPriorityAction {
@@ -135,7 +135,7 @@ abstract class ChangeCallableReturnTypeFix(
             "Change $typeName of $functionPresentation to '$typePresentation'"
     }
 
-    override fun getFamilyName() = KotlinBundle.message("change.type.family")
+    override fun getFamilyName(): String = KotlinBundle.message("change.type.family")
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         return !typeContainsError &&

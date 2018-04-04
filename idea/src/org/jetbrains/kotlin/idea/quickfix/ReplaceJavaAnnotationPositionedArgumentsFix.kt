@@ -46,7 +46,7 @@ class ReplaceJavaAnnotationPositionedArgumentsFix(element: KtAnnotationEntry)
     }
 
     companion object : KotlinSingleIntentionActionFactory() {
-        override fun createAction(diagnostic: Diagnostic) =
+        override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtAnnotationEntry>? =
                 diagnostic.createIntentionForFirstParentOfType(::ReplaceJavaAnnotationPositionedArgumentsFix)
     }
 }

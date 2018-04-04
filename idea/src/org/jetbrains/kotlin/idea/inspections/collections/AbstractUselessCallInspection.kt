@@ -56,14 +56,14 @@ abstract class AbstractUselessCallInspection : AbstractKotlinInspection() {
         }
     }
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = QualifiedExpressionVisitor(holder, isOnTheFly)
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): QualifiedExpressionVisitor = QualifiedExpressionVisitor(holder, isOnTheFly)
 
 
     protected companion object {
         data class Conversion(val replacementName: String? = null)
 
-        val deleteConversion = Conversion()
+        val deleteConversion: Conversion = Conversion()
 
-        fun Set<String>.toShortNames() = mapTo(mutableSetOf()) { fqName -> fqName.takeLastWhile { it != '.' } }
+        fun Set<String>.toShortNames(): MutableSet<String> = mapTo(mutableSetOf()) { fqName -> fqName.takeLastWhile { it != '.' } }
     }
 }

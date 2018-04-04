@@ -31,7 +31,7 @@ class KotlinULiteralExpression(
     override val isNull: Boolean
         get() = psi.unwrapBlockOrParenthesis().node?.elementType == KtNodeTypes.NULL
 
-    override val value by lz { evaluate() }
+    override val value: Any? by lz { evaluate() }
 }
 
 class KotlinStringULiteralExpression(
@@ -45,7 +45,7 @@ class KotlinStringULiteralExpression(
     override val value: String
         get() = text
 
-    override fun evaluate() = value
+    override fun evaluate(): String = value
 
     override fun getExpressionType(): PsiType? = PsiType.getJavaLangString(psi.manager, psi.resolveScope)
 }

@@ -72,12 +72,12 @@ abstract class TypeInfo(val variance: Variance) {
     }
 
     class ByExplicitCandidateTypes(val types: List<KotlinType>) : TypeInfo(Variance.INVARIANT) {
-        override fun getPossibleTypes(builder: CallableBuilder) = types
+        override fun getPossibleTypes(builder: CallableBuilder): List<KotlinType> = types
     }
 
     abstract class DelegatingTypeInfo(val delegate: TypeInfo): TypeInfo(delegate.variance) {
         override val substitutionsAllowed: Boolean = delegate.substitutionsAllowed
-        override fun getPossibleNamesFromExpression(bindingContext: BindingContext) = delegate.getPossibleNamesFromExpression(bindingContext)
+        override fun getPossibleNamesFromExpression(bindingContext: BindingContext): Array<String> = delegate.getPossibleNamesFromExpression(bindingContext)
         override fun getPossibleTypes(builder: CallableBuilder): List<KotlinType> = delegate.getPossibleTypes(builder)
     }
 
@@ -153,7 +153,7 @@ fun TypeInfo.forceNotNull(): TypeInfo {
     return (this as? ForcedNotNull) ?: ForcedNotNull(this)
 }
 
-fun TypeInfo.ofThis() = TypeInfo.OfThis(this)
+fun TypeInfo.ofThis(): TypeInfo.OfThis = TypeInfo.OfThis(this)
 
 /**
  * Encapsulates information about a function parameter that is going to be created.
@@ -184,7 +184,7 @@ abstract class CallableInfo (
     abstract val kind: CallableKind
     abstract val parameterInfos: List<ParameterInfo>
 
-    val isAbstract get() = modifierList?.hasModifier(KtTokens.ABSTRACT_KEYWORD) == true
+    val isAbstract: Boolean get() = modifierList?.hasModifier(KtTokens.ABSTRACT_KEYWORD) == true
 
     abstract fun copy(receiverTypeInfo: TypeInfo = this.receiverTypeInfo,
                       possibleContainers: List<KtElement> = this.possibleContainers,
@@ -207,7 +207,7 @@ class FunctionInfo(name: String,
             receiverTypeInfo: TypeInfo,
             possibleContainers: List<KtElement>,
             modifierList: KtModifierList?
-    ) = FunctionInfo(
+    ): FunctionInfo = FunctionInfo(
             name,
             receiverTypeInfo,
             returnTypeInfo,
@@ -233,7 +233,7 @@ class ClassWithPrimaryConstructorInfo(
             receiverTypeInfo: TypeInfo,
             possibleContainers: List<KtElement>,
             modifierList: KtModifierList?
-    ) = throw UnsupportedOperationException()
+    ): Nothing = throw UnsupportedOperationException()
 }
 
 class ConstructorInfo(
@@ -249,7 +249,7 @@ class ConstructorInfo(
             receiverTypeInfo: TypeInfo,
             possibleContainers: List<KtElement>,
             modifierList: KtModifierList?
-    ) = throw UnsupportedOperationException()
+    ): Nothing = throw UnsupportedOperationException()
 }
 
 class PropertyInfo(name: String,
@@ -270,14 +270,14 @@ class PropertyInfo(name: String,
             receiverTypeInfo: TypeInfo,
             possibleContainers: List<KtElement>,
             modifierList: KtModifierList?
-    ) = copyProperty(receiverTypeInfo, possibleContainers, modifierList)
+    ): PropertyInfo = copyProperty(receiverTypeInfo, possibleContainers, modifierList)
 
     fun copyProperty(
             receiverTypeInfo: TypeInfo = this.receiverTypeInfo,
             possibleContainers: List<KtElement> = this.possibleContainers,
             modifierList: KtModifierList? = this.modifierList,
             isLateinitPreferred: Boolean = this.isLateinitPreferred
-    ) = PropertyInfo(
+    ): PropertyInfo = PropertyInfo(
             name,
             receiverTypeInfo,
             returnTypeInfo,

@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.psi.psiUtil.quoteIfNeeded
 
 class KotlinCreateFromTemplateHandler : DefaultCreateFromTemplateHandler() {
-    override fun handlesTemplate(template: FileTemplate) = template.isTemplateOfType(KotlinFileType.INSTANCE)
+    override fun handlesTemplate(template: FileTemplate): Boolean = template.isTemplateOfType(KotlinFileType.INSTANCE)
 
     override fun prepareProperties(props: MutableMap<String, Any>) {
         val packageName = props[FileTemplate.ATTRIBUTE_PACKAGE_NAME] as? String

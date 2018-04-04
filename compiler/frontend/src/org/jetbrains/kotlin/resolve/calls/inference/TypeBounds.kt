@@ -69,11 +69,11 @@ interface TypeBounds {
             return result
         }
 
-        override fun toString() = "Bound($constrainingType, $kind, $position, isProper = $isProper)"
+        override fun toString(): String = "Bound($constrainingType, $kind, $position, isProper = $isProper)"
     }
 }
 
-fun BoundKind.reverse() = when (this) {
+fun BoundKind.reverse(): BoundKind = when (this) {
     LOWER_BOUND -> UPPER_BOUND
     UPPER_BOUND -> LOWER_BOUND
     EXACT_BOUND -> EXACT_BOUND

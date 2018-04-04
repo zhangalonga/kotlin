@@ -60,24 +60,24 @@ class SyntheticClassOrObjectDescriptor(
 
     override val annotations: Annotations get() = Annotations.EMPTY
 
-    override fun getModality() = modality
-    override fun getVisibility() = visibility
-    override fun getKind() = kind
-    override fun isCompanionObject() = isCompanionObject
-    override fun isInner() = false
-    override fun isData() = false
-    override fun isInline() = false
-    override fun isExpect() = false
-    override fun isActual() = false
+    override fun getModality(): Modality = modality
+    override fun getVisibility(): Visibility = visibility
+    override fun getKind(): ClassKind = kind
+    override fun isCompanionObject(): Boolean = isCompanionObject
+    override fun isInner(): Boolean = false
+    override fun isData(): Boolean = false
+    override fun isInline(): Boolean = false
+    override fun isExpect(): Boolean = false
+    override fun isActual(): Boolean = false
 
-    override fun getCompanionObjectDescriptor() = null
+    override fun getCompanionObjectDescriptor(): Nothing? = null
     override fun getTypeConstructor(): TypeConstructor = typeConstructor
-    override fun getUnsubstitutedPrimaryConstructor() = unsubstitutedPrimaryConstructor
-    override fun getConstructors() = listOf(unsubstitutedPrimaryConstructor)
-    override fun getDeclaredTypeParameters() = emptyList<TypeParameterDescriptor>()
-    override fun getStaticScope() = MemberScope.Empty
-    override fun getUnsubstitutedMemberScope() = unsubstitutedMemberScope
-    override fun getSealedSubclasses() = emptyList<ClassDescriptor>()
+    override fun getUnsubstitutedPrimaryConstructor(): ClassConstructorDescriptor = unsubstitutedPrimaryConstructor
+    override fun getConstructors(): List<ClassConstructorDescriptor> = listOf(unsubstitutedPrimaryConstructor)
+    override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> = emptyList<TypeParameterDescriptor>()
+    override fun getStaticScope(): MemberScope.Empty = MemberScope.Empty
+    override fun getUnsubstitutedMemberScope(): LazyClassMemberScope = unsubstitutedMemberScope
+    override fun getSealedSubclasses(): List<ClassDescriptor> = emptyList<ClassDescriptor>()
 
     init {
         assert(modality != Modality.SEALED) { "Implement getSealedSubclasses() for this class: ${this::class.java}" }

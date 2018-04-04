@@ -44,7 +44,7 @@ class KaptContext<out GState : GenerationState?>(
         processorOptions: Map<String, String>,
         javacOptions: Map<String, String> = emptyMap()
 ) : AutoCloseable {
-    val context = Context()
+    val context: Context = Context()
     val compiler: KaptJavaCompiler
     val fileManager: JavacFileManager
     val options: Options

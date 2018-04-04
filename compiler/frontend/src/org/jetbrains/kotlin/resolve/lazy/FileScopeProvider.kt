@@ -33,7 +33,7 @@ interface FileScopeProvider {
     fun getFileScopes(file: KtFile): FileScopes
 
     object ThrowException : FileScopeProvider {
-        override fun getFileScopes(file: KtFile) = throw UnsupportedOperationException("Should not be called")
+        override fun getFileScopes(file: KtFile): Nothing = throw UnsupportedOperationException("Should not be called")
     }
 }
 
@@ -50,7 +50,7 @@ class FileScopeProviderImpl(
         scopes
     }
 
-    override fun getFileScopes(file: KtFile) = cache(file)
+    override fun getFileScopes(file: KtFile): FileScopes = cache(file)
 }
 
 interface FileScopesCustomizer {

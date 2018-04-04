@@ -40,7 +40,7 @@ import org.jetbrains.kotlin.serialization.deserialization.getClassId
 import org.jetbrains.kotlin.storage.LockBasedStorageManager
 
 open class KotlinClsStubBuilder : ClsStubBuilder() {
-    override fun getStubVersion() = ClassFileStubBuilder.STUB_VERSION + KotlinStubVersions.CLASSFILE_STUB_VERSION
+    override fun getStubVersion(): Int = ClassFileStubBuilder.STUB_VERSION + KotlinStubVersions.CLASSFILE_STUB_VERSION
 
     override fun buildFileStub(content: FileContent): PsiFileStub<*>? {
         val file = content.file
@@ -104,7 +104,7 @@ open class KotlinClsStubBuilder : ClsStubBuilder() {
     }
 
     companion object {
-        val LOG = Logger.getInstance(KotlinClsStubBuilder::class.java)
+        val LOG: Logger = Logger.getInstance(KotlinClsStubBuilder::class.java)
     }
 }
 
@@ -124,7 +124,7 @@ class AnnotationLoaderForClassFileStubBuilder(
     override fun loadTypeAnnotation(proto: ProtoBuf.Annotation, nameResolver: NameResolver): ClassId =
             nameResolver.getClassId(proto.id)
 
-    override fun loadConstant(desc: String, initializer: Any) = null
+    override fun loadConstant(desc: String, initializer: Any): Nothing? = null
 
     override fun loadAnnotation(
             annotationClassId: ClassId, source: SourceElement, result: MutableList<ClassId>
@@ -140,5 +140,5 @@ class AnnotationLoaderForClassFileStubBuilder(
                fieldAnnotations.map { ClassIdWithTarget(it, fieldUseSiteTarget ) }
     }
 
-    override fun transformAnnotations(annotations: List<ClassId>) = annotations.map { ClassIdWithTarget(it, null) }
+    override fun transformAnnotations(annotations: List<ClassId>): List<ClassIdWithTarget> = annotations.map { ClassIdWithTarget(it, null) }
 }

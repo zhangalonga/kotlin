@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.metadata.ProtoBuf.TypeParameter
 import org.jetbrains.kotlin.types.Variance
 
 object ProtoEnumFlags {
-    fun memberKind(memberKind: ProtoBuf.MemberKind?) = when (memberKind) {
+    fun memberKind(memberKind: ProtoBuf.MemberKind?): CallableMemberDescriptor.Kind = when (memberKind) {
         ProtoBuf.MemberKind.DECLARATION -> CallableMemberDescriptor.Kind.DECLARATION
         ProtoBuf.MemberKind.FAKE_OVERRIDE -> CallableMemberDescriptor.Kind.FAKE_OVERRIDE
         ProtoBuf.MemberKind.DELEGATION -> CallableMemberDescriptor.Kind.DELEGATION
@@ -37,7 +37,7 @@ object ProtoEnumFlags {
         CallableMemberDescriptor.Kind.SYNTHESIZED -> ProtoBuf.MemberKind.SYNTHESIZED
     }
 
-    fun modality(modality: ProtoBuf.Modality?) = when (modality) {
+    fun modality(modality: ProtoBuf.Modality?): Modality = when (modality) {
         ProtoBuf.Modality.FINAL -> Modality.FINAL
         ProtoBuf.Modality.OPEN -> Modality.OPEN
         ProtoBuf.Modality.ABSTRACT -> Modality.ABSTRACT
@@ -52,7 +52,7 @@ object ProtoEnumFlags {
         Modality.SEALED -> ProtoBuf.Modality.SEALED
     }
 
-    fun visibility(visibility: ProtoBuf.Visibility?) = when (visibility) {
+    fun visibility(visibility: ProtoBuf.Visibility?): Visibility = when (visibility) {
         ProtoBuf.Visibility.INTERNAL -> Visibilities.INTERNAL
         ProtoBuf.Visibility.PRIVATE -> Visibilities.PRIVATE
         ProtoBuf.Visibility.PRIVATE_TO_THIS -> Visibilities.PRIVATE_TO_THIS
@@ -95,13 +95,13 @@ object ProtoEnumFlags {
         }
     }
 
-    fun variance(variance: TypeParameter.Variance) = when (variance) {
+    fun variance(variance: TypeParameter.Variance): Variance = when (variance) {
         ProtoBuf.TypeParameter.Variance.IN -> Variance.IN_VARIANCE
         ProtoBuf.TypeParameter.Variance.OUT -> Variance.OUT_VARIANCE
         ProtoBuf.TypeParameter.Variance.INV -> Variance.INVARIANT
     }
 
-    fun variance(projection: ProtoBuf.Type.Argument.Projection) = when (projection) {
+    fun variance(projection: ProtoBuf.Type.Argument.Projection): Variance = when (projection) {
         ProtoBuf.Type.Argument.Projection.IN -> Variance.IN_VARIANCE
         ProtoBuf.Type.Argument.Projection.OUT -> Variance.OUT_VARIANCE
         ProtoBuf.Type.Argument.Projection.INV -> Variance.INVARIANT

@@ -29,9 +29,9 @@ class KotlinTypeParameterStubImpl(
     private val isInVariance: Boolean,
     private val isOutVariance: Boolean
 ) : KotlinStubBaseImpl<KtTypeParameter>(parent, KtStubElementTypes.TYPE_PARAMETER), KotlinTypeParameterStub {
-    override fun isInVariance() = isInVariance
-    override fun isOutVariance() = isOutVariance
-    override fun getName() = StringRef.toString(name)
+    override fun isInVariance(): Boolean = isInVariance
+    override fun isOutVariance(): Boolean = isOutVariance
+    override fun getName(): String? = StringRef.toString(name)
     // type parameters don't have FqNames
-    override fun getFqName() = null
+    override fun getFqName(): Nothing? = null
 }

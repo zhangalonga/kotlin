@@ -15,7 +15,7 @@ interface AbsentDescriptorHandler {
 }
 
 class BasicAbsentDescriptorHandler : AbsentDescriptorHandler {
-    override fun diagnoseDescriptorNotFound(declaration: KtDeclaration) = throw NoDescriptorForDeclarationException(declaration)
+    override fun diagnoseDescriptorNotFound(declaration: KtDeclaration): Nothing = throw NoDescriptorForDeclarationException(declaration)
 }
 
 class NoDescriptorForDeclarationException @JvmOverloads constructor(declaration: KtDeclaration, additionalDetails: String? = null) :

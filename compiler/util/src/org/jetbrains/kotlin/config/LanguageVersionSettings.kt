@@ -95,7 +95,7 @@ enum class LanguageFeature(
     // E.g. "DestructuringLambdaParameters" -> ["Destructuring", "Lambda", "Parameters"] -> "destructuring lambda parameters"
         get() = name.split("(?<!^)(?=[A-Z])".toRegex()).joinToString(separator = " ", transform = String::toLowerCase)
 
-    val presentableText get() = if (hintUrl == null) presentableName else "$presentableName (See: $hintUrl)"
+    val presentableText: String get() = if (hintUrl == null) presentableName else "$presentableName (See: $hintUrl)"
 
     enum class State(override val description: String) : DescriptionAware {
         ENABLED("Enabled"),
@@ -106,7 +106,7 @@ enum class LanguageFeature(
 
     companion object {
         @JvmStatic
-        fun fromString(str: String) = values().find { it.name == str }
+        fun fromString(str: String): LanguageFeature? = values().find { it.name == str }
     }
 }
 
@@ -125,18 +125,18 @@ enum class LanguageVersion(val major: Int, val minor: Int) : DescriptionAware {
     override val description: String
         get() = if (isStable) versionString else "$versionString (EXPERIMENTAL)"
 
-    override fun toString() = versionString
+    override fun toString(): String = versionString
 
     companion object {
         @JvmStatic
-        fun fromVersionString(str: String?) = values().find { it.versionString == str }
+        fun fromVersionString(str: String?): LanguageVersion? = values().find { it.versionString == str }
 
         @JvmStatic
-        fun fromFullVersionString(str: String) =
+        fun fromFullVersionString(str: String): LanguageVersion? =
             str.split(".", "-").let { if (it.size >= 2) fromVersionString("${it[0]}.${it[1]}") else null }
 
         @JvmField
-        val LATEST_STABLE = KOTLIN_1_2
+        val LATEST_STABLE: LanguageVersion = KOTLIN_1_2
     }
 }
 
@@ -177,7 +177,7 @@ class LanguageVersionSettingsImpl @JvmOverloads constructor(
         return LanguageFeature.State.DISABLED
     }
 
-    override fun toString() = buildString {
+    override fun toString(): String = buildString {
         append("Language = $languageVersion, API = $apiVersion")
         specificFeatures.forEach { (feature, state) ->
             val char = when (state) {
@@ -191,7 +191,7 @@ class LanguageVersionSettingsImpl @JvmOverloads constructor(
 
     companion object {
         @JvmField
-        val DEFAULT = LanguageVersionSettingsImpl(LanguageVersion.LATEST_STABLE, ApiVersion.LATEST_STABLE)
+        val DEFAULT: LanguageVersionSettingsImpl = LanguageVersionSettingsImpl(LanguageVersion.LATEST_STABLE, ApiVersion.LATEST_STABLE)
     }
 }
 

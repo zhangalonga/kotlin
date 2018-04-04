@@ -56,7 +56,7 @@ open class InliningContext(
         val classRegeneration: Boolean
 ) {
 
-    val isInliningLambda = lambdaInfo != null
+    val isInliningLambda: Boolean = lambdaInfo != null
 
     private val internalNameToAnonymousObjectTransformationInfo = hashMapOf<String, AnonymousObjectTransformationInfo>()
 

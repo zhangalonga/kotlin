@@ -28,7 +28,7 @@ class LibraryClassSymbol(
     override val typeParameters: List<ConeTypeParameterSymbol> by lazy { typeDeserializer.ownTypeParameters }
     override val classId: ClassId = nameResolver.getClassId(classProto.fqName)
 
-    val typeTable = TypeTable(classProto.typeTable)
+    val typeTable: TypeTable = TypeTable(classProto.typeTable)
 
     override val superTypes: List<ConeClassLikeType>
         get() {

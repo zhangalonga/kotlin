@@ -37,11 +37,9 @@ abstract class DelegatingSimpleType : SimpleType() {
 class AbbreviatedType(override val delegate: SimpleType, val abbreviation: SimpleType) : DelegatingSimpleType() {
     val expandedType: SimpleType get() = delegate
 
-    override fun replaceAnnotations(newAnnotations: Annotations)
-            = AbbreviatedType(delegate.replaceAnnotations(newAnnotations), abbreviation)
+    override fun replaceAnnotations(newAnnotations: Annotations): AbbreviatedType = AbbreviatedType(delegate.replaceAnnotations(newAnnotations), abbreviation)
 
-    override fun makeNullableAsSpecified(newNullability: Boolean)
-            = AbbreviatedType(delegate.makeNullableAsSpecified(newNullability), abbreviation.makeNullableAsSpecified(newNullability))
+    override fun makeNullableAsSpecified(newNullability: Boolean): AbbreviatedType = AbbreviatedType(delegate.makeNullableAsSpecified(newNullability), abbreviation.makeNullableAsSpecified(newNullability))
 }
 
 fun KotlinType.getAbbreviatedType(): AbbreviatedType? = unwrap() as? AbbreviatedType

@@ -38,22 +38,22 @@ abstract class LexicalScopeStorage(
     parent: HierarchicalScope,
     val redeclarationChecker: LocalRedeclarationChecker
 ) : LexicalScope {
-    override val parent = parent.takeSnapshot()
+    override val parent: HierarchicalScope = parent.takeSnapshot()
 
     protected val addedDescriptors: MutableList<DeclarationDescriptor> = SmartList()
 
     private var functionsByName: MutableMap<Name, IntList>? = null
     private var variablesAndClassifiersByName: MutableMap<Name, IntList>? = null
 
-    override fun getContributedClassifier(name: Name, location: LookupLocation) =
+    override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? =
         variableOrClassDescriptorByName(name) as? ClassifierDescriptor
 
-    override fun getContributedVariables(name: Name, location: LookupLocation) =
+    override fun getContributedVariables(name: Name, location: LookupLocation): List<VariableDescriptor> =
         listOfNotNull(variableOrClassDescriptorByName(name) as? VariableDescriptor)
 
-    override fun getContributedFunctions(name: Name, location: LookupLocation) = functionsByName(name)
+    override fun getContributedFunctions(name: Name, location: LookupLocation): List<FunctionDescriptor> = functionsByName(name)
 
-    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean) = addedDescriptors
+    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): MutableList<DeclarationDescriptor> = addedDescriptors
 
     protected fun addVariableOrClassDescriptor(descriptor: DeclarationDescriptor) {
         val name = descriptor.name
@@ -127,6 +127,6 @@ abstract class LexicalScopeStorage(
         return result
     }
 
-    override fun definitelyDoesNotContainName(name: Name) =
+    override fun definitelyDoesNotContainName(name: Name): Boolean =
         functionsByName?.get(name) == null && variablesAndClassifiersByName?.get(name) == null
 }

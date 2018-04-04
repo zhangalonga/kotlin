@@ -35,6 +35,6 @@ interface DeclarationReturnTypeSanitizer {
             wrappedTypeFactory: WrappedTypeFactory,
             trace: BindingTrace,
             languageVersionSettings: LanguageVersionSettings
-        ) = inferred
+        ): UnwrappedType = inferred
     }
 }

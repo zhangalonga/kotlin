@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.idea.framework.getCommonRuntimeLibraryVersion
 import org.jetbrains.kotlin.idea.versions.bundledRuntimeVersion
 
 class KotlinVersionInfoProviderByModuleDependencies : KotlinVersionInfoProvider {
-    override fun getCompilerVersion(module: Module) = bundledRuntimeVersion()
+    override fun getCompilerVersion(module: Module): String = bundledRuntimeVersion()
 
     override fun getLibraryVersions(module: Module, targetPlatform: TargetPlatformKind<*>, rootModel: ModuleRootModel?): Collection<String> {
         val versionProvider: (Library) -> String? = when (targetPlatform) {

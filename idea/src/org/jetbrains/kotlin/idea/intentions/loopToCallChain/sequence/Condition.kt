@@ -62,11 +62,11 @@ class AtomicCondition(val expression: KtExpression, private val isNegated: Boole
         assert(expression.isPhysical)
     }
 
-    override fun asExpression(reformat: Boolean) = if (isNegated) expression.negate(reformat) else expression
-    override fun asNegatedExpression(reformat: Boolean) = if (isNegated) expression else expression.negate(reformat)
-    override fun toAtomicConditions() = listOf(this)
+    override fun asExpression(reformat: Boolean): KtExpression = if (isNegated) expression.negate(reformat) else expression
+    override fun asNegatedExpression(reformat: Boolean): KtExpression = if (isNegated) expression else expression.negate(reformat)
+    override fun toAtomicConditions(): List<AtomicCondition> = listOf(this)
 
-    fun negate() = AtomicCondition(expression, !isNegated)
+    fun negate(): AtomicCondition = AtomicCondition(expression, !isNegated)
 }
 
 class CompositeCondition private constructor(val conditions: List<AtomicCondition>) : Condition {
@@ -86,7 +86,7 @@ class CompositeCondition private constructor(val conditions: List<AtomicConditio
         return asExpression(reformat).negate()
     }
 
-    override fun toAtomicConditions() = conditions
+    override fun toAtomicConditions(): List<AtomicCondition> = conditions
 
     companion object {
         fun create(conditions: List<AtomicCondition>): Condition {

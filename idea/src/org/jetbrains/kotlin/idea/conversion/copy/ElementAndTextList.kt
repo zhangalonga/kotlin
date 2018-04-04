@@ -27,13 +27,13 @@ class ElementAndTextList() {
         elementsAndTexts.addAll(elements.filter { it is PsiElement || it is String })
     }
 
-    fun add(a: String) = elementsAndTexts.add(a)
+    fun add(a: String): Boolean = elementsAndTexts.add(a)
 
-    fun add(a: PsiElement) = elementsAndTexts.add(a)
+    fun add(a: PsiElement): Boolean = elementsAndTexts.add(a)
 
-    operator fun plusAssign(other: String) = plusAssign(other as Any)
+    operator fun plusAssign(other: String): Unit = plusAssign(other as Any)
 
-    operator fun plusAssign(other: PsiElement) = plusAssign(other as Any)
+    operator fun plusAssign(other: PsiElement): Unit = plusAssign(other as Any)
 
     private fun plusAssign(a: Any) {
         elementsAndTexts.add(a)

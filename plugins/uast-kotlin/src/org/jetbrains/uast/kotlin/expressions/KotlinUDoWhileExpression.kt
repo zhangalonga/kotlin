@@ -19,14 +19,15 @@ package org.jetbrains.uast.kotlin
 import org.jetbrains.kotlin.psi.KtDoWhileExpression
 import org.jetbrains.uast.UDoWhileExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UIdentifier
 
 class KotlinUDoWhileExpression(
         override val psi: KtDoWhileExpression,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UDoWhileExpression {
-    override val condition by lz { KotlinConverter.convertOrEmpty(psi.condition, this) }
-    override val body by lz { KotlinConverter.convertOrEmpty(psi.body, this) }
+    override val condition: UExpression by lz { KotlinConverter.convertOrEmpty(psi.condition, this) }
+    override val body: UExpression by lz { KotlinConverter.convertOrEmpty(psi.body, this) }
 
     override val doIdentifier: UIdentifier
         get() = UIdentifier(null, this)

@@ -45,8 +45,8 @@ class AddNameToArgumentIntention
         return true
     }
 
-    override fun allowCaretInsideElement(element: PsiElement)
-            = element !is KtValueArgumentList && element !is KtContainerNode && super.allowCaretInsideElement(element)
+    override fun allowCaretInsideElement(element: PsiElement): Boolean =
+        element !is KtValueArgumentList && element !is KtContainerNode && super.allowCaretInsideElement(element)
 
     override fun applyTo(element: KtValueArgument, editor: Editor?) {
         val name = detectNameToAdd(element)!!

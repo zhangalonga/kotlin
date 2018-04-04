@@ -169,7 +169,7 @@ class RenderIrElementWithDescriptorsVisitor : IrElementVisitor<String, Nothing?>
             "ERROR_CALL '${expression.description}' type=${expression.type.render()}"
 
     companion object {
-        val DECLARATION_RENDERER = DescriptorRenderer.withOptions {
+        val DECLARATION_RENDERER: DescriptorRenderer = DescriptorRenderer.withOptions {
             withDefinedIn = false
             overrideRenderingPolicy = OverrideRenderingPolicy.RENDER_OPEN_OVERRIDE
             includePropertyConstant = true
@@ -178,7 +178,7 @@ class RenderIrElementWithDescriptorsVisitor : IrElementVisitor<String, Nothing?>
             modifiers = DescriptorRendererModifier.ALL
         }
 
-        val REFERENCE_RENDERER = DescriptorRenderer.ONLY_NAMES_WITH_SHORT_TYPES
+        val REFERENCE_RENDERER: DescriptorRenderer = DescriptorRenderer.ONLY_NAMES_WITH_SHORT_TYPES
 
         internal fun IrDeclaration.name(): String =
                 descriptor.let { it.name.toString() }
@@ -201,11 +201,11 @@ class RenderIrElementWithDescriptorsVisitor : IrElementVisitor<String, Nothing?>
 }
 
 class DumpIrTreeWithDescriptorsVisitor(out: Appendable): IrElementVisitor<Unit, String> {
-    val printer = Printer(out, "  ")
-    val elementRenderer = RenderIrElementWithDescriptorsVisitor()
+    val printer: Printer = Printer(out, "  ")
+    val elementRenderer: RenderIrElementWithDescriptorsVisitor = RenderIrElementWithDescriptorsVisitor()
 
     companion object {
-        val ANNOTATIONS_RENDERER = DescriptorRenderer.withOptions {
+        val ANNOTATIONS_RENDERER: DescriptorRenderer = DescriptorRenderer.withOptions {
             verbose = true
             annotationArgumentsRenderingPolicy = AnnotationArgumentsRenderingPolicy.UNLESS_EMPTY
         }

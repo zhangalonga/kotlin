@@ -70,9 +70,9 @@ import kotlin.concurrent.read
 import kotlin.concurrent.schedule
 import kotlin.concurrent.write
 
-const val REMOTE_STREAM_BUFFER_SIZE = 4096
+const val REMOTE_STREAM_BUFFER_SIZE: Int = 4096
 
-fun nowSeconds() = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime())
+fun nowSeconds(): Long = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime())
 
 interface CompilerSelector {
     operator fun get(targetPlatform: CompileService.TargetPlatform): CLICompiler<*>
@@ -281,7 +281,7 @@ class CompileServiceImpl(
     }
 
 
-    override fun releaseCompileSession(sessionId: Int) = ifAlive(minAliveness = Aliveness.LastSession) {
+    override fun releaseCompileSession(sessionId: Int): CompileService.CallResult<Nothing> = ifAlive(minAliveness = Aliveness.LastSession) {
         state.sessions.remove(sessionId)
         log.info("cleaning after session $sessionId")
         rwlock.write {

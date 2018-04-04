@@ -184,7 +184,7 @@ class PropertyReferenceCodegen(
     companion object {
 
         @JvmField
-        val ANY_SUBSTITUTOR = TypeSubstitutor.create(object : TypeSubstitution() {
+        val ANY_SUBSTITUTOR: TypeSubstitutor = TypeSubstitutor.create(object : TypeSubstitution() {
             override fun get(key: KotlinType): TypeProjection? {
                 if (KotlinBuiltIns.isUnit(key)) {
                     return TypeProjectionImpl(key)
@@ -245,7 +245,7 @@ class PropertyReferenceCodegen(
         }
 
         @JvmStatic
-        fun findGetFunction(localVariableDescriptorForReference: VariableDescriptor) = localVariableDescriptorForReference.type.memberScope.getContributedFunctions(OperatorNameConventions.GET, NoLookupLocation.FROM_BACKEND).single()
+        fun findGetFunction(localVariableDescriptorForReference: VariableDescriptor): SimpleFunctionDescriptor = localVariableDescriptorForReference.type.memberScope.getContributedFunctions(OperatorNameConventions.GET, NoLookupLocation.FROM_BACKEND).single()
     }
 
     class PropertyReferenceGenerationStrategy(

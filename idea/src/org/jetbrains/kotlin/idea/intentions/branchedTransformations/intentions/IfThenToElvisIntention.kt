@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.idea.intentions.branchedTransformations.intentions
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.editor.Editor
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
@@ -35,7 +36,7 @@ class IfThenToElvisInspection : IntentionBasedInspection<KtIfExpression>(
         IfThenToElvisIntention::class,
         { it -> it.isUsedAsExpression(it.analyze(BodyResolveMode.PARTIAL)) }
 ) {
-    override fun inspectionTarget(element: KtIfExpression) = element.ifKeyword
+    override fun inspectionTarget(element: KtIfExpression): PsiElement = element.ifKeyword
 
     override fun problemHighlightType(element: KtIfExpression): ProblemHighlightType =
             if (element.shouldBeTransformed()) super.problemHighlightType(element) else ProblemHighlightType.INFORMATION
@@ -70,7 +71,7 @@ class IfThenToElvisIntention : SelfTargetingOffsetIndependentIntention<KtIfExpre
         return innerExpression is KtBlockExpression || innerExpression.node.elementType == KtNodeTypes.NULL
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtIfExpression, editor: Editor?) {
         val ifThenToSelectData = element.buildSelectTransformationData() ?: return

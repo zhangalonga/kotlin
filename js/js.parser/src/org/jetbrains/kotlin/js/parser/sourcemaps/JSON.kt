@@ -41,8 +41,8 @@ class JsonBoolean private constructor(val value: Boolean) : JsonNode() {
     }
 
     companion object {
-        val TRUE = JsonBoolean(true)
-        val FALSE = JsonBoolean(false)
+        val TRUE: JsonBoolean = JsonBoolean(true)
+        val FALSE: JsonBoolean = JsonBoolean(false)
 
         fun of(value: Boolean): JsonBoolean = if (value) TRUE else FALSE
     }

@@ -320,7 +320,7 @@ class ConvertFunctionTypeParameterToReceiverIntention : SelfTargetingRangeIntent
             val function: KtFunction
     ) {
         val isFirstParameter: Boolean get() = typeParameterIndex == 0
-        val functionDescriptor by lazy { function.unsafeResolveToDescriptor() as FunctionDescriptor }
+        val functionDescriptor: FunctionDescriptor by lazy { function.unsafeResolveToDescriptor() as FunctionDescriptor }
     }
 
     private fun KtTypeReference.getConversionData(): ConversionData? {

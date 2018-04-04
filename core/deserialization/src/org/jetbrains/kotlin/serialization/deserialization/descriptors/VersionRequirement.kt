@@ -24,7 +24,7 @@ class VersionRequirementTable private constructor(private val infos: List<ProtoB
     operator fun get(id: Int): ProtoBuf.VersionRequirement? = infos.getOrNull(id)
 
     companion object {
-        val EMPTY = VersionRequirementTable(emptyList())
+        val EMPTY: VersionRequirementTable = VersionRequirementTable(emptyList())
 
         fun create(table: ProtoBuf.VersionRequirementTable): VersionRequirementTable =
                 if (table.requirementCount == 0) EMPTY else VersionRequirementTable(table.requirementList)
@@ -45,7 +45,7 @@ class VersionRequirement(
         fun encode(
                 writeVersion: (Int) -> Unit,
                 writeVersionFull: (Int) -> Unit
-        ) = when {
+        ): Unit = when {
             this == INFINITY -> {
                 // Do nothing: absence of version means INFINITY
             }
@@ -61,7 +61,7 @@ class VersionRequirement(
 
         companion object {
             @JvmField
-            val INFINITY = Version(256, 256, 256)
+            val INFINITY: Version = Version(256, 256, 256)
 
             // Number of bits used for major, minor and patch components in "version" field
             private const val MAJOR_BITS = 3

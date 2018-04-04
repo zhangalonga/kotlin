@@ -40,9 +40,9 @@ enum class ClassKind {
     OPEN_ENUM,
     ANNOTATION_CLASS;
 
-    fun isObject() = this == OBJECT || this == ANONYMOUS_OBJECT
-    fun isOpen() = this == OPEN_CLASS || this == INTERFACE || this == OPEN_ENUM
-    fun isEnum() = this == FINAL_ENUM || this == OPEN_ENUM
+    fun isObject(): Boolean = this == OBJECT || this == ANONYMOUS_OBJECT
+    fun isOpen(): Boolean = this == OPEN_CLASS || this == INTERFACE || this == OPEN_ENUM
+    fun isEnum(): Boolean = this == FINAL_ENUM || this == OPEN_ENUM
 }
 
 class ClassBodyConverter(private val psiClass: PsiClass,

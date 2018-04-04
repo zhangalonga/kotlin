@@ -31,7 +31,7 @@ private typealias LineInfoMap = MutableMap<String, KotlinPosition>
 
 class KaptLineMappingCollector(private val kaptContext: KaptContext<*>) {
     companion object {
-        const val KAPT_METADATA_EXTENSION = ".kapt_metadata"
+        const val KAPT_METADATA_EXTENSION: String = ".kapt_metadata"
         private const val METADATA_VERSION = 1
 
         fun parseFileInfo(file: JCTree.JCCompilationUnit): FileInfo {
@@ -164,10 +164,10 @@ class KaptLineMappingCollector(private val kaptContext: KaptContext<*>) {
 
     class FileInfo(private val lineInfo: LineInfoMap, private val signatureInfo: Map<String, String>) {
         companion object {
-            val EMPTY = FileInfo(mutableMapOf(), emptyMap())
+            val EMPTY: FileInfo = FileInfo(mutableMapOf(), emptyMap())
         }
 
-        fun getPositionFor(fqName: String) = lineInfo[fqName]
-        fun getMethodDescriptor(decl: JCTree.JCMethodDecl) = signatureInfo[getJavacSignature(decl)]
+        fun getPositionFor(fqName: String): KotlinPosition? = lineInfo[fqName]
+        fun getMethodDescriptor(decl: JCTree.JCMethodDecl): String? = signatureInfo[getJavacSignature(decl)]
     }
 }

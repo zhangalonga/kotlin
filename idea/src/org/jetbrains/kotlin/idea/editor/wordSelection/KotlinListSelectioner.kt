@@ -29,11 +29,10 @@ import com.intellij.codeInsight.editorActions.ExtendWordSelectionHandlerBase
 
 class KotlinListSelectioner : ExtendWordSelectionHandlerBase() {
     companion object {
-        fun canSelect(e: PsiElement)
-            = e is KtParameterList || e is KtValueArgumentList || e is KtTypeParameterList || e is KtTypeArgumentList
+        fun canSelect(e: PsiElement): Boolean = e is KtParameterList || e is KtValueArgumentList || e is KtTypeParameterList || e is KtTypeArgumentList
     }
 
-    override fun canSelect(e: PsiElement) = KotlinListSelectioner.canSelect(e)
+    override fun canSelect(e: PsiElement): Boolean = KotlinListSelectioner.canSelect(e)
 
     override fun select(e: PsiElement, editorText: CharSequence, cursorOffset: Int, editor: Editor): List<TextRange>? {
         val node = e.node!!

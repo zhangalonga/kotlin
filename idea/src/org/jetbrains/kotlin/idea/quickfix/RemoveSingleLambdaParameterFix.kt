@@ -27,8 +27,8 @@ import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtParameterList
 
 class RemoveSingleLambdaParameterFix(element: KtParameter) : KotlinQuickFixAction<KtParameter>(element) {
-    override fun getFamilyName() = "Remove single lambda parameter declaration"
-    override fun getText() = familyName
+    override fun getFamilyName(): String = "Remove single lambda parameter declaration"
+    override fun getText(): String = familyName
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

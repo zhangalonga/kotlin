@@ -18,6 +18,7 @@ package org.jetbrains.uast.kotlin
 
 import org.jetbrains.kotlin.psi.KtLabeledExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UIdentifier
 import org.jetbrains.uast.ULabeledExpression
 
@@ -31,5 +32,5 @@ class KotlinULabeledExpression(
     override val labelIdentifier: UIdentifier?
         get() = psi.getTargetLabel()?.let { UIdentifier(it, this) }
 
-    override val expression by lz { KotlinConverter.convertOrEmpty(psi.baseExpression, this) }
+    override val expression: UExpression by lz { KotlinConverter.convertOrEmpty(psi.baseExpression, this) }
 }

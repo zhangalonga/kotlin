@@ -23,8 +23,8 @@ import com.intellij.codeInsight.template.TextResult
 import org.jetbrains.kotlin.psi.KtFile
 
 class KotlinPackageNameMacro : KotlinMacro() {
-    override fun getName() = "kotlinPackageName"
-    override fun getPresentableName() = "kotlinPackageName()"
+    override fun getName(): String = "kotlinPackageName"
+    override fun getPresentableName(): String = "kotlinPackageName()"
 
     override fun calculateResult(params: Array<Expression>, context: ExpressionContext): Result? {
         val file = context.psiElementAtStartOffset?.containingFile as? KtFile ?: return null

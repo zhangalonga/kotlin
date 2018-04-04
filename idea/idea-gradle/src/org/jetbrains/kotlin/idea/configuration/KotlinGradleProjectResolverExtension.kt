@@ -39,21 +39,21 @@ import org.jetbrains.plugins.gradle.service.project.AbstractProjectResolverExten
 import org.jetbrains.plugins.gradle.service.project.GradleProjectResolver
 import java.util.*
 
-var DataNode<ModuleData>.isResolved
+var DataNode<ModuleData>.isResolved: Boolean
         by NotNullableCopyableDataNodeUserDataProperty(Key.create<Boolean>("IS_RESOLVED"), false)
-var DataNode<ModuleData>.hasKotlinPlugin
+var DataNode<ModuleData>.hasKotlinPlugin: Boolean
         by NotNullableCopyableDataNodeUserDataProperty(Key.create<Boolean>("HAS_KOTLIN_PLUGIN"), false)
-var DataNode<ModuleData>.compilerArgumentsBySourceSet
+var DataNode<ModuleData>.compilerArgumentsBySourceSet: CompilerArgumentsBySourceSet?
         by CopyableDataNodeUserDataProperty(Key.create<CompilerArgumentsBySourceSet>("CURRENT_COMPILER_ARGUMENTS"))
-var DataNode<ModuleData>.coroutines
+var DataNode<ModuleData>.coroutines: String?
         by CopyableDataNodeUserDataProperty(Key.create<String>("KOTLIN_COROUTINES"))
-var DataNode<ModuleData>.platformPluginId
+var DataNode<ModuleData>.platformPluginId: String?
         by CopyableDataNodeUserDataProperty(Key.create<String>("PLATFORM_PLUGIN_ID"))
-var DataNode<out ModuleData>.implementedModuleNames
+var DataNode<out ModuleData>.implementedModuleNames: List<String>
         by NotNullableCopyableDataNodeUserDataProperty(Key.create<List<String>>("IMPLEMENTED_MODULE_NAME"), emptyList())
 
 class KotlinGradleProjectResolverExtension : AbstractProjectResolverExtension() {
-    val isAndroidProjectKey = Key.findKeyByName("IS_ANDROID_PROJECT_KEY")
+    val isAndroidProjectKey: Key<*>? = Key.findKeyByName("IS_ANDROID_PROJECT_KEY")
 
     override fun getToolingExtensionsClasses(): Set<Class<out Any>> {
         return setOf(KotlinGradleModelBuilder::class.java, Unit::class.java)

@@ -54,7 +54,7 @@ interface KotlinUastBindingContextProviderService {
 var PsiElement.destructuringDeclarationInitializer: Boolean? by UserDataProperty(Key.create("kotlin.uast.destructuringDeclarationInitializer"))
 
 class KotlinUastLanguagePlugin : UastLanguagePlugin {
-    override val priority = 10
+    override val priority: Int = 10
 
     override val language: Language
         get() = KotlinLanguage.INSTANCE

@@ -371,7 +371,7 @@ class QualifiedExpressionResolver {
     ) {
         constructor (expression: KtSimpleNameExpression) : this(expression.getReferencedNameAsName(), expression)
 
-        val location = KotlinLookupLocation(expression)
+        val location: KotlinLookupLocation = KotlinLookupLocation(expression)
     }
 
 
@@ -469,7 +469,7 @@ class QualifiedExpressionResolver {
         return Pair(currentDescriptor, path.size)
     }
 
-    fun ClassDescriptor.getContributedClassifier(qualifierPart: QualifierPart) =
+    fun ClassDescriptor.getContributedClassifier(qualifierPart: QualifierPart): ClassifierDescriptor? =
         unsubstitutedInnerClassesScope.getContributedClassifier(qualifierPart.name, qualifierPart.location)
 
     fun resolveNameExpressionAsQualifierForDiagnostics(
@@ -505,7 +505,7 @@ class QualifiedExpressionResolver {
         val memberName: Name?
     ) {
         companion object {
-            val UNRESOLVED = QualifiedExpressionResolveResult(null, null)
+            val UNRESOLVED: QualifiedExpressionResolveResult = QualifiedExpressionResolveResult(null, null)
         }
     }
 

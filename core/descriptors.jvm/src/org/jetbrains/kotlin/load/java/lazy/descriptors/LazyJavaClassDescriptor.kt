@@ -76,8 +76,8 @@ class LazyJavaClassDescriptor(
     private val visibility = jClass.visibility
     private val isInner = jClass.outerClass != null && !jClass.isStatic
 
-    override fun getKind() = kind
-    override fun getModality() = modality
+    override fun getKind(): ClassKind = kind
+    override fun getModality(): Modality = modality
 
     // To workaround a problem with Scala compatibility (KT-9700),
     // we consider private visibility of a Java top level class as package private
@@ -85,21 +85,21 @@ class LazyJavaClassDescriptor(
     // which can be inherited from the same package.
     // Kotlin considers this "private in package" just as "private" and thinks they are invisible for inheritors,
     // so their functions are invisible fake which is not true.
-    override fun getVisibility() =
+    override fun getVisibility(): Visibility =
             if (visibility == Visibilities.PRIVATE && jClass.outerClass == null) JavaVisibilities.PACKAGE_VISIBILITY else visibility
 
-    override fun isInner() = isInner
-    override fun isData() = false
-    override fun isInline() = false
-    override fun isCompanionObject() = false
-    override fun isExpect() = false
-    override fun isActual() = false
+    override fun isInner(): Boolean = isInner
+    override fun isData(): Boolean = false
+    override fun isInline(): Boolean = false
+    override fun isCompanionObject(): Boolean = false
+    override fun isExpect(): Boolean = false
+    override fun isActual(): Boolean = false
 
     private val typeConstructor = LazyJavaClassTypeConstructor()
     override fun getTypeConstructor(): TypeConstructor = typeConstructor
 
     private val unsubstitutedMemberScope = LazyJavaClassMemberScope(c, this, jClass)
-    override fun getUnsubstitutedMemberScope() = unsubstitutedMemberScope
+    override fun getUnsubstitutedMemberScope(): LazyJavaClassMemberScope = unsubstitutedMemberScope
 
     private val innerClassesScope = InnerClassesScopeWrapper(getUnsubstitutedMemberScope())
     override fun getUnsubstitutedInnerClassesScope(): MemberScope = innerClassesScope
@@ -111,9 +111,9 @@ class LazyJavaClassDescriptor(
 
     override fun getCompanionObjectDescriptor(): ClassDescriptor? = null
 
-    override fun getConstructors() = unsubstitutedMemberScope.constructors()
+    override fun getConstructors(): List<ClassConstructorDescriptor> = unsubstitutedMemberScope.constructors()
 
-    override val annotations = c.resolveAnnotations(jClass)
+    override val annotations: Annotations = c.resolveAnnotations(jClass)
 
     private val declaredParameters = c.storageManager.createLazyValue {
         jClass.typeParameters.map {
@@ -123,7 +123,7 @@ class LazyJavaClassDescriptor(
         }
     }
 
-    override fun getDeclaredTypeParameters() = declaredParameters()
+    override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> = declaredParameters()
 
     override fun getDefaultFunctionTypeForSamInterface(): SimpleType? = c.components.samConversionResolver.resolveFunctionTypeIfSamInterface(this)
 
@@ -151,12 +151,12 @@ class LazyJavaClassDescriptor(
 
     // Checks if any part of compiler has requested scope content
     // It's necessary for IC to figure out if there is a need to track symbols in the class
-    fun wasScopeContentRequested() =
+    fun wasScopeContentRequested(): Boolean =
             getUnsubstitutedMemberScope().wasContentRequested() || staticScope.wasContentRequested()
 
     override fun getSealedSubclasses(): Collection<ClassDescriptor> = emptyList()
 
-    override fun toString() = "Lazy Java class ${this.fqNameUnsafe}"
+    override fun toString(): String = "Lazy Java class ${this.fqNameUnsafe}"
 
     private inner class LazyJavaClassTypeConstructor : AbstractClassTypeConstructor(c.storageManager) {
         private val parameters = c.storageManager.createLazyValue {

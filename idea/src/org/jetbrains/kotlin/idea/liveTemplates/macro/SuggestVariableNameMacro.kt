@@ -38,8 +38,8 @@ import org.jetbrains.kotlin.psi.KtForExpression
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class SuggestVariableNameMacro : KotlinMacro() {
-    override fun getName() = "kotlinSuggestVariableName"
-    override fun getPresentableName() = "kotlinSuggestVariableName()"
+    override fun getName(): String = "kotlinSuggestVariableName"
+    override fun getPresentableName(): String = "kotlinSuggestVariableName()"
 
     override fun calculateResult(params: Array<out Expression>, context: ExpressionContext): Result? {
         return suggestNames(context).firstOrNull()?.let(::TextResult)

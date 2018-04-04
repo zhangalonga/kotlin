@@ -22,18 +22,18 @@ import org.jetbrains.kotlin.cli.jvm.repl.reader.ConsoleReplCommandReader
 import org.jetbrains.kotlin.cli.jvm.repl.writer.ConsoleReplWriter
 
 class ConsoleReplConfiguration : ReplConfiguration {
-    override val writer = ConsoleReplWriter()
+    override val writer: ConsoleReplWriter = ConsoleReplWriter()
 
-    override val exceptionReporter
+    override val exceptionReporter: ReplExceptionReporter.DoNothing
         get() = ReplExceptionReporter
 
-    override val commandReader = ConsoleReplCommandReader()
+    override val commandReader: ConsoleReplCommandReader = ConsoleReplCommandReader()
 
     override val allowIncompleteLines: Boolean
         get() = true
 
-    override val executionInterceptor
+    override val executionInterceptor: SnippetExecutionInterceptor.Plain
         get() = SnippetExecutionInterceptor
 
-    override fun createDiagnosticHolder() = ConsoleDiagnosticMessageHolder()
+    override fun createDiagnosticHolder(): ConsoleDiagnosticMessageHolder = ConsoleDiagnosticMessageHolder()
 }

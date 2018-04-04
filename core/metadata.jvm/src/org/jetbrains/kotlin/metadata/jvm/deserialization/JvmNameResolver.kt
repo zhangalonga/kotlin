@@ -75,7 +75,7 @@ class JvmNameResolver(
         index in localNameIndices
 
     companion object {
-        val PREDEFINED_STRINGS = listOf(
+        val PREDEFINED_STRINGS: List<String> = listOf(
                 "kotlin/Any",
                 "kotlin/Nothing",
                 "kotlin/Unit",

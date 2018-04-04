@@ -85,7 +85,7 @@ object LambdaSignatureTemplates {
         }
     }
 
-    val DEFAULT_LAMBDA_PRESENTATION = "{...}"
+    val DEFAULT_LAMBDA_PRESENTATION: String = "{...}"
 
     enum class SignaturePresentation {
         NAMES,

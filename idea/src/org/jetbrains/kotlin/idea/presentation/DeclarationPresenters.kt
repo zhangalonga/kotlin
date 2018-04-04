@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.idea.KotlinIconProvider
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
+import javax.swing.Icon
 
 open class KotlinDefaultNamedDeclarationPresentation(private val declaration: KtNamedDeclaration) : ColoredItemPresentation {
 
@@ -25,7 +26,7 @@ open class KotlinDefaultNamedDeclarationPresentation(private val declaration: Kt
         return null
     }
 
-    override fun getPresentableText() = declaration.name
+    override fun getPresentableText(): String? = declaration.name
 
     override fun getLocationString(): String? {
         if ((declaration is KtFunction && declaration.isLocal) || (declaration is KtClassOrObject && declaration.isLocal)) {
@@ -62,12 +63,13 @@ open class KotlinDefaultNamedDeclarationPresentation(private val declaration: Kt
         return "object in $containerFqName"
     }
 
-    override fun getIcon(unused: Boolean) =
+    override fun getIcon(unused: Boolean): Icon? =
         KotlinIconProvider.INSTANCE.getIcon(declaration, Iconable.ICON_FLAG_VISIBILITY or Iconable.ICON_FLAG_READ_STATUS)
 }
 
 class KtDefaultDeclarationPresenter : ItemPresentationProvider<KtNamedDeclaration> {
-    override fun getPresentation(item: KtNamedDeclaration) = KotlinDefaultNamedDeclarationPresentation(item)
+    override fun getPresentation(item: KtNamedDeclaration): KotlinDefaultNamedDeclarationPresentation =
+        KotlinDefaultNamedDeclarationPresentation(item)
 }
 
 class KtFunctionPresenter : ItemPresentationProvider<KtFunction> {

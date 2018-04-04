@@ -35,7 +35,7 @@ import org.jetbrains.kotlin.resolve.calls.model.VarargValueArgument
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 class KotlinInvalidBundleOrPropertyInspection : AbstractKotlinInspection() {
-    override fun getDisplayName() = CodeInsightBundle.message("inspection.unresolved.property.key.reference.name")
+    override fun getDisplayName(): String = CodeInsightBundle.message("inspection.unresolved.property.key.reference.name")
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : KtVisitorVoid() {

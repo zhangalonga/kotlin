@@ -48,11 +48,11 @@ class IntegerValueTypeConstructor(
 
     override fun getParameters(): List<TypeParameterDescriptor> = emptyList()
 
-    override fun isFinal() = false
+    override fun isFinal(): Boolean = false
 
-    override fun isDenotable() = false
+    override fun isDenotable(): Boolean = false
 
-    override fun getDeclarationDescriptor() = null
+    override fun getDeclarationDescriptor(): Nothing? = null
 
     fun getValue(): Long = value
 
@@ -60,5 +60,5 @@ class IntegerValueTypeConstructor(
         return builtIns
     }
 
-    override fun toString() = "IntegerValueType($value)"
+    override fun toString(): String = "IntegerValueType($value)"
 }

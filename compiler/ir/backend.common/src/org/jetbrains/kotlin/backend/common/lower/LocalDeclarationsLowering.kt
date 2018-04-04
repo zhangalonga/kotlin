@@ -42,7 +42,7 @@ interface LocalNameProvider {
     fun localName(descriptor: DeclarationDescriptor): String =
             descriptor.name.asString()
     companion object {
-        val DEFAULT = object : LocalNameProvider {}
+        val DEFAULT: LocalNameProvider = object : LocalNameProvider {}
     }
 }
 

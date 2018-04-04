@@ -22,9 +22,9 @@ class RenderedDiagnostic<D : Diagnostic>(
     val diagnostic: D,
     val renderer: DiagnosticRenderer<D>
 ) {
-    val text = renderer.render(diagnostic)
+    val text: String = renderer.render(diagnostic)
 
     val factory: DiagnosticFactory<*> get() = diagnostic.factory
 
-    override fun toString() = text
+    override fun toString(): String = text
 }

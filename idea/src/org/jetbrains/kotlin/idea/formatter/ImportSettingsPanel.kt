@@ -38,25 +38,25 @@ class ImportSettingsPanelWrapper(settings: CodeStyleSettings) : CodeStyleAbstrac
 
     private fun CodeStyleSettings.kotlinSettings() = getCustomSettings(KotlinCodeStyleSettings::class.java)
 
-    override fun getRightMargin() = throw UnsupportedOperationException()
+    override fun getRightMargin(): Nothing = throw UnsupportedOperationException()
 
-    override fun createHighlighter(scheme: EditorColorsScheme) = throw UnsupportedOperationException()
+    override fun createHighlighter(scheme: EditorColorsScheme): Nothing = throw UnsupportedOperationException()
 
-    override fun getFileType() = throw UnsupportedOperationException()
+    override fun getFileType(): Nothing = throw UnsupportedOperationException()
 
-    override fun getPreviewText() = null
+    override fun getPreviewText(): Nothing? = null
 
-    override fun apply(settings: CodeStyleSettings) = importsPanel.apply(settings.kotlinSettings())
+    override fun apply(settings: CodeStyleSettings): Unit = importsPanel.apply(settings.kotlinSettings())
 
-    override fun isModified(settings: CodeStyleSettings) = importsPanel.isModified(settings.kotlinSettings())
+    override fun isModified(settings: CodeStyleSettings): Boolean = importsPanel.isModified(settings.kotlinSettings())
 
-    override fun getPanel() = importsPanel
+    override fun getPanel(): ImportSettingsPanel = importsPanel
 
     override fun resetImpl(settings: CodeStyleSettings) {
         importsPanel.reset(settings.kotlinSettings())
     }
 
-    override fun getTabTitle() = ApplicationBundle.message("title.imports")
+    override fun getTabTitle(): String = ApplicationBundle.message("title.imports")
 }
 
 class ImportSettingsPanel(private val commonSettings: CodeStyleSettings) : JPanel() {

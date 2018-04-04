@@ -27,6 +27,6 @@ class MockInferredAnnotationsManager : InferredAnnotationsManager() {
     override fun isInferredAnnotation(annotation: PsiAnnotation): Boolean = false
 
     companion object {
-        val EMPTY_PSI_ANNOTATION_ARRAY = arrayOf<PsiAnnotation>()
+        val EMPTY_PSI_ANNOTATION_ARRAY: Array<PsiAnnotation> = arrayOf<PsiAnnotation>()
     }
 }

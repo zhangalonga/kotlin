@@ -54,7 +54,7 @@ class ClasspathRootsResolver(
         private val requireStdlibModule: Boolean,
         private val outputDirectory: VirtualFile?
 ) {
-    val javaModuleGraph = JavaModuleGraph(javaModuleFinder)
+    val javaModuleGraph: JavaModuleGraph = JavaModuleGraph(javaModuleFinder)
 
     data class RootsAndModules(val roots: List<JavaRoot>, val modules: List<JavaModule>)
 

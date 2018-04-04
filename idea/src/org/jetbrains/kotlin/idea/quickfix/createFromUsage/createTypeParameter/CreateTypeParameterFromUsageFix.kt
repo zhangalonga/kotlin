@@ -55,7 +55,7 @@ class CreateTypeParameterFromUsageFix(
         return "Create $prefix$typeParametersText in $containerText"
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         doInvoke()

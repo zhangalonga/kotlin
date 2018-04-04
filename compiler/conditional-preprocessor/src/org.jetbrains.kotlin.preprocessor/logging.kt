@@ -30,9 +30,9 @@ object SystemOutLogger : Logger {
     override fun debug(msg: CharSequence) {
         if (isDebugEnabled) out("DEBUG", msg)
     }
-    override fun info(msg: CharSequence) = out("INFO", msg)
-    override fun warn(msg: CharSequence) = out("WARN", msg)
-    override fun error(msg: CharSequence) = out("ERROR", msg)
+    override fun info(msg: CharSequence): Unit = out("INFO", msg)
+    override fun warn(msg: CharSequence): Unit = out("WARN", msg)
+    override fun error(msg: CharSequence): Unit = out("ERROR", msg)
 }
 
 fun Logger.withPrefix(prefix: String): Logger = PrefixedLogger(prefix, this)
@@ -44,8 +44,8 @@ class PrefixedLogger(val prefix: String, val logger: Logger) : Logger {
         append(msg)
     }
 
-    override fun debug(msg: CharSequence) = logger.debug(prefix(msg))
-    override fun info(msg: CharSequence) = logger.info(prefix(msg))
-    override fun warn(msg: CharSequence) = logger.warn(prefix(msg))
-    override fun error(msg: CharSequence) = logger.error(prefix(msg))
+    override fun debug(msg: CharSequence): Unit = logger.debug(prefix(msg))
+    override fun info(msg: CharSequence): Unit = logger.info(prefix(msg))
+    override fun warn(msg: CharSequence): Unit = logger.warn(prefix(msg))
+    override fun error(msg: CharSequence): Unit = logger.error(prefix(msg))
 }

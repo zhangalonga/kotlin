@@ -105,7 +105,7 @@ fun createMultifileClassStub(
     return fileStub
 }
 
-fun createIncompatibleAbiVersionFileStub() = createFileStub(FqName.ROOT, isScript = false)
+fun createIncompatibleAbiVersionFileStub(): KotlinFileStubImpl = createFileStub(FqName.ROOT, isScript = false)
 
 fun createFileStub(packageFqName: FqName, isScript: Boolean): KotlinFileStubImpl {
     val fileStub = KotlinFileStubForIde.forFile(packageFqName, isScript)
@@ -240,6 +240,6 @@ val MessageLite.annotatedCallableKind: AnnotatedCallableKind
         }
     }
 
-fun Name.ref() = StringRef.fromString(this.asString())!!
+fun Name.ref(): StringRef = StringRef.fromString(this.asString())!!
 
-fun FqName.ref() = StringRef.fromString(this.asString())!!
+fun FqName.ref(): StringRef = StringRef.fromString(this.asString())!!

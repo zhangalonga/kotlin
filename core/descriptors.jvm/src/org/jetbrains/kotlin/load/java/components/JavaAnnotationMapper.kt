@@ -122,7 +122,7 @@ class JavaTargetAnnotationDescriptor(
         annotation: JavaAnnotation,
         c: LazyJavaResolverContext
 ): JavaAnnotationDescriptor(c, annotation, KotlinBuiltIns.FQ_NAMES.target) {
-    override val allValueArguments by c.storageManager.createLazyValue {
+    override val allValueArguments: Map<Name, ConstantValue<*>> by c.storageManager.createLazyValue {
         val targetArgument = when (firstArgument) {
             is JavaArrayAnnotationArgument -> JavaAnnotationTargetMapper.mapJavaTargetArguments(firstArgument.getElements())
             is JavaEnumValueAnnotationArgument -> JavaAnnotationTargetMapper.mapJavaTargetArguments(listOf(firstArgument))
@@ -136,7 +136,7 @@ class JavaRetentionAnnotationDescriptor(
         annotation: JavaAnnotation,
         c: LazyJavaResolverContext
 ): JavaAnnotationDescriptor(c, annotation, KotlinBuiltIns.FQ_NAMES.retention) {
-    override val allValueArguments by c.storageManager.createLazyValue {
+    override val allValueArguments: Map<Name, ConstantValue<*>> by c.storageManager.createLazyValue {
         val retentionArgument = JavaAnnotationTargetMapper.mapJavaRetentionArgument(firstArgument)
         retentionArgument?.let { mapOf(JavaAnnotationMapper.RETENTION_ANNOTATION_VALUE to it) }.orEmpty()
     }

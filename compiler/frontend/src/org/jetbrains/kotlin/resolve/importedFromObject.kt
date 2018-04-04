@@ -19,10 +19,10 @@ package org.jetbrains.kotlin.resolve
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.types.TypeSubstitutor
 
-fun FunctionDescriptor.asImportedFromObject(original: FunctionImportedFromObject? = null) =
+fun FunctionDescriptor.asImportedFromObject(original: FunctionImportedFromObject? = null): FunctionImportedFromObject =
     FunctionImportedFromObject(this, original)
 
-fun PropertyDescriptor.asImportedFromObject(original: PropertyImportedFromObject? = null) =
+fun PropertyDescriptor.asImportedFromObject(original: PropertyImportedFromObject? = null): PropertyImportedFromObject =
     PropertyImportedFromObject(this, original)
 
 abstract class ImportedFromObjectCallableDescriptor<out TCallable : CallableMemberDescriptor>(
@@ -30,9 +30,9 @@ abstract class ImportedFromObjectCallableDescriptor<out TCallable : CallableMemb
     private val originalOrNull: TCallable?
 ) : CallableDescriptor {
 
-    val containingObject = callableFromObject.containingDeclaration as ClassDescriptor
+    val containingObject: ClassDescriptor = callableFromObject.containingDeclaration as ClassDescriptor
 
-    protected val _original
+    protected val _original: CallableDescriptor
         get() = originalOrNull ?: this
 }
 
@@ -45,10 +45,10 @@ class FunctionImportedFromObject(
 
     override fun getDispatchReceiverParameter(): ReceiverParameterDescriptor? = null
 
-    override fun substitute(substitutor: TypeSubstitutor) =
+    override fun substitute(substitutor: TypeSubstitutor): FunctionImportedFromObject? =
         callableFromObject.substitute(substitutor)?.asImportedFromObject(this)
 
-    override fun getOriginal() = _original as FunctionDescriptor
+    override fun getOriginal(): FunctionDescriptor = _original as FunctionDescriptor
 
     override fun copy(
         newOwner: DeclarationDescriptor?, modality: Modality?, visibility: Visibility?,
@@ -66,9 +66,9 @@ class PropertyImportedFromObject(
 
     override fun getDispatchReceiverParameter(): ReceiverParameterDescriptor? = null
 
-    override fun substitute(substitutor: TypeSubstitutor) = callableFromObject.substitute(substitutor)?.asImportedFromObject(this)
+    override fun substitute(substitutor: TypeSubstitutor): PropertyImportedFromObject? = callableFromObject.substitute(substitutor)?.asImportedFromObject(this)
 
-    override fun getOriginal() = _original as PropertyDescriptor
+    override fun getOriginal(): PropertyDescriptor = _original as PropertyDescriptor
 
     override fun copy(
         newOwner: DeclarationDescriptor?, modality: Modality?, visibility: Visibility?,

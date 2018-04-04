@@ -35,8 +35,8 @@ class ReplacePrimitiveCastWithNumberConversionFix(
         private val targetShortType: String
 ) : KotlinQuickFixAction<KtBinaryExpressionWithTypeRHS>(element) {
 
-    override fun getText() = "Replace cast with call to 'to$targetShortType()'"
-    override fun getFamilyName() = "Replace cast with primitive conversion method"
+    override fun getText(): String = "Replace cast with call to 'to$targetShortType()'"
+    override fun getFamilyName(): String = "Replace cast with primitive conversion method"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

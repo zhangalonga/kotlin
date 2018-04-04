@@ -237,11 +237,11 @@ class KotlinMultilineStringEnterHandler : EnterHandlerDelegateAdapter() {
     }
 
     companion object {
-        val DEFAULT_TRIM_MARGIN_CHAR = '|'
-        val TRIM_INDENT_CALL = "trimIndent"
-        val TRIM_MARGIN_CALL = "trimMargin"
+        val DEFAULT_TRIM_MARGIN_CHAR: Char = '|'
+        val TRIM_INDENT_CALL: String = "trimIndent"
+        val TRIM_MARGIN_CALL: String = "trimMargin"
 
-        val MULTILINE_QUOTE = "\"\"\""
+        val MULTILINE_QUOTE: String = "\"\"\""
 
         class MultilineSettings(project: Project) {
             private val kotlinIndentOptions =
@@ -250,7 +250,7 @@ class KotlinMultilineStringEnterHandler : EnterHandlerDelegateAdapter() {
             private val useTabs = kotlinIndentOptions.USE_TAB_CHARACTER
             private val tabSize = kotlinIndentOptions.TAB_SIZE
             private val regularIndent = kotlinIndentOptions.INDENT_SIZE
-            val marginIndent = regularIndent
+            val marginIndent: Int = regularIndent
 
             fun getSmartSpaces(count: Int): String = when {
                 useTabs -> StringUtil.repeat("\t", count / tabSize) + StringUtil.repeat(" ", count % tabSize)
@@ -284,7 +284,7 @@ class KotlinMultilineStringEnterHandler : EnterHandlerDelegateAdapter() {
             return element.parents.firstIsInstanceOrNull<KtStringTemplateExpression>()
         }
 
-        fun inMultilineString(element: PsiElement?, offset: Int) =
+        fun inMultilineString(element: PsiElement?, offset: Int): Boolean =
                 !(findString(element, offset)?.isSingleQuoted() ?: true)
 
         fun getMarginCharFromLiteral(str: KtStringTemplateExpression, marginChar: Char = DEFAULT_TRIM_MARGIN_CHAR): Char? {
@@ -352,7 +352,7 @@ class KotlinMultilineStringEnterHandler : EnterHandlerDelegateAdapter() {
                                    settings.getSmartSpaces(indent) + (marginChar?.toString() ?: ""))
         }
 
-        fun String.prefixLength(f: (Char) -> Boolean) = takeWhile(f).count()
+        fun String.prefixLength(f: (Char) -> Boolean): Int = takeWhile(f).count()
 
         fun insertTrimCall(document: Document, literal: KtStringTemplateExpression, marginChar: Char?) {
             if (hasTrimIndentCallInChain(literal) || getMarginCharFromTrimMarginCallsInChain(literal) != null) return

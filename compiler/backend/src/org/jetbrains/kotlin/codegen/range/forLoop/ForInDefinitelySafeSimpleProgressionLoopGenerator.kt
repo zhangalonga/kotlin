@@ -63,10 +63,10 @@ class ForInDefinitelySafeSimpleProgressionLoopGenerator(
     )
 
     companion object {
-        fun fromBoundedValueWithStep1(codegen: ExpressionCodegen, forExpression: KtForExpression, boundedValue: SimpleBoundedValue) =
+        fun fromBoundedValueWithStep1(codegen: ExpressionCodegen, forExpression: KtForExpression, boundedValue: SimpleBoundedValue): ForInDefinitelySafeSimpleProgressionLoopGenerator =
             ForInDefinitelySafeSimpleProgressionLoopGenerator(codegen, forExpression, boundedValue, 1)
 
-        fun fromBoundedValueWithStepMinus1(codegen: ExpressionCodegen, forExpression: KtForExpression, boundedValue: SimpleBoundedValue) =
+        fun fromBoundedValueWithStepMinus1(codegen: ExpressionCodegen, forExpression: KtForExpression, boundedValue: SimpleBoundedValue): ForInDefinitelySafeSimpleProgressionLoopGenerator =
             ForInDefinitelySafeSimpleProgressionLoopGenerator(codegen, forExpression, boundedValue, -1)
     }
 

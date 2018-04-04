@@ -41,13 +41,13 @@ import java.util.zip.ZipOutputStream
 
 class CreateIncrementalCompilationBackup: AnAction("Create backup for debugging Kotlin incremental compilation") {
     companion object {
-        val BACKUP_DIR_NAME = ".backup"
-        val PATCHES_TO_CREATE = 5
+        val BACKUP_DIR_NAME: String = ".backup"
+        val PATCHES_TO_CREATE: Int = 5
 
-        val PATCHES_FRACTION = .25
-        val LOGS_FRACTION = .05
-        val PROJECT_SYSTEM_FRACTION = .05
-        val ZIP_FRACTION = 1.0 - PATCHES_FRACTION - LOGS_FRACTION - PROJECT_SYSTEM_FRACTION
+        val PATCHES_FRACTION: Double = .25
+        val LOGS_FRACTION: Double = .05
+        val PROJECT_SYSTEM_FRACTION: Double = .05
+        val ZIP_FRACTION: Double = 1.0 - PATCHES_FRACTION - LOGS_FRACTION - PROJECT_SYSTEM_FRACTION
     }
 
     override fun actionPerformed(e: AnActionEvent) {

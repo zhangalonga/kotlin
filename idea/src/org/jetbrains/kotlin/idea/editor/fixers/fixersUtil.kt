@@ -25,4 +25,4 @@ val TextRange.start: Int get() = startOffset
 val TextRange.end: Int get() = endOffset
 
 fun PsiElement.startLine(doc: Document): Int = doc.getLineNumber(range.start)
-fun PsiElement?.isWithCaret(caret: Int) = this?.textRange?.contains(caret) == true
+fun PsiElement?.isWithCaret(caret: Int): Boolean = this?.textRange?.contains(caret) == true

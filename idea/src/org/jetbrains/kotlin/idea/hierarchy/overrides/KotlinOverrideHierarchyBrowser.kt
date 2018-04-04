@@ -20,6 +20,7 @@ import com.intellij.ide.hierarchy.HierarchyNodeDescriptor
 import com.intellij.ide.hierarchy.HierarchyTreeStructure
 import com.intellij.ide.hierarchy.JavaHierarchyUtil
 import com.intellij.ide.hierarchy.MethodHierarchyBrowserBase
+import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -33,6 +34,7 @@ import org.jetbrains.kotlin.asJava.unwrapped
 import org.jetbrains.kotlin.idea.KotlinBundle
 import org.jetbrains.kotlin.psi.KtCallableDeclaration
 import org.jetbrains.kotlin.psi.KtDeclaration
+import java.util.Comparator
 import javax.swing.JPanel
 import javax.swing.JTree
 
@@ -59,7 +61,7 @@ class KotlinOverrideHierarchyBrowser(
                     KotlinBundle.message("hierarchy.legend.member.should.be.defined")
             )
 
-    override fun getElementFromDescriptor(descriptor: HierarchyNodeDescriptor) = descriptor.psiElement
+    override fun getElementFromDescriptor(descriptor: HierarchyNodeDescriptor): PsiElement? = descriptor.psiElement
 
     override fun isApplicableElement(psiElement: PsiElement): Boolean =
             psiElement.isOverrideHierarchyElement()
@@ -67,7 +69,7 @@ class KotlinOverrideHierarchyBrowser(
     override fun createHierarchyTreeStructure(typeName: String, psiElement: PsiElement): HierarchyTreeStructure? =
             if (typeName == MethodHierarchyBrowserBase.METHOD_TYPE) KotlinOverrideTreeStructure(myProject, psiElement as KtCallableDeclaration) else null
 
-    override fun getComparator() = JavaHierarchyUtil.getComparator(myProject)!!
+    override fun getComparator(): Comparator<NodeDescriptor<Any>> = JavaHierarchyUtil.getComparator(myProject)!!
 
     override fun getContentDisplayName(typeName: String, element: PsiElement): String? {
         val targetElement = element.unwrapped

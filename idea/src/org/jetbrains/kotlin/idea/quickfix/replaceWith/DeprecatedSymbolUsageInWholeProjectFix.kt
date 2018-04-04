@@ -36,11 +36,11 @@ class DeprecatedSymbolUsageInWholeProjectFix(
         private val text: String
 ) : DeprecatedSymbolUsageFixBase(element, replaceWith) {
 
-    override fun getFamilyName() = "Replace deprecated symbol usage in whole project"
+    override fun getFamilyName(): String = "Replace deprecated symbol usage in whole project"
 
-    override fun getText() = text
+    override fun getText(): String = text
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         if (!super.isAvailable(project, editor, file)) return false

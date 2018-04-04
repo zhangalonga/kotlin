@@ -41,10 +41,9 @@ import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 // Example: for `A<B, C<D, E>>`, indices go as follows: `0 - A<...>, 1 - B, 2 - C<D, E>, 3 - D, 4 - E`,
 // which corresponds to the left-to-right breadth-first walk of the tree representation of the type.
 // For flexible types, both bounds are indexed in the same way: `(A<B>..C<D>)` gives `0 - (A<B>..C<D>), 1 - B and D`.
-fun KotlinType.enhance(qualifiers: (Int) -> JavaTypeQualifiers) = unwrap().enhancePossiblyFlexible(qualifiers, 0).typeIfChanged
+fun KotlinType.enhance(qualifiers: (Int) -> JavaTypeQualifiers): KotlinType? = unwrap().enhancePossiblyFlexible(qualifiers, 0).typeIfChanged
 
-fun KotlinType.hasEnhancedNullability()
-        = annotations.findAnnotation(JvmAnnotationNames.ENHANCED_NULLABILITY_ANNOTATION) != null
+fun KotlinType.hasEnhancedNullability(): Boolean = annotations.findAnnotation(JvmAnnotationNames.ENHANCED_NULLABILITY_ANNOTATION) != null
 
 private enum class TypeComponentPosition {
     FLEXIBLE_LOWER,

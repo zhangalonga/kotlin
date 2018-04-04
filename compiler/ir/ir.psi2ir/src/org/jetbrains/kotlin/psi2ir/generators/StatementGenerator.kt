@@ -54,7 +54,7 @@ class StatementGenerator(
     fun generateStatement(ktElement: KtElement): IrStatement =
         ktElement.genStmt()
 
-    fun generateStatements(ktStatements: List<KtExpression>, to: IrStatementContainer) =
+    fun generateStatements(ktStatements: List<KtExpression>, to: IrStatementContainer): MutableList<IrStatement> =
         ktStatements.mapTo(to.statements) { generateStatement(it) }
 
     fun generateExpression(ktExpression: KtExpression): IrExpression =
@@ -408,6 +408,6 @@ abstract class StatementGeneratorExtension(val statementGenerator: StatementGene
     override val scope: Scope get() = statementGenerator.scope
     override val context: GeneratorContext get() = statementGenerator.context
 
-    fun KtExpression.genExpr() = statementGenerator.generateExpression(this)
-    fun KtExpression.genStmt() = statementGenerator.generateStatement(this)
+    fun KtExpression.genExpr(): IrExpression = statementGenerator.generateExpression(this)
+    fun KtExpression.genStmt(): IrStatement = statementGenerator.generateStatement(this)
 }

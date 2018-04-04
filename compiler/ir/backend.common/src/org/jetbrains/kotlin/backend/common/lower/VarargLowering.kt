@@ -237,15 +237,15 @@ class VarargInjectionLowering constructor(val context: CommonBackendContext): De
                            val sizeGetterSymbol: IrFunctionSymbol,
                            val copyRangeToSymbol: IrFunctionSymbol)
 
-    val kByteArrayHandler    = handle(symbols.byteArray)
-    val kCharArrayHandler    = handle(symbols.charArray)
-    val kShortArrayHandler   = handle(symbols.shortArray)
-    val kIntArrayHandler     = handle(symbols.intArray)
-    val kLongArrayHandler    = handle(symbols.longArray)
-    val kFloatArrayHandler   = handle(symbols.floatArray)
-    val kDoubleArrayHandler  = handle(symbols.doubleArray)
-    val kBooleanArrayHandler = handle(symbols.booleanArray)
-    val kArrayHandler        = handle(symbols.array)
+    val kByteArrayHandler: ArrayHandle = handle(symbols.byteArray)
+    val kCharArrayHandler: ArrayHandle = handle(symbols.charArray)
+    val kShortArrayHandler: ArrayHandle = handle(symbols.shortArray)
+    val kIntArrayHandler: ArrayHandle = handle(symbols.intArray)
+    val kLongArrayHandler: ArrayHandle = handle(symbols.longArray)
+    val kFloatArrayHandler: ArrayHandle = handle(symbols.floatArray)
+    val kDoubleArrayHandler: ArrayHandle = handle(symbols.doubleArray)
+    val kBooleanArrayHandler: ArrayHandle = handle(symbols.booleanArray)
+    val kArrayHandler: ArrayHandle = handle(symbols.array)
 
     private fun handle(symbol: IrClassSymbol) = ArrayHandle(
             arraySymbol = symbol,

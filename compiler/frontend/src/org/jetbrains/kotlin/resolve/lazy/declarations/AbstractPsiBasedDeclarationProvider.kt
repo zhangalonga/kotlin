@@ -32,13 +32,13 @@ abstract class AbstractPsiBasedDeclarationProvider(storageManager: StorageManage
 
     protected class Index {
         // This mutable state is only modified under inside the computable
-        val allDeclarations = ArrayList<KtDeclaration>()
-        val functions = ArrayListMultimap.create<Name, KtNamedFunction>()
-        val properties = ArrayListMultimap.create<Name, KtProperty>()
-        val classesAndObjects = ArrayListMultimap.create<Name, KtClassLikeInfo>() // order matters here
-        val typeAliases = ArrayListMultimap.create<Name, KtTypeAlias>()
-        val destructuringDeclarationsEntries = ArrayListMultimap.create<Name, KtDestructuringDeclarationEntry>()
-        val names = Sets.newHashSet<Name>()
+        val allDeclarations: ArrayList<KtDeclaration> = ArrayList()
+        val functions: ArrayListMultimap<Name, KtNamedFunction> = ArrayListMultimap.create<Name, KtNamedFunction>()
+        val properties: ArrayListMultimap<Name, KtProperty> = ArrayListMultimap.create<Name, KtProperty>()
+        val classesAndObjects: ArrayListMultimap<Name, KtClassLikeInfo> = ArrayListMultimap.create<Name, KtClassLikeInfo>() // order matters here
+        val typeAliases: ArrayListMultimap<Name, KtTypeAlias> = ArrayListMultimap.create<Name, KtTypeAlias>()
+        val destructuringDeclarationsEntries: ArrayListMultimap<Name, KtDestructuringDeclarationEntry> = ArrayListMultimap.create<Name, KtDestructuringDeclarationEntry>()
+        val names: HashSet<Name> = Sets.newHashSet<Name>()
 
         fun putToIndex(declaration: KtDeclaration) {
             if (declaration is KtAnonymousInitializer || declaration is KtSecondaryConstructor) return
@@ -75,10 +75,10 @@ abstract class AbstractPsiBasedDeclarationProvider(storageManager: StorageManage
             }
         }
 
-        override fun toString() = "allDeclarations: " + allDeclarations.mapNotNull { it.name }
+        override fun toString(): String = "allDeclarations: " + allDeclarations.mapNotNull { it.name }
     }
 
-    override fun getDeclarationNames() = index().names
+    override fun getDeclarationNames(): HashSet<Name> = index().names
 
     private val index = storageManager.createLazyValue<Index> {
         val index = Index()

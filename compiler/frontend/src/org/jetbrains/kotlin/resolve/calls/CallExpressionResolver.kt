@@ -137,7 +137,7 @@ class CallExpressionResolver(
     fun getSimpleNameExpressionTypeInfo(
         nameExpression: KtSimpleNameExpression, receiver: Receiver?,
         callOperationNode: ASTNode?, context: ExpressionTypingContext
-    ) = getSimpleNameExpressionTypeInfo(nameExpression, receiver, callOperationNode, context, context.dataFlowInfo)
+    ): KotlinTypeInfo = getSimpleNameExpressionTypeInfo(nameExpression, receiver, callOperationNode, context, context.dataFlowInfo)
 
     private fun getSimpleNameExpressionTypeInfo(
         nameExpression: KtSimpleNameExpression, receiver: Receiver?,
@@ -505,7 +505,7 @@ class CallExpressionResolver(
         fun reportUnnecessarySafeCall(
             trace: BindingTrace, type: KotlinType,
             callOperationNode: ASTNode, explicitReceiver: Receiver?
-        ) = trace.report(
+        ): Unit = trace.report(
             if (explicitReceiver is ExpressionReceiver && explicitReceiver.expression is KtSuperExpression) {
                 UNEXPECTED_SAFE_CALL.on(callOperationNode.psi)
             } else {

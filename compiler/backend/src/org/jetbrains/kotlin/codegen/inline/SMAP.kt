@@ -20,9 +20,10 @@ import gnu.trove.TIntIntHashMap
 import org.jetbrains.kotlin.codegen.ClassBuilder
 import org.jetbrains.kotlin.codegen.SourceInfo
 import java.util.*
+import kotlin.collections.ArrayList
 
-val KOTLIN_STRATA_NAME = "Kotlin"
-val KOTLIN_DEBUG_STRATA_NAME = "KotlinDebug"
+val KOTLIN_STRATA_NAME: String = "Kotlin"
+val KOTLIN_DEBUG_STRATA_NAME: String = "KotlinDebug"
 
 //TODO join parameter
 class SMAPBuilder(
@@ -177,7 +178,7 @@ object IdenticalSourceMapper : SourceMapper {
     override val parent: SourceMapper?
         get() = null
 
-    override fun mapLineNumber(lineNumber: Int) = lineNumber
+    override fun mapLineNumber(lineNumber: Int): Int = lineNumber
 }
 
 class CallSiteMarker(val lineNumber: Int)
@@ -259,7 +260,7 @@ class SMAP(val fileMappings: List<FileMapping>) {
     val default: FileMapping
         get() = fileMappings.first()
 
-    val intervals = fileMappings.flatMap { it.lineMappings }.sortedWith(RangeMapping.Comparator)
+    val intervals: List<RangeMapping> = fileMappings.flatMap { it.lineMappings }.sortedWith(RangeMapping.Comparator)
 
     val sourceInfo: SourceInfo
 
@@ -269,9 +270,9 @@ class SMAP(val fileMappings: List<FileMapping>) {
     }
 
     companion object {
-        const val FILE_SECTION = "*F"
-        const val LINE_SECTION = "*L"
-        const val END = "*E"
+        const val FILE_SECTION: String = "*F"
+        const val LINE_SECTION: String = "*L"
+        const val END: String = "*E"
     }
 }
 
@@ -281,7 +282,7 @@ class RawFileMapping(val name: String, val path: String) {
 
     private var lastMappedWithNewIndex = -1000
 
-    fun toFileMapping() =
+    fun toFileMapping(): FileMapping =
             FileMapping(name, path).apply {
                 for (range in rangeMappings) {
                     addRangeMapping(range)
@@ -325,8 +326,8 @@ class RawFileMapping(val name: String, val path: String) {
 }
 
 open class FileMapping(val name: String, val path: String) {
-    val lineMappings = arrayListOf<RangeMapping>()
-    var id = -1
+    val lineMappings: ArrayList<RangeMapping> = arrayListOf<RangeMapping>()
+    var id: Int = -1
 
     fun addRangeMapping(lineMapping: RangeMapping) {
         lineMappings.add(lineMapping)
@@ -374,7 +375,7 @@ data class RangeMapping(val source: Int, val dest: Int, var range: Int = 1, var 
     }
 
     companion object {
-        val SKIP = RangeMapping(-1, -1, 1)
+        val SKIP: RangeMapping = RangeMapping(-1, -1, 1)
     }
 }
 

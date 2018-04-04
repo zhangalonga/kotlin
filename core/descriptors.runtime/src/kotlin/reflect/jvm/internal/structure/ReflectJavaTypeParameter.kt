@@ -38,9 +38,9 @@ class ReflectJavaTypeParameter(
     override val name: Name
         get() = Name.identifier(typeVariable.name)
 
-    override fun equals(other: Any?) = other is ReflectJavaTypeParameter && typeVariable == other.typeVariable
+    override fun equals(other: Any?): Boolean = other is ReflectJavaTypeParameter && typeVariable == other.typeVariable
 
-    override fun hashCode() = typeVariable.hashCode()
+    override fun hashCode(): Int = typeVariable.hashCode()
 
-    override fun toString() = this::class.java.name + ": " + typeVariable
+    override fun toString(): String = this::class.java.name + ": " + typeVariable
 }

@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.idea.intentions.RemoveExplicitTypeIntention
 import org.jetbrains.kotlin.psi.*
 
 class RedundantExplicitTypeInspection : AbstractKotlinInspection() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): KtVisitorVoid =
             propertyVisitor(fun(property) {
                 if (!property.isLocal) return
                 val typeReference = property.typeReference ?: return

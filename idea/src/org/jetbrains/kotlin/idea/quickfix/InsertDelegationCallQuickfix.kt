@@ -37,8 +37,8 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 
 class InsertDelegationCallQuickfix(val isThis: Boolean, element: KtSecondaryConstructor) : KotlinQuickFixAction<KtSecondaryConstructor>(element) {
-    override fun getText() = KotlinBundle.message("insert.delegation.call", keywordToUse)
-    override fun getFamilyName() = "Insert explicit delegation call"
+    override fun getText(): String = KotlinBundle.message("insert.delegation.call", keywordToUse)
+    override fun getFamilyName(): String = "Insert explicit delegation call"
 
     private val keywordToUse = if (isThis) "this" else "super"
 
@@ -63,7 +63,7 @@ class InsertDelegationCallQuickfix(val isThis: Boolean, element: KtSecondaryCons
     }
 
     object InsertThisDelegationCallFactory : KotlinSingleIntentionActionFactory() {
-        override fun createAction(diagnostic: Diagnostic) = diagnostic.createIntentionForFirstParentOfType<KtSecondaryConstructor> {
+        override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtSecondaryConstructor>? = diagnostic.createIntentionForFirstParentOfType {
             secondaryConstructor ->
             if (secondaryConstructor.getContainingClassOrObject().getConstructorsCount() <= 1 ||
                 !secondaryConstructor.hasImplicitDelegationCall()) return null

@@ -37,8 +37,8 @@ class AddArrayOfTypeFix(expression: KtExpression, expectedType: KotlinType) : Ko
 
     }
 
-    override fun getText() = "Add $prefix wrapper"
-    override fun getFamilyName() = "Add arrayOf wrapper"
+    override fun getText(): String = "Add $prefix wrapper"
+    override fun getFamilyName(): String = "Add arrayOf wrapper"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

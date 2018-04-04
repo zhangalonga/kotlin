@@ -21,7 +21,7 @@ import templates.SequenceClass.*
 
 object SetOps : TemplateGroupBase() {
 
-    val f_toMutableSet = fn("toMutableSet()") {
+    val f_toMutableSet: FamilyPrimitiveMemberDefinition = fn("toMutableSet()") {
         includeDefault()
     } builder {
         doc {
@@ -57,7 +57,7 @@ object SetOps : TemplateGroupBase() {
         }
     }
 
-    val f_distinct = fn("distinct()") {
+    val f_distinct: FamilyPrimitiveMemberDefinition = fn("distinct()") {
         includeDefault()
     } builder {
         doc {
@@ -77,7 +77,7 @@ object SetOps : TemplateGroupBase() {
         }
     }
 
-    val f_distinctBy = fn("distinctBy(selector: (T) -> K)") {
+    val f_distinctBy: FamilyPrimitiveMemberDefinition = fn("distinctBy(selector: (T) -> K)") {
         includeDefault()
     } builder {
         doc {
@@ -113,7 +113,7 @@ object SetOps : TemplateGroupBase() {
         }
     }
 
-    val f_union = fn("union(other: Iterable<T>)") {
+    val f_union: FamilyPrimitiveMemberDefinition = fn("union(other: Iterable<T>)") {
         include(Family.defaultFamilies - Sequences)
     } builder {
         infix(true)
@@ -136,7 +136,7 @@ object SetOps : TemplateGroupBase() {
         }
     }
 
-    val f_intersect = fn("intersect(other: Iterable<T>)") {
+    val f_intersect: FamilyPrimitiveMemberDefinition = fn("intersect(other: Iterable<T>)") {
         include(Family.defaultFamilies - Sequences)
     } builder {
         infix()
@@ -157,7 +157,7 @@ object SetOps : TemplateGroupBase() {
         }
     }
 
-    val f_subtract = fn("subtract(other: Iterable<T>)") {
+    val f_subtract: FamilyPrimitiveMemberDefinition = fn("subtract(other: Iterable<T>)") {
         include(Family.defaultFamilies - Sequences)
     } builder {
         infix()

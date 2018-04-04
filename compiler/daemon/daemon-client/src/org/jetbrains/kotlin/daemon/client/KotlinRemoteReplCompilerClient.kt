@@ -34,9 +34,9 @@ open class KotlinRemoteReplCompilerClient(
         templateClassName: String,
         port: Int = SOCKET_ANY_FREE_PORT
 ) : ReplCompiler {
-    val services = BasicCompilerServicesWithResultsFacadeServer(messageCollector, null, port)
+    val services: BasicCompilerServicesWithResultsFacadeServer = BasicCompilerServicesWithResultsFacadeServer(messageCollector, null, port)
 
-    val sessionId = compileService.leaseReplSession(
+    val sessionId: Int = compileService.leaseReplSession(
             clientAliveFlagFile?.absolutePath,
             args,
             CompilationOptions(

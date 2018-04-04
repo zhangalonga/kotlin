@@ -53,11 +53,11 @@ abstract class KotlinFileIndexBase<T>(classOfIndex: Class<T>) : ScalarIndexExten
 
     private val LOG = Logger.getInstance(classOfIndex)
 
-    override fun getName() = KEY
+    override fun getName(): ID<FqName, Void> = KEY
 
-    override fun dependsOnFileContent() = true
+    override fun dependsOnFileContent(): Boolean = true
 
-    override fun getKeyDescriptor() = KEY_DESCRIPTOR
+    override fun getKeyDescriptor(): KeyDescriptor<FqName> = KEY_DESCRIPTOR
 
     protected fun indexer(f: (FileContent) -> FqName?): DataIndexer<FqName, Void, FileContent> =
             // See KT-11323
@@ -83,11 +83,11 @@ fun <T> KotlinFileIndexBase<T>.hasSomethingInPackage(fqName: FqName, scope: Glob
 
 object KotlinClassFileIndex : KotlinFileIndexBase<KotlinClassFileIndex>(KotlinClassFileIndex::class.java) {
 
-    override fun getIndexer() = INDEXER
+    override fun getIndexer(): DataIndexer<FqName, Void, FileContent> = INDEXER
 
-    override fun getInputFilter() = FileBasedIndex.InputFilter { file -> file.fileType == JavaClassFileType.INSTANCE }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = FileBasedIndex.InputFilter { file -> file.fileType == JavaClassFileType.INSTANCE }
 
-    override fun getVersion() = VERSION
+    override fun getVersion(): Int = VERSION
 
     private val VERSION = 3
 
@@ -99,11 +99,11 @@ object KotlinClassFileIndex : KotlinFileIndexBase<KotlinClassFileIndex>(KotlinCl
 
 object KotlinJavaScriptMetaFileIndex : KotlinFileIndexBase<KotlinJavaScriptMetaFileIndex>(KotlinJavaScriptMetaFileIndex::class.java) {
 
-    override fun getIndexer() = INDEXER
+    override fun getIndexer(): DataIndexer<FqName, Void, FileContent> = INDEXER
 
-    override fun getInputFilter() = FileBasedIndex.InputFilter { file -> file.fileType == KotlinJavaScriptMetaFileType }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = FileBasedIndex.InputFilter { file -> file.fileType == KotlinJavaScriptMetaFileType }
 
-    override fun getVersion() = VERSION
+    override fun getVersion(): Int = VERSION
 
     private val VERSION = 4
 
@@ -117,11 +117,11 @@ object KotlinJavaScriptMetaFileIndex : KotlinFileIndexBase<KotlinJavaScriptMetaF
 }
 
 open class KotlinMetadataFileIndexBase<T>(classOfIndex: Class<T>, indexFunction: (ClassId) -> FqName) : KotlinFileIndexBase<T>(classOfIndex) {
-    override fun getIndexer() = INDEXER
+    override fun getIndexer(): DataIndexer<FqName, Void, FileContent> = INDEXER
 
-    override fun getInputFilter() = FileBasedIndex.InputFilter { file -> file.fileType == KotlinBuiltInFileType }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = FileBasedIndex.InputFilter { file -> file.fileType == KotlinBuiltInFileType }
 
-    override fun getVersion() = VERSION
+    override fun getVersion(): Int = VERSION
 
     private val VERSION = 1
 

@@ -50,7 +50,7 @@ fun IrClass.addAll(members: List<IrDeclaration>) {
     declarations.addAll(members)
 }
 
-fun IrClass.getInstanceInitializerMembers() =
+fun IrClass.getInstanceInitializerMembers(): List<IrDeclaration> =
     declarations.filter {
         when (it) {
             is IrAnonymousInitializer ->

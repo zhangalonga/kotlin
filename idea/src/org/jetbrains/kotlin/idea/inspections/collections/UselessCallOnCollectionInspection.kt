@@ -30,14 +30,14 @@ import org.jetbrains.kotlin.types.isFlexible
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 class UselessCallOnCollectionInspection : AbstractUselessCallInspection() {
-    override val uselessFqNames = mapOf("kotlin.collections.filterNotNull" to deleteConversion,
-                                        "kotlin.collections.filterIsInstance" to deleteConversion,
-                                        "kotlin.collections.mapNotNull" to Conversion("map"),
-                                        "kotlin.collections.mapNotNullTo" to Conversion("mapTo"),
-                                        "kotlin.collections.mapIndexedNotNull" to Conversion("mapIndexed"),
-                                        "kotlin.collections.mapIndexedNotNullTo" to Conversion("mapIndexedTo"))
+    override val uselessFqNames: Map<String, Companion.Conversion> = mapOf("kotlin.collections.filterNotNull" to deleteConversion,
+                                                                           "kotlin.collections.filterIsInstance" to deleteConversion,
+                                                                           "kotlin.collections.mapNotNull" to Conversion("map"),
+                                                                           "kotlin.collections.mapNotNullTo" to Conversion("mapTo"),
+                                                                           "kotlin.collections.mapIndexedNotNull" to Conversion("mapIndexed"),
+                                                                           "kotlin.collections.mapIndexedNotNullTo" to Conversion("mapIndexedTo"))
 
-    override val uselessNames = uselessFqNames.keys.toShortNames()
+    override val uselessNames: MutableSet<String> = uselessFqNames.keys.toShortNames()
 
     override fun QualifiedExpressionVisitor.suggestConversionIfNeeded(
             expression: KtQualifiedExpression,

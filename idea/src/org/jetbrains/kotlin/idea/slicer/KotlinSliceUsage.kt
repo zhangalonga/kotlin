@@ -55,7 +55,7 @@ open class KotlinSliceUsage : SliceUsage {
         return originalInfo
     }
 
-    override fun canBeLeaf() = element != null && lambdaLevel == 0
+    override fun canBeLeaf(): Boolean = element != null && lambdaLevel == 0
 
     public override fun processUsagesFlownDownTo(element: PsiElement, uniqueProcessor: Processor<SliceUsage>) {
         InflowSlicer(element as? KtExpression ?: return, uniqueProcessor, this).processChildren()

@@ -16,6 +16,7 @@
 
 package org.jetbrains.uast.kotlin
 
+import com.intellij.psi.PsiType
 import org.jetbrains.kotlin.psi.KtClassLiteralExpression
 import org.jetbrains.kotlin.resolve.BindingContext.DOUBLE_COLON_LHS
 import org.jetbrains.uast.UClassLiteralExpression
@@ -26,7 +27,7 @@ class KotlinUClassLiteralExpression(
         override val psi: KtClassLiteralExpression,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UClassLiteralExpression, KotlinUElementWithType {
-    override val type by lz {
+    override val type: PsiType? by lz {
         val ktType = psi.analyze()[DOUBLE_COLON_LHS, psi.receiverExpression]?.type ?: return@lz null
         ktType.toPsiType(this, psi, boxed = true)
     }

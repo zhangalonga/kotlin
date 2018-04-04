@@ -33,7 +33,7 @@ import org.jetbrains.kotlin.types.typeUtil.containsError
 import org.jetbrains.kotlin.types.typeUtil.immediateSupertypes
 
 //hack to separate type presentation from param info presentation
-const val TYPE_INFO_PREFIX = "@TYPE@"
+const val TYPE_INFO_PREFIX: String = "@TYPE@"
 
 class ImportAwareClassifierNamePolicy(
     val bindingContext: BindingContext,
@@ -52,7 +52,7 @@ class ImportAwareClassifierNamePolicy(
     }
 }
 
-fun getInlayHintsTypeRenderer(bindingContext: BindingContext, context: KtElement) =
+fun getInlayHintsTypeRenderer(bindingContext: BindingContext, context: KtElement): DescriptorRenderer =
     DescriptorRenderer.COMPACT_WITH_SHORT_TYPES.withOptions {
         textFormat = RenderingFormat.PLAIN
         renderUnabbreviatedType = false

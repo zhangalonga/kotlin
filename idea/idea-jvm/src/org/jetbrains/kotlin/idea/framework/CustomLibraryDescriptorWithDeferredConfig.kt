@@ -119,7 +119,7 @@ abstract class CustomLibraryDescriptorWithDeferredConfig
     class DeferredCopyFileRequests(private val configurator: KotlinWithLibraryConfigurator) {
         private val copyFilesRequests = arrayListOf<CopyFileRequest>()
 
-        fun isEmpty() = copyFilesRequests.isEmpty()
+        fun isEmpty(): Boolean = copyFilesRequests.isEmpty()
 
         fun performRequests(relativePath: String, model: Library.ModifiableModel, collector: NotificationMessageCollector) {
             for (request in copyFilesRequests) {
@@ -209,7 +209,7 @@ abstract class CustomLibraryDescriptorWithDeferredConfig
         return createConfigurationFromPluginPaths()
     }
 
-    fun createConfigurationFromPluginPaths() =
+    fun createConfigurationFromPluginPaths(): NewLibraryConfiguration =
             createConfiguration(collectPathsInPlugin(OrderRootType.CLASSES),
                                 collectPathsInPlugin(OrderRootType.SOURCES))
 

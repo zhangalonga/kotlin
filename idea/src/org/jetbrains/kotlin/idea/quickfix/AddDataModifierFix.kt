@@ -35,9 +35,9 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 
 class AddDataModifierFix(element: KtClass, private val fqName: String) : AddModifierFix(element, KtTokens.DATA_KEYWORD) {
 
-    override fun getText() = "Make '$fqName' data class"
+    override fun getText(): String = "Make '$fqName' data class"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     companion object : KotlinSingleIntentionActionFactory() {
 

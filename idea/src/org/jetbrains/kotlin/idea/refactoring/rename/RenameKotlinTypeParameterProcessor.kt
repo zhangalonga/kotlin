@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.idea.caches.resolve.unsafeResolveToDescriptor
 import org.jetbrains.kotlin.psi.KtTypeParameter
 
 class RenameKotlinTypeParameterProcessor : RenameKotlinPsiProcessor() {
-    override fun canProcessElement(element: PsiElement) = element is KtTypeParameter
+    override fun canProcessElement(element: PsiElement): Boolean = element is KtTypeParameter
 
     override fun findCollisions(
             element: PsiElement,

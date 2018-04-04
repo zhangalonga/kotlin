@@ -57,7 +57,7 @@ class ReplaceArrayEqualityOpWithArraysEqualsInspection : AbstractApplicabilityBa
         return rightResolvedCall?.resolvedToArrayType() == true && leftResolvedCall?.resolvedToArrayType() == true
     }
 
-    override fun inspectionText(element: KtBinaryExpression) = "Dangerous array comparison"
+    override fun inspectionText(element: KtBinaryExpression): String = "Dangerous array comparison"
 
     override val defaultFixText: String
         get() = "Replace with 'contentEquals'"

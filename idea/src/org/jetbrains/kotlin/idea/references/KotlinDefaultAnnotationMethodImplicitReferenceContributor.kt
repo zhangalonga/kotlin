@@ -35,9 +35,9 @@ class KotlinDefaultAnnotationMethodImplicitReferenceContributor : AbstractKotlin
                 ?.mainReference
                 ?.resolve()
 
-        override fun getElement() = argument
+        override fun getElement(): KtValueArgument = argument
 
-        override fun getRangeInElement() = TextRange.EMPTY_RANGE
+        override fun getRangeInElement(): TextRange = TextRange.EMPTY_RANGE
 
         override fun resolve(): PsiElement? {
             val annotationPsi = resolveAnnotationCallee() ?: return null
@@ -54,7 +54,7 @@ class KotlinDefaultAnnotationMethodImplicitReferenceContributor : AbstractKotlin
             }
         }
 
-        override fun getCanonicalText() = PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME
+        override fun getCanonicalText(): String = PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME
 
         override fun handleElementRename(newElementName: String): PsiElement {
             val psiFactory = KtPsiFactory(argument)
@@ -66,16 +66,16 @@ class KotlinDefaultAnnotationMethodImplicitReferenceContributor : AbstractKotlin
             return argument.replaced(newArgument)
         }
 
-        override fun bindToElement(element: PsiElement) = throw IncorrectOperationException("Not implemented")
+        override fun bindToElement(element: PsiElement): Nothing = throw IncorrectOperationException("Not implemented")
 
         override fun isReferenceTo(element: PsiElement): Boolean {
             val unwrapped = element.unwrapped
             return (unwrapped is PsiMethod || unwrapped is KtParameter) && unwrapped == resolve()
         }
 
-        override fun getVariants() = ArrayUtil.EMPTY_OBJECT_ARRAY
+        override fun getVariants(): Array<out Any> = ArrayUtil.EMPTY_OBJECT_ARRAY
 
-        override fun isSoft() = false
+        override fun isSoft(): Boolean = false
     }
 
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {

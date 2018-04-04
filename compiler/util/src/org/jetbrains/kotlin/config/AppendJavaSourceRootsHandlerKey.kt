@@ -19,4 +19,4 @@ package org.jetbrains.kotlin.config
 import com.intellij.openapi.util.Key
 import java.io.File
 
-val APPEND_JAVA_SOURCE_ROOTS_HANDLER_KEY = Key<(List<File>) -> Unit>("AppendJavaSourceRootsHandlerKey")
+val APPEND_JAVA_SOURCE_ROOTS_HANDLER_KEY: Key<(List<File>) -> Unit> = Key("AppendJavaSourceRootsHandlerKey")

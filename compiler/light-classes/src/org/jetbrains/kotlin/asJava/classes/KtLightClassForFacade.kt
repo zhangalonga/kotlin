@@ -29,6 +29,7 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.util.containers.SLRUCache
 import org.jetbrains.annotations.NonNls
+import org.jetbrains.kotlin.asJava.builder.LightClassData
 import org.jetbrains.kotlin.asJava.builder.LightClassDataHolder
 import org.jetbrains.kotlin.asJava.builder.LightClassDataProviderForFileFacade
 import org.jetbrains.kotlin.asJava.elements.FakeFileForLightClass
@@ -106,47 +107,47 @@ class KtLightClassForFacade private constructor(
     val fqName: FqName
         get() = facadeClassFqName
 
-    override fun getModifierList() = modifierList
+    override fun getModifierList(): PsiModifierList = modifierList
 
-    override fun hasModifierProperty(@NonNls name: String) = modifierList.hasModifierProperty(name)
+    override fun hasModifierProperty(@NonNls name: String): Boolean = modifierList.hasModifierProperty(name)
 
-    override fun isDeprecated() = false
+    override fun isDeprecated(): Boolean = false
 
-    override fun isInterface() = false
+    override fun isInterface(): Boolean = false
 
-    override fun isAnnotationType() = false
+    override fun isAnnotationType(): Boolean = false
 
-    override fun isEnum() = false
+    override fun isEnum(): Boolean = false
 
-    override fun getContainingClass() = null
+    override fun getContainingClass(): Nothing? = null
 
-    override fun getContainingFile() = packageClsFile
+    override fun getContainingFile(): FakeFileForLightClass = packageClsFile
 
-    override fun hasTypeParameters() = false
+    override fun hasTypeParameters(): Boolean = false
 
-    override fun getTypeParameters() = PsiTypeParameter.EMPTY_ARRAY
+    override fun getTypeParameters(): Array<out PsiTypeParameter> = PsiTypeParameter.EMPTY_ARRAY
 
-    override fun getTypeParameterList() = null
+    override fun getTypeParameterList(): Nothing? = null
 
-    override fun getDocComment() = null
+    override fun getDocComment(): Nothing? = null
 
-    override fun getImplementsList() = implementsList
+    override fun getImplementsList(): LightEmptyImplementsList = implementsList
 
-    override fun getImplementsListTypes() = PsiClassType.EMPTY_ARRAY
+    override fun getImplementsListTypes(): Array<out PsiClassType> = PsiClassType.EMPTY_ARRAY
 
-    override fun getInterfaces() = PsiClass.EMPTY_ARRAY
+    override fun getInterfaces(): Array<out PsiClass> = PsiClass.EMPTY_ARRAY
 
-    override fun getInnerClasses() = PsiClass.EMPTY_ARRAY
+    override fun getInnerClasses(): Array<out PsiClass> = PsiClass.EMPTY_ARRAY
 
     override fun getOwnInnerClasses(): List<PsiClass> = listOf()
 
-    override fun getAllInnerClasses() = PsiClass.EMPTY_ARRAY
+    override fun getAllInnerClasses(): Array<out PsiClass> = PsiClass.EMPTY_ARRAY
 
-    override fun getInitializers() = PsiClassInitializer.EMPTY_ARRAY
+    override fun getInitializers(): Array<out PsiClassInitializer> = PsiClassInitializer.EMPTY_ARRAY
 
-    override fun findInnerClassByName(@NonNls name: String, checkBases: Boolean) = null
+    override fun findInnerClassByName(@NonNls name: String, checkBases: Boolean): Nothing? = null
 
-    override fun getName() = facadeClassFqName.shortName().asString()
+    override fun getName(): String = facadeClassFqName.shortName().asString()
 
     override fun setName(name: String): PsiElement? {
         for (file in files) {
@@ -187,16 +188,16 @@ class KtLightClassForFacade private constructor(
         return this
     }
 
-    override fun getQualifiedName() = facadeClassFqName.asString()
+    override fun getQualifiedName(): String = facadeClassFqName.asString()
 
-    override fun isValid() = files.all { it.isValid && it.hasTopLevelCallables() && facadeClassFqName == it.javaFileFacadeFqName }
+    override fun isValid(): Boolean = files.all { it.isValid && it.hasTopLevelCallables() && facadeClassFqName == it.javaFileFacadeFqName }
 
-    override fun copy() = KtLightClassForFacade(manager, facadeClassFqName, lightClassDataCache, files)
+    override fun copy(): KtLightClassForFacade = KtLightClassForFacade(manager, facadeClassFqName, lightClassDataCache, files)
 
-    override val lightClassData
+    override val lightClassData: LightClassData
         get() = lightClassDataCache.value.findDataForFacade(facadeClassFqName)
 
-    override fun getNavigationElement() = files.iterator().next()
+    override fun getNavigationElement(): KtFile = files.iterator().next()
 
     override fun isEquivalentTo(another: PsiElement?): Boolean {
         return another is KtLightClassForFacade && Comparing.equal(another.qualifiedName, qualifiedName)
@@ -220,7 +221,7 @@ class KtLightClassForFacade private constructor(
         return arrayOf(PsiType.getJavaLangObject(manager, resolveScope))
     }
 
-    override fun hashCode() = hashCode
+    override fun hashCode(): Int = hashCode
 
     private fun computeHashCode(): Int {
         var result = manager.hashCode()
@@ -245,7 +246,7 @@ class KtLightClassForFacade private constructor(
         return true
     }
 
-    override fun toString() = "${KtLightClassForFacade::class.java.simpleName}:$facadeClassFqName"
+    override fun toString(): String = "${KtLightClassForFacade::class.java.simpleName}:$facadeClassFqName"
 
     companion object Factory {
         fun createForFacade(

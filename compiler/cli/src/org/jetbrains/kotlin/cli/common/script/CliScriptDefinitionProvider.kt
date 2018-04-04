@@ -27,11 +27,11 @@ class CliScriptDefinitionProvider : ScriptDefinitionProvider {
     private val definitions: MutableList<KotlinScriptDefinition> = arrayListOf(StandardScriptDefinition)
     private val lock = ReentrantReadWriteLock()
 
-    override fun findScriptDefinition(fileName: String) = lock.read {
+    override fun findScriptDefinition(fileName: String): KotlinScriptDefinition? = lock.read {
         definitions.firstOrNull { it.isScript(fileName) }
     }
 
-    override fun isScript(fileName: String) = lock.read {
+    override fun isScript(fileName: String): Boolean = lock.read {
         definitions.any { it.isScript(fileName) }
     }
 

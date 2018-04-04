@@ -20,9 +20,9 @@ import org.jetbrains.kotlin.psi.*
 
 class ConvertToRunIntention : ConvertDotQualifiedToScopeIntention("Convert to run") {
 
-    override fun createScopeExpression(factory: KtPsiFactory, element: KtDotQualifiedExpression) =
+    override fun createScopeExpression(factory: KtPsiFactory, element: KtDotQualifiedExpression): KtExpression =
             factory.createExpressionByPattern("$0.run {}", element.getLeftMostReceiverExpression())
 
-    override fun findCallExpressionFrom(scopeExpression: KtExpression) =
+    override fun findCallExpressionFrom(scopeExpression: KtExpression): KtCallExpression? =
             (scopeExpression as? KtQualifiedExpression)?.callExpression
 }

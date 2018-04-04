@@ -24,9 +24,9 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 class ReplaceWithArrayCallInAnnotationFix(argument: KtExpression) : KotlinQuickFixAction<KtExpression>(argument) {
-    override fun getText() = "Replace with array call"
+    override fun getText(): String = "Replace with array call"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val argument = element?.getParentOfType<KtValueArgument>(false) ?: return

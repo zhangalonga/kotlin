@@ -92,7 +92,7 @@ class OverrideMembersHandler(private val preferConstructorParameters: Boolean = 
         return overridden.flatMap { toRealSupers(it) }.distinctBy { it.original }
     }
 
-    override fun getChooserTitle() = "Override Members"
+    override fun getChooserTitle(): String = "Override Members"
 
-    override fun getNoMembersFoundHint() = "No members to override have been found"
+    override fun getNoMembersFoundHint(): String = "No members to override have been found"
 }

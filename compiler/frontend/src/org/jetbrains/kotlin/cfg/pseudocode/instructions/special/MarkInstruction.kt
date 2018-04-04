@@ -33,7 +33,7 @@ class MarkInstruction(
 
     override fun <R> accept(visitor: InstructionVisitorWithResult<R>): R = visitor.visitMarkInstruction(this)
 
-    override fun createCopy() = MarkInstruction(element, blockScope)
+    override fun createCopy(): MarkInstruction = MarkInstruction(element, blockScope)
 
-    override fun toString() = "mark(${render(element)})"
+    override fun toString(): String = "mark(${render(element)})"
 }

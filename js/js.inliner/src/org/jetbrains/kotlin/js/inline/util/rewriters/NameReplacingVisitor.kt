@@ -35,13 +35,13 @@ class NameReplacingVisitor(private val replaceMap: Map<JsName, JsExpression>) : 
         }
     }
 
-    override fun endVisit(x: JsVars.JsVar, ctx: JsContext<*>) = applyToNamedNode(x)
+    override fun endVisit(x: JsVars.JsVar, ctx: JsContext<*>): Unit = applyToNamedNode(x)
 
-    override fun endVisit(x: JsLabel, ctx: JsContext<*>) = applyToNamedNode(x)
+    override fun endVisit(x: JsLabel, ctx: JsContext<*>): Unit = applyToNamedNode(x)
 
-    override fun endVisit(x: JsFunction, ctx: JsContext<*>) = applyToNamedNode(x)
+    override fun endVisit(x: JsFunction, ctx: JsContext<*>): Unit = applyToNamedNode(x)
 
-    override fun endVisit(x: JsParameter, ctx: JsContext<*>) = applyToNamedNode(x)
+    override fun endVisit(x: JsParameter, ctx: JsContext<*>): Unit = applyToNamedNode(x)
 
     private fun applyToNamedNode(x: HasName) {
         while (true) {

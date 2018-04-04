@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 
 class ExplicitThisInspection : AbstractKotlinInspection() {
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = object : KtVisitorVoid() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): KtVisitorVoid = object : KtVisitorVoid() {
         override fun visitCallableReferenceExpression(expression: KtCallableReferenceExpression) {
             if (!expression.languageVersionSettings.supportsFeature(CallableReferencesToClassMembersWithEmptyLHS)) return
 

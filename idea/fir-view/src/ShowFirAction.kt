@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.idea.KotlinIcons
 
 class ShowFirAction : AnAction() {
 
-    val TOOLWINDOW_ID = "FIR Explorer"
+    val TOOLWINDOW_ID: String = "FIR Explorer"
 
 
     override fun actionPerformed(e: AnActionEvent) {

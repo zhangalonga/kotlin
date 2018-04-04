@@ -41,7 +41,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getTopmostParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
-val KOTLIN_CONSOLE_KEY = Key.create<Boolean>("kotlin.console")
+val KOTLIN_CONSOLE_KEY: Key<Boolean> = Key.create<Boolean>("kotlin.console")
 
 /**
  * Tested in OutOfBlockModificationTestGenerated
@@ -67,7 +67,7 @@ class KotlinCodeBlockModificationListener(
                modificationTrackerImpl.outOfCodeBlockModificationCount
     }
 
-    fun hasPerModuleModificationCounts() = perModuleChangesHighwatermark != null
+    fun hasPerModuleModificationCounts(): Boolean = perModuleChangesHighwatermark != null
 
     init {
         val model = PomManager.getModel(project)
@@ -166,7 +166,8 @@ class KotlinCodeBlockModificationListener(
                 KtNamedFunction::class.java
         )
 
-        fun getInstance(project: Project) = project.getComponent(KotlinCodeBlockModificationListener::class.java)
+        fun getInstance(project: Project): KotlinCodeBlockModificationListener =
+            project.getComponent(KotlinCodeBlockModificationListener::class.java)
     }
 }
 

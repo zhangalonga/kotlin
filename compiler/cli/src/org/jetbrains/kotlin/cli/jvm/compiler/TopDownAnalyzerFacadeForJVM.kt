@@ -250,10 +250,10 @@ object TopDownAnalyzerFacadeForJVM {
     class AllJavaSourcesInProjectScope(project: Project) : DelegatingGlobalSearchScope(GlobalSearchScope.allScope(project)) {
         // 'isDirectory' check is needed because otherwise directories such as 'frontend.java' would be recognized
         // as Java source files, which makes no sense
-        override fun contains(file: VirtualFile) =
+        override fun contains(file: VirtualFile): Boolean =
                 file.fileType === JavaFileType.INSTANCE && !file.isDirectory
 
-        override fun toString() = "All Java sources in the project"
+        override fun toString(): String = "All Java sources in the project"
     }
 
     class SourceOrBinaryModuleClassResolver(private val sourceScope: GlobalSearchScope) : ModuleClassResolver {

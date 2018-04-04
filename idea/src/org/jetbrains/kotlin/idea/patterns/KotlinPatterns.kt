@@ -34,9 +34,9 @@ import org.jetbrains.kotlin.renderer.DescriptorRenderer
 // Methods in this class are used through reflection
 @Suppress("unused")
 object KotlinPatterns: StandardPatterns() {
-    @JvmStatic fun kotlinParameter() = KtParameterPattern()
-    @JvmStatic fun kotlinFunction() = KotlinFunctionPattern()
-    @JvmStatic fun receiver() = KotlinReceiverPattern()
+    @JvmStatic fun kotlinParameter(): KtParameterPattern = KtParameterPattern()
+    @JvmStatic fun kotlinFunction(): KotlinFunctionPattern = KotlinFunctionPattern()
+    @JvmStatic fun receiver(): KotlinReceiverPattern = KotlinReceiverPattern()
 }
 
 // Methods in this class are used through reflection during pattern construction

@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.serialization.deserialization.descriptors.Deserializ
 class KotlinJvmBinaryPackageSourceElement(
         private val packageFragment: LazyJavaPackageFragment
 ) : SourceElement {
-    override fun toString() = "$packageFragment: ${packageFragment.binaryClasses.keys}"
+    override fun toString(): String = "$packageFragment: ${packageFragment.binaryClasses.keys}"
 
     override fun getContainingFile(): SourceFile = SourceFile.NO_SOURCE_FILE
 

@@ -160,7 +160,7 @@ private fun isNonAbstractMember(member: KtDeclaration?): Boolean {
 }
 
 private val DEFAULT_IMPLS_CLASS_NAME = Name.identifier(JvmAbi.DEFAULT_IMPLS_CLASS_NAME)
-fun FqName.defaultImplsChild() = child(DEFAULT_IMPLS_CLASS_NAME)
+fun FqName.defaultImplsChild(): FqName = child(DEFAULT_IMPLS_CLASS_NAME)
 
 @Suppress("unused")
 fun KtElement.toLightAnnotation(): PsiAnnotation? {

@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.psi.createPrimaryConstructorIfAbsent
 
 class ParcelableAddPrimaryConstructorQuickfix(clazz: KtClass) : AbstractParcelableQuickFix<KtClass>(clazz) {
     object Factory : AbstractFactory({ findElement<KtClass>()?.let(::ParcelableAddPrimaryConstructorQuickfix) })
-    override fun getText() = "Add empty primary constructor"
+    override fun getText(): String = "Add empty primary constructor"
 
     override fun invoke(ktPsiFactory: KtPsiFactory, element: KtClass) {
         element.createPrimaryConstructorIfAbsent()

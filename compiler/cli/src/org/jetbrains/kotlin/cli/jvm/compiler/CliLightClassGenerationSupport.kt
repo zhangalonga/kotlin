@@ -71,9 +71,9 @@ class CliLightClassGenerationSupport(private val traceHolder: CliTraceHolder) : 
         return traceHolder.bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, declaration)
     }
 
-    override fun analyze(element: KtElement) = traceHolder.bindingContext
+    override fun analyze(element: KtElement): BindingContext = traceHolder.bindingContext
 
-    override fun analyzeWithContent(element: KtClassOrObject) = traceHolder.bindingContext
+    override fun analyzeWithContent(element: KtClassOrObject): BindingContext = traceHolder.bindingContext
 }
 
 

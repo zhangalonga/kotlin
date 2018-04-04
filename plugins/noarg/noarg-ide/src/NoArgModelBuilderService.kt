@@ -32,9 +32,9 @@ class NoArgModelImpl(
 ) : NoArgModel
 
 class NoArgModelBuilderService : AnnotationBasedPluginModelBuilderService<NoArgModel>() {
-    override val gradlePluginNames get() = listOf("org.jetbrains.kotlin.plugin.noarg", "kotlin-noarg")
-    override val extensionName get() = "noArg"
-    override val modelClass get() = NoArgModel::class.java
+    override val gradlePluginNames: List<String> get() = listOf("org.jetbrains.kotlin.plugin.noarg", "kotlin-noarg")
+    override val extensionName: String get() = "noArg"
+    override val modelClass: Class<NoArgModel> get() = NoArgModel::class.java
 
     override fun createModel(annotations: List<String>, presets: List<String>, extension: Any?): NoArgModel {
         val invokeInitializers = extension?.getFieldValue("invokeInitializers") as? Boolean ?: false
@@ -44,9 +44,9 @@ class NoArgModelBuilderService : AnnotationBasedPluginModelBuilderService<NoArgM
 
 class NoArgProjectResolverExtension : AnnotationBasedPluginProjectResolverExtension<NoArgModel>() {
     companion object {
-        val KEY = Key<NoArgModel>("NoArgModel")
+        val KEY: Key<NoArgModel> = Key("NoArgModel")
     }
 
-    override val modelClass get() = NoArgModel::class.java
-    override val userDataKey get() = KEY
+    override val modelClass: Class<NoArgModel> get() = NoArgModel::class.java
+    override val userDataKey: Key<NoArgModel> get() = KEY
 }

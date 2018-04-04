@@ -26,6 +26,6 @@ data class ScriptDependencies(
         val scripts: List<File> = emptyList()
 ) {
     companion object {
-        val Empty = ScriptDependencies()
+        val Empty: ScriptDependencies = ScriptDependencies()
     }
 }

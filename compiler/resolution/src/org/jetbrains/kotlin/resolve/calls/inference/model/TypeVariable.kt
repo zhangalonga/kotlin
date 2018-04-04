@@ -37,9 +37,9 @@ class TypeVariableTypeConstructor(private val builtIns: KotlinBuiltIns, val debu
     override fun isDenotable(): Boolean = false
     override fun getDeclarationDescriptor(): ClassifierDescriptor? = null
 
-    override fun getBuiltIns() = builtIns
+    override fun getBuiltIns(): KotlinBuiltIns = builtIns
 
-    override fun toString() = "TypeVariable($debugName)"
+    override fun toString(): String = "TypeVariable($debugName)"
 }
 
 sealed class NewTypeVariable(builtIns: KotlinBuiltIns, name: String) {
@@ -52,7 +52,7 @@ sealed class NewTypeVariable(builtIns: KotlinBuiltIns, name: String) {
         nullable = false, memberScope = builtIns.any.unsubstitutedMemberScope
     )
 
-    override fun toString() = freshTypeConstructor.toString()
+    override fun toString(): String = freshTypeConstructor.toString()
 }
 
 class TypeVariableFromCallableDescriptor(

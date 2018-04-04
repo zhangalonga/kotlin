@@ -28,7 +28,7 @@ class PseudocodeLabel internal constructor(
 
     private val correspondingElement: KtElement get() = pseudocode.correspondingElement
 
-    override var targetInstructionIndex = -1
+    override var targetInstructionIndex: Int = -1
 
     override fun toString(): String = if (comment == null) name else "$name [$comment]"
 

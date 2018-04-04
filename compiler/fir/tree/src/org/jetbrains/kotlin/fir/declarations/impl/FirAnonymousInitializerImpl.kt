@@ -16,5 +16,5 @@ class FirAnonymousInitializerImpl(
     override val psi: PsiElement?,
     override val body: FirBody?
 ) : FirAnonymousInitializer {
-    override val declarationKind = IrDeclarationKind.ANONYMOUS_INITIALIZER
+    override val declarationKind: IrDeclarationKind = IrDeclarationKind.ANONYMOUS_INITIALIZER
 }

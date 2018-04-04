@@ -17,7 +17,8 @@
 package org.jetbrains.kotlin.psi
 
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 
 class KtLabelReferenceExpression(node: ASTNode) : KtSimpleNameExpressionImpl(node) {
-    override fun getReferencedNameElement() = getIdentifier() ?: this
+    override fun getReferencedNameElement(): PsiElement = getIdentifier() ?: this
 }

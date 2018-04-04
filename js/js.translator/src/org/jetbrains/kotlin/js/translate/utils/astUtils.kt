@@ -107,13 +107,17 @@ var JsConditional.otherwise: JsExpression
     set(value) { elseExpression = value }
 
 // Extension functions below produce aliased invocations.
-fun TranslationContext.invokeKotlinFunction(functionName: String, vararg arguments: JsExpression)
-    = JsInvocation(getReferenceToIntrinsic(functionName), arguments.toList())
+fun TranslationContext.invokeKotlinFunction(functionName: String, vararg arguments: JsExpression): JsInvocation =
+    JsInvocation(getReferenceToIntrinsic(functionName), arguments.toList())
 
-fun TranslationContext.toByte(expression: JsExpression) = invokeKotlinFunction(OperatorConventions.BYTE.identifier, expression)
+fun TranslationContext.toByte(expression: JsExpression): JsInvocation =
+    invokeKotlinFunction(OperatorConventions.BYTE.identifier, expression)
 
-fun TranslationContext.toShort(expression: JsExpression) = invokeKotlinFunction(OperatorConventions.SHORT.identifier, expression)
+fun TranslationContext.toShort(expression: JsExpression): JsInvocation =
+    invokeKotlinFunction(OperatorConventions.SHORT.identifier, expression)
 
-fun TranslationContext.toChar(expression: JsExpression) = invokeKotlinFunction(OperatorConventions.CHAR.identifier, expression)
+fun TranslationContext.toChar(expression: JsExpression): JsInvocation =
+    invokeKotlinFunction(OperatorConventions.CHAR.identifier, expression)
 
-fun TranslationContext.toLong(expression: JsExpression) = invokeKotlinFunction(OperatorConventions.LONG.identifier, expression)
+fun TranslationContext.toLong(expression: JsExpression): JsInvocation =
+    invokeKotlinFunction(OperatorConventions.LONG.identifier, expression)

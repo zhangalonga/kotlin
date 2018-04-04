@@ -12,12 +12,13 @@ import org.jetbrains.kotlin.idea.core.replaced
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
+import org.jetbrains.kotlin.psi.KtVisitorVoid
 import org.jetbrains.kotlin.psi.prefixExpressionVisitor
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.types.typeUtil.isBoolean
 
 class KotlinDoubleNegationInspection : AbstractKotlinInspection(), CleanupLocalInspectionTool {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
             prefixExpressionVisitor(fun(expression) {
                 if (expression.operationToken != KtTokens.EXCL ||
                     expression.baseExpression?.getType(expression.analyze())?.isBoolean() != true) {

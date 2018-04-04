@@ -51,7 +51,7 @@ class InsnSequence(val from: AbstractInsnNode, val to: AbstractInsnNode?) : Sequ
     }
 }
 
-fun InsnList.asSequence() = InsnSequence(this)
+fun InsnList.asSequence(): InsnSequence = InsnSequence(this)
 
 fun MethodNode.prepareForEmitting() {
     stripOptimizationMarkers()
@@ -204,12 +204,12 @@ val AbstractInsnNode.intConstant: Int?
             else -> null
         }
 
-fun insnListOf(vararg insns: AbstractInsnNode) = InsnList().apply { insns.forEach { add(it) } }
+fun insnListOf(vararg insns: AbstractInsnNode): InsnList = InsnList().apply { insns.forEach { add(it) } }
 
 fun AbstractInsnNode.isStoreOperation(): Boolean = opcode in Opcodes.ISTORE..Opcodes.ASTORE
 fun AbstractInsnNode.isLoadOperation(): Boolean = opcode in Opcodes.ILOAD..Opcodes.ALOAD
 
-val AbstractInsnNode?.debugText
+val AbstractInsnNode?.debugText: String
     get() =
         if (this == null) "<null>" else "${this::class.java.simpleName}: $insnText"
 

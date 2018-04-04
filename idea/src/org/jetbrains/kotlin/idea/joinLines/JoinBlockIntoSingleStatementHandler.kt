@@ -77,5 +77,5 @@ class JoinBlockIntoSingleStatementHandler : JoinRawLinesHandlerDelegate {
         }
     }
 
-    override fun tryJoinLines(document: Document, file: PsiFile, start: Int, end: Int) = -1
+    override fun tryJoinLines(document: Document, file: PsiFile, start: Int, end: Int): Int = -1
 }

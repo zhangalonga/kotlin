@@ -55,9 +55,9 @@ abstract class KotlinMetadataDecompiler<out V : BinaryVersion>(
 
     abstract fun readFile(bytes: ByteArray, file: VirtualFile): FileWithMetadata?
 
-    override fun accepts(file: VirtualFile) = file.fileType == fileType
+    override fun accepts(file: VirtualFile): Boolean = file.fileType == fileType
 
-    override fun getStubBuilder() = stubBuilder
+    override fun getStubBuilder(): KotlinMetadataStubBuilder = stubBuilder
 
     override fun createFileViewProvider(file: VirtualFile, manager: PsiManager, physical: Boolean): FileViewProvider {
         return KotlinDecompiledFileViewProvider(manager, file, physical) { provider ->
@@ -124,8 +124,8 @@ sealed class FileWithMetadata {
             val proto: ProtoBuf.PackageFragment,
             serializerProtocol: SerializerExtensionProtocol
     ) : FileWithMetadata() {
-        val nameResolver = NameResolverImpl(proto.strings, proto.qualifiedNames)
-        val packageFqName = FqName(nameResolver.getPackageFqName(proto.`package`.getExtension(serializerProtocol.packageFqName)))
+        val nameResolver: NameResolverImpl = NameResolverImpl(proto.strings, proto.qualifiedNames)
+        val packageFqName: FqName = FqName(nameResolver.getPackageFqName(proto.`package`.getExtension(serializerProtocol.packageFqName)))
 
         open val classesToDecompile: List<ProtoBuf.Class> =
                 proto.class_List.filter { proto ->

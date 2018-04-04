@@ -23,22 +23,22 @@ import org.jetbrains.kotlin.utils.Printer
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 class ExplicitImportsScope(private val descriptors: Collection<DeclarationDescriptor>) : BaseImportingScope(null) {
-    override fun getContributedClassifier(name: Name, location: LookupLocation)
-            = descriptors.filter { it.name == name }.firstIsInstanceOrNull<ClassifierDescriptor>()
+    override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? =
+        descriptors.filter { it.name == name }.firstIsInstanceOrNull()
 
-    override fun getContributedPackage(name: Name)
-            = descriptors.filter { it.name == name }.firstIsInstanceOrNull<PackageViewDescriptor>()
+    override fun getContributedPackage(name: Name): PackageViewDescriptor? =
+        descriptors.filter { it.name == name }.firstIsInstanceOrNull()
 
-    override fun getContributedVariables(name: Name, location: LookupLocation)
-            = descriptors.filter { it.name == name }.filterIsInstance<VariableDescriptor>()
+    override fun getContributedVariables(name: Name, location: LookupLocation): List<VariableDescriptor> =
+        descriptors.filter { it.name == name }.filterIsInstance<VariableDescriptor>()
 
-    override fun getContributedFunctions(name: Name, location: LookupLocation)
-            = descriptors.filter { it.name == name }.filterIsInstance<FunctionDescriptor>()
+    override fun getContributedFunctions(name: Name, location: LookupLocation): List<FunctionDescriptor> =
+        descriptors.filter { it.name == name }.filterIsInstance<FunctionDescriptor>()
 
-    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean, changeNamesForAliased: Boolean)
-            = descriptors
+    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean, changeNamesForAliased: Boolean): Collection<DeclarationDescriptor> =
+        descriptors
 
-    override fun computeImportedNames() = descriptors.mapTo(hashSetOf()) { it.name }
+    override fun computeImportedNames(): HashSet<Name> = descriptors.mapTo(hashSetOf()) { it.name }
 
     override fun printStructure(p: Printer) {
         p.println(this::class.java.name)

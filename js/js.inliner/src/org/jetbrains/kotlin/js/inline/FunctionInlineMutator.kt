@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.js.backend.ast.metadata.staticRef
 import org.jetbrains.kotlin.js.backend.ast.metadata.synthetic
 import org.jetbrains.kotlin.js.inline.clean.removeDefaultInitializers
 import org.jetbrains.kotlin.js.inline.context.InliningContext
+import org.jetbrains.kotlin.js.inline.context.NamingContext
 import org.jetbrains.kotlin.js.inline.util.*
 import org.jetbrains.kotlin.js.inline.util.rewriters.ReturnReplacingVisitor
 import org.jetbrains.kotlin.js.translate.context.Namer
@@ -33,7 +34,7 @@ private constructor(
         function: JsFunction
 ) {
     private val invokedFunction: JsFunction
-    val namingContext = inliningContext.newNamingContext()
+    val namingContext: NamingContext = inliningContext.newNamingContext()
     val body: JsBlock
     var resultExpr: JsExpression? = null
     private var resultName: JsName? = null

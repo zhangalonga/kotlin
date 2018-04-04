@@ -25,14 +25,14 @@ import org.jetbrains.kotlin.psi.*
 
 class KtScratchSourceFileProcessor {
     companion object {
-        const val GENERATED_OUTPUT_PREFIX = "##scratch##generated##"
-        const val LINES_INFO_MARKER = "end##"
-        const val END_OUTPUT_MARKER = "end##!@#%^&*"
+        const val GENERATED_OUTPUT_PREFIX: String = "##scratch##generated##"
+        const val LINES_INFO_MARKER: String = "end##"
+        const val END_OUTPUT_MARKER: String = "end##!@#%^&*"
 
-        const val OBJECT_NAME = "ScratchFileRunnerGenerated"
-        const val INSTANCE_NAME = "instanceScratchFileRunner"
-        const val PACKAGE_NAME = "org.jetbrains.kotlin.idea.scratch.generated"
-        const val GET_RES_FUN_NAME_PREFIX = "generated_get_instance_res"
+        const val OBJECT_NAME: String = "ScratchFileRunnerGenerated"
+        const val INSTANCE_NAME: String = "instanceScratchFileRunner"
+        const val PACKAGE_NAME: String = "org.jetbrains.kotlin.idea.scratch.generated"
+        const val GET_RES_FUN_NAME_PREFIX: String = "generated_get_instance_res"
     }
 
     fun process(file: ScratchFile): Result {
@@ -63,9 +63,9 @@ class KtScratchSourceFileProcessor {
     }
 
     class KtSourceProcessor {
-        val classBuilder = StringBuilder()
-        val objectBuilder = StringBuilder()
-        val imports = arrayListOf<KtImportDirective>()
+        val classBuilder: StringBuilder = StringBuilder()
+        val objectBuilder: StringBuilder = StringBuilder()
+        val imports: ArrayList<KtImportDirective> = arrayListOf<KtImportDirective>()
 
         private var resCount = 0
 

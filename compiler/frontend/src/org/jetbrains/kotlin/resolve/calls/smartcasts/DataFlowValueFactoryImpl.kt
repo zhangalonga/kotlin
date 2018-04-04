@@ -30,13 +30,13 @@ class DataFlowValueFactoryImpl : DataFlowValueFactory {
     override fun createDataFlowValue(
         receiverValue: ReceiverValue,
         resolutionContext: ResolutionContext<*>
-    ) = createDataFlowValue(receiverValue, resolutionContext.trace.bindingContext, resolutionContext.scope.ownerDescriptor)
+    ): DataFlowValue = createDataFlowValue(receiverValue, resolutionContext.trace.bindingContext, resolutionContext.scope.ownerDescriptor)
 
     override fun createDataFlowValue(
         receiverValue: ReceiverValue,
         bindingContext: BindingContext,
         containingDeclarationOrModule: DeclarationDescriptor
-    ) = when (receiverValue) {
+    ): DataFlowValue = when (receiverValue) {
         is TransientReceiver, is ImplicitReceiver -> createDataFlowValueForStableReceiver(receiverValue)
         is ExpressionReceiver -> createDataFlowValue(
             receiverValue.expression,
@@ -47,7 +47,7 @@ class DataFlowValueFactoryImpl : DataFlowValueFactory {
         else -> throw UnsupportedOperationException("Unsupported receiver value: " + receiverValue::class.java.name)
     }
 
-    override fun createDataFlowValueForStableReceiver(receiver: ReceiverValue) =
+    override fun createDataFlowValueForStableReceiver(receiver: ReceiverValue): DataFlowValue =
         DataFlowValue(IdentifierInfo.Receiver(receiver), receiver.type)
 
 
@@ -72,7 +72,7 @@ class DataFlowValueFactoryImpl : DataFlowValueFactory {
         expression: KtExpression,
         type: KotlinType,
         resolutionContext: ResolutionContext<*>
-    ) = createDataFlowValue(expression, type, resolutionContext.trace.bindingContext, resolutionContext.scope.ownerDescriptor)
+    ): DataFlowValue = createDataFlowValue(expression, type, resolutionContext.trace.bindingContext, resolutionContext.scope.ownerDescriptor)
 
     override fun createDataFlowValue(
         expression: KtExpression,

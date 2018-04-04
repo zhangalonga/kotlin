@@ -52,18 +52,18 @@ class KotlinClassifiersCache(sourceFiles: Collection<KtFile>,
 
     private val classifiers = hashMapOf<ClassId, JavaClass>()
 
-    fun getKotlinClassifier(classId: ClassId) = classifiers[classId] ?: createClassifier(classId)
+    fun getKotlinClassifier(classId: ClassId): JavaClass? = classifiers[classId] ?: createClassifier(classId)
 
     fun createMockKotlinClassifier(classifier: KtClassOrObject?,
                                    ktFile: KtFile?,
-                                   classId: ClassId) = MockKotlinClassifier(classId,
-                                                                            classifier,
-                                                                            ktFile,
-                                                                            this,
-                                                                            javac)
+                                   classId: ClassId): MockKotlinClassifier = MockKotlinClassifier(classId,
+                                                                                                  classifier,
+                                                                                                  ktFile,
+                                                                                                  this,
+                                                                                                  javac)
             .apply { classifiers[classId] = this }
 
-    fun hasPackage(packageFqName: FqName) = kotlinPackages.contains(packageFqName)
+    fun hasPackage(packageFqName: FqName): Boolean = kotlinPackages.contains(packageFqName)
 
     private fun createClassifier(classId: ClassId): JavaClass? {
         kotlinFacadeClasses[classId]?.let {
@@ -124,21 +124,21 @@ class MockKotlinClassifier(override val classId: ClassId,
                             cache.createMockKotlinClassifier(nestedClassOrObject, ktFile, classId.createNestedClassId(nestedClassOrObject.nameAsSafeName))
                         } ?: emptyList()
 
-    override val lightClassOriginKind
+    override val lightClassOriginKind: LightClassOriginKind
         get() = LightClassOriginKind.SOURCE
 
     override val virtualFile: VirtualFile?
         get() = null
 
-    override val name
+    override val name: Name
         get() = fqName.shortNameOrSpecial()
 
-    override fun isFromSourceCodeInScope(scope: SearchScope) = true
+    override fun isFromSourceCodeInScope(scope: SearchScope): Boolean = true
 
-    override val innerClassNames
+    override val innerClassNames: List<Name>
         get() = innerClasses.map(JavaClass::name)
 
-    override fun findInnerClass(name: Name) = innerClasses.find { it.name == name }
+    override fun findInnerClass(name: Name): JavaClass? = innerClasses.find { it.name == name }
 
     val typeParametersNumber: Int
         get() = classOrObject?.typeParameters?.size ?: 0
@@ -146,32 +146,32 @@ class MockKotlinClassifier(override val classId: ClassId,
     val hasTypeParameters: Boolean
         get() = typeParametersNumber > 0
 
-    fun findField(name: String) = classOrObject?.let { javac.kotlinResolver.findField(it, name) } ?: javac.kotlinResolver.findField(ktFile, name)
+    fun findField(name: String): JavaField? = classOrObject?.let { javac.kotlinResolver.findField(it, name) } ?: javac.kotlinResolver.findField(ktFile, name)
 
-    override val isAbstract get() = shouldNotBeCalled()
-    override val isStatic get() = shouldNotBeCalled()
-    override val isFinal get() = shouldNotBeCalled()
-    override val typeParameters get() = shouldNotBeCalled()
-    override val outerClass get() = shouldNotBeCalled()
-    override val isInterface get() = shouldNotBeCalled()
-    override val isAnnotationType get() = shouldNotBeCalled()
-    override val isEnum get() = shouldNotBeCalled()
-    override val methods get() = shouldNotBeCalled()
-    override val fields get() = shouldNotBeCalled()
-    override val constructors get() = shouldNotBeCalled()
-    override val annotations get() = shouldNotBeCalled()
-    override val isDeprecatedInJavaDoc get() = shouldNotBeCalled()
-    override fun findAnnotation(fqName: FqName) = shouldNotBeCalled()
+    override val isAbstract: Nothing get() = shouldNotBeCalled()
+    override val isStatic: Nothing get() = shouldNotBeCalled()
+    override val isFinal: Nothing get() = shouldNotBeCalled()
+    override val typeParameters: Nothing get() = shouldNotBeCalled()
+    override val outerClass: Nothing get() = shouldNotBeCalled()
+    override val isInterface: Nothing get() = shouldNotBeCalled()
+    override val isAnnotationType: Nothing get() = shouldNotBeCalled()
+    override val isEnum: Nothing get() = shouldNotBeCalled()
+    override val methods: Nothing get() = shouldNotBeCalled()
+    override val fields: Nothing get() = shouldNotBeCalled()
+    override val constructors: Nothing get() = shouldNotBeCalled()
+    override val annotations: Nothing get() = shouldNotBeCalled()
+    override val isDeprecatedInJavaDoc: Nothing get() = shouldNotBeCalled()
+    override fun findAnnotation(fqName: FqName): Nothing = shouldNotBeCalled()
 }
 
 class MockKotlinClassifierType(override val classifier: JavaClassifier) : JavaClassifierType {
-    override val typeArguments get() = shouldNotBeCalled()
-    override val isRaw get() = shouldNotBeCalled()
-    override val annotations get() = shouldNotBeCalled()
-    override val classifierQualifiedName get() = shouldNotBeCalled()
-    override val presentableText get() = shouldNotBeCalled()
-    override fun findAnnotation(fqName: FqName) = shouldNotBeCalled()
-    override val isDeprecatedInJavaDoc get() = shouldNotBeCalled()
+    override val typeArguments: Nothing get() = shouldNotBeCalled()
+    override val isRaw: Nothing get() = shouldNotBeCalled()
+    override val annotations: Nothing get() = shouldNotBeCalled()
+    override val classifierQualifiedName: Nothing get() = shouldNotBeCalled()
+    override val presentableText: Nothing get() = shouldNotBeCalled()
+    override fun findAnnotation(fqName: FqName): Nothing = shouldNotBeCalled()
+    override val isDeprecatedInJavaDoc: Nothing get() = shouldNotBeCalled()
 }
 
 class MockKotlinField(private val psiField: PsiField) : JavaField {
@@ -179,18 +179,18 @@ class MockKotlinField(private val psiField: PsiField) : JavaField {
     override val initializerValue: Any?
         get() = (psiField.initializer as? PsiLiteralExpression)?.value
 
-    override val name get() = shouldNotBeCalled()
-    override val annotations get() = shouldNotBeCalled()
-    override val isDeprecatedInJavaDoc get() = shouldNotBeCalled()
-    override val isAbstract get() = shouldNotBeCalled()
-    override val isStatic get() = shouldNotBeCalled()
-    override val isFinal get() = shouldNotBeCalled()
-    override val visibility get() = shouldNotBeCalled()
-    override val containingClass get() = shouldNotBeCalled()
-    override val isEnumEntry get() = shouldNotBeCalled()
-    override val type get() = shouldNotBeCalled()
-    override val hasConstantNotNullInitializer get() = shouldNotBeCalled()
-    override fun findAnnotation(fqName: FqName) = shouldNotBeCalled()
+    override val name: Nothing get() = shouldNotBeCalled()
+    override val annotations: Nothing get() = shouldNotBeCalled()
+    override val isDeprecatedInJavaDoc: Nothing get() = shouldNotBeCalled()
+    override val isAbstract: Nothing get() = shouldNotBeCalled()
+    override val isStatic: Nothing get() = shouldNotBeCalled()
+    override val isFinal: Nothing get() = shouldNotBeCalled()
+    override val visibility: Nothing get() = shouldNotBeCalled()
+    override val containingClass: Nothing get() = shouldNotBeCalled()
+    override val isEnumEntry: Nothing get() = shouldNotBeCalled()
+    override val type: Nothing get() = shouldNotBeCalled()
+    override val hasConstantNotNullInitializer: Nothing get() = shouldNotBeCalled()
+    override fun findAnnotation(fqName: FqName): Nothing = shouldNotBeCalled()
 }
 
 private fun KtClassOrObject.computeClassId(): ClassId? =

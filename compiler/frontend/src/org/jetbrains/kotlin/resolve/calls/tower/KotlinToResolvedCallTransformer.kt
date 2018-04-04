@@ -426,7 +426,7 @@ sealed class NewAbstractResolvedCall<D : CallableDescriptor>() : ResolvedCall<D>
         return argumentToParameterMap!![valueArgument] ?: ArgumentUnmapped
     }
 
-    override fun getDataFlowInfoForArguments() = object : DataFlowInfoForArguments {
+    override fun getDataFlowInfoForArguments(): DataFlowInfoForArguments = object : DataFlowInfoForArguments {
         override fun getResultInfo(): DataFlowInfo = nonTrivialUpdatedResultInfo ?: kotlinCall.psiKotlinCall.resultDataFlowInfo
 
         override fun getInfo(valueArgument: ValueArgument): DataFlowInfo {
@@ -489,7 +489,7 @@ class NewResolvedCallImpl<D : CallableDescriptor>(
     substitutor: NewTypeSubstitutor?,
     private var diagnostics: Collection<KotlinCallDiagnostic>
 ) : NewAbstractResolvedCall<D>() {
-    var isCompleted = false
+    var isCompleted: Boolean = false
         private set
     private lateinit var resultingDescriptor: D
 
@@ -582,7 +582,7 @@ class NewVariableAsFunctionResolvedCallImpl(
     override val variableCall: NewResolvedCallImpl<VariableDescriptor>,
     override val functionCall: NewResolvedCallImpl<FunctionDescriptor>
 ) : VariableAsFunctionResolvedCall, ResolvedCall<FunctionDescriptor> by functionCall {
-    val baseCall get() = functionCall.resolvedCallAtom.atom.psiKotlinCall.cast<PSIKotlinCallForInvoke>().baseCall
+    val baseCall: PSIKotlinCallImpl get() = functionCall.resolvedCallAtom.atom.psiKotlinCall.cast<PSIKotlinCallForInvoke>().baseCall
 }
 
 fun ResolvedCall<*>.isNewNotCompleted(): Boolean {

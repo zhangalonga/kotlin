@@ -58,13 +58,13 @@ class KotlinCallerChooser(
         return KotlinMethodNode(method, called, myProject, cancelCallback)
     }
 
-    override fun findDeepestSuperMethods(method: PsiElement) =
+    override fun findDeepestSuperMethods(method: PsiElement): Array<out PsiMethod>? =
             method.toLightMethods().singleOrNull()?.findDeepestSuperMethods()
 
-    override fun getEmptyCallerText() =
+    override fun getEmptyCallerText(): String =
             "Caller text \nwith highlighted callee call would be shown here"
 
-    override fun getEmptyCalleeText() =
+    override fun getEmptyCalleeText(): String =
             "Callee text would be shown here"
 }
 
@@ -74,7 +74,7 @@ class KotlinMethodNode(
         project: Project,
         cancelCallback: Runnable
 ): MethodNodeBase<PsiElement>(method?.namedUnwrappedElement ?: method, called, project, cancelCallback) {
-    override fun createNode(caller: PsiElement, called: HashSet<PsiElement>) =
+    override fun createNode(caller: PsiElement, called: HashSet<PsiElement>): KotlinMethodNode =
             KotlinMethodNode(caller, called, myProject, myCancelCallback)
 
     override fun customizeRendererText(renderer: ColoredTreeCellRenderer) {

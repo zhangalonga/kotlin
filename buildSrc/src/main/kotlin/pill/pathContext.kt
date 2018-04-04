@@ -39,5 +39,5 @@ class ModuleContext(val project: PProject, val module: PModule) : PathContext {
     }
 }
 
-fun String.withSlash() = if (this.endsWith("/")) this else (this + "/")
-fun String.withoutSlash() = this.trimEnd('/')
+fun String.withSlash(): String = if (this.endsWith("/")) this else (this + "/")
+fun String.withoutSlash(): String = this.trimEnd('/')

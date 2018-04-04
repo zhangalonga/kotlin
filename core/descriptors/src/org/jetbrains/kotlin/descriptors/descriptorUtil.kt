@@ -32,8 +32,8 @@ fun ModuleDescriptor.resolveClassByFqName(fqName: FqName, lookupLocation: Lookup
             ?.getContributedClassifier(fqName.shortName(), lookupLocation) as? ClassDescriptor
 }
 
-fun ModuleDescriptor.findContinuationClassDescriptorOrNull(lookupLocation: LookupLocation) =
+fun ModuleDescriptor.findContinuationClassDescriptorOrNull(lookupLocation: LookupLocation): ClassDescriptor? =
         resolveClassByFqName(DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME, lookupLocation)
 
-fun ModuleDescriptor.findContinuationClassDescriptor(lookupLocation: LookupLocation) =
+fun ModuleDescriptor.findContinuationClassDescriptor(lookupLocation: LookupLocation): ClassDescriptor =
         findContinuationClassDescriptorOrNull(lookupLocation).sure { "Continuation interface is not found" }

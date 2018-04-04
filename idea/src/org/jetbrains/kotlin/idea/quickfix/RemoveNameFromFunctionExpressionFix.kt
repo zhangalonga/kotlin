@@ -35,7 +35,7 @@ class RemoveNameFromFunctionExpressionFix(element: KtNamedFunction) : KotlinQuic
 
     companion object : KotlinSingleIntentionActionFactory() {
 
-        override fun createAction(diagnostic: Diagnostic) =
+        override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtNamedFunction>? =
                 diagnostic.createIntentionForFirstParentOfType(::RemoveNameFromFunctionExpressionFix)
 
         private fun removeNameFromFunction(function: KtNamedFunction) {

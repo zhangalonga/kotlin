@@ -28,7 +28,7 @@ abstract class SwitchCodegen(
     protected val bindingContext: BindingContext = codegen.bindingContext
 
     @JvmField
-    protected val subjectType = subjectType ?: codegen.expressionType(expression.subjectExpression)
+    protected val subjectType: Type = subjectType ?: codegen.expressionType(expression.subjectExpression)
 
     protected val resultType: Type = if (isStatement) Type.VOID_TYPE else codegen.expressionType(expression)
 

@@ -155,7 +155,7 @@ sealed class TransformationMatch(val sequenceTransformations: List<SequenceTrans
         constructor(resultTransformation: ResultTransformation, vararg sequenceTransformations: SequenceTransformation)
             : this(resultTransformation, sequenceTransformations.asList())
 
-        override val allTransformations = sequenceTransformations + resultTransformation
+        override val allTransformations: List<Transformation> = sequenceTransformations + resultTransformation
     }
 }
 
@@ -163,7 +163,7 @@ sealed class TransformationMatch(val sequenceTransformations: List<SequenceTrans
  * Helper class for holding and updating PsiChildRange to be used for [CommentSaver.restore] call
  */
 class CommentSavingRangeHolder(range: PsiChildRange) {
-    var range = range
+    var range: PsiChildRange = range
         private set
 
     /**

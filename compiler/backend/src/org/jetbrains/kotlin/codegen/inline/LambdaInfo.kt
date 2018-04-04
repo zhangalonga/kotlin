@@ -46,7 +46,7 @@ abstract class LambdaInfo(@JvmField val isCrossInline: Boolean) : LabelOwner {
 
     abstract fun generateLambdaBody(sourceCompiler: SourceCompilerForInline, reifiedTypeInliner: ReifiedTypeInliner)
 
-    open val hasDispatchReceiver = true
+    open val hasDispatchReceiver: Boolean = true
 
     fun addAllParameters(remapper: FieldRemapper): Parameters {
         val builder = ParametersBuilder.initializeBuilderFrom(AsmTypes.OBJECT_TYPE, invokeMethod.descriptor, this)
@@ -81,7 +81,7 @@ class DefaultLambda(
         val needReification: Boolean
 ) : LambdaInfo(parameterDescriptor.isCrossinline) {
 
-    override var isBoundCallableReference by Delegates.notNull<Boolean>()
+    override var isBoundCallableReference: Boolean by Delegates.notNull<Boolean>()
         private set
 
     val parameterOffsetsInDefault: MutableList<Int> = arrayListOf()
@@ -164,7 +164,7 @@ class DefaultLambda(
     }
 }
 
-fun Type.boxReceiverForBoundReference() = AsmUtil.boxType(this)
+fun Type.boxReceiverForBoundReference(): Type = AsmUtil.boxType(this)
 
 abstract class ExpressionLambda(protected val typeMapper: KotlinTypeMapper, isCrossInline: Boolean): LambdaInfo(isCrossInline) {
 

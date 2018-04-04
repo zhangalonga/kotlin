@@ -35,8 +35,8 @@ open class KotlinAnnotatedScriptDependenciesResolver(val baseClassPath: List<Fil
     private val resolvers: MutableList<Resolver> = resolvers.toMutableList()
 
     inner class ResolvedDependencies(previousDependencies: KotlinScriptExternalDependencies?, depsFromAnnotations: List<File> ) : KotlinScriptExternalDependencies {
-        override val classpath = if (resolvers.isEmpty()) baseClassPath  else baseClassPath + depsFromAnnotations
-        override val imports = if (previousDependencies != null) emptyList() else listOf(DependsOn::class.java.`package`.name + ".*")
+        override val classpath: List<File> = if (resolvers.isEmpty()) baseClassPath  else baseClassPath + depsFromAnnotations
+        override val imports: List<String> = if (previousDependencies != null) emptyList() else listOf(DependsOn::class.java.`package`.name + ".*")
     }
 
     @AcceptedAnnotations(DependsOn::class, Repository::class)

@@ -244,8 +244,8 @@ class CallGenerator(statementGenerator: StatementGenerator) : StatementGenerator
     }
 }
 
-fun CallGenerator.generateCall(ktElement: KtElement, call: CallBuilder, origin: IrStatementOrigin? = null) =
+fun CallGenerator.generateCall(ktElement: KtElement, call: CallBuilder, origin: IrStatementOrigin? = null): IrExpression =
     generateCall(ktElement.startOffset, ktElement.endOffset, call, origin)
 
-fun CallGenerator.generateCall(irExpression: IrExpression, call: CallBuilder, origin: IrStatementOrigin? = null) =
+fun CallGenerator.generateCall(irExpression: IrExpression, call: CallBuilder, origin: IrStatementOrigin? = null): IrExpression =
     generateCall(irExpression.startOffset, irExpression.endOffset, call, origin)

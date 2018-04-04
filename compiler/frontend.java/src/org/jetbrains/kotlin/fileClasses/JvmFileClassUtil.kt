@@ -31,7 +31,7 @@ object JvmFileClassUtil {
     val JVM_NAME_SHORT: String = JVM_NAME.shortName().asString()
 
     val JVM_MULTIFILE_CLASS: FqName = FqName("kotlin.jvm.JvmMultifileClass")
-    val JVM_MULTIFILE_CLASS_SHORT = JVM_MULTIFILE_CLASS.shortName().asString()
+    val JVM_MULTIFILE_CLASS_SHORT: String = JVM_MULTIFILE_CLASS.shortName().asString()
 
     val JVM_PACKAGE_NAME: FqName = FqName("kotlin.jvm.JvmPackageName")
     private val JVM_PACKAGE_NAME_SHORT = JVM_PACKAGE_NAME.shortName().asString()
@@ -113,7 +113,7 @@ val KtFile.javaFileFacadeFqName: FqName
         }
     }
 
-fun KtDeclaration.isInsideJvmMultifileClassFile() = JvmFileClassUtil.findAnnotationEntryOnFileNoResolve(
+fun KtDeclaration.isInsideJvmMultifileClassFile(): Boolean = JvmFileClassUtil.findAnnotationEntryOnFileNoResolve(
         containingKtFile,
         JvmFileClassUtil.JVM_MULTIFILE_CLASS_SHORT
 ) != null

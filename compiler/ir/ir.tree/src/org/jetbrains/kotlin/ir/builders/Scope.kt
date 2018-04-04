@@ -69,7 +69,7 @@ class Scope(val scopeOwnerSymbol: IrSymbol) {
 
 @Suppress("DeprecatedCallableAddReplaceWith")
 @Deprecated("Creates unbound symbol")
-fun createSymbolForScopeOwner(descriptor: DeclarationDescriptor) =
+fun createSymbolForScopeOwner(descriptor: DeclarationDescriptor): IrSymbol =
     when (descriptor) {
         is ClassDescriptor -> IrClassSymbolImpl(descriptor)
         is FunctionDescriptor -> createFunctionSymbol(descriptor)

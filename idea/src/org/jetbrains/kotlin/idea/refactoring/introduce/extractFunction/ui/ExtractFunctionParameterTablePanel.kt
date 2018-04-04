@@ -29,20 +29,20 @@ import javax.swing.table.DefaultTableCellRenderer
 
 open class ExtractFunctionParameterTablePanel : AbstractParameterTablePanel<Parameter, ExtractFunctionParameterTablePanel.ParameterInfo>() {
     companion object {
-        val PARAMETER_TYPE_COLUMN = 2
+        val PARAMETER_TYPE_COLUMN: Int = 2
     }
 
     class ParameterInfo(
             originalParameter: Parameter,
             val isReceiver: Boolean
     ) : AbstractParameterTablePanel.AbstractParameterInfo<Parameter>(originalParameter) {
-        var type = originalParameter.getParameterType(false)
+        var type: KotlinType = originalParameter.getParameterType(false)
 
         init {
             name = if (isReceiver) "<receiver>" else originalParameter.name
         }
 
-        override fun toParameter() = originalParameter.copy(name, type)
+        override fun toParameter(): Parameter = originalParameter.copy(name, type)
     }
 
     override fun createTableModel(): AbstractParameterTablePanel<Parameter, ParameterInfo>.TableModelBase = MyTableModel()

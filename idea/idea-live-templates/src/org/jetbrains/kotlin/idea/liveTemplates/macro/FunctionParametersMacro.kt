@@ -22,8 +22,8 @@ import org.jetbrains.kotlin.psi.KtFunction
 import java.util.*
 
 class FunctionParametersMacro : KotlinMacro() {
-    override fun getName() = "functionParameters"
-    override fun getPresentableName() = "functionParameters()"
+    override fun getName(): String = "functionParameters"
+    override fun getPresentableName(): String = "functionParameters()"
 
     override fun calculateResult(params: Array<Expression>, context: ExpressionContext): Result? {
         val project = context.project

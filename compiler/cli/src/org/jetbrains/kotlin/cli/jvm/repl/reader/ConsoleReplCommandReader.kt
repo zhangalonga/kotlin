@@ -51,7 +51,7 @@ class ConsoleReplCommandReader : ReplCommandReader {
         }
     }
 
-    override fun flushHistory() = lineReader.history.save()
+    override fun flushHistory(): Unit = lineReader.history.save()
 
     private companion object {
         init {

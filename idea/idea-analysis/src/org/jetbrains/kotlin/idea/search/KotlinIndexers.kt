@@ -131,11 +131,11 @@ class KotlinFilterLexer(private val occurrenceConsumer: OccurrenceConsumer): Bas
 class KotlinIdIndexer: LexerBasedIdIndexer() {
     override fun createLexer(consumer: OccurrenceConsumer): Lexer = KotlinFilterLexer(consumer)
 
-    override fun getVersion() = 3
+    override fun getVersion(): Int = 3
 }
 
 class KotlinTodoIndexer: LexerBasedTodoIndexer(), IdAndToDoScannerBasedOnFilterLexer {
-    override fun getVersion() = 2
+    override fun getVersion(): Int = 2
 
-    override fun createLexer(consumer: OccurrenceConsumer) = KotlinFilterLexer(consumer)
+    override fun createLexer(consumer: OccurrenceConsumer): KotlinFilterLexer = KotlinFilterLexer(consumer)
 }

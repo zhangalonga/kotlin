@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.types.KotlinType
 
 class ChangeTypeFix(element: KtTypeReference, private val type: KotlinType) : KotlinQuickFixAction<KtTypeReference>(element) {
-    override fun getFamilyName() = "Change type"
+    override fun getFamilyName(): String = "Change type"
 
     override fun getText(): String {
         val currentTypeText = element?.text ?: return ""
@@ -44,13 +44,13 @@ class ChangeTypeFix(element: KtTypeReference, private val type: KotlinType) : Ko
     }
 
     companion object : KotlinSingleIntentionActionFactoryWithDelegate<KtTypeReference, KotlinType>() {
-        override fun getElementOfInterest(diagnostic: Diagnostic) =
+        override fun getElementOfInterest(diagnostic: Diagnostic): KtTypeReference? =
                 Errors.EXPECTED_PARAMETER_TYPE_MISMATCH.cast(diagnostic).psiElement.typeReference
 
-        override fun extractFixData(element: KtTypeReference, diagnostic: Diagnostic) =
+        override fun extractFixData(element: KtTypeReference, diagnostic: Diagnostic): KotlinType =
                 Errors.EXPECTED_PARAMETER_TYPE_MISMATCH.cast(diagnostic).a
 
-        override fun createFix(originalElement: KtTypeReference, data: KotlinType) =
+        override fun createFix(originalElement: KtTypeReference, data: KotlinType): ChangeTypeFix =
                 ChangeTypeFix(originalElement, data)
     }
 }

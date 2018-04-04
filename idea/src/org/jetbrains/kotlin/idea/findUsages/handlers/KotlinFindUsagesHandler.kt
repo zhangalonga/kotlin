@@ -117,7 +117,7 @@ abstract class KotlinFindUsagesHandler<T : PsiElement>(psiElement: T,
     }
 
     companion object {
-        val LOG = Logger.getInstance(KotlinFindUsagesHandler::class.java)
+        val LOG: Logger = Logger.getInstance(KotlinFindUsagesHandler::class.java)
 
         internal fun processUsage(processor: Processor<UsageInfo>, ref: PsiReference): Boolean =
             processor.processIfNotNull {

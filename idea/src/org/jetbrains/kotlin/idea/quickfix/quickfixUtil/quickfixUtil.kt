@@ -27,12 +27,12 @@ import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 inline fun <reified T : PsiElement> Diagnostic.createIntentionForFirstParentOfType(
     factory: (T) -> KotlinQuickFixAction<T>?
-) = psiElement.getNonStrictParentOfType<T>()?.let(factory)
+): KotlinQuickFixAction<T>? = psiElement.getNonStrictParentOfType<T>()?.let(factory)
 
 
 fun createIntentionFactory(
     factory: (Diagnostic) -> IntentionAction?
-) = object : KotlinSingleIntentionActionFactory() {
+): KotlinSingleIntentionActionFactory = object : KotlinSingleIntentionActionFactory() {
     override fun createAction(diagnostic: Diagnostic) = factory(diagnostic)
 }
 

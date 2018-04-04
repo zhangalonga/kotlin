@@ -34,11 +34,11 @@ class KtLightParameterList(
         get() = (parent.kotlinOrigin as? KtFunction)?.valueParameterList
 
     private val _parameters: Array<PsiParameter> by lazyPub { computeParameters().toTypedArray() }
-    override fun getParameters() = _parameters
+    override fun getParameters(): Array<PsiParameter> = _parameters
 
-    override fun getParameterIndex(parameter: PsiParameter) = _parameters.indexOf(parameter)
+    override fun getParameterIndex(parameter: PsiParameter): Int = _parameters.indexOf(parameter)
 
-    override fun getParametersCount() = parametersCount
+    override fun getParametersCount(): Int = parametersCount
 
     override fun accept(visitor: PsiElementVisitor) {
         if (visitor is JavaElementVisitor) {

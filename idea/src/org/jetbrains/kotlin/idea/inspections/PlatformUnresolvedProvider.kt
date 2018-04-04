@@ -33,8 +33,8 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import java.util.*
 
 object PlatformUnresolvedProvider : KotlinIntentionActionFactoryWithDelegate<KtNameReferenceExpression, String>() {
-    override fun getElementOfInterest(diagnostic: Diagnostic) = QuickFixUtil.getParentElementOfType(diagnostic, KtNameReferenceExpression::class.java)
-    override fun extractFixData(element: KtNameReferenceExpression, diagnostic: Diagnostic) = element.getReferencedName()
+    override fun getElementOfInterest(diagnostic: Diagnostic): KtNameReferenceExpression? = QuickFixUtil.getParentElementOfType(diagnostic, KtNameReferenceExpression::class.java)
+    override fun extractFixData(element: KtNameReferenceExpression, diagnostic: Diagnostic): String = element.getReferencedName()
 
     override fun createFixes(originalElementPointer: SmartPsiElementPointer<KtNameReferenceExpression>, diagnostic: Diagnostic, quickFixDataFactory: () -> String?): List<QuickFixWithDelegateFactory> {
         val result = ArrayList<QuickFixWithDelegateFactory>()

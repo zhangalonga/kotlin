@@ -30,28 +30,28 @@ sealed class CreateLabelFix(
         expression: KtLabelReferenceExpression
 ) : KotlinQuickFixAction<KtLabelReferenceExpression>(expression) {
     class ForLoop(expression: KtLabelReferenceExpression) : CreateLabelFix(expression) {
-        override val chooserTitle = "Select loop statement to label"
+        override val chooserTitle: String = "Select loop statement to label"
 
-        override fun getCandidateExpressions(labelReferenceExpression: KtLabelReferenceExpression) =
+        override fun getCandidateExpressions(labelReferenceExpression: KtLabelReferenceExpression): List<KtLoopExpression> =
                 labelReferenceExpression.getContainingLoops().toList()
     }
 
     class ForLambda(expression: KtLabelReferenceExpression) : CreateLabelFix(expression) {
-        override val chooserTitle = "Select lambda to label"
+        override val chooserTitle: String = "Select lambda to label"
 
-        override fun getCandidateExpressions(labelReferenceExpression: KtLabelReferenceExpression) =
+        override fun getCandidateExpressions(labelReferenceExpression: KtLabelReferenceExpression): List<KtLambdaExpression> =
                 labelReferenceExpression.getContainingLambdas().toList()
     }
 
-    override fun getFamilyName() = "Create label"
+    override fun getFamilyName(): String = "Create label"
 
-    override fun getText() = "Create label ${element?.getReferencedName() ?: ""}@"
+    override fun getText(): String = "Create label ${element?.getReferencedName() ?: ""}@"
 
     abstract val chooserTitle: String
 
     abstract fun getCandidateExpressions(labelReferenceExpression: KtLabelReferenceExpression): List<KtExpression>
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     private fun doCreateLabel(expression: KtLabelReferenceExpression, it: KtExpression, project: Project) {
         project.executeWriteCommand(text) {

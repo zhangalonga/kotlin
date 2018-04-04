@@ -25,9 +25,9 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 open class RemovePsiElementSimpleFix(element: PsiElement, private val text: String) : KotlinQuickFixAction<PsiElement>(element) {
-    override fun getFamilyName() = "Remove element"
+    override fun getFamilyName(): String = "Remove element"
 
-    override fun getText() = text
+    override fun getText(): String = text
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         element?.delete()

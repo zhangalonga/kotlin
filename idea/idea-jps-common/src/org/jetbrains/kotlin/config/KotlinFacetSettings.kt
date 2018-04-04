@@ -26,13 +26,13 @@ sealed class TargetPlatformKind<out Version : TargetPlatformVersion>(
         val version: Version,
         val name: String
 ) : DescriptionAware {
-    override val description = "$name ${version.description}"
+    override val description: String = "$name ${version.description}"
 
     class Jvm(version: JvmTarget) : TargetPlatformKind<JvmTarget>(version, "JVM") {
         companion object {
-            val JVM_PLATFORMS by lazy { JvmTarget.values().map(::Jvm) }
+            val JVM_PLATFORMS: List<Jvm> by lazy { JvmTarget.values().map(::Jvm) }
 
-            operator fun get(version: JvmTarget) = JVM_PLATFORMS[version.ordinal]
+            operator fun get(version: JvmTarget): Jvm = JVM_PLATFORMS[version.ordinal]
         }
     }
 
@@ -84,9 +84,9 @@ sealed class VersionView : DescriptionAware {
         override val description: String
             get() = version.description
 
-        override fun equals(other: Any?) = other is Specific && version == other.version
+        override fun equals(other: Any?): Boolean = other is Specific && version == other.version
 
-        override fun hashCode() = version.hashCode()
+        override fun hashCode(): Int = version.hashCode()
     }
 
     companion object {
@@ -115,11 +115,11 @@ var CommonCompilerArguments.apiVersionView: VersionView
 class KotlinFacetSettings {
     companion object {
         // Increment this when making serialization-incompatible changes to configuration data
-        val CURRENT_VERSION = 3
-        val DEFAULT_VERSION = 0
+        val CURRENT_VERSION: Int = 3
+        val DEFAULT_VERSION: Int = 0
     }
 
-    var version = CURRENT_VERSION
+    var version: Int = CURRENT_VERSION
     var useProjectSettings: Boolean = true
 
     var mergedCompilerArguments: CommonCompilerArguments? = null
@@ -219,6 +219,6 @@ interface KotlinFacetSettingsProvider {
     fun getInitializedSettings(module: Module): KotlinFacetSettings
 
     companion object {
-        fun getInstance(project: Project) = ServiceManager.getService(project, KotlinFacetSettingsProvider::class.java)!!
+        fun getInstance(project: Project): KotlinFacetSettingsProvider = ServiceManager.getService(project, KotlinFacetSettingsProvider::class.java)!!
     }
 }

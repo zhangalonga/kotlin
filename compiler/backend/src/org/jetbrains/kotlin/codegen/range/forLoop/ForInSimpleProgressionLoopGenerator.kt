@@ -56,7 +56,7 @@ class ForInSimpleProgressionLoopGenerator(
             forExpression: KtForExpression,
             boundedValue: SimpleBoundedValue,
             inverseBoundsEvaluationOrder: Boolean = false
-        ) =
+        ): ForInSimpleProgressionLoopGenerator =
             ForInSimpleProgressionLoopGenerator(codegen, forExpression, boundedValue, inverseBoundsEvaluationOrder, 1)
 
         fun fromBoundedValueWithStepMinus1(
@@ -64,7 +64,7 @@ class ForInSimpleProgressionLoopGenerator(
             forExpression: KtForExpression,
             boundedValue: SimpleBoundedValue,
             inverseBoundsEvaluationOrder: Boolean = false
-        ) =
+        ): ForInSimpleProgressionLoopGenerator =
             ForInSimpleProgressionLoopGenerator(codegen, forExpression, boundedValue, inverseBoundsEvaluationOrder, -1)
     }
 

@@ -416,7 +416,7 @@ object KotlinToJVMBytecodeCompiler {
             }
         }
 
-        override fun toString() = "All files under: $directories"
+        override fun toString(): String = "All files under: $directories"
     }
 
     private fun GenerationState.Builder.withModule(module: Module?) =

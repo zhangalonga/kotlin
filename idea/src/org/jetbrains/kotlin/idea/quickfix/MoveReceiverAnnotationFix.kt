@@ -28,8 +28,8 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
 class MoveReceiverAnnotationFix(element: KtAnnotationEntry) : KotlinQuickFixAction<KtAnnotationEntry>(element) {
 
-    override fun getFamilyName() = "Move annotation to receiver type"
-    override fun getText() = familyName
+    override fun getFamilyName(): String = "Move annotation to receiver type"
+    override fun getText(): String = familyName
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

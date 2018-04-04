@@ -36,7 +36,7 @@ class TypeVisitor(
     private val typeConverter: TypeConverter = converter.typeConverter
 
     //TODO: support for all types
-    override fun visitType(type: PsiType) = ErrorType()
+    override fun visitType(type: PsiType): ErrorType = ErrorType()
 
     override fun visitPrimitiveType(primitiveType: PsiPrimitiveType): Type {
         val name = primitiveType.canonicalText

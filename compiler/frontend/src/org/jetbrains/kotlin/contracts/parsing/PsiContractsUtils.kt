@@ -39,31 +39,31 @@ import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 object ContractsDslNames {
     // Internal marker-annotation for distinguishing our API
-    val CONTRACTS_DSL_ANNOTATION_FQN = FqName("kotlin.internal.ContractsDsl")
+    val CONTRACTS_DSL_ANNOTATION_FQN: FqName = FqName("kotlin.internal.ContractsDsl")
 
     // Types
-    val EFFECT = Name.identifier("Effect")
-    val CONDITIONAL_EFFECT = Name.identifier("ConditionalEffect")
-    val SIMPLE_EFFECT = Name.identifier("SimpleEffect")
-    val RETURNS_EFFECT = Name.identifier("Returns")
-    val RETURNS_NOT_NULL_EFFECT = Name.identifier("ReturnsNotNull")
-    val CALLS_IN_PLACE_EFFECT = Name.identifier("CallsInPlace")
+    val EFFECT: Name = Name.identifier("Effect")
+    val CONDITIONAL_EFFECT: Name = Name.identifier("ConditionalEffect")
+    val SIMPLE_EFFECT: Name = Name.identifier("SimpleEffect")
+    val RETURNS_EFFECT: Name = Name.identifier("Returns")
+    val RETURNS_NOT_NULL_EFFECT: Name = Name.identifier("ReturnsNotNull")
+    val CALLS_IN_PLACE_EFFECT: Name = Name.identifier("CallsInPlace")
 
     // Structure-defining calls
-    val CONTRACT = Name.identifier("contract")
-    val IMPLIES = Name.identifier("implies")
+    val CONTRACT: Name = Name.identifier("contract")
+    val IMPLIES: Name = Name.identifier("implies")
 
     // Effect-declaration calls
-    val RETURNS = Name.identifier("returns")
-    val RETURNS_NOT_NULL = Name.identifier("returnsNotNull")
-    val CALLS_IN_PLACE = Name.identifier("callsInPlace")
+    val RETURNS: Name = Name.identifier("returns")
+    val RETURNS_NOT_NULL: Name = Name.identifier("returnsNotNull")
+    val CALLS_IN_PLACE: Name = Name.identifier("callsInPlace")
 
     // enum class InvocationKind
-    val INVOCATION_KIND_ENUM = Name.identifier("InvocationKind")
-    val EXACTLY_ONCE_KIND = Name.identifier("EXACTLY_ONCE")
-    val AT_LEAST_ONCE_KIND = Name.identifier("AT_LEAST_ONCE")
-    val UNKNOWN_KIND = Name.identifier("UNKNOWN")
-    val AT_MOST_ONCE_KIND = Name.identifier("AT_MOST_ONCE")
+    val INVOCATION_KIND_ENUM: Name = Name.identifier("InvocationKind")
+    val EXACTLY_ONCE_KIND: Name = Name.identifier("EXACTLY_ONCE")
+    val AT_LEAST_ONCE_KIND: Name = Name.identifier("AT_LEAST_ONCE")
+    val UNKNOWN_KIND: Name = Name.identifier("UNKNOWN")
+    val AT_MOST_ONCE_KIND: Name = Name.identifier("AT_MOST_ONCE")
 }
 
 fun DeclarationDescriptor.isFromContractDsl(): Boolean = this.annotations.hasAnnotation(CONTRACTS_DSL_ANNOTATION_FQN)

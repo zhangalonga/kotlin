@@ -31,7 +31,7 @@ sealed class FirBuiltinType(
         ConeKotlinTypeProjection.EMPTY_ARRAY
     )
 
-    final override val isNullable = false
+    final override val isNullable: Boolean = false
 
     final override val annotations: List<FirAnnotationCall>
         get() = emptyList()

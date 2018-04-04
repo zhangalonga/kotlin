@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
 class LiftReturnOrAssignmentInspection : AbstractKotlinInspection() {
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
             object : KtVisitorVoid() {
                 private fun visitIfOrWhenOrTry(expression: KtExpression, keyword: PsiElement) {
                     if (expression.lineCount() > LINES_LIMIT) return

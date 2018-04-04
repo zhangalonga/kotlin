@@ -28,6 +28,6 @@ enum class PredefinedAnnotation(fqName: String) {
     val fqName: FqName = FqName(fqName)
 
     companion object {
-        val WITH_CUSTOM_NAME = setOf(LIBRARY, NATIVE)
+        val WITH_CUSTOM_NAME: Set<PredefinedAnnotation> = setOf(LIBRARY, NATIVE)
     }
 }

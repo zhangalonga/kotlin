@@ -37,7 +37,7 @@ class BodyGenerator(
 ) : GeneratorWithScope {
     val scopeOwner: DeclarationDescriptor get() = scopeOwnerSymbol.descriptor
 
-    override val scope = Scope(scopeOwnerSymbol)
+    override val scope: Scope = Scope(scopeOwnerSymbol)
     private val loopTable = HashMap<KtLoopExpression, IrLoop>()
 
     fun generateFunctionBody(ktBody: KtExpression): IrBody {
@@ -158,7 +158,7 @@ class BodyGenerator(
         irBlockBody.statements.add(irDelegatingConstructorCall)
     }
 
-    fun createStatementGenerator() = StatementGenerator(this, scope)
+    fun createStatementGenerator(): StatementGenerator = StatementGenerator(this, scope)
 
     fun putLoop(expression: KtLoopExpression, irLoop: IrLoop) {
         loopTable[expression] = irLoop

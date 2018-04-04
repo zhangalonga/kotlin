@@ -22,7 +22,7 @@ import kotlin.reflect.KClass
 import kotlin.script.dependencies.ScriptDependenciesResolver
 import kotlin.script.experimental.dependencies.DependenciesResolver.NoDependencies
 
-const val DEFAULT_SCRIPT_FILE_PATTERN = ".*\\.kts"
+const val DEFAULT_SCRIPT_FILE_PATTERN: String = ".*\\.kts"
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

@@ -31,7 +31,7 @@ abstract class AssignedVariablesSearcher : KtTreeVisitorVoid() {
 
     open fun writers(variableDescriptor: VariableDescriptor): MutableSet<Writer> = assignedNames[variableDescriptor.name]
 
-    fun hasWriters(variableDescriptor: VariableDescriptor) = writers(variableDescriptor).isNotEmpty()
+    fun hasWriters(variableDescriptor: VariableDescriptor): Boolean = writers(variableDescriptor).isNotEmpty()
 
     private var currentDeclaration: KtDeclaration? = null
 

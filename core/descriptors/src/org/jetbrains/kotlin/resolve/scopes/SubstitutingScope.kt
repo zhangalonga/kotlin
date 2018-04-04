@@ -16,8 +16,7 @@
 
 package org.jetbrains.kotlin.resolve.scopes
 
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.Substitutable
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.calls.inference.wrapWithCapturingSubstitution
@@ -69,21 +68,21 @@ class SubstitutingScope(private val workerScope: MemberScope, givenSubstitutor: 
         return result
     }
 
-    override fun getContributedVariables(name: Name, location: LookupLocation) = substitute(workerScope.getContributedVariables(name, location))
+    override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> = substitute(workerScope.getContributedVariables(name, location))
 
-    override fun getContributedClassifier(name: Name, location: LookupLocation) =
+    override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? =
             workerScope.getContributedClassifier(name, location)?.let { substitute(it) }
 
-    override fun getContributedFunctions(name: Name, location: LookupLocation) = substitute(workerScope.getContributedFunctions(name, location))
+    override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> = substitute(workerScope.getContributedFunctions(name, location))
 
     override fun getContributedDescriptors(kindFilter: DescriptorKindFilter,
-                                           nameFilter: (Name) -> Boolean) = _allDescriptors
+                                           nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> = _allDescriptors
 
-    override fun getFunctionNames() = workerScope.getFunctionNames()
-    override fun getVariableNames() = workerScope.getVariableNames()
-    override fun getClassifierNames() = workerScope.getClassifierNames()
+    override fun getFunctionNames(): Set<Name> = workerScope.getFunctionNames()
+    override fun getVariableNames(): Set<Name> = workerScope.getVariableNames()
+    override fun getClassifierNames(): Set<Name>? = workerScope.getClassifierNames()
 
-    override fun definitelyDoesNotContainName(name: Name) = workerScope.definitelyDoesNotContainName(name)
+    override fun definitelyDoesNotContainName(name: Name): Boolean = workerScope.definitelyDoesNotContainName(name)
 
     override fun printScopeStructure(p: Printer) {
         p.println(this::class.java.simpleName, " {")

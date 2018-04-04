@@ -41,7 +41,7 @@ class RedundantNotNullExtensionReceiverOfInlineInspection : AbstractKotlinInspec
         }
     }
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
         namedFunctionVisitor(fun(function) {
 
             val receiverTypeReference = function.receiverTypeReference ?: return

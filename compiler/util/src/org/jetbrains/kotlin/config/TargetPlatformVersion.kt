@@ -20,6 +20,6 @@ import org.jetbrains.kotlin.utils.DescriptionAware
 
 interface TargetPlatformVersion : DescriptionAware {
     object NoVersion : TargetPlatformVersion {
-        override val description = ""
+        override val description: String = ""
     }
 }

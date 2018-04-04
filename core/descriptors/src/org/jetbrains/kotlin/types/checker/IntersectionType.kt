@@ -21,10 +21,10 @@ import org.jetbrains.kotlin.types.*
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-fun intersectWrappedTypes(types: Collection<KotlinType>) = intersectTypes(types.map { it.unwrap() })
+fun intersectWrappedTypes(types: Collection<KotlinType>): UnwrappedType = intersectTypes(types.map { it.unwrap() })
 
 
-fun intersectTypes(types: List<SimpleType>) = intersectTypes(types as List<UnwrappedType>) as SimpleType
+fun intersectTypes(types: List<SimpleType>): SimpleType = intersectTypes(types as List<UnwrappedType>) as SimpleType
 
 fun intersectTypes(types: List<UnwrappedType>): UnwrappedType {
     when (types.size) {

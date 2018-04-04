@@ -69,11 +69,11 @@ class ExampleAnnotationProcessor : AbstractProcessor() {
         }
     }
 
-    override fun getSupportedSourceVersion() = SourceVersion.RELEASE_6
+    override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.RELEASE_6
 
     override fun getSupportedAnnotationTypes(): Set<String> {
         return ANNOTATION_TO_PREFIX.keys.map { it.java.canonicalName }.toSet() + GenError::class.java.canonicalName
     }
 
-    override fun getSupportedOptions() = setOf(SUFFIX_OPTION, GENERATE_KOTLIN_CODE_OPTION, GENERATE_ERROR)
+    override fun getSupportedOptions(): Set<String> = setOf(SUFFIX_OPTION, GENERATE_KOTLIN_CODE_OPTION, GENERATE_ERROR)
 }

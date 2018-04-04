@@ -42,9 +42,9 @@ open class FirClassImpl(
     override val modality: Modality
         get() = super.modality ?: if (classKind == ClassKind.INTERFACE) Modality.ABSTRACT else Modality.FINAL
 
-    override val superTypes = mutableListOf<FirType>()
+    override val superTypes: MutableList<FirType> = mutableListOf()
 
-    override val declarations = mutableListOf<FirDeclaration>()
+    override val declarations: MutableList<FirDeclaration> = mutableListOf()
 
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirClass {

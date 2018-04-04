@@ -34,15 +34,15 @@ import org.jetbrains.org.objectweb.asm.tree.*
 class ReificationArgument(
         val parameterName: String, val nullable: Boolean, private val arrayDepth: Int
 ) {
-    fun asString() = "[".repeat(arrayDepth) + parameterName + (if (nullable) "?" else "")
-    fun combine(replacement: ReificationArgument) =
+    fun asString(): String = "[".repeat(arrayDepth) + parameterName + (if (nullable) "?" else "")
+    fun combine(replacement: ReificationArgument): ReificationArgument =
             ReificationArgument(
                     replacement.parameterName,
                     this.nullable || (replacement.nullable && this.arrayDepth == 0),
                     this.arrayDepth + replacement.arrayDepth
             )
 
-    fun reify(replacementAsmType: Type, kotlinType: KotlinType) =
+    fun reify(replacementAsmType: Type, kotlinType: KotlinType): Pair<Type, KotlinType> =
             Pair(Type.getType("[".repeat(arrayDepth) + replacementAsmType), TypeUtils.makeNullableIfNeeded(kotlinType.arrayOf(arrayDepth), nullable))
 
     private fun KotlinType.arrayOf(arrayDepth: Int): KotlinType {
@@ -65,10 +65,10 @@ class ReifiedTypeInliner(private val parametersMapping: TypeParameterMappings?) 
     }
 
     companion object {
-        const val REIFIED_OPERATION_MARKER_METHOD_NAME = "reifiedOperationMarker"
-        const val NEED_CLASS_REIFICATION_MARKER_METHOD_NAME = "needClassReification"
+        const val REIFIED_OPERATION_MARKER_METHOD_NAME: String = "reifiedOperationMarker"
+        const val NEED_CLASS_REIFICATION_MARKER_METHOD_NAME: String = "needClassReification"
 
-        fun isOperationReifiedMarker(insn: AbstractInsnNode) =
+        fun isOperationReifiedMarker(insn: AbstractInsnNode): Boolean =
                 isReifiedMarker(insn) { it == REIFIED_OPERATION_MARKER_METHOD_NAME }
 
         private fun isReifiedMarker(insn: AbstractInsnNode, namePredicate: (String) -> Boolean): Boolean {
@@ -283,7 +283,7 @@ class TypeParameterMappings() {
 
     operator fun get(name: String): TypeParameterMapping? = mappingsByName[name]
 
-    fun hasReifiedParameters() = mappingsByName.values.any { it.isReified }
+    fun hasReifiedParameters(): Boolean = mappingsByName.values.any { it.isReified }
 
     internal inline fun forEach(l: (TypeParameterMapping) -> Unit)  {
         mappingsByName.values.forEach(l)

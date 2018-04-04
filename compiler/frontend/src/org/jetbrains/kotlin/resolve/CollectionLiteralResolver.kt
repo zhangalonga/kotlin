@@ -56,7 +56,7 @@ class CollectionLiteralResolver(
             PrimitiveType.DOUBLE to Name.identifier("doubleArrayOf")
         )
 
-        val ARRAY_OF_FUNCTION = Name.identifier("arrayOf")
+        val ARRAY_OF_FUNCTION: Name = Name.identifier("arrayOf")
     }
 
     fun resolveCollectionLiteral(

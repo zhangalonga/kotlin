@@ -20,7 +20,7 @@ import templates.Family.*
 
 object SequenceOps : TemplateGroupBase() {
 
-    val f_asIterable = fn("asIterable()") {
+    val f_asIterable: FamilyPrimitiveMemberDefinition = fn("asIterable()") {
         include(Iterables, ArraysOfObjects, ArraysOfPrimitives, Sequences, CharSequences, Maps)
     } builder {
         doc { "Creates an [Iterable] instance that wraps the original ${f.collection} returning its ${f.element.pluralize()} when being iterated." }
@@ -45,7 +45,7 @@ object SequenceOps : TemplateGroupBase() {
         body(Maps) { "return entries" }
     }
 
-    val f_asSequence = fn("asSequence()") {
+    val f_asSequence: FamilyPrimitiveMemberDefinition = fn("asSequence()") {
         includeDefault()
         include(CharSequences, Maps)
     } builder {

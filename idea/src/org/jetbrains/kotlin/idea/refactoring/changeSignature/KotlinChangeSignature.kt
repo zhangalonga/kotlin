@@ -76,7 +76,7 @@ class KotlinChangeSignature(
 
     private val LOG = Logger.getInstance(KotlinChangeSignature::class.java)
 
-    override fun forcePerformForSelectedFunctionOnly() = configuration.forcePerformForSelectedFunctionOnly()
+    override fun forcePerformForSelectedFunctionOnly(): Boolean = configuration.forcePerformForSelectedFunctionOnly()
 
     private fun runSilentRefactoring(descriptor: KotlinMethodDescriptor) {
         val baseDeclaration = descriptor.baseDeclaration

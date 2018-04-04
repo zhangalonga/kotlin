@@ -47,7 +47,7 @@ object ModifierCheckerCore {
         MEMBER_PROPERTY, TOP_LEVEL_PROPERTY, CONSTRUCTOR, TYPEALIAS
     )
 
-    val possibleTargetMap = mapOf<KtModifierKeywordToken, Set<KotlinTarget>>(
+    val possibleTargetMap: Map<KtModifierKeywordToken, Set<KotlinTarget>> = mapOf<KtModifierKeywordToken, Set<KotlinTarget>>(
         ENUM_KEYWORD to EnumSet.of(ENUM_CLASS),
         ABSTRACT_KEYWORD to EnumSet.of(CLASS_ONLY, LOCAL_CLASS, INTERFACE, MEMBER_PROPERTY, MEMBER_FUNCTION),
         OPEN_KEYWORD to EnumSet.of(CLASS_ONLY, LOCAL_CLASS, INTERFACE, MEMBER_PROPERTY, MEMBER_FUNCTION),

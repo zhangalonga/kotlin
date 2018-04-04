@@ -21,22 +21,22 @@ import org.jetbrains.kotlin.incremental.components.LookupTracker
 
 object CommonConfigurationKeys {
     @JvmField
-    val LANGUAGE_VERSION_SETTINGS = CompilerConfigurationKey<LanguageVersionSettings>("language version settings")
+    val LANGUAGE_VERSION_SETTINGS: CompilerConfigurationKey<LanguageVersionSettings> = CompilerConfigurationKey<LanguageVersionSettings>("language version settings")
 
     @JvmField
-    val DISABLE_INLINE = CompilerConfigurationKey<Boolean>("disable inline")
+    val DISABLE_INLINE: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey<Boolean>("disable inline")
 
     @JvmField
-    val MODULE_NAME = CompilerConfigurationKey<String>("module name")
+    val MODULE_NAME: CompilerConfigurationKey<String> = CompilerConfigurationKey<String>("module name")
 
     @JvmField
-    val REPORT_OUTPUT_FILES = CompilerConfigurationKey<Boolean>("report output files")
+    val REPORT_OUTPUT_FILES: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey<Boolean>("report output files")
 
     @JvmField
-    val LOOKUP_TRACKER = CompilerConfigurationKey.create<LookupTracker>("lookup tracker")
+    val LOOKUP_TRACKER: CompilerConfigurationKey<LookupTracker> = CompilerConfigurationKey.create<LookupTracker>("lookup tracker")
 
     @JvmField
-    val EXPECT_ACTUAL_TRACKER = CompilerConfigurationKey.create<ExpectActualTracker>("expect actual tracker")
+    val EXPECT_ACTUAL_TRACKER: CompilerConfigurationKey<ExpectActualTracker> = CompilerConfigurationKey.create<ExpectActualTracker>("expect actual tracker")
 }
 
 var CompilerConfiguration.languageVersionSettings: LanguageVersionSettings

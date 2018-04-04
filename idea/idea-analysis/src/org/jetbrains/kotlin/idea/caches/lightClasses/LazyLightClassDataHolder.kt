@@ -64,8 +64,8 @@ sealed class LazyLightClassDataHolder(
     private val inexactStub: PsiJavaFileStub?
         get() = if (exactResultCachedValue.hasUpToDateValue()) null else lazyInexactStub
 
-    override val javaFileStub get() = exactResultCachedValue.value.stub
-    override val extraDiagnostics get() = exactResultCachedValue.value.diagnostics
+    override val javaFileStub: PsiJavaFileStub get() = exactResultCachedValue.value.stub
+    override val extraDiagnostics: Diagnostics get() = exactResultCachedValue.value.diagnostics
 
     // for facade or defaultImpls
     override fun findData(findDelegate: (PsiJavaFileStub) -> PsiClass): LightClassData =

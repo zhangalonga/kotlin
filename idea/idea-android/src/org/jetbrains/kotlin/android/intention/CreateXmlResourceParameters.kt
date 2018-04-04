@@ -20,7 +20,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 
 
-val CREATE_XML_RESOURCE_PARAMETERS_NAME_KEY = Key<String>("CREATE_XML_RESOURCE_PARAMETERS_NAME_KEY")
+val CREATE_XML_RESOURCE_PARAMETERS_NAME_KEY: Key<String> = Key("CREATE_XML_RESOURCE_PARAMETERS_NAME_KEY")
 
 class CreateXmlResourceParameters(val name: String,
                                   val value: String,

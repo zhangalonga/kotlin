@@ -42,10 +42,10 @@ object CopyClassesToJavaOutputStatus {
         }
     }
 
-    const val buildCacheWarningMessage = "The 'kotlin.copyClassesToJavaOutput' option should not be used with Gradle " +
+    const val buildCacheWarningMessage: String = "The 'kotlin.copyClassesToJavaOutput' option should not be used with Gradle " +
             "build cache"
 
-    const val gradleVersionTooLowWarningMessage = "The 'kotlin.copyClassesToJavaOutput' option has no effect when " +
+    const val gradleVersionTooLowWarningMessage: String = "The 'kotlin.copyClassesToJavaOutput' option has no effect when " +
             "used with Gradle < 4.0"
 
     private val Project.kotlinJvmExt: KotlinJvmProjectExtension?

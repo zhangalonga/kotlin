@@ -36,8 +36,8 @@ class AddLoopLabelFix(
             if (existingLabelName != null) "Add '@$existingLabelName' to ${jumpExpression.text}"
             else "Add label to loop"
 
-    override fun getText() = description
-    override fun getFamilyName() = text
+    override fun getText(): String = description
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

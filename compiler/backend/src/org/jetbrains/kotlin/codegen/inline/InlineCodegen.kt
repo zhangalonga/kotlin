@@ -50,6 +50,7 @@ import org.jetbrains.org.objectweb.asm.commons.Method
 import org.jetbrains.org.objectweb.asm.tree.*
 import java.util.*
 import kotlin.collections.HashSet
+import kotlin.collections.LinkedHashMap
 
 abstract class InlineCodegen<out T: BaseExpressionCodegen>(
         protected val codegen: T,
@@ -67,7 +68,7 @@ abstract class InlineCodegen<out T: BaseExpressionCodegen>(
     // TODO: implement AS_FUNCTION inline strategy
     private val asFunctionInline = false
 
-    protected val typeMapper = state.typeMapper
+    protected val typeMapper: KotlinTypeMapper = state.typeMapper
 
     private val initialFrameSize = codegen.frameMap.currentSize
 
@@ -83,9 +84,9 @@ abstract class InlineCodegen<out T: BaseExpressionCodegen>(
 
     private val isSameModule: Boolean
 
-    protected val invocationParamBuilder = ParametersBuilder.newBuilder()
+    protected val invocationParamBuilder: ParametersBuilder = ParametersBuilder.newBuilder()
 
-    protected val expressionMap = linkedMapOf<Int, LambdaInfo>()
+    protected val expressionMap: LinkedHashMap<Int, LambdaInfo> = linkedMapOf()
 
     var activeLambda: LambdaInfo? = null
         protected set
@@ -94,9 +95,9 @@ abstract class InlineCodegen<out T: BaseExpressionCodegen>(
 
     protected var delayedHiddenWriting: Function0<Unit>? = null
 
-    protected val maskValues = ArrayList<Int>()
-    protected var maskStartIndex = -1
-    protected var methodHandleInDefaultMethodIndex = -1
+    protected val maskValues: ArrayList<Int> = ArrayList()
+    protected var maskStartIndex: Int = -1
+    protected var methodHandleInDefaultMethodIndex: Int = -1
 
     init {
         sourceCompiler.initializeInlineFunctionContext(functionDescriptor)
@@ -762,7 +763,7 @@ class PsiInlineCodegen(
         )
     }
 
-    override fun reorderArgumentsIfNeeded(actualArgsWithDeclIndex: List<ArgumentAndDeclIndex>, valueParameterTypes: List<Type>) = Unit
+    override fun reorderArgumentsIfNeeded(actualArgsWithDeclIndex: List<ArgumentAndDeclIndex>, valueParameterTypes: List<Type>): Unit = Unit
 
     override fun putHiddenParamsIntoLocals() {
         assert(delayedHiddenWriting != null) { "processAndPutHiddenParameters(true) should be called before putHiddenParamsIntoLocals" }

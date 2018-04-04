@@ -36,9 +36,9 @@ class MakeTypeParameterReifiedAndFunctionInlineFix(
 
     private val inlineFix = AddInlineToFunctionWithReifiedFix(function)
 
-    override fun getText() = "Make type parameter reified and function inline"
+    override fun getText(): String = "Make type parameter reified and function inline"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         inlineFix.invoke(project, editor, file)

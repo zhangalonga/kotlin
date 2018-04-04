@@ -97,7 +97,7 @@ interface IrStatementOrigin {
         companion object {
             private val precreatedComponents = Array(32) { i -> COMPONENT_N(i + 1) }
 
-            fun withIndex(index: Int) =
+            fun withIndex(index: Int): COMPONENT_N =
                 if (index < precreatedComponents.size)
                     precreatedComponents[index - 1]
                 else
@@ -107,7 +107,7 @@ interface IrStatementOrigin {
 
 }
 
-fun IrStatementOrigin.isAssignmentOperatorWithResult() =
+fun IrStatementOrigin.isAssignmentOperatorWithResult(): Boolean =
     when (this) {
         IrStatementOrigin.PREFIX_INCR, IrStatementOrigin.PREFIX_DECR,
         IrStatementOrigin.POSTFIX_INCR, IrStatementOrigin.POSTFIX_DECR ->

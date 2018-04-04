@@ -29,7 +29,7 @@ object LibraryUtils {
 
     private var TITLE_KOTLIN_JAVASCRIPT_STDLIB: String
 
-    val META_INF = "META-INF/"
+    val META_INF: String = "META-INF/"
     private val MANIFEST_PATH = "${META_INF}MANIFEST.MF"
 
     init {

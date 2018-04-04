@@ -75,7 +75,7 @@ fun IrExpression.safeCallOnDispatchReceiver(
     startOffset: Int,
     endOffset: Int,
     ifNotNull: (IrExpression) -> IrExpression
-) =
+): IrExpression =
     SafeCallReceiver(
         generator, startOffset, endOffset,
         extensionReceiver = null,

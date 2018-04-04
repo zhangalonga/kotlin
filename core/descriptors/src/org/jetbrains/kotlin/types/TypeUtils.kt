@@ -45,8 +45,8 @@ fun KotlinType.nullability(): TypeNullability {
 val KotlinType.builtIns: KotlinBuiltIns
     get() = constructor.builtIns
 
-fun KotlinType.makeNullable() = TypeUtils.makeNullable(this)
-fun KotlinType.makeNotNullable() = TypeUtils.makeNotNullable(this)
+fun KotlinType.makeNullable(): KotlinType = TypeUtils.makeNullable(this)
+fun KotlinType.makeNotNullable(): KotlinType = TypeUtils.makeNotNullable(this)
 
 fun KotlinType.immediateSupertypes(): Collection<KotlinType> = TypeUtils.getImmediateSupertypes(this)
 fun KotlinType.supertypes(): Collection<KotlinType> = TypeUtils.getAllSupertypes(this)
@@ -61,13 +61,13 @@ fun KotlinType.isPrimitiveNumberType(): Boolean = KotlinBuiltIns.isPrimitiveType
 
 fun KotlinType.isBooleanOrNullableBoolean(): Boolean = KotlinBuiltIns.isBooleanOrNullableBoolean(this)
 fun KotlinType.isNotNullThrowable(): Boolean = KotlinBuiltIns.isThrowableOrNullableThrowable(this) && !isMarkedNullable
-fun KotlinType.isByte() = KotlinBuiltIns.isByte(this)
-fun KotlinType.isChar() = KotlinBuiltIns.isChar(this)
-fun KotlinType.isShort() = KotlinBuiltIns.isShort(this)
-fun KotlinType.isInt() = KotlinBuiltIns.isInt(this)
-fun KotlinType.isLong() = KotlinBuiltIns.isLong(this)
-fun KotlinType.isFloat() = KotlinBuiltIns.isFloat(this)
-fun KotlinType.isDouble() = KotlinBuiltIns.isDouble(this)
+fun KotlinType.isByte(): Boolean = KotlinBuiltIns.isByte(this)
+fun KotlinType.isChar(): Boolean = KotlinBuiltIns.isChar(this)
+fun KotlinType.isShort(): Boolean = KotlinBuiltIns.isShort(this)
+fun KotlinType.isInt(): Boolean = KotlinBuiltIns.isInt(this)
+fun KotlinType.isLong(): Boolean = KotlinBuiltIns.isLong(this)
+fun KotlinType.isFloat(): Boolean = KotlinBuiltIns.isFloat(this)
+fun KotlinType.isDouble(): Boolean = KotlinBuiltIns.isDouble(this)
 
 fun KotlinType.isPrimitiveNumberOrNullableType(): Boolean =
     KotlinBuiltIns.isPrimitiveTypeOrNullablePrimitiveType(this) &&
@@ -88,7 +88,7 @@ fun KotlinType?.isArrayOfNothing(): Boolean {
 
 fun KotlinType.isSubtypeOf(superType: KotlinType): Boolean = KotlinTypeChecker.DEFAULT.isSubtypeOf(this, superType)
 
-fun isNullabilityMismatch(expected: KotlinType, actual: KotlinType) =
+fun isNullabilityMismatch(expected: KotlinType, actual: KotlinType): Boolean =
     !expected.isMarkedNullable && actual.isMarkedNullable && actual.isSubtypeOf(TypeUtils.makeNullable(expected))
 
 fun KotlinType.cannotBeReified(): Boolean =
@@ -111,7 +111,7 @@ fun KotlinTypeChecker.equalTypesOrNulls(type1: KotlinType?, type2: KotlinType?):
     return equalTypes(type1, type2)
 }
 
-fun KotlinType.containsError() = ErrorUtils.containsErrorType(this)
+fun KotlinType.containsError(): Boolean = ErrorUtils.containsErrorType(this)
 
 fun List<KotlinType>.defaultProjections(): List<TypeProjection> = map(::TypeProjectionImpl)
 
@@ -170,10 +170,10 @@ fun KotlinType.getImmediateSuperclassNotAny(): KotlinType? {
 }
 
 fun KotlinType.asTypeProjection(): TypeProjection = TypeProjectionImpl(this)
-fun KotlinType.contains(predicate: (UnwrappedType) -> Boolean) = TypeUtils.contains(this, predicate)
+fun KotlinType.contains(predicate: (UnwrappedType) -> Boolean): Boolean = TypeUtils.contains(this, predicate)
 
-fun KotlinType.replaceArgumentsWithStarProjections() = replaceArgumentsWith(::StarProjectionImpl)
-fun KotlinType.replaceArgumentsWithNothing() = replaceArgumentsWith { it.builtIns.nothingType.asTypeProjection() }
+fun KotlinType.replaceArgumentsWithStarProjections(): KotlinType = replaceArgumentsWith(::StarProjectionImpl)
+fun KotlinType.replaceArgumentsWithNothing(): KotlinType = replaceArgumentsWith { it.builtIns.nothingType.asTypeProjection() }
 
 private inline fun KotlinType.replaceArgumentsWith(replacement: (TypeParameterDescriptor) -> TypeProjection): KotlinType {
     val unwrapped = unwrap()

@@ -117,9 +117,9 @@ class KtLightMethodImpl private constructor(
         return super.getModifierList()
     }
 
-    override fun getParameterList() = paramsList
+    override fun getParameterList(): PsiParameterList = paramsList
 
-    override fun getTypeParameterList() = typeParamsList.value
+    override fun getTypeParameterList(): PsiTypeParameterList? = typeParamsList.value
 
     override fun getTypeParameters(): Array<PsiTypeParameter> =
             typeParameterList?.typeParameters ?: PsiTypeParameter.EMPTY_ARRAY
@@ -156,7 +156,7 @@ class KtLightMethodImpl private constructor(
 
     override fun hashCode(): Int = ((getName().hashCode() * 31 + (lightMemberOrigin?.hashCode() ?: 0)) * 31 + containingClass.hashCode()) * 31 + (_memberIndex?.hashCode() ?: 0)
 
-    override fun getDefaultValue() = (clsDelegate as? PsiAnnotationMethod)?.defaultValue
+    override fun getDefaultValue(): PsiAnnotationMemberValue? = (clsDelegate as? PsiAnnotationMethod)?.defaultValue
 
     // override getReturnType() so return type resolves to type parameters of this method not delegate's
     // which is relied upon by java type inference
@@ -196,36 +196,36 @@ class KtLightMethodImpl private constructor(
             return KtLightMethodImpl(computeRealDelegate, origin, containingClass, dummyDelegate)
         }
 
-        fun fromClsMethods(delegateClass: PsiClass, containingClass: KtLightClass) = delegateClass.methods.map {
+        fun fromClsMethods(delegateClass: PsiClass, containingClass: KtLightClass): List<KtLightMethodImpl> = delegateClass.methods.map {
             KtLightMethodImpl.create(it, getOrigin(it), containingClass)
         }
 
-        fun getOrigin(method: PsiMethod) = adjustMethodOrigin(getMemberOrigin(method))
+        fun getOrigin(method: PsiMethod): LightMemberOriginForDeclaration? = adjustMethodOrigin(getMemberOrigin(method))
     }
 
-    override fun getThrowsList() = clsDelegate.throwsList
+    override fun getThrowsList(): PsiReferenceList = clsDelegate.throwsList
 
-    override fun hasTypeParameters() = clsDelegate.hasTypeParameters()
+    override fun hasTypeParameters(): Boolean = clsDelegate.hasTypeParameters()
 
-    override fun isVarArgs() = (dummyDelegate ?: clsDelegate).isVarArgs
+    override fun isVarArgs(): Boolean = (dummyDelegate ?: clsDelegate).isVarArgs
 
-    override fun isConstructor() = dummyDelegate?.isConstructor ?: clsDelegate.isConstructor
+    override fun isConstructor(): Boolean = dummyDelegate?.isConstructor ?: clsDelegate.isConstructor
 
-    override fun getHierarchicalMethodSignature() = clsDelegate.hierarchicalMethodSignature
+    override fun getHierarchicalMethodSignature(): HierarchicalMethodSignature = clsDelegate.hierarchicalMethodSignature
 
-    override fun findSuperMethodSignaturesIncludingStatic(checkAccess: Boolean) = clsDelegate.findSuperMethodSignaturesIncludingStatic(checkAccess)
+    override fun findSuperMethodSignaturesIncludingStatic(checkAccess: Boolean): MutableList<MethodSignatureBackedByPsiMethod> = clsDelegate.findSuperMethodSignaturesIncludingStatic(checkAccess)
 
-    override fun getBody() = null
+    override fun getBody(): Nothing? = null
 
-    override fun findDeepestSuperMethod() = clsDelegate.findDeepestSuperMethod()
+    override fun findDeepestSuperMethod(): PsiMethod? = clsDelegate.findDeepestSuperMethod()
 
-    override fun findDeepestSuperMethods() = clsDelegate.findDeepestSuperMethods()
+    override fun findDeepestSuperMethods(): Array<out PsiMethod> = clsDelegate.findDeepestSuperMethods()
 
-    override fun findSuperMethods() = clsDelegate.findSuperMethods()
+    override fun findSuperMethods(): Array<out PsiMethod> = clsDelegate.findSuperMethods()
 
-    override fun findSuperMethods(checkAccess: Boolean) = clsDelegate.findSuperMethods(checkAccess)
+    override fun findSuperMethods(checkAccess: Boolean): Array<out PsiMethod> = clsDelegate.findSuperMethods(checkAccess)
 
-    override fun findSuperMethods(parentClass: PsiClass?) = clsDelegate.findSuperMethods(parentClass)
+    override fun findSuperMethods(parentClass: PsiClass?): Array<out PsiMethod> = clsDelegate.findSuperMethods(parentClass)
 }
 
 fun KtLightMethod.isTraitFakeOverride(): Boolean {

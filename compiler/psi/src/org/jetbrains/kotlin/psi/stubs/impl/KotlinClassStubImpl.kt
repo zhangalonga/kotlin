@@ -42,10 +42,10 @@ class KotlinClassStubImpl(
         return FqName(stringRef)
     }
 
-    override fun isInterface() = isInterface
-    override fun isEnumEntry() = isEnumEntry
-    override fun isLocal() = isLocal
-    override fun getName() = StringRef.toString(name)
+    override fun isInterface(): Boolean = isInterface
+    override fun isEnumEntry(): Boolean = isEnumEntry
+    override fun isLocal(): Boolean = isLocal
+    override fun getName(): String? = StringRef.toString(name)
 
     override fun getSuperNames(): List<String> {
         val result = ArrayList<String>()
@@ -55,5 +55,5 @@ class KotlinClassStubImpl(
         return result
     }
 
-    override fun isTopLevel() = isTopLevel
+    override fun isTopLevel(): Boolean = isTopLevel
 }

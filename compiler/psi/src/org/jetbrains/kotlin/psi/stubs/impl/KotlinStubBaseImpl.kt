@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.psi.stubs.KotlinStubWithFqName
 import java.lang.reflect.Method
 import java.util.ArrayList
 
-val STUB_TO_STRING_PREFIX = "KotlinStub$"
+val STUB_TO_STRING_PREFIX: String = "KotlinStub$"
 
 open class KotlinStubBaseImpl<T : KtElementImplStub<*>>(parent: StubElement<*>?, elementType: IStubElementType<*, *>) :
     StubBase<T>(parent, elementType) {

@@ -31,7 +31,7 @@ abstract class KtResolvableCollisionUsageInfo(
         referencedElement: PsiElement
 ) : ResolvableCollisionUsageInfo(element, referencedElement) {
     // To prevent simple rename via PsiReference
-    override fun getReference() = null
+    override fun getReference(): Nothing? = null
 
     abstract fun apply()
 }

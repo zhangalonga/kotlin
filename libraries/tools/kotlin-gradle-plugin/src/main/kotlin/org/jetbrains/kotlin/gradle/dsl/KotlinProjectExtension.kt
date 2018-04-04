@@ -35,7 +35,7 @@ open class KotlinJvmProjectExtension : KotlinProjectExtension() {
      * With Gradle 4.0+, disables the separate output directory for Kotlin, falling back to sharing the deprecated
      * single classes directory per source set. With Gradle < 4.0, has no effect.
      * */
-    var copyClassesToJavaOutput = false
+    var copyClassesToJavaOutput: Boolean = false
 }
 
 open class ExperimentalExtension {
@@ -48,7 +48,7 @@ enum class Coroutines {
     ERROR;
 
     companion object {
-        val DEFAULT = WARN
+        val DEFAULT: Coroutines = WARN
 
         fun byCompilerArgument(argument: String): Coroutines? =
                 Coroutines.values().firstOrNull { it.name.equals(argument, ignoreCase = true) }

@@ -53,10 +53,10 @@ class Identifier(
 
     private fun quote(str: String): String = "`$str`"
 
-    override fun toString() = if (isNullable) "$name?" else name
+    override fun toString(): String = if (isNullable) "$name?" else name
 
     companion object {
-        val Empty = Identifier("")
+        val Empty: Identifier = Identifier("")
 
         private val KEYWORDS = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }.toSet()
 

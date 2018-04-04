@@ -39,9 +39,9 @@ import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 
 open class FunctionCodegen(private val irFunction: IrFunction, private val classCodegen: ClassCodegen) {
 
-    val state = classCodegen.state
+    val state: GenerationState = classCodegen.state
 
-    val descriptor = irFunction.descriptor
+    val descriptor: FunctionDescriptor = irFunction.descriptor
 
     fun generate() {
         try {

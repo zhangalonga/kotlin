@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.idea.core.OptionalParametersHelper
 import org.jetbrains.kotlin.idea.core.resolveCandidates
 import org.jetbrains.kotlin.idea.resolve.ResolutionFacade
 import org.jetbrains.kotlin.idea.util.ShadowedDeclarationsFilter
+import org.jetbrains.kotlin.lexer.KtSingleValueToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.load.java.sam.SamAdapterDescriptor
 import org.jetbrains.kotlin.psi.*
@@ -57,19 +58,19 @@ import java.util.*
 import kotlin.reflect.KClass
 
 class KotlinFunctionParameterInfoHandler : KotlinParameterInfoWithCallHandlerBase<KtValueArgumentList, KtValueArgument>(KtValueArgumentList::class, KtValueArgument::class) {
-    override fun getActualParameters(arguments: KtValueArgumentList) = arguments.arguments.toTypedArray()
+    override fun getActualParameters(arguments: KtValueArgumentList): Array<KtValueArgument> = arguments.arguments.toTypedArray()
 
-    override fun getActualParametersRBraceType() = KtTokens.RPAR
+    override fun getActualParametersRBraceType(): KtSingleValueToken = KtTokens.RPAR
 
-    override fun getArgumentListAllowedParentClasses() = setOf(KtCallElement::class.java)
+    override fun getArgumentListAllowedParentClasses(): Set<Class<KtCallElement>> = setOf(KtCallElement::class.java)
 }
 
 class KotlinArrayAccessParameterInfoHandler : KotlinParameterInfoWithCallHandlerBase<KtContainerNode, KtExpression>(KtContainerNode::class, KtExpression::class) {
-    override fun getArgumentListAllowedParentClasses() = setOf(KtArrayAccessExpression::class.java)
+    override fun getArgumentListAllowedParentClasses(): Set<Class<KtArrayAccessExpression>> = setOf(KtArrayAccessExpression::class.java)
 
     override fun getActualParameters(containerNode: KtContainerNode): Array<out KtExpression> = containerNode.allChildren.filterIsInstance<KtExpression>().toList().toTypedArray()
 
-    override fun getActualParametersRBraceType() = KtTokens.RBRACKET
+    override fun getActualParametersRBraceType(): KtSingleValueToken = KtTokens.RBRACKET
 }
 
 abstract class KotlinParameterInfoWithCallHandlerBase<TArgumentList : KtElement, TArgument : KtElement>(
@@ -86,11 +87,11 @@ abstract class KotlinParameterInfoWithCallHandlerBase<TArgumentList : KtElement,
         return (argumentList.parent as? KtElement)?.getCall(bindingContext)
     }
 
-    override fun getActualParameterDelimiterType() = KtTokens.COMMA
+    override fun getActualParameterDelimiterType(): KtSingleValueToken = KtTokens.COMMA
 
-    override fun getArgListStopSearchClasses() = setOf(KtNamedFunction::class.java, KtVariableDeclaration::class.java)
+    override fun getArgListStopSearchClasses(): Set<Class<out KtDeclaration>> = setOf(KtNamedFunction::class.java, KtVariableDeclaration::class.java)
 
-    override fun getArgumentListClass() = argumentListClass.java
+    override fun getArgumentListClass(): Class<TArgumentList> = argumentListClass.java
 
     override fun showParameterInfo(element: TArgumentList, context: CreateParameterInfoContext) {
         context.showHint(element, element.textRange.startOffset, this)
@@ -237,14 +238,14 @@ abstract class KotlinParameterInfoWithCallHandlerBase<TArgumentList : KtElement,
         return true
     }
 
-    override fun getParameterCloseChars() = ParameterInfoUtils.DEFAULT_PARAMETER_CLOSE_CHARS
+    override fun getParameterCloseChars(): String = ParameterInfoUtils.DEFAULT_PARAMETER_CLOSE_CHARS
 
-    override fun tracksParameterIndex() = true
+    override fun tracksParameterIndex(): Boolean = true
 
     //TODO
-    override fun couldShowInLookup() = false
-    override fun getParametersForLookup(item: LookupElement, context: ParameterInfoContext) = emptyArray<Any>()
-    override fun getParametersForDocumentation(item: FunctionDescriptor, context: ParameterInfoContext) = emptyArray<Any>()
+    override fun couldShowInLookup(): Boolean = false
+    override fun getParametersForLookup(item: LookupElement, context: ParameterInfoContext): Array<Any> = emptyArray<Any>()
+    override fun getParametersForDocumentation(item: FunctionDescriptor, context: ParameterInfoContext): Array<Any> = emptyArray<Any>()
 
     private val RENDERER = DescriptorRenderer.SHORT_NAMES_IN_TYPES.withOptions {
         renderUnabbreviatedType = false

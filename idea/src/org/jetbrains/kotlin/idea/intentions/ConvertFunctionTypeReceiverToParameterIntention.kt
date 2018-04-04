@@ -57,7 +57,7 @@ class ConvertFunctionTypeReceiverToParameterIntention : SelfTargetingRangeIntent
             val lambdaReceiverType: KotlinType,
             val function: KtFunction
     ) {
-        val functionDescriptor by lazy { function.unsafeResolveToDescriptor() as FunctionDescriptor }
+        val functionDescriptor: FunctionDescriptor by lazy { function.unsafeResolveToDescriptor() as FunctionDescriptor }
     }
 
     class FunctionDefinitionInfo(element: KtFunction) : AbstractProcessableUsageInfo<KtFunction, ConversionData>(element) {

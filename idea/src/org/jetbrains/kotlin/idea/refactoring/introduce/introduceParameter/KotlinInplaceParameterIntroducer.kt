@@ -45,6 +45,7 @@ import org.jetbrains.kotlin.types.typeUtil.supertypes
 import java.awt.Color
 import java.util.*
 import javax.swing.JCheckBox
+import javax.swing.JPanel
 
 class KotlinInplaceParameterIntroducer(
         val originalDescriptor: IntroduceParameterDescriptor,
@@ -196,13 +197,13 @@ class KotlinInplaceParameterIntroducer(
         }
     }
 
-    override fun getActionName() = "IntroduceParameter"
+    override fun getActionName(): String = "IntroduceParameter"
 
-    override fun checkLocalScope() = descriptor.callable
+    override fun checkLocalScope(): KtNamedDeclaration = descriptor.callable
 
-    override fun getVariable() = originalDescriptor.callable.getValueParameters().lastOrNull()
+    override fun getVariable(): KtParameter? = originalDescriptor.callable.getValueParameters().lastOrNull()
 
-    override fun suggestNames(replaceAll: Boolean, variable: KtParameter?) = suggestedNames
+    override fun suggestNames(replaceAll: Boolean, variable: KtParameter?): Array<out String> = suggestedNames
 
     override fun createFieldToStartTemplateOn(replaceAll: Boolean, names: Array<out String>): KtParameter? {
         return runWriteAction {
@@ -221,13 +222,13 @@ class KotlinInplaceParameterIntroducer(
         }
     }
 
-    override fun isReplaceAllOccurrences() = replaceAllCheckBox?.isSelected ?: true
+    override fun isReplaceAllOccurrences(): Boolean = replaceAllCheckBox?.isSelected ?: true
 
     override fun setReplaceAllOccurrences(allOccurrences: Boolean) {
         replaceAllCheckBox?.isSelected = allOccurrences
     }
 
-    override fun getComponent() = myWholePanel
+    override fun getComponent(): JPanel? = myWholePanel
 
     override fun updateTitle(addedParameter: KtParameter?, currentName: String?) {
         val preview = Preview(addedParameter, currentName)

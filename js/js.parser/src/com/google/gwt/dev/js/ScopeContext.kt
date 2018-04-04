@@ -52,7 +52,7 @@ class ScopeContext(scope: JsScope) {
     fun enterLabel(ident: String, outputName: String): JsName =
             (currentScope as JsDeclarationScope).enterLabel(ident, outputName)
 
-    fun exitLabel() =
+    fun exitLabel(): Unit =
             (currentScope as JsDeclarationScope).exitLabel()
 
     fun labelFor(ident: String): JsName? =

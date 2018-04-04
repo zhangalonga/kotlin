@@ -62,16 +62,16 @@ class DataFlowValue(
         // Smart casts are not safe
         OTHER("other", "complex expression");
 
-        override fun toString() = str
+        override fun toString(): String = str
     }
 
     /**
      * Stable means here we do not expect some sudden change of their values,
      * like accessing mutable properties in another thread, so smart casts can be used safely.
      */
-    val isStable = (kind == Kind.STABLE_VALUE || kind == Kind.STABLE_VARIABLE || kind == Kind.STABLE_COMPLEX_EXPRESSION)
+    val isStable: Boolean = (kind == Kind.STABLE_VALUE || kind == Kind.STABLE_VARIABLE || kind == Kind.STABLE_COMPLEX_EXPRESSION)
 
-    val canBeBound get() = identifierInfo.canBeBound
+    val canBeBound: Boolean get() = identifierInfo.canBeBound
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -83,16 +83,16 @@ class DataFlowValue(
         return true
     }
 
-    override fun toString() = "$kind $identifierInfo $immanentNullability"
+    override fun toString(): String = "$kind $identifierInfo $immanentNullability"
 
-    override fun hashCode() = type.hashCode() + 31 * identifierInfo.hashCode()
+    override fun hashCode(): Int = type.hashCode() + 31 * identifierInfo.hashCode()
 
     companion object {
 
         @JvmStatic
-        fun nullValue(builtIns: KotlinBuiltIns) = DataFlowValue(IdentifierInfo.NULL, builtIns.nullableNothingType, Nullability.NULL)
+        fun nullValue(builtIns: KotlinBuiltIns): DataFlowValue = DataFlowValue(IdentifierInfo.NULL, builtIns.nullableNothingType, Nullability.NULL)
 
         @JvmField
-        val ERROR = DataFlowValue(IdentifierInfo.ERROR, ErrorUtils.createErrorType("Error type for data flow"), Nullability.IMPOSSIBLE)
+        val ERROR: DataFlowValue = DataFlowValue(IdentifierInfo.ERROR, ErrorUtils.createErrorType("Error type for data flow"), Nullability.IMPOSSIBLE)
     }
 }

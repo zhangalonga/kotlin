@@ -17,12 +17,13 @@
 package org.jetbrains.kotlin.script
 
 import org.jetbrains.kotlin.descriptors.ScriptDescriptor
+import org.jetbrains.kotlin.types.KotlinType
 import kotlin.reflect.KClass
 
 class ScriptHelperImpl : ScriptHelper {
-    override fun getScriptParameters(kotlinScriptDefinition: KotlinScriptDefinition, scriptDefinition: ScriptDescriptor) =
+    override fun getScriptParameters(kotlinScriptDefinition: KotlinScriptDefinition, scriptDefinition: ScriptDescriptor): List<ScriptParameter> =
             kotlinScriptDefinition.getScriptParameters(scriptDefinition)
 
-    override fun getKotlinType(scriptDescriptor: ScriptDescriptor, kClass: KClass<out Any>) =
+    override fun getKotlinType(scriptDescriptor: ScriptDescriptor, kClass: KClass<out Any>): KotlinType =
             getKotlinTypeByKClass(scriptDescriptor, kClass)
 }

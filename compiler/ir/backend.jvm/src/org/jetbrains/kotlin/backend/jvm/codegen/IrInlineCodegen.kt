@@ -129,5 +129,5 @@ class IrExpressionLambda(
         get() = false
 }
 
-fun isInlineIrExpression(argumentExpression: IrExpression) =
+fun isInlineIrExpression(argumentExpression: IrExpression): Boolean =
         argumentExpression is IrBlock && argumentExpression.origin == IrStatementOrigin.LAMBDA

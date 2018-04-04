@@ -221,7 +221,7 @@ enum class ReferenceAccess(val isRead: Boolean, val isWrite: Boolean) {
     READ(true, false), WRITE(false, true), READ_WRITE(true, true)
 }
 
-fun KtExpression.readWriteAccess(useResolveForReadWrite: Boolean) = readWriteAccessWithFullExpression(useResolveForReadWrite).first
+fun KtExpression.readWriteAccess(useResolveForReadWrite: Boolean): ReferenceAccess = readWriteAccessWithFullExpression(useResolveForReadWrite).first
 
 fun KtExpression.readWriteAccessWithFullExpression(useResolveForReadWrite: Boolean): Pair<ReferenceAccess, KtExpression> {
     var expression = getQualifiedExpressionForSelectorOrThis()

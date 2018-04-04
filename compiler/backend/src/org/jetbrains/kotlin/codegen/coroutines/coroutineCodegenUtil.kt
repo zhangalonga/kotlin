@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
@@ -44,6 +45,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.jvm.AsmTypes
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.KotlinTypeFactory
+import org.jetbrains.kotlin.types.SimpleType
 import org.jetbrains.kotlin.types.TypeConstructorSubstitution
 import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -54,25 +56,25 @@ import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 import org.jetbrains.org.objectweb.asm.commons.Method
 import org.jetbrains.org.objectweb.asm.tree.MethodNode
 
-const val COROUTINE_LABEL_FIELD_NAME = "label"
-const val SUSPEND_FUNCTION_CREATE_METHOD_NAME = "create"
-const val DO_RESUME_METHOD_NAME = "doResume"
-const val DATA_FIELD_NAME = "data"
-const val EXCEPTION_FIELD_NAME = "exception"
+const val COROUTINE_LABEL_FIELD_NAME: String = "label"
+const val SUSPEND_FUNCTION_CREATE_METHOD_NAME: String = "create"
+const val DO_RESUME_METHOD_NAME: String = "doResume"
+const val DATA_FIELD_NAME: String = "data"
+const val EXCEPTION_FIELD_NAME: String = "exception"
 
 @JvmField
-val COROUTINES_JVM_INTERNAL_PACKAGE_FQ_NAME =
+val COROUTINES_JVM_INTERNAL_PACKAGE_FQ_NAME: FqName =
     DescriptorUtils.COROUTINES_PACKAGE_FQ_NAME.child(Name.identifier("jvm")).child(Name.identifier("internal"))
 
 @JvmField
-val CONTINUATION_ASM_TYPE = DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME.topLevelClassAsmType()
+val CONTINUATION_ASM_TYPE: Type = DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME.topLevelClassAsmType()
 
 @JvmField
-val COROUTINE_CONTEXT_ASM_TYPE =
+val COROUTINE_CONTEXT_ASM_TYPE: Type =
     DescriptorUtils.COROUTINES_PACKAGE_FQ_NAME.child(Name.identifier("CoroutineContext")).topLevelClassAsmType()
 
 @JvmField
-val COROUTINE_IMPL_ASM_TYPE = COROUTINES_JVM_INTERNAL_PACKAGE_FQ_NAME.child(Name.identifier("CoroutineImpl")).topLevelClassAsmType()
+val COROUTINE_IMPL_ASM_TYPE: Type = COROUTINES_JVM_INTERNAL_PACKAGE_FQ_NAME.child(Name.identifier("CoroutineImpl")).topLevelClassAsmType()
 
 private val COROUTINES_INTRINSICS_FILE_FACADE_INTERNAL_NAME =
     DescriptorUtils.COROUTINES_INTRINSICS_PACKAGE_FQ_NAME.child(Name.identifier("IntrinsicsKt")).topLevelClassAsmType()
@@ -86,10 +88,12 @@ private val GET_CONTEXT_METHOD_NAME = "getContext"
 data class ResolvedCallWithRealDescriptor(val resolvedCall: ResolvedCall<*>, val fakeContinuationExpression: KtExpression)
 
 @JvmField
-val INITIAL_DESCRIPTOR_FOR_SUSPEND_FUNCTION = object : FunctionDescriptor.UserDataKey<FunctionDescriptor> {}
+val INITIAL_DESCRIPTOR_FOR_SUSPEND_FUNCTION: FunctionDescriptor.UserDataKey<FunctionDescriptor> =
+    object : FunctionDescriptor.UserDataKey<FunctionDescriptor> {}
 
 @JvmField
-val INITIAL_SUSPEND_DESCRIPTOR_FOR_DO_RESUME = object : FunctionDescriptor.UserDataKey<FunctionDescriptor> {}
+val INITIAL_SUSPEND_DESCRIPTOR_FOR_DO_RESUME: FunctionDescriptor.UserDataKey<FunctionDescriptor> =
+    object : FunctionDescriptor.UserDataKey<FunctionDescriptor> {}
 
 // Resolved calls to suspension function contain descriptors as they visible within coroutines:
 // E.g. `fun <V> await(f: CompletableFuture<V>): V` instead of `fun <V> await(f: CompletableFuture<V>, machine: Continuation<V>): Unit`
@@ -249,7 +253,7 @@ fun <D : FunctionDescriptor> D.createCustomCopy(
 private fun FunctionDescriptor.getContinuationParameterTypeOfSuspendFunction() =
     module.getContinuationOfTypeOrAny(returnType!!)
 
-fun ModuleDescriptor.getContinuationOfTypeOrAny(kotlinType: KotlinType) =
+fun ModuleDescriptor.getContinuationOfTypeOrAny(kotlinType: KotlinType): SimpleType =
     module.findContinuationClassDescriptorOrNull(NoLookupLocation.FROM_BACKEND)?.defaultType?.let {
         KotlinTypeFactory.simpleType(
             it,
@@ -257,7 +261,7 @@ fun ModuleDescriptor.getContinuationOfTypeOrAny(kotlinType: KotlinType) =
         )
     } ?: module.builtIns.nullableAnyType
 
-fun FunctionDescriptor.isBuiltInSuspendCoroutineOrReturnInJvm() =
+fun FunctionDescriptor.isBuiltInSuspendCoroutineOrReturnInJvm(): Boolean =
     getUserData(INITIAL_DESCRIPTOR_FOR_SUSPEND_FUNCTION)?.isBuiltInSuspendCoroutineOrReturn() == true
 
 fun createMethodNodeForSuspendCoroutineOrReturn(
@@ -300,7 +304,7 @@ fun createMethodNodeForSuspendCoroutineOrReturn(
     return node
 }
 
-fun FunctionDescriptor.isBuiltInSuspendCoroutineUninterceptedOrReturnInJvm() =
+fun FunctionDescriptor.isBuiltInSuspendCoroutineUninterceptedOrReturnInJvm(): Boolean =
     getUserData(INITIAL_DESCRIPTOR_FOR_SUSPEND_FUNCTION)?.isBuiltInSuspendCoroutineUninterceptedOrReturn() == true
 
 fun createMethodNodeForIntercepted(
@@ -431,5 +435,5 @@ fun InstructionAdapter.invokeDoResumeWithUnit(thisName: String) {
     )
 }
 
-fun Method.getImplForOpenMethod(ownerInternalName: String) =
+fun Method.getImplForOpenMethod(ownerInternalName: String): Method =
     Method("$name\$suspendImpl", returnType, arrayOf(Type.getObjectType(ownerInternalName)) + argumentTypes)

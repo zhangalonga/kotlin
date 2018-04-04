@@ -2,7 +2,7 @@ package org.jetbrains.idl2k.util
 
 import java.util.*
 
-fun List<List<*>>.mutationsCount() = if (isEmpty()) 0 else fold(1) { acc, e -> acc * e.size }
+fun List<List<*>>.mutationsCount(): Int = if (isEmpty()) 0 else fold(1) { acc, e -> acc * e.size }
 
 fun <T> List<List<T>>.mutations() : List<List<T>> {
     val indices = IntArray(size)
@@ -42,4 +42,4 @@ fun <T> List<List<T>>.mutations() : List<List<T>> {
     return result
 }
 
-fun mapEnumConstant(entry: String) = if (entry.isEmpty()) "EMPTY" else entry.toUpperCase().replace("-", "_")
+fun mapEnumConstant(entry: String): String = if (entry.isEmpty()) "EMPTY" else entry.toUpperCase().replace("-", "_")

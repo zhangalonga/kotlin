@@ -22,12 +22,12 @@ import org.jetbrains.kotlin.types.KotlinType
 
 abstract class ExpressionValue(override val type: KotlinType) : IntermediateValue
 
-inline fun generateExpressionValue(type: KotlinType, crossinline generate: () -> IrExpression) =
+inline fun generateExpressionValue(type: KotlinType, crossinline generate: () -> IrExpression): ExpressionValue =
     object : ExpressionValue(type) {
         override fun load(): IrExpression = generate()
     }
 
-inline fun generateDelegatedValue(type: KotlinType, crossinline generateValue: () -> IntermediateValue) =
+inline fun generateDelegatedValue(type: KotlinType, crossinline generateValue: () -> IntermediateValue): ExpressionValue =
     object : ExpressionValue(type) {
         val lazyDelegate by lazy { generateValue() }
         override fun load(): IrExpression = lazyDelegate.load()

@@ -20,10 +20,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.diagnostics.Errors
 import org.jetbrains.kotlin.diagnostics.Errors.UNRESOLVED_REFERENCE
 import org.jetbrains.kotlin.diagnostics.Errors.UNRESOLVED_REFERENCE_WRONG_RECEIVER
-import org.jetbrains.kotlin.psi.Call
-import org.jetbrains.kotlin.psi.KtConstructorDelegationCall
-import org.jetbrains.kotlin.psi.KtLambdaArgument
-import org.jetbrains.kotlin.psi.KtSecondaryConstructor
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext.CALL
 import org.jetbrains.kotlin.resolve.BindingContext.REFERENCE_TARGET
 import org.jetbrains.kotlin.resolve.BindingContext.RESOLVED_CALL
@@ -40,7 +37,7 @@ class TracingStrategyForImplicitConstructorDelegationCall(
     val delegationCall: KtConstructorDelegationCall, call: Call
 ) : AbstractTracingStrategy(delegationCall.calleeExpression!!, call) {
 
-    val calleeExpression = delegationCall.calleeExpression
+    val calleeExpression: KtConstructorDelegationReferenceExpression? = delegationCall.calleeExpression
 
     override fun bindCall(trace: BindingTrace, call: Call) {
         trace.record(CALL, call.calleeExpression, call)

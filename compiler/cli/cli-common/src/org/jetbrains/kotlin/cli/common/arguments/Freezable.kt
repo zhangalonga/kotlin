@@ -21,7 +21,7 @@ import kotlin.reflect.KProperty
 
 abstract class Freezable {
     protected inner class FreezableVar<T>(private var value: T) : ReadWriteProperty<Any, T> {
-        override fun getValue(thisRef: Any, property: KProperty<*>) = value
+        override fun getValue(thisRef: Any, property: KProperty<*>): T = value
 
         override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
             if (frozen) throw IllegalStateException("Instance of ${this::class} is frozen")
@@ -33,6 +33,6 @@ abstract class Freezable {
 
     private fun getInstanceWithFreezeStatus(value: Boolean) = if (value == frozen) this else copyBean(this).apply { frozen = value }
 
-    fun frozen() = getInstanceWithFreezeStatus(true)
-    fun unfrozen() = getInstanceWithFreezeStatus(false)
+    fun frozen(): Freezable = getInstanceWithFreezeStatus(true)
+    fun unfrozen(): Freezable = getInstanceWithFreezeStatus(false)
 }

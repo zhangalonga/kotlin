@@ -62,7 +62,7 @@ class SimplifyAssertNotNullInspection : AbstractApplicabilityBasedInspection<KtC
         return true
     }
 
-    override fun inspectionText(element: KtCallExpression) = "assert should be replaced with operator"
+    override fun inspectionText(element: KtCallExpression): String = "assert should be replaced with operator"
 
     override val defaultFixText: String = "Replace assert with operator"
 

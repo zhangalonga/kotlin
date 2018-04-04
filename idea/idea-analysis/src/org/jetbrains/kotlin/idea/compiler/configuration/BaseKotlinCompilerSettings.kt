@@ -64,7 +64,7 @@ abstract class BaseKotlinCompilerSettings<T : Freezable> protected constructor(p
 
     protected abstract fun createSettings(): T
 
-    override fun getState() = XmlSerializer.serialize(_settings, SKIP_DEFAULT_VALUES)
+    override fun getState(): Element = XmlSerializer.serialize(_settings, SKIP_DEFAULT_VALUES)
 
     override fun loadState(state: Element) {
         _settings = ReflectionUtil.newInstance(_settings.javaClass).apply {
@@ -79,7 +79,7 @@ abstract class BaseKotlinCompilerSettings<T : Freezable> protected constructor(p
     public override fun clone(): Any = super.clone()
 
     companion object {
-        const val KOTLIN_COMPILER_SETTINGS_PATH = PROJECT_CONFIG_DIR + "/" + SettingConstants.KOTLIN_COMPILER_SETTINGS_FILE
+        const val KOTLIN_COMPILER_SETTINGS_PATH: String = PROJECT_CONFIG_DIR + "/" + SettingConstants.KOTLIN_COMPILER_SETTINGS_FILE
 
         private val SKIP_DEFAULT_VALUES = SkipDefaultValuesSerializationFilters(
                 CommonCompilerArguments.DummyImpl(),
@@ -96,6 +96,7 @@ interface KotlinCompilerSettingsListener {
     fun <T> settingsChanged(newSettings: T)
 
     companion object {
-        val TOPIC = Topic.create("KotlinCompilerSettingsListener", KotlinCompilerSettingsListener::class.java)
+        val TOPIC: Topic<KotlinCompilerSettingsListener> =
+            Topic.create("KotlinCompilerSettingsListener", KotlinCompilerSettingsListener::class.java)
     }
 }

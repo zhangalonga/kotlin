@@ -105,7 +105,7 @@ private val SUPPORTED_ARGUMENT_TYPES = listOf(
 )
 
 @TestOnly
-var CREATEBYPATTERN_MAY_NOT_REFORMAT = false
+var CREATEBYPATTERN_MAY_NOT_REFORMAT: Boolean = false
 
 fun <TElement : KtElement> createByPattern(
     pattern: String,

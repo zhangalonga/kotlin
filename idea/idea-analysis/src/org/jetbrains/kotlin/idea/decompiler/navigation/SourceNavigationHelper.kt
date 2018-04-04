@@ -250,9 +250,9 @@ object SourceNavigationHelper {
         })
     }
 
-    fun getNavigationElement(declaration: KtDeclaration) = navigateToDeclaration(declaration, NavigationKind.CLASS_FILES_TO_SOURCES)
+    fun getNavigationElement(declaration: KtDeclaration): KtDeclaration = navigateToDeclaration(declaration, NavigationKind.CLASS_FILES_TO_SOURCES)
 
-    fun getOriginalElement(declaration: KtDeclaration) = navigateToDeclaration(declaration, NavigationKind.SOURCES_TO_CLASS_FILES)
+    fun getOriginalElement(declaration: KtDeclaration): KtDeclaration = navigateToDeclaration(declaration, NavigationKind.SOURCES_TO_CLASS_FILES)
 
     private fun navigateToDeclaration(
         from: KtDeclaration,

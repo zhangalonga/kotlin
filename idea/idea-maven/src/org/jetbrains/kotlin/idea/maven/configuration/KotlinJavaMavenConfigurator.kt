@@ -36,10 +36,10 @@ class KotlinJavaMavenConfigurator : KotlinMavenConfigurator(
     KotlinJavaMavenConfigurator.PRESENTABLE_TEXT
 ) {
 
-    override fun isKotlinModule(module: Module) =
+    override fun isKotlinModule(module: Module): Boolean =
         hasKotlinJvmRuntimeInScope(module)
 
-    override fun isRelevantGoal(goalName: String) =
+    override fun isRelevantGoal(goalName: String): Boolean =
         goalName == PomFile.KotlinGoals.Compile
 
     override fun getStdlibArtifactId(module: Module, version: String): String =
@@ -72,7 +72,7 @@ class KotlinJavaMavenConfigurator : KotlinMavenConfigurator(
 
     companion object {
         private const val NAME = "maven"
-        const val TEST_LIB_ID = "kotlin-test"
+        const val TEST_LIB_ID: String = "kotlin-test"
         private const val PRESENTABLE_TEXT = "Maven"
     }
 }

@@ -39,11 +39,11 @@ class MutableDiagnosticsWithSuppression @JvmOverloads constructor(
 
     private fun readonlyView(): DiagnosticsWithSuppression = cache.value!!
 
-    override val modificationTracker = CompositeModificationTracker(delegateDiagnostics.modificationTracker)
+    override val modificationTracker: CompositeModificationTracker = CompositeModificationTracker(delegateDiagnostics.modificationTracker)
 
     override fun all(): Collection<Diagnostic> = readonlyView().all()
-    override fun forElement(psiElement: PsiElement) = readonlyView().forElement(psiElement)
-    override fun noSuppression() = readonlyView().noSuppression()
+    override fun forElement(psiElement: PsiElement): Collection<Diagnostic> = readonlyView().forElement(psiElement)
+    override fun noSuppression(): Diagnostics = readonlyView().noSuppression()
 
     //essential that this list is readonly
     fun getOwnDiagnostics(): List<Diagnostic> {

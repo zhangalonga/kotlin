@@ -44,8 +44,8 @@ class TypeVariableDependencyInformationProvider(
         computeRelatedToTopLevelType()
     }
 
-    fun isVariableRelatedToTopLevelType(variable: TypeConstructor) = relatedToTopLevelType.contains(variable)
-    fun isVariableRelatedToAnyOutputType(variable: TypeConstructor) = relatedToAllOutputTypes.contains(variable)
+    fun isVariableRelatedToTopLevelType(variable: TypeConstructor): Boolean = relatedToTopLevelType.contains(variable)
+    fun isVariableRelatedToAnyOutputType(variable: TypeConstructor): Boolean = relatedToAllOutputTypes.contains(variable)
 
     private fun computeConstraintEdges() {
         fun addConstraintEdge(from: TypeConstructor, to: TypeConstructor) {

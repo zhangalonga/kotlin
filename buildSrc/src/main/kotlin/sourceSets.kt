@@ -6,7 +6,7 @@ import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
 //import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
-inline fun Project.sourceSets(crossinline body: SourceSetsBuilder.() -> Unit) =
+inline fun Project.sourceSets(crossinline body: SourceSetsBuilder.() -> Unit): Unit =
         SourceSetsBuilder(this).body()
 
 class SourceSetsBuilder(val project: Project) {

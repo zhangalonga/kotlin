@@ -36,7 +36,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.source.getPsi
 
 object CreateDataClassPropertyFromDestructuringActionFactory : CreateParameterFromUsageFactory<KtDestructuringDeclaration>() {
-    override fun getElementOfInterest(diagnostic: Diagnostic) = CreateComponentFunctionActionFactory.getElementOfInterest(diagnostic)
+    override fun getElementOfInterest(diagnostic: Diagnostic): KtDestructuringDeclaration? = CreateComponentFunctionActionFactory.getElementOfInterest(diagnostic)
 
     override fun extractFixData(element: KtDestructuringDeclaration, diagnostic: Diagnostic): CreateParameterData<KtDestructuringDeclaration>? {
         val diagnosticWithParameters = Errors.COMPONENT_FUNCTION_MISSING.cast(diagnostic)

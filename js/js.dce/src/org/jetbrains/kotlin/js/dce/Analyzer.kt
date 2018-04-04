@@ -29,11 +29,11 @@ class Analyzer(private val context: Context) : JsVisitor() {
     private val astNodesToEliminate = mutableSetOf<JsNode>()
     private val astNodesToSkip = mutableSetOf<JsNode>()
     private val invocationsToSkip = mutableSetOf<JsInvocation>()
-    val moduleMapping = mutableMapOf<JsStatement, String>()
+    val moduleMapping: MutableMap<JsStatement, String> = mutableMapOf<JsStatement, String>()
     private val functionsToEnter = mutableSetOf<JsFunction>()
     private val functionsToSkip = mutableSetOf<Context.Node>()
 
-    val analysisResult = object : AnalysisResult {
+    val analysisResult: AnalysisResult = object : AnalysisResult {
         override val nodeMap: Map<JsNode, Node> get() = this@Analyzer.nodeMap
 
         override val astNodesToEliminate: Set<JsNode> get() = this@Analyzer.astNodesToEliminate

@@ -12,7 +12,7 @@ enum class JdkMajorVersion {
     JDK_16, JDK_17, JDK_18, JDK_9, JDK_10
 }
 
-val jdkAlternativeVarNames = mapOf(JdkMajorVersion.JDK_9 to listOf("JDK_19"))
+val jdkAlternativeVarNames: Map<JdkMajorVersion, List<String>> = mapOf(JdkMajorVersion.JDK_9 to listOf("JDK_19"))
 
 data class JdkId(val explicit: Boolean, val majorVersion: JdkMajorVersion, var version: String, var homeDir: File)
 

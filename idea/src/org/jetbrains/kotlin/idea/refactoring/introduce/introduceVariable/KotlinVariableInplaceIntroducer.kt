@@ -43,6 +43,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.types.KotlinType
 import java.util.*
 import javax.swing.JCheckBox
+import javax.swing.JPanel
 
 class KotlinVariableInplaceIntroducer(
         val addedVariable: KtProperty,
@@ -108,11 +109,11 @@ class KotlinVariableInplaceIntroducer(
         }
     }
 
-    override fun getVariable() = addedVariable
+    override fun getVariable(): KtProperty = addedVariable
 
-    override fun suggestNames(replaceAll: Boolean, variable: KtProperty?) = suggestedNames
+    override fun suggestNames(replaceAll: Boolean, variable: KtProperty?): Array<String> = suggestedNames
 
-    override fun createFieldToStartTemplateOn(replaceAll: Boolean, names: Array<out String>) = addedVariable
+    override fun createFieldToStartTemplateOn(replaceAll: Boolean, names: Array<out String>): KtProperty = addedVariable
 
     override fun addAdditionalVariables(builder: TemplateBuilderImpl) {
         addedVariable.typeReference?.let {
@@ -139,7 +140,7 @@ class KotlinVariableInplaceIntroducer(
         return result
     }
 
-    override fun getInitialName() = super.getInitialName().quoteIfNeeded()
+    override fun getInitialName(): String = super.getInitialName().quoteIfNeeded()
 
     override fun updateTitle(variable: KtProperty?, value: String?) {
         expressionTypeCheckBox?.isEnabled = value == null || value.isIdentifier()
@@ -150,13 +151,13 @@ class KotlinVariableInplaceIntroducer(
         // Do not delete introduced variable as it was created outside of in-place refactoring
     }
 
-    override fun isReplaceAllOccurrences() = true
+    override fun isReplaceAllOccurrences(): Boolean = true
 
     override fun setReplaceAllOccurrences(allOccurrences: Boolean) {
 
     }
 
-    override fun getComponent() = myWholePanel
+    override fun getComponent(): JPanel? = myWholePanel
 
     override fun performIntroduce() {
         val newName = inputName ?: return

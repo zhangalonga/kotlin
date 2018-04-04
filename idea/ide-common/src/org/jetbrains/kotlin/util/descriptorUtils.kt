@@ -104,5 +104,5 @@ val ClassifierDescriptorWithTypeParameters.kind: ClassKind?
         else -> null
     }
 
-val DeclarationDescriptor.isJavaDescriptor
+val DeclarationDescriptor.isJavaDescriptor: Boolean
     get() = this is JavaClassDescriptor || this is JavaCallableMemberDescriptor

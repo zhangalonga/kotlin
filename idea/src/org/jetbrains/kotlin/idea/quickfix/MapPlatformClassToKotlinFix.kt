@@ -58,7 +58,7 @@ class MapPlatformClassToKotlinFix(
             "Change all usages of '$platformClassQualifiedName' in this file to a Kotlin class"
     }
 
-    override fun getFamilyName() = "Change to Kotlin class"
+    override fun getFamilyName(): String = "Change to Kotlin class"
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val bindingContext = file.analyzeWithContent()

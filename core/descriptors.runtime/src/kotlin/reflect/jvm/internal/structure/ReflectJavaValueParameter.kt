@@ -29,7 +29,7 @@ class ReflectJavaValueParameter(
     override val annotations: List<ReflectJavaAnnotation>
         get() = reflectAnnotations.getAnnotations()
 
-    override fun findAnnotation(fqName: FqName) =
+    override fun findAnnotation(fqName: FqName): ReflectJavaAnnotation? =
             reflectAnnotations.findAnnotation(fqName)
 
     override val isDeprecatedInJavaDoc: Boolean
@@ -38,5 +38,5 @@ class ReflectJavaValueParameter(
     override val name: Name?
         get() = reflectName?.let(Name::guessByFirstCharacter)
 
-    override fun toString() = this::class.java.name + ": " + (if (isVararg) "vararg " else "") + name + ": " + type
+    override fun toString(): String = this::class.java.name + ": " + (if (isVararg) "vararg " else "") + name + ": " + type
 }

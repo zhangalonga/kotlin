@@ -25,7 +25,7 @@ class ReplaceSizeZeroCheckWithIsEmptyInspection : IntentionBasedInspection<KtBin
 
 class ReplaceSizeZeroCheckWithIsEmptyIntention : ReplaceSizeCheckIntention("Replace size zero check with 'isEmpty'") {
 
-    override fun getGenerateMethodSymbol() = "isEmpty()"
+    override fun getGenerateMethodSymbol(): String = "isEmpty()"
 
     override fun getTargetExpression(element: KtBinaryExpression): KtExpression? {
         return when (element.operationToken) {

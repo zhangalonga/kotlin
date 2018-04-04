@@ -40,7 +40,7 @@ abstract class DeserializedPackageFragment(
 
     protected abstract fun computeMemberScope(): MemberScope
 
-    override fun getMemberScope() = memberScope()
+    override fun getMemberScope(): MemberScope = memberScope()
 
     open fun hasTopLevelClass(name: Name): Boolean {
         val scope = getMemberScope()

@@ -19,7 +19,7 @@ package org.jetbrains.kotlin.js.inline.clean
 import org.jetbrains.kotlin.js.backend.ast.JsFunction
 
 class FunctionPostProcessor(val root: JsFunction) {
-    val optimizations = listOf(
+    val optimizations: List<() -> Boolean> = listOf(
         //{ TemporaryAssignmentElimination(root.body).apply() },
         { RedundantLabelRemoval(root.body).apply() },
         { EmptyStatementElimination(root.body).apply() },

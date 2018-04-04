@@ -25,10 +25,10 @@ open class SymbolBasedElement<out T : Element>(
         val javac: JavacWrapper
 ) : JavaElement {
 
-    override fun equals(other: Any?) = (other as? SymbolBasedElement<*>)?.element == element
+    override fun equals(other: Any?): Boolean = (other as? SymbolBasedElement<*>)?.element == element
 
-    override fun hashCode() = element.hashCode()
+    override fun hashCode(): Int = element.hashCode()
 
-    override fun toString() = element.simpleName.toString()
+    override fun toString(): String = element.simpleName.toString()
 
 }

@@ -53,7 +53,7 @@ open class AddModifierFix(
         return "Add '${modifier.value}' modifier"
     }
 
-    override fun getFamilyName() = "Add modifier"
+    override fun getFamilyName(): String = "Add modifier"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         element?.addModifier(modifier)

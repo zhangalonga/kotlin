@@ -90,9 +90,9 @@ class CopyKotlinDeclarationDialog(
         classNameField.selectAll()
     }
 
-    override fun getPreferredFocusedComponent() = classNameField
+    override fun getPreferredFocusedComponent(): EditorTextField = classNameField
 
-    override fun createCenterPanel() = JPanel(BorderLayout())
+    override fun createCenterPanel(): JPanel = JPanel(BorderLayout())
 
     override fun createNorthPanel(): JComponent? {
         val qualifiedName = qualifiedName
@@ -176,7 +176,7 @@ class CopyKotlinDeclarationDialog(
         super.doOKAction()
     }
 
-    override fun getHelpId() = HelpID.COPY_CLASS
+    override fun getHelpId(): String = HelpID.COPY_CLASS
 
     companion object {
         @NonNls private val RECENTS_KEY = "CopyKotlinDeclarationDialog.RECENTS_KEY"

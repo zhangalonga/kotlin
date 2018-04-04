@@ -31,7 +31,7 @@ class AddSuspendModifierFix(
         private val declarationName: String?
 ): AddModifierFix(element, KtTokens.SUSPEND_KEYWORD) {
 
-    override fun getText() =
+    override fun getText(): String =
             when (element) {
                 is KtNamedFunction -> "Make ${declarationName ?: "containing function"} suspend"
                 is KtTypeReference -> "Make ${declarationName ?: "receiver"} type suspend"

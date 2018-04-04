@@ -39,8 +39,8 @@ import org.jetbrains.kotlin.types.typeUtil.supertypes
 
 class KotlinAndroidViewConstructorFix(element: KtSuperTypeEntry) : KotlinQuickFixAction<KtSuperTypeEntry>(element) {
 
-    override fun getText() = "Add Android View constructors using '@JvmOverloads'"
-    override fun getFamilyName() = text
+    override fun getText(): String = "Add Android View constructors using '@JvmOverloads'"
+    override fun getFamilyName(): String = text
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         return AndroidFacet.getInstance(file) != null

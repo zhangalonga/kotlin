@@ -23,7 +23,7 @@ interface KotlinToJvmSignatureMapper {
     fun mapToJvmMethodSignature(function: FunctionDescriptor): Method
 }
 
-fun erasedSignaturesEqualIgnoringReturnTypes(subFunction: Method, superFunction: Method) =
+fun erasedSignaturesEqualIgnoringReturnTypes(subFunction: Method, superFunction: Method): Boolean =
         subFunction.parametersDescriptor() == superFunction.parametersDescriptor()
 
 private fun Method.parametersDescriptor() = descriptor.substring(1, descriptor.lastIndexOf(")"))

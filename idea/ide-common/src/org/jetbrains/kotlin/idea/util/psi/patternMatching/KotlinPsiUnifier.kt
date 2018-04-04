@@ -101,7 +101,7 @@ class KotlinPsiUnifier(
         val allowWeakMatches: Boolean = false
 ) {
     companion object {
-        val DEFAULT = KotlinPsiUnifier()
+        val DEFAULT: KotlinPsiUnifier = KotlinPsiUnifier()
     }
 
     private inner class Context(

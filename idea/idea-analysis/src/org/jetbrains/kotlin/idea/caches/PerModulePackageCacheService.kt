@@ -292,7 +292,7 @@ class PerModulePackageCacheService(private val project: Project) {
     }
 
     companion object {
-        const val FULL_DROP_THRESHOLD = 1000
+        const val FULL_DROP_THRESHOLD: Int = 1000
 
         fun getInstance(project: Project): PerModulePackageCacheService =
             ServiceManager.getService(project, PerModulePackageCacheService::class.java)

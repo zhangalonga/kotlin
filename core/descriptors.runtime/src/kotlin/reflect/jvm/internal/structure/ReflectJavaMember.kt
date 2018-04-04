@@ -55,11 +55,11 @@ abstract class ReflectJavaMember : ReflectJavaElement(), ReflectJavaAnnotationOw
         return result
     }
 
-    override fun equals(other: Any?) = other is ReflectJavaMember && member == other.member
+    override fun equals(other: Any?): Boolean = other is ReflectJavaMember && member == other.member
 
-    override fun hashCode() = member.hashCode()
+    override fun hashCode(): Int = member.hashCode()
 
-    override fun toString() = this::class.java.name + ": " + member
+    override fun toString(): String = this::class.java.name + ": " + member
 }
 
 private object Java8ParameterNamesLoader {

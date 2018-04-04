@@ -34,10 +34,10 @@ enum class Modifier(private val str: String) {
     fun toKotlin(): String = str
 }
 
-val ACCESS_MODIFIERS = setOf(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.INTERNAL)
+val ACCESS_MODIFIERS: Set<Modifier> = setOf(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.INTERNAL)
 
 class Modifiers(modifiers: Collection<Modifier>) : Element() {
-    val modifiers = modifiers.toSet()
+    val modifiers: Set<Modifier> = modifiers.toSet()
 
     override fun generateCode(builder: CodeBuilder) {
         val modifiersToInclude = if (modifiers.contains(Modifier.OVERRIDE))
@@ -71,7 +71,7 @@ class Modifiers(modifiers: Collection<Modifier>) : Element() {
     }
 
     companion object {
-        val Empty = Modifiers(listOf())
+        val Empty: Modifiers = Modifiers(listOf())
     }
 }
 

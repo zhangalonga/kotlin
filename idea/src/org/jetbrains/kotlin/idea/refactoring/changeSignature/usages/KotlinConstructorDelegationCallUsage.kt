@@ -26,7 +26,7 @@ class KotlinConstructorDelegationCallUsage(
         call: KtConstructorDelegationCall,
         changeInfo: KotlinChangeInfo
 ) : KotlinUsageInfo<KtConstructorDelegationCall>(call) {
-    val delegate = KotlinFunctionCallUsage(call, changeInfo.methodDescriptor.originalPrimaryCallable)
+    val delegate: KotlinFunctionCallUsage = KotlinFunctionCallUsage(call, changeInfo.methodDescriptor.originalPrimaryCallable)
 
     override fun processUsage(changeInfo: KotlinChangeInfo, element: KtConstructorDelegationCall, allUsages: Array<out UsageInfo>): Boolean {
         val isThisCall = element.isCallToThis

@@ -107,7 +107,7 @@ class KotlinConsoleRunner(
         super.finishConsole()
     }
 
-    val commandHistory = CommandHistory()
+    val commandHistory: CommandHistory = CommandHistory()
 
     var isReadLineMode: Boolean = false
         set(value) {
@@ -119,14 +119,14 @@ class KotlinConsoleRunner(
             field = value
         }
 
-    fun changeConsoleEditorIndicator(newIconWithTooltip: IconWithTooltip) = WriteCommandAction.runWriteCommandAction(project) {
+    fun changeConsoleEditorIndicator(newIconWithTooltip: IconWithTooltip): Unit = WriteCommandAction.runWriteCommandAction(project) {
         consoleEditorHighlighter.gutterIconRenderer = ConsoleIndicatorRenderer(newIconWithTooltip)
     }
 
     private var consoleEditorHighlighter by Delegates.notNull<RangeHighlighter>()
     private var disposableDescriptor by Delegates.notNull<RunContentDescriptor>()
 
-    val executor = CommandExecutor(this)
+    val executor: CommandExecutor = CommandExecutor(this)
     var compilerHelper: ConsoleCompilerHelper by Delegates.notNull()
 
     private val consoleScriptDefinition = object : KotlinScriptDefinition(Any::class) {
@@ -137,7 +137,7 @@ class KotlinConsoleRunner(
         override fun getScriptName(script: KtScript) = Name.identifier("REPL")
     }
 
-    override fun createProcess() = cmdLine.createProcess()
+    override fun createProcess(): Process = cmdLine.createProcess()
 
     override fun createConsoleView(): LanguageConsoleView? {
         val builder = LanguageConsoleBuilder()
@@ -186,7 +186,7 @@ class KotlinConsoleRunner(
         return processHandler
     }
 
-    override fun createExecuteActionHandler() = object : ProcessBackedConsoleExecuteActionHandler(processHandler, false) {
+    override fun createExecuteActionHandler(): ProcessBackedConsoleExecuteActionHandler = object : ProcessBackedConsoleExecuteActionHandler(processHandler, false) {
         override fun runExecuteAction(consoleView: LanguageConsoleView) = executor.executeCommand()
     }
 
@@ -206,10 +206,9 @@ class KotlinConsoleRunner(
         return actionList
     }
 
-    override fun createConsoleExecAction(consoleExecuteActionHandler: ProcessBackedConsoleExecuteActionHandler)
-            = ConsoleExecuteAction(consoleView, consoleExecuteActionHandler, KOTLIN_SHELL_EXECUTE_ACTION_ID, consoleExecuteActionHandler)
+    override fun createConsoleExecAction(consoleExecuteActionHandler: ProcessBackedConsoleExecuteActionHandler): ConsoleExecuteAction = ConsoleExecuteAction(consoleView, consoleExecuteActionHandler, KOTLIN_SHELL_EXECUTE_ACTION_ID, consoleExecuteActionHandler)
 
-    override fun constructConsoleTitle(title: String) = "$title (in module ${module.name})"
+    override fun constructConsoleTitle(title: String): String = "$title (in module ${module.name})"
 
     private fun setupPlaceholder(editor: EditorEx) {
         val executeCommandAction = ActionManager.getInstance().getAction(KOTLIN_SHELL_EXECUTE_ACTION_ID)

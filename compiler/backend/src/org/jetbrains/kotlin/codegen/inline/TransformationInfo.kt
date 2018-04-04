@@ -44,7 +44,7 @@ class WhenMappingTransformationInfo(
         val fieldNode: FieldInsnNode
 ) : TransformationInfo {
 
-    override val nameGenerator by lazy {
+    override val nameGenerator: NameGenerator by lazy {
         parentNameGenerator.subGenerator(false, oldClassName.substringAfterLast("/").substringAfterLast(TRANSFORMED_WHEN_MAPPING_MARKER))
     }
 
@@ -56,7 +56,7 @@ class WhenMappingTransformationInfo(
             WhenMappingTransformer(this, inliningContext)
 
     companion object {
-        const val TRANSFORMED_WHEN_MAPPING_MARKER = "\$wm$"
+        const val TRANSFORMED_WHEN_MAPPING_MARKER: String = "\$wm$"
     }
 }
 
@@ -72,7 +72,7 @@ class AnonymousObjectTransformationInfo internal constructor(
         private val capturesAnonymousObjectThatMustBeRegenerated: Boolean = false
 ) : TransformationInfo {
 
-    override val nameGenerator by lazy {
+    override val nameGenerator: NameGenerator by lazy {
         parentNameGenerator.subGenerator(true, null)
     }
 

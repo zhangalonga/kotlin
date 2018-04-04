@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 class RemoveUselessIsCheckFixForWhen(element: KtWhenConditionIsPattern) : KotlinQuickFixAction<KtWhenConditionIsPattern>(element) {
-    override fun getFamilyName() = "Remove useless is check"
+    override fun getFamilyName(): String = "Remove useless is check"
 
     override fun getText(): String = familyName
 

@@ -29,9 +29,9 @@ class AllOpenModelImpl(
 ) : AllOpenModel
 
 class AllOpenModelBuilderService : AnnotationBasedPluginModelBuilderService<AllOpenModel>() {
-    override val gradlePluginNames get() = listOf("org.jetbrains.kotlin.plugin.allopen", "kotlin-allopen")
-    override val extensionName get() = "allOpen"
-    override val modelClass get() = AllOpenModel::class.java
+    override val gradlePluginNames: List<String> get() = listOf("org.jetbrains.kotlin.plugin.allopen", "kotlin-allopen")
+    override val extensionName: String get() = "allOpen"
+    override val modelClass: Class<AllOpenModel> get() = AllOpenModel::class.java
 
     override fun createModel(annotations: List<String>, presets: List<String>, extension: Any?): AllOpenModelImpl {
         return AllOpenModelImpl(annotations, presets)
@@ -40,9 +40,9 @@ class AllOpenModelBuilderService : AnnotationBasedPluginModelBuilderService<AllO
 
 class AllOpenProjectResolverExtension : AnnotationBasedPluginProjectResolverExtension<AllOpenModel>() {
     companion object {
-        val KEY = Key<AllOpenModel>("AllOpenModel")
+        val KEY: Key<AllOpenModel> = Key("AllOpenModel")
     }
 
-    override val modelClass get() = AllOpenModel::class.java
-    override val userDataKey get() = KEY
+    override val modelClass: Class<AllOpenModel> get() = AllOpenModel::class.java
+    override val userDataKey: Key<AllOpenModel> get() = KEY
 }

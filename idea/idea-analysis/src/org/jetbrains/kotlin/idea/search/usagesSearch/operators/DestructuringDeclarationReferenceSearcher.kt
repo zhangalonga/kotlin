@@ -54,7 +54,7 @@ class DestructuringDeclarationReferenceSearcher(
         return entries[componentIndex - 1].references.firstIsInstance<KtDestructuringDeclarationReference>()
     }
 
-    override fun isReferenceToCheck(ref: PsiReference) = ref is KtDestructuringDeclarationReference
+    override fun isReferenceToCheck(ref: PsiReference): Boolean = ref is KtDestructuringDeclarationReference
 
     override fun processPossibleReceiverExpression(expression: KtExpression) {
         val parent = expression.parent

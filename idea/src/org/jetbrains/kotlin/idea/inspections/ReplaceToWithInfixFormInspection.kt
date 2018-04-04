@@ -47,9 +47,9 @@ class ReplaceToWithInfixFormInspection : AbstractKotlinInspection() {
 }
 
 class ReplaceToWithInfixFormQuickfix : LocalQuickFix {
-    override fun getName() = "Replace 'to' with infix form"
+    override fun getName(): String = "Replace 'to' with infix form"
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val element = descriptor.psiElement as KtDotQualifiedExpression

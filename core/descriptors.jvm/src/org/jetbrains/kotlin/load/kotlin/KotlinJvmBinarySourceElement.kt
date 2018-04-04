@@ -30,5 +30,5 @@ class KotlinJvmBinarySourceElement(
 
     override fun getContainingFile(): SourceFile = SourceFile.NO_SOURCE_FILE
 
-    override fun toString() = "${this::class.java.simpleName}: $binaryClass"
+    override fun toString(): String = "${this::class.java.simpleName}: $binaryClass"
 }

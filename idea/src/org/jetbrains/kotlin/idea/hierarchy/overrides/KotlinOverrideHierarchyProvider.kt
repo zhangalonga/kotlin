@@ -46,4 +46,4 @@ class KotlinOverrideHierarchyProvider: HierarchyProvider {
             = element?.getParentOfTypesAndPredicate { it.isOverrideHierarchyElement() }
 }
 
-fun PsiElement.isOverrideHierarchyElement() = this is KtCallableDeclaration && containingClassOrObject != null
+fun PsiElement.isOverrideHierarchyElement(): Boolean = this is KtCallableDeclaration && containingClassOrObject != null

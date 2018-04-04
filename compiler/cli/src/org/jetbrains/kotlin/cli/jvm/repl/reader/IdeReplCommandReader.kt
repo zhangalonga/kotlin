@@ -19,6 +19,6 @@ package org.jetbrains.kotlin.cli.jvm.repl.reader
 import org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal
 
 class IdeReplCommandReader : ReplCommandReader {
-    override fun readLine(next: ReplFromTerminal.WhatNextAfterOneLine) = readLine()
-    override fun flushHistory() = Unit
+    override fun readLine(next: ReplFromTerminal.WhatNextAfterOneLine): String? = readLine()
+    override fun flushHistory(): Unit = Unit
 }

@@ -26,28 +26,28 @@ import org.jetbrains.org.objectweb.asm.tree.analysis.BasicValue
 open class StrictBasicValue(type: Type?) : BasicValue(type) {
     companion object {
         @JvmField
-        val UNINITIALIZED_VALUE = StrictBasicValue(null)
+        val UNINITIALIZED_VALUE: StrictBasicValue = StrictBasicValue(null)
         @JvmField
-        val INT_VALUE = StrictBasicValue(Type.INT_TYPE)
+        val INT_VALUE: StrictBasicValue = StrictBasicValue(Type.INT_TYPE)
         @JvmField
-        val FLOAT_VALUE = StrictBasicValue(Type.FLOAT_TYPE)
+        val FLOAT_VALUE: StrictBasicValue = StrictBasicValue(Type.FLOAT_TYPE)
         @JvmField
-        val LONG_VALUE = StrictBasicValue(Type.LONG_TYPE)
+        val LONG_VALUE: StrictBasicValue = StrictBasicValue(Type.LONG_TYPE)
         @JvmField
-        val DOUBLE_VALUE = StrictBasicValue(Type.DOUBLE_TYPE)
+        val DOUBLE_VALUE: StrictBasicValue = StrictBasicValue(Type.DOUBLE_TYPE)
         @JvmField
-        val BOOLEAN_VALUE = StrictBasicValue(Type.BOOLEAN_TYPE)
+        val BOOLEAN_VALUE: StrictBasicValue = StrictBasicValue(Type.BOOLEAN_TYPE)
         @JvmField
-        val CHAR_VALUE = StrictBasicValue(Type.CHAR_TYPE)
+        val CHAR_VALUE: StrictBasicValue = StrictBasicValue(Type.CHAR_TYPE)
         @JvmField
-        val BYTE_VALUE = StrictBasicValue(Type.BYTE_TYPE)
+        val BYTE_VALUE: StrictBasicValue = StrictBasicValue(Type.BYTE_TYPE)
         @JvmField
-        val SHORT_VALUE = StrictBasicValue(Type.SHORT_TYPE)
+        val SHORT_VALUE: StrictBasicValue = StrictBasicValue(Type.SHORT_TYPE)
         @JvmField
-        val REFERENCE_VALUE = StrictBasicValue(Type.getObjectType("java/lang/Object"))
+        val REFERENCE_VALUE: StrictBasicValue = StrictBasicValue(Type.getObjectType("java/lang/Object"))
 
         @JvmField
-        val NULL_VALUE = StrictBasicValue(Type.getObjectType("java/lang/Object"))
+        val NULL_VALUE: StrictBasicValue = StrictBasicValue(Type.getObjectType("java/lang/Object"))
     }
 
     override fun equals(other: Any?): Boolean {
@@ -65,7 +65,7 @@ open class StrictBasicValue(type: Type?) : BasicValue(type) {
         return true
     }
 
-    override fun hashCode() = (type?.hashCode() ?: 0)
+    override fun hashCode(): Int = (type?.hashCode() ?: 0)
 
     override fun toString(): String {
         if (this === UNINITIALIZED_VALUE) return "."

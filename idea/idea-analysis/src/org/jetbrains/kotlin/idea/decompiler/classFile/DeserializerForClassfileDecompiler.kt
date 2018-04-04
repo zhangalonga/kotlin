@@ -102,7 +102,7 @@ class DirectoryBasedClassFinder(
         val packageDirectory: VirtualFile,
         val directoryPackageFqName: FqName
 ) : KotlinClassFinder {
-    override fun findKotlinClass(javaClass: JavaClass) = findKotlinClass(javaClass.classId!!)
+    override fun findKotlinClass(javaClass: JavaClass): KotlinJvmBinaryClass? = findKotlinClass(javaClass.classId!!)
 
     override fun findKotlinClass(classId: ClassId): KotlinJvmBinaryClass? {
         if (classId.packageFqName != directoryPackageFqName) {

@@ -26,5 +26,5 @@ class SplitBlockConnector(
         override val nextBlocks: List<BasicBlock>
 ) : BlockConnector {
 
-    override val previousBlocks = listOf(previous)
+    override val previousBlocks: List<BasicBlock> = listOf(previous)
 }

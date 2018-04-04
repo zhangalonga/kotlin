@@ -64,8 +64,8 @@ sealed class ContainerInfo {
     abstract fun matches(descriptor: DeclarationDescriptor): Boolean
 
     object UnknownPackage : ContainerInfo() {
-        override val fqName = null
-        override fun matches(descriptor: DeclarationDescriptor) = descriptor is PackageViewDescriptor
+        override val fqName: Nothing? = null
+        override fun matches(descriptor: DeclarationDescriptor): Boolean = descriptor is PackageViewDescriptor
     }
 
     class Package(override val fqName: FqName): ContainerInfo() {
@@ -73,9 +73,9 @@ sealed class ContainerInfo {
             return descriptor is PackageFragmentDescriptor && descriptor.fqName == fqName
         }
 
-        override fun equals(other: Any?) = other is Package && other.fqName == fqName
+        override fun equals(other: Any?): Boolean = other is Package && other.fqName == fqName
 
-        override fun hashCode() = fqName.hashCode()
+        override fun hashCode(): Int = fqName.hashCode()
     }
 
     class Class(override val fqName: FqName) : ContainerInfo() {
@@ -83,9 +83,9 @@ sealed class ContainerInfo {
             return descriptor is ClassDescriptor && descriptor.importableFqName == fqName
         }
 
-        override fun equals(other: Any?) = other is Class && other.fqName == fqName
+        override fun equals(other: Any?): Boolean = other is Class && other.fqName == fqName
 
-        override fun hashCode() = fqName.hashCode()
+        override fun hashCode(): Int = fqName.hashCode()
     }
 }
 

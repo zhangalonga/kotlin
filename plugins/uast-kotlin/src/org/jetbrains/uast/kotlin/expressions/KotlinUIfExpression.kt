@@ -18,6 +18,7 @@ package org.jetbrains.uast.kotlin
 
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.UIdentifier
 import org.jetbrains.uast.UIfExpression
 
@@ -25,10 +26,10 @@ class KotlinUIfExpression(
         override val psi: KtIfExpression,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UIfExpression, KotlinUElementWithType, KotlinEvaluatableUElement {
-    override val condition by lz { KotlinConverter.convertOrEmpty(psi.condition, this) }
-    override val thenExpression by lz { KotlinConverter.convertOrNull(psi.then, this) }
-    override val elseExpression by lz { KotlinConverter.convertOrNull(psi.`else`, this) }
-    override val isTernary = false
+    override val condition: UExpression by lz { KotlinConverter.convertOrEmpty(psi.condition, this) }
+    override val thenExpression: UExpression? by lz { KotlinConverter.convertOrNull(psi.then, this) }
+    override val elseExpression: UExpression? by lz { KotlinConverter.convertOrNull(psi.`else`, this) }
+    override val isTernary: Boolean = false
 
     override val ifIdentifier: UIdentifier
         get() = UIdentifier(null, this)

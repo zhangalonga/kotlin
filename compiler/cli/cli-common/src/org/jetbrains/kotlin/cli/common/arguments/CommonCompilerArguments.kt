@@ -27,11 +27,11 @@ abstract class CommonCompilerArguments : CommonToolArguments() {
     companion object {
         @JvmStatic private val serialVersionUID = 0L
 
-        const val PLUGIN_OPTION_FORMAT = "plugin:<pluginId>:<optionName>=<value>"
+        const val PLUGIN_OPTION_FORMAT: String = "plugin:<pluginId>:<optionName>=<value>"
 
-        const val WARN = "warn"
-        const val ERROR = "error"
-        const val ENABLE = "enable"
+        const val WARN: String = "warn"
+        const val ERROR: String = "error"
+        const val ENABLE: String = "enable"
     }
 
     @get:Transient
@@ -156,7 +156,7 @@ abstract class CommonCompilerArguments : CommonToolArguments() {
         value = "-Xproper-ieee754-comparisons",
         description = "Generate proper IEEE 754 comparisons in all cases if values are statically known to be of primitive numeric types"
     )
-    var properIeee754Comparisons by FreezableVar(false)
+    var properIeee754Comparisons: Boolean by FreezableVar(false)
 
     open fun configureAnalysisFlags(collector: MessageCollector): MutableMap<AnalysisFlag<*>, Any> {
         return HashMap<AnalysisFlag<*>, Any>().apply {

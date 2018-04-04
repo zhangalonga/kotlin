@@ -40,13 +40,13 @@ class KotlinGradleMultiplatformModuleBuilder : GradleModuleBuilder() {
     var jdk: Sdk? = null
     var jsModuleName: String? = null
 
-    override fun getBuilderId() = "kotlin.gradle.multiplatform"
+    override fun getBuilderId(): String = "kotlin.gradle.multiplatform"
 
     override fun getNodeIcon(): Icon = KotlinIcons.MPP
 
-    override fun getPresentableName() = "Kotlin (Multiplatform - Experimental)"
+    override fun getPresentableName(): String = "Kotlin (Multiplatform - Experimental)"
 
-    override fun getDescription() =
+    override fun getDescription(): String =
         "Multiplatform projects allow reusing the same code between multiple platforms supported by Kotlin. Such projects are built with Gradle."
 
     override fun createWizardSteps(wizardContext: WizardContext, modulesProvider: ModulesProvider): Array<ModuleWizardStep> {

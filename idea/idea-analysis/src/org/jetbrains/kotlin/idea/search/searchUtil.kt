@@ -54,9 +54,9 @@ fun Project.projectScope(): GlobalSearchScope = GlobalSearchScope.projectScope(t
 
 fun PsiFile.fileScope(): GlobalSearchScope = GlobalSearchScope.fileScope(this)
 
-fun GlobalSearchScope.restrictByFileType(fileType: FileType) = GlobalSearchScope.getScopeRestrictedByFileTypes(this, fileType)
+fun GlobalSearchScope.restrictByFileType(fileType: FileType): GlobalSearchScope = GlobalSearchScope.getScopeRestrictedByFileTypes(this, fileType)
 
-fun SearchScope.restrictByFileType(fileType: FileType) = when (this) {
+fun SearchScope.restrictByFileType(fileType: FileType): SearchScope = when (this) {
     is GlobalSearchScope -> restrictByFileType(fileType)
     is LocalSearchScope -> {
         val elements = scope.filter { it.containingFile.fileType == fileType }
@@ -69,9 +69,9 @@ fun SearchScope.restrictByFileType(fileType: FileType) = when (this) {
     else -> this
 }
 
-fun GlobalSearchScope.restrictToKotlinSources() = restrictByFileType(KotlinFileType.INSTANCE)
+fun GlobalSearchScope.restrictToKotlinSources(): GlobalSearchScope = restrictByFileType(KotlinFileType.INSTANCE)
 
-fun SearchScope.restrictToKotlinSources() = restrictByFileType(KotlinFileType.INSTANCE)
+fun SearchScope.restrictToKotlinSources(): SearchScope = restrictByFileType(KotlinFileType.INSTANCE)
 
 fun SearchScope.excludeKotlinSources(): SearchScope = excludeFileTypes(KotlinFileType.INSTANCE)
 

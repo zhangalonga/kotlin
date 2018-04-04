@@ -22,7 +22,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 
 interface KotlinUniversalQuickFix : IntentionAction, LocalQuickFix {
-    override fun getName() = text
+    override fun getName(): String = text
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         invoke(project, null, descriptor.psiElement?.containingFile)

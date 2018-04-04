@@ -85,9 +85,9 @@ class AddVarianceModifierInspection : AbstractKotlinInspection() {
 
 
     class AddVarianceFix(val variance: Variance) : LocalQuickFix {
-        override fun getName() = "Add '$variance' variance"
+        override fun getName(): String = "Add '$variance' variance"
 
-        override fun getFamilyName() = "Add variance"
+        override fun getFamilyName(): String = "Add variance"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return

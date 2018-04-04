@@ -31,11 +31,11 @@ import org.jetbrains.org.objectweb.asm.Opcodes
 object KotlinJvmMetadataVersionIndex : KotlinMetadataVersionIndexBase<KotlinJvmMetadataVersionIndex, JvmMetadataVersion>(
         KotlinJvmMetadataVersionIndex::class.java, ::JvmMetadataVersion
 ) {
-    override fun getIndexer() = INDEXER
+    override fun getIndexer(): DataIndexer<JvmMetadataVersion, Void, FileContent> = INDEXER
 
-    override fun getInputFilter() = FileBasedIndex.InputFilter { file -> file.fileType == StdFileTypes.CLASS }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = FileBasedIndex.InputFilter { file -> file.fileType == StdFileTypes.CLASS }
 
-    override fun getVersion() = VERSION
+    override fun getVersion(): Int = VERSION
 
     private val VERSION = 4
 

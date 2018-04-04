@@ -26,5 +26,5 @@ class JoinBlockConnector(
         next: BasicBlock?
 ) : BlockConnector {
 
-    override val nextBlocks = listOfNotNull(next)
+    override val nextBlocks: List<BasicBlock> = listOfNotNull(next)
 }

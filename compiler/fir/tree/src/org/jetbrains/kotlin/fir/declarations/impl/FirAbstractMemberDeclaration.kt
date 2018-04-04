@@ -28,7 +28,7 @@ abstract class FirAbstractMemberDeclaration(
     override val modality: Modality?,
     override val platformStatus: FirMemberPlatformStatus
 ) : FirAbstractNamedAnnotatedDeclaration(session, psi, declarationKind, name), FirMemberDeclaration {
-    final override val typeParameters = mutableListOf<FirTypeParameter>()
+    final override val typeParameters: MutableList<FirTypeParameter> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         typeParameters.transformInplace(transformer, data)

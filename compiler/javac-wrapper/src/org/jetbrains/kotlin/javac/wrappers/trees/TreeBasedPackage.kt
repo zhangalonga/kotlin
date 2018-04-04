@@ -19,10 +19,7 @@ package org.jetbrains.kotlin.javac.wrappers.trees
 import com.intellij.openapi.vfs.VirtualFile
 import com.sun.tools.javac.tree.JCTree
 import org.jetbrains.kotlin.javac.JavacWrapper
-import org.jetbrains.kotlin.load.java.structure.JavaAnnotation
-import org.jetbrains.kotlin.load.java.structure.JavaPackage
-import org.jetbrains.kotlin.load.java.structure.MapBasedJavaAnnotationOwner
-import org.jetbrains.kotlin.load.java.structure.buildLazyValueForMap
+import org.jetbrains.kotlin.load.java.structure.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import javax.tools.JavaFileObject
@@ -39,7 +36,7 @@ class TreeBasedPackage(val name: String, val javac: JavacWrapper, val unit: JCTr
         javac.toVirtualFile(unit.sourceFile)
     }
 
-    override fun getClasses(nameFilter: (Name) -> Boolean) =
+    override fun getClasses(nameFilter: (Name) -> Boolean): List<JavaClass> =
             javac.findClassesFromPackage(fqName).filter { nameFilter(it.fqName!!.shortName()) }
 
     override val annotations: Collection<JavaAnnotation>
@@ -47,10 +44,10 @@ class TreeBasedPackage(val name: String, val javac: JavacWrapper, val unit: JCTr
 
     override val annotationsByFqName: Map<FqName?, JavaAnnotation> by buildLazyValueForMap()
 
-    override fun equals(other: Any?) = (other as? TreeBasedPackage)?.name == name
+    override fun equals(other: Any?): Boolean = (other as? TreeBasedPackage)?.name == name
 
-    override fun hashCode() = name.hashCode()
+    override fun hashCode(): Int = name.hashCode()
 
-    override fun toString() = name
+    override fun toString(): String = name
 
 }

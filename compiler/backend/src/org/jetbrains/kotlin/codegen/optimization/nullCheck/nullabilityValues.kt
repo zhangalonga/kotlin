@@ -26,10 +26,10 @@ class NotNullBasicValue(type: Type?) : StrictBasicValue(type) {
     override fun equals(other: Any?): Boolean = other is NotNullBasicValue && other.type == type
     // We do not differ not-nullable values, so we should always return the same hashCode
     // Actually it doesn't really matter because analyzer is not supposed to store values in hashtables
-    override fun hashCode() = 0
+    override fun hashCode(): Int = 0
 
     companion object {
-        val NOT_NULL_REFERENCE_VALUE = NotNullBasicValue(StrictBasicValue.REFERENCE_VALUE.type)
+        val NOT_NULL_REFERENCE_VALUE: NotNullBasicValue = NotNullBasicValue(StrictBasicValue.REFERENCE_VALUE.type)
     }
 }
 
@@ -38,8 +38,8 @@ object NullBasicValue : StrictBasicValue(AsmTypes.OBJECT_TYPE)
 enum class Nullability {
     NULL, NOT_NULL, NULLABLE;
 
-    fun isNull() = this == NULL
-    fun isNotNull() = this == NOT_NULL
+    fun isNull(): Boolean = this == NULL
+    fun isNotNull(): Boolean = this == NOT_NULL
 }
 
 fun BasicValue.getNullability(): Nullability =

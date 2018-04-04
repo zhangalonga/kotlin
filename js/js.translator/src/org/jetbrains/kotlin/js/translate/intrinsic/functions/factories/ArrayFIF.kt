@@ -44,14 +44,14 @@ import java.util.*
 
 object ArrayFIF : CompositeFIF() {
     @JvmField
-    val GET_INTRINSIC = intrinsify { callInfo, arguments, context ->
+    val GET_INTRINSIC: FunctionIntrinsic = intrinsify { callInfo, arguments, context ->
         assert(arguments.size == 1) { "Array get expression must have one argument." }
         val (indexExpression) = arguments
         JsArrayAccess(callInfo.dispatchReceiver, indexExpression)
     }
 
     @JvmField
-    val SET_INTRINSIC = intrinsify { callInfo, arguments, _ ->
+    val SET_INTRINSIC: FunctionIntrinsic = intrinsify { callInfo, arguments, _ ->
         assert(arguments.size == 2) { "Array set expression must have two arguments." }
         val (indexExpression, value) = arguments
         val arrayAccess = JsArrayAccess(callInfo.dispatchReceiver, indexExpression)
@@ -59,7 +59,7 @@ object ArrayFIF : CompositeFIF() {
     }
 
     @JvmField
-    val LENGTH_PROPERTY_INTRINSIC = BuiltInPropertyIntrinsic("length")
+    val LENGTH_PROPERTY_INTRINSIC: BuiltInPropertyIntrinsic = BuiltInPropertyIntrinsic("length")
 
     fun castOrCreatePrimitiveArray(ctx: TranslationContext, type: PrimitiveType?, arg: JsArrayLiteral): JsExpression {
         if (type == null) return arg

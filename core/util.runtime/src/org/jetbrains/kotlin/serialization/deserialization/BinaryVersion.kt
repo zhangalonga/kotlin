@@ -61,7 +61,7 @@ abstract class BinaryVersion(vararg val numbers: Int) {
         return if (versions.isEmpty()) "unknown" else versions.joinToString(".")
     }
 
-    override fun equals(other: Any?) =
+    override fun equals(other: Any?): Boolean =
             other != null &&
             this::class.java == other::class.java &&
             major == (other as BinaryVersion).major && minor == other.minor && patch == other.patch && rest == other.rest

@@ -30,7 +30,7 @@ sealed class ChangeCoroutineSupportFix(
             get() = coroutineSupport == LanguageFeature.State.ENABLED || coroutineSupport == LanguageFeature.State.ENABLED_WITH_WARNING
 
     class InModule(element: PsiElement, coroutineSupport: LanguageFeature.State) : ChangeCoroutineSupportFix(element, coroutineSupport) {
-        override fun getText() = "${super.getText()} in the current module"
+        override fun getText(): String = "${super.getText()} in the current module"
 
         override fun invoke(project: Project, editor: Editor?, file: KtFile) {
             val module = ModuleUtilCore.findModuleForPsiElement(file) ?: return
@@ -40,7 +40,7 @@ sealed class ChangeCoroutineSupportFix(
     }
 
     class InProject(element: PsiElement, coroutineSupport: LanguageFeature.State) : ChangeCoroutineSupportFix(element, coroutineSupport) {
-        override fun getText() = "${super.getText()} in the project"
+        override fun getText(): String = "${super.getText()} in the project"
 
         override fun invoke(project: Project, editor: Editor?, file: KtFile) {
             if (coroutineSupportEnabled) {
@@ -59,7 +59,7 @@ sealed class ChangeCoroutineSupportFix(
 
     }
 
-    override fun getFamilyName() = "Enable/Disable coroutine support"
+    override fun getFamilyName(): String = "Enable/Disable coroutine support"
 
     override fun getText(): String {
         return getFixText(coroutineSupport)

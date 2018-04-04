@@ -59,7 +59,7 @@ val CallableDescriptor.explicitParameters: List<ParameterDescriptor>
         return result
     }
 
-fun KotlinType.replace(types: List<KotlinType>) = this.replace(types.map(::TypeProjectionImpl))
+fun KotlinType.replace(types: List<KotlinType>): KotlinType = this.replace(types.map(::TypeProjectionImpl))
 
 fun FunctionDescriptor.substitute(vararg types: KotlinType): FunctionDescriptor {
     val typeSubstitutor = TypeSubstitutor.create(

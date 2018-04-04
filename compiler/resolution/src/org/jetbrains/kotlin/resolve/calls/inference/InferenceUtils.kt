@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.resolve.calls.inference.model.NewConstraintSystemImp
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.types.*
 
-fun ConstraintStorage.buildCurrentSubstitutor() = NewTypeSubstitutorByConstructorMap(fixedTypeVariables.entries.associate {
+fun ConstraintStorage.buildCurrentSubstitutor(): NewTypeSubstitutorByConstructorMap = NewTypeSubstitutorByConstructorMap(fixedTypeVariables.entries.associate {
     it.key to it.value
 })
 

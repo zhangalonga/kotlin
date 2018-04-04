@@ -42,5 +42,5 @@ class KotlinUDestructuringDeclarationExpression(
     psiAnchor: PsiElement
 ) : KotlinUDeclarationsExpression(null, givenParent, psiAnchor) {
 
-    val tempVarAssignment get() = declarations.first()
+    val tempVarAssignment: UDeclaration get() = declarations.first()
 }

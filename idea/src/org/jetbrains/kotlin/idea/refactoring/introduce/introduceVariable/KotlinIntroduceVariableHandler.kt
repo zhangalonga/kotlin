@@ -74,7 +74,7 @@ import org.jetbrains.kotlin.utils.sure
 import java.util.*
 
 object KotlinIntroduceVariableHandler : RefactoringActionHandler {
-    val INTRODUCE_VARIABLE = KotlinRefactoringBundle.message("introduce.variable")
+    val INTRODUCE_VARIABLE: String = KotlinRefactoringBundle.message("introduce.variable")
 
     private val EXPRESSION_KEY = Key.create<Boolean>("EXPRESSION_KEY")
     private val REPLACE_KEY = Key.create<Boolean>("REPLACE_KEY")

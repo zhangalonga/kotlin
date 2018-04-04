@@ -16,34 +16,35 @@
 
 package org.jetbrains.kotlin.resolve.lazy.declarations
 
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtDestructuringDeclarationEntry
-import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.resolve.lazy.data.KtClassLikeInfo
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 
 class CombinedPackageMemberDeclarationProvider(
     val providers: Collection<PackageMemberDeclarationProvider>
 ) : PackageMemberDeclarationProvider {
-    override fun getAllDeclaredSubPackages(nameFilter: (Name) -> Boolean) = providers.flatMap { it.getAllDeclaredSubPackages(nameFilter) }
+    override fun getAllDeclaredSubPackages(nameFilter: (Name) -> Boolean): List<FqName> = providers.flatMap { it.getAllDeclaredSubPackages(nameFilter) }
 
-    override fun getPackageFiles() = providers.flatMap { it.getPackageFiles() }
+    override fun getPackageFiles(): List<KtFile> = providers.flatMap { it.getPackageFiles() }
 
-    override fun containsFile(file: KtFile) = providers.any { it.containsFile(file) }
+    override fun containsFile(file: KtFile): Boolean = providers.any { it.containsFile(file) }
 
-    override fun getDeclarations(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean) =
+    override fun getDeclarations(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): List<KtDeclaration> =
         providers.flatMap { it.getDeclarations(kindFilter, nameFilter) }
 
-    override fun getFunctionDeclarations(name: Name) = providers.flatMap { it.getFunctionDeclarations(name) }
+    override fun getFunctionDeclarations(name: Name): List<KtNamedFunction> = providers.flatMap { it.getFunctionDeclarations(name) }
 
-    override fun getPropertyDeclarations(name: Name) = providers.flatMap { it.getPropertyDeclarations(name) }
+    override fun getPropertyDeclarations(name: Name): List<KtProperty> = providers.flatMap { it.getPropertyDeclarations(name) }
 
     override fun getDestructuringDeclarationsEntries(name: Name): Collection<KtDestructuringDeclarationEntry> {
         return providers.flatMap { it.getDestructuringDeclarationsEntries(name) }
     }
 
-    override fun getClassOrObjectDeclarations(name: Name) = providers.flatMap { it.getClassOrObjectDeclarations(name) }
+    override fun getClassOrObjectDeclarations(name: Name): List<KtClassLikeInfo> = providers.flatMap { it.getClassOrObjectDeclarations(name) }
 
-    override fun getTypeAliasDeclarations(name: Name) = providers.flatMap { it.getTypeAliasDeclarations(name) }
+    override fun getTypeAliasDeclarations(name: Name): List<KtTypeAlias> = providers.flatMap { it.getTypeAliasDeclarations(name) }
 
     override fun getDeclarationNames(): Set<Name> = providers.flatMapTo(HashSet()) { it.getDeclarationNames() }
 }

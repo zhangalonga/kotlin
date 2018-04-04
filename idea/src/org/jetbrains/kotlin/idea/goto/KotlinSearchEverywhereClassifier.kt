@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.idea.goto
 
 import com.intellij.ide.actions.SearchEverywhereClassifier
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
@@ -24,11 +25,11 @@ import java.awt.Component
 import javax.swing.JList
 
 class KotlinSearchEverywhereClassifier : SearchEverywhereClassifier {
-    override fun isClass(o: Any?) = o is KtClassOrObject
+    override fun isClass(o: Any?): Boolean = o is KtClassOrObject
 
-    override fun isSymbol(o: Any?) = o is KtNamedDeclaration
+    override fun isSymbol(o: Any?): Boolean = o is KtNamedDeclaration
 
-    override fun getVirtualFile(o: Any) = (o as? PsiElement)?.containingFile?.virtualFile
+    override fun getVirtualFile(o: Any): VirtualFile? = (o as? PsiElement)?.containingFile?.virtualFile
 
     override fun getListCellRendererComponent(list: JList<*>, value: Any?, index: Int, isSelected: Boolean, cellHasFocus: Boolean): Component? {
         if (value !is PsiElement) return null

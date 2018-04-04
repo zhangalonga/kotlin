@@ -41,10 +41,10 @@ class FunctionClassDescriptor(
         SuspendFunction(BUILT_INS_PACKAGE_FQ_NAME, "SuspendFunction"),
         KFunction(KOTLIN_REFLECT_FQ_NAME, "KFunction");
 
-        fun numberedClassName(arity: Int) = Name.identifier("$classNamePrefix$arity")
+        fun numberedClassName(arity: Int): Name = Name.identifier("$classNamePrefix$arity")
 
         companion object {
-            fun byClassNamePrefix(packageFqName: FqName, className: String) =
+            fun byClassNamePrefix(packageFqName: FqName, className: String): Kind? =
                     Kind.values().firstOrNull { it.packageFqName == packageFqName && className.startsWith(it.classNamePrefix) }
         }
     }
@@ -72,32 +72,32 @@ class FunctionClassDescriptor(
         parameters = result.toList()
     }
 
-    override fun getContainingDeclaration() = containingDeclaration
+    override fun getContainingDeclaration(): PackageFragmentDescriptor = containingDeclaration
 
-    override fun getStaticScope() = MemberScope.Empty
+    override fun getStaticScope(): MemberScope.Empty = MemberScope.Empty
 
     override fun getTypeConstructor(): TypeConstructor = typeConstructor
 
-    override fun getUnsubstitutedMemberScope() = memberScope
+    override fun getUnsubstitutedMemberScope(): FunctionClassScope = memberScope
 
-    override fun getCompanionObjectDescriptor() = null
-    override fun getConstructors() = emptyList<ClassConstructorDescriptor>()
-    override fun getKind() = ClassKind.INTERFACE
-    override fun getModality() = Modality.ABSTRACT
-    override fun getUnsubstitutedPrimaryConstructor() = null
-    override fun getVisibility() = Visibilities.PUBLIC
-    override fun isCompanionObject() = false
-    override fun isInner() = false
-    override fun isData() = false
-    override fun isInline() = false
-    override fun isExpect() = false
-    override fun isActual() = false
-    override fun isExternal() = false
+    override fun getCompanionObjectDescriptor(): Nothing? = null
+    override fun getConstructors(): List<ClassConstructorDescriptor> = emptyList<ClassConstructorDescriptor>()
+    override fun getKind(): ClassKind = ClassKind.INTERFACE
+    override fun getModality(): Modality = Modality.ABSTRACT
+    override fun getUnsubstitutedPrimaryConstructor(): Nothing? = null
+    override fun getVisibility(): Visibility = Visibilities.PUBLIC
+    override fun isCompanionObject(): Boolean = false
+    override fun isInner(): Boolean = false
+    override fun isData(): Boolean = false
+    override fun isInline(): Boolean = false
+    override fun isExpect(): Boolean = false
+    override fun isActual(): Boolean = false
+    override fun isExternal(): Boolean = false
     override val annotations: Annotations get() = Annotations.EMPTY
     override fun getSource(): SourceElement = SourceElement.NO_SOURCE
-    override fun getSealedSubclasses() = emptyList<ClassDescriptor>()
+    override fun getSealedSubclasses(): List<ClassDescriptor> = emptyList()
 
-    override fun getDeclaredTypeParameters() = parameters
+    override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> = parameters
 
     private inner class FunctionTypeConstructor : AbstractClassTypeConstructor(storageManager) {
         override fun computeSupertypes(): Collection<KotlinType> {
@@ -149,5 +149,5 @@ class FunctionClassDescriptor(
             get() = SupertypeLoopChecker.EMPTY
     }
 
-    override fun toString() = name.asString()
+    override fun toString(): String = name.asString()
 }

@@ -13,7 +13,7 @@ sealed class ConeKotlinTypeProjection {
     abstract val kind: ProjectionKind
 
     companion object {
-        val EMPTY_ARRAY = arrayOf<ConeKotlinTypeProjection>()
+        val EMPTY_ARRAY: Array<ConeKotlinTypeProjection> = arrayOf()
     }
 }
 

@@ -414,11 +414,11 @@ private fun KtModifierList.modifierFromTokenSet(set: TokenSet): PsiElement? {
 
 private fun KtModifierListOwner.modifierFromTokenSet(set: TokenSet) = modifierList?.modifierFromTokenSet(set)
 
-fun KtModifierList.visibilityModifier() = modifierFromTokenSet(KtTokens.VISIBILITY_MODIFIERS)
+fun KtModifierList.visibilityModifier(): PsiElement? = modifierFromTokenSet(KtTokens.VISIBILITY_MODIFIERS)
 
 fun KtModifierList.visibilityModifierType(): KtModifierKeywordToken? = visibilityModifier()?.node?.elementType as KtModifierKeywordToken?
 
-fun KtModifierListOwner.visibilityModifier() = modifierList?.modifierFromTokenSet(KtTokens.VISIBILITY_MODIFIERS)
+fun KtModifierListOwner.visibilityModifier(): PsiElement? = modifierList?.modifierFromTokenSet(KtTokens.VISIBILITY_MODIFIERS)
 
 val KtModifierListOwner.isPublic: Boolean
     get() {
@@ -430,12 +430,12 @@ val KtModifierListOwner.isPublic: Boolean
 fun KtModifierListOwner.visibilityModifierType(): KtModifierKeywordToken? =
     visibilityModifier()?.node?.elementType as KtModifierKeywordToken?
 
-fun KtDeclaration.modalityModifier() = modifierFromTokenSet(MODALITY_MODIFIERS)
+fun KtDeclaration.modalityModifier(): PsiElement? = modifierFromTokenSet(MODALITY_MODIFIERS)
 
 fun KtDeclaration.modalityModifierType(): KtModifierKeywordToken? = modalityModifier()?.node?.elementType as KtModifierKeywordToken?
 
-fun KtStringTemplateExpression.isPlain() = entries.all { it is KtLiteralStringTemplateEntry }
-fun KtStringTemplateExpression.isPlainWithEscapes() =
+fun KtStringTemplateExpression.isPlain(): Boolean = entries.all { it is KtLiteralStringTemplateEntry }
+fun KtStringTemplateExpression.isPlainWithEscapes(): Boolean =
     entries.all { it is KtLiteralStringTemplateEntry || it is KtEscapeStringTemplateEntry }
 
 // Correct for class members only (including constructors and nested classes)
@@ -487,9 +487,9 @@ fun isTypeConstructorReference(e: PsiElement): Boolean {
     return parent is KtUserType && parent.referenceExpression == e
 }
 
-fun KtParameter.isPropertyParameter() = ownerFunction is KtPrimaryConstructor && hasValOrVar()
+fun KtParameter.isPropertyParameter(): Boolean = ownerFunction is KtPrimaryConstructor && hasValOrVar()
 
-fun isDoubleColonReceiver(expression: KtExpression) =
+fun isDoubleColonReceiver(expression: KtExpression): Boolean =
     expression.getParentOfTypeAndBranch<KtDoubleColonExpression> { this.receiverExpression } != null
 
 fun KtFunctionLiteral.getOrCreateParameterList(): KtParameterList {
@@ -523,7 +523,7 @@ fun KtCallExpression.addTypeArgument(typeArgument: KtTypeProjection) {
     }
 }
 
-fun KtDeclaration.hasBody() = when (this) {
+fun KtDeclaration.hasBody(): Boolean = when (this) {
     is KtFunction -> hasBody()
     is KtProperty -> hasBody()
     else -> false
@@ -544,7 +544,7 @@ fun KtExpression.getLabeledParent(labelName: String): KtLabeledExpression? {
     return null
 }
 
-fun PsiElement.astReplace(newElement: PsiElement) = parent.node.replaceChild(node, newElement.node)
+fun PsiElement.astReplace(newElement: PsiElement): Unit = parent.node.replaceChild(node, newElement.node)
 
 var KtElement.parentSubstitute: PsiElement? by UserDataProperty(Key.create<PsiElement>("PARENT_SUBSTITUTE"))
 

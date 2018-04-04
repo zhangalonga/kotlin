@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 class ConvertCollectionFix(element: KtExpression, val type: CollectionType) : KotlinQuickFixAction<KtExpression>(element) {
     override fun getFamilyName(): String = "Convert to ${type.displayName}"
-    override fun getText() = "Convert expression to '${type.displayName}' by inserting '.${type.functionCall}'"
+    override fun getText(): String = "Convert expression to '${type.displayName}' by inserting '.${type.functionCall}'"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val expression = element ?: return
@@ -57,9 +57,9 @@ class ConvertCollectionFix(element: KtExpression, val type: CollectionType) : Ko
         ArrayViaList("toList().toTypedArray()", FqName("kotlin.Array"), "Array"),
         ;
 
-        val displayName get() = nameOverride ?: name
+        val displayName: String get() = nameOverride ?: name
 
-        fun specializeFor(sourceType: CollectionType) = when {
+        fun specializeFor(sourceType: CollectionType): CollectionType = when {
             this == Array && sourceType == Sequence -> ArrayViaList
             this == Array && sourceType == Iterable -> ArrayViaList
             else -> this

@@ -32,7 +32,7 @@ class RemoveValVarFromParameterFix(element: KtValVarKeywordOwner) : KotlinQuickF
         varOrVal = valOrVarNode.text
     }
 
-    override fun getFamilyName() = "Remove 'val/var' from parameter"
+    override fun getFamilyName(): String = "Remove 'val/var' from parameter"
 
     override fun getText(): String {
         val element = element ?: return ""
@@ -45,7 +45,7 @@ class RemoveValVarFromParameterFix(element: KtValVarKeywordOwner) : KotlinQuickF
     }
 
     companion object : KotlinSingleIntentionActionFactory() {
-        override fun createAction(diagnostic: Diagnostic) =
+        override fun createAction(diagnostic: Diagnostic): RemoveValVarFromParameterFix =
                 RemoveValVarFromParameterFix(diagnostic.psiElement.parent as KtValVarKeywordOwner)
     }
 }

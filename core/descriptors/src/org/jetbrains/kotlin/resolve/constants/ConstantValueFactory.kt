@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils
 
 object ConstantValueFactory {
-    fun createArrayValue(value: List<ConstantValue<*>>, type: KotlinType) = ArrayValue(value) { type }
+    fun createArrayValue(value: List<ConstantValue<*>>, type: KotlinType): ArrayValue = ArrayValue(value) { type }
 
     fun createConstantValue(value: Any?): ConstantValue<*>? {
         return when (value) {

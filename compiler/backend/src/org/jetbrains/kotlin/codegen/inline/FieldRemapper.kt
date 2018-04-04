@@ -28,7 +28,7 @@ open class FieldRemapper(
         @JvmField val parent: FieldRemapper?,
         protected val parameters: Parameters
 ) {
-    val isRoot = parent == null
+    val isRoot: Boolean = parent == null
 
     open val isInsideInliningLambda: Boolean = parent?.isInsideInliningLambda ?: false
 
@@ -97,7 +97,7 @@ open class FieldRemapper(
             MethodInliner.findCapturedField(node, this).remapValue
 
     companion object {
-        fun foldName(fieldName: String) =
+        fun foldName(fieldName: String): String =
                 CAPTURED_FIELD_FOLD_PREFIX + fieldName
     }
 }

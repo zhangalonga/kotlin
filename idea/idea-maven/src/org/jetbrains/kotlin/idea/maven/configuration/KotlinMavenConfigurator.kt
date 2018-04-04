@@ -118,7 +118,7 @@ protected constructor(
         }
     }
 
-    protected open fun getMinimumSupportedVersion() = "1.0.0"
+    protected open fun getMinimumSupportedVersion(): String = "1.0.0"
 
     protected abstract fun isKotlinModule(module: Module): Boolean
     protected abstract fun isRelevantGoal(goalName: String): Boolean
@@ -289,8 +289,8 @@ protected constructor(
     }
 
     companion object {
-        const val GROUP_ID = "org.jetbrains.kotlin"
-        const val MAVEN_PLUGIN_ID = "kotlin-maven-plugin"
+        const val GROUP_ID: String = "org.jetbrains.kotlin"
+        const val MAVEN_PLUGIN_ID: String = "kotlin-maven-plugin"
         private const val KOTLIN_VERSION_PROPERTY = "kotlin.version"
 
         private fun hasJavaFiles(module: Module): Boolean {

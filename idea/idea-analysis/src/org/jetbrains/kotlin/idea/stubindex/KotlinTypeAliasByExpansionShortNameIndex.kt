@@ -26,13 +26,13 @@ import org.jetbrains.kotlin.psi.KtTypeAlias
 class KotlinTypeAliasByExpansionShortNameIndex : StringStubIndexExtension<KtTypeAlias>() {
     override fun getKey(): StubIndexKey<String, KtTypeAlias> = KEY
 
-    override fun get(key: String, project: Project, scope: GlobalSearchScope) =
+    override fun get(key: String, project: Project, scope: GlobalSearchScope): MutableCollection<KtTypeAlias> =
             StubIndex.getElements(KEY, key, project, scope, KtTypeAlias::class.java)!!
 
     companion object {
-        val KEY = KotlinIndexUtil.createIndexKey(KotlinTypeAliasByExpansionShortNameIndex::class.java)
-        val INSTANCE = KotlinTypeAliasByExpansionShortNameIndex()
+        val KEY: StubIndexKey<String, KtTypeAlias> = KotlinIndexUtil.createIndexKey(KotlinTypeAliasByExpansionShortNameIndex::class.java)
+        val INSTANCE: KotlinTypeAliasByExpansionShortNameIndex = KotlinTypeAliasByExpansionShortNameIndex()
 
-        @JvmStatic fun getInstance() = INSTANCE
+        @JvmStatic fun getInstance(): KotlinTypeAliasByExpansionShortNameIndex = INSTANCE
     }
 }

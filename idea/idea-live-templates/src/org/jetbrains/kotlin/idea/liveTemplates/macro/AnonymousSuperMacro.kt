@@ -39,8 +39,8 @@ import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.utils.collectDescriptorsFiltered
 
 class AnonymousSuperMacro : KotlinMacro() {
-    override fun getName() = "anonymousSuper"
-    override fun getPresentableName() = "anonymousSuper()"
+    override fun getName(): String = "anonymousSuper"
+    override fun getPresentableName(): String = "anonymousSuper()"
 
     override fun calculateResult(params: Array<Expression>, context: ExpressionContext): Result? {
         val editor = context.editor

@@ -22,7 +22,7 @@ import java.util.*
 open class WriteCopyrightToFile : DefaultTask() {
 
     @InputFile
-    var path = project.file("${project.rootDir}/.idea/copyright/apache.xml")
+    var path: File? = project.file("${project.rootDir}/.idea/copyright/apache.xml")
 
     @OutputFile
     var outputFile: File? = null

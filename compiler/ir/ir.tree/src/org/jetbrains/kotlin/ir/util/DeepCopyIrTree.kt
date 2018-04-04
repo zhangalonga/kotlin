@@ -35,33 +35,33 @@ inline fun <reified T : IrElement> T.deepCopyOld(): T =
 
 @Deprecated("Creates unbound symbols")
 open class DeepCopyIrTree : IrElementTransformerVoid() {
-    protected open fun mapDeclarationOrigin(declarationOrigin: IrDeclarationOrigin) = declarationOrigin
-    protected open fun mapStatementOrigin(statementOrigin: IrStatementOrigin?) = statementOrigin
-    protected open fun mapFileEntry(fileEntry: SourceManager.FileEntry) = fileEntry
+    protected open fun mapDeclarationOrigin(declarationOrigin: IrDeclarationOrigin): IrDeclarationOrigin = declarationOrigin
+    protected open fun mapStatementOrigin(statementOrigin: IrStatementOrigin?): IrStatementOrigin? = statementOrigin
+    protected open fun mapFileEntry(fileEntry: SourceManager.FileEntry): SourceManager.FileEntry = fileEntry
 
-    protected open fun mapModuleDescriptor(descriptor: ModuleDescriptor) = descriptor
-    protected open fun mapPackageFragmentDescriptor(descriptor: PackageFragmentDescriptor) = descriptor
-    protected open fun mapClassDeclaration(descriptor: ClassDescriptor) = descriptor
-    protected open fun mapTypeAliasDeclaration(descriptor: TypeAliasDescriptor) = descriptor
-    protected open fun mapFunctionDeclaration(descriptor: FunctionDescriptor) = descriptor
-    protected open fun mapConstructorDeclaration(descriptor: ClassConstructorDescriptor) = descriptor
-    protected open fun mapPropertyDeclaration(descriptor: PropertyDescriptor) = descriptor
-    protected open fun mapLocalPropertyDeclaration(descriptor: VariableDescriptorWithAccessors) = descriptor
-    protected open fun mapEnumEntryDeclaration(descriptor: ClassDescriptor) = descriptor
-    protected open fun mapVariableDeclaration(descriptor: VariableDescriptor) = descriptor
-    protected open fun mapErrorDeclaration(descriptor: DeclarationDescriptor) = descriptor
+    protected open fun mapModuleDescriptor(descriptor: ModuleDescriptor): ModuleDescriptor = descriptor
+    protected open fun mapPackageFragmentDescriptor(descriptor: PackageFragmentDescriptor): PackageFragmentDescriptor = descriptor
+    protected open fun mapClassDeclaration(descriptor: ClassDescriptor): ClassDescriptor = descriptor
+    protected open fun mapTypeAliasDeclaration(descriptor: TypeAliasDescriptor): TypeAliasDescriptor = descriptor
+    protected open fun mapFunctionDeclaration(descriptor: FunctionDescriptor): FunctionDescriptor = descriptor
+    protected open fun mapConstructorDeclaration(descriptor: ClassConstructorDescriptor): ClassConstructorDescriptor = descriptor
+    protected open fun mapPropertyDeclaration(descriptor: PropertyDescriptor): PropertyDescriptor = descriptor
+    protected open fun mapLocalPropertyDeclaration(descriptor: VariableDescriptorWithAccessors): VariableDescriptorWithAccessors = descriptor
+    protected open fun mapEnumEntryDeclaration(descriptor: ClassDescriptor): ClassDescriptor = descriptor
+    protected open fun mapVariableDeclaration(descriptor: VariableDescriptor): VariableDescriptor = descriptor
+    protected open fun mapErrorDeclaration(descriptor: DeclarationDescriptor): DeclarationDescriptor = descriptor
 
-    protected open fun mapSuperQualifier(qualifier: ClassDescriptor?) = qualifier
-    protected open fun mapClassReference(descriptor: ClassDescriptor) = descriptor
-    protected open fun mapValueReference(descriptor: ValueDescriptor) = descriptor
-    protected open fun mapVariableReference(descriptor: VariableDescriptor) = descriptor
-    protected open fun mapPropertyReference(descriptor: PropertyDescriptor) = descriptor
-    protected open fun mapCallee(descriptor: FunctionDescriptor) = descriptor
-    protected open fun mapDelegatedConstructorCallee(descriptor: ClassConstructorDescriptor) = descriptor
-    protected open fun mapEnumConstructorCallee(descriptor: ClassConstructorDescriptor) = descriptor
-    protected open fun mapLocalPropertyReference(descriptor: VariableDescriptorWithAccessors) = descriptor
-    protected open fun mapClassifierReference(descriptor: ClassifierDescriptor) = descriptor
-    protected open fun mapReturnTarget(descriptor: FunctionDescriptor) = mapCallee(descriptor)
+    protected open fun mapSuperQualifier(qualifier: ClassDescriptor?): ClassDescriptor? = qualifier
+    protected open fun mapClassReference(descriptor: ClassDescriptor): ClassDescriptor = descriptor
+    protected open fun mapValueReference(descriptor: ValueDescriptor): ValueDescriptor = descriptor
+    protected open fun mapVariableReference(descriptor: VariableDescriptor): VariableDescriptor = descriptor
+    protected open fun mapPropertyReference(descriptor: PropertyDescriptor): PropertyDescriptor = descriptor
+    protected open fun mapCallee(descriptor: FunctionDescriptor): FunctionDescriptor = descriptor
+    protected open fun mapDelegatedConstructorCallee(descriptor: ClassConstructorDescriptor): ClassConstructorDescriptor = descriptor
+    protected open fun mapEnumConstructorCallee(descriptor: ClassConstructorDescriptor): ClassConstructorDescriptor = descriptor
+    protected open fun mapLocalPropertyReference(descriptor: VariableDescriptorWithAccessors): VariableDescriptorWithAccessors = descriptor
+    protected open fun mapClassifierReference(descriptor: ClassifierDescriptor): ClassifierDescriptor = descriptor
+    protected open fun mapReturnTarget(descriptor: FunctionDescriptor): FunctionDescriptor = mapCallee(descriptor)
 
     private inline fun <reified T : IrElement> T.transform() = transform(this@DeepCopyIrTree, null) as T
 
@@ -166,7 +166,7 @@ open class DeepCopyIrTree : IrElementTransformerVoid() {
             transformValueParameters(original)
         }
 
-    protected fun <T : IrFunction> T.transformValueParameters(original: T) =
+    protected fun <T : IrFunction> T.transformValueParameters(original: T): T =
         apply {
             dispatchReceiverParameter = original.dispatchReceiverParameter?.let {
                 copyValueParameter(it, descriptor.dispatchReceiverParameter ?: throw AssertionError("No dispatch receiver in $descriptor"))
@@ -388,7 +388,7 @@ open class DeepCopyIrTree : IrElementTransformerVoid() {
     override fun visitCall(expression: IrCall): IrCall =
         shallowCopyCall(expression).transformValueArguments(expression)
 
-    protected fun shallowCopyCall(expression: IrCall) =
+    protected fun shallowCopyCall(expression: IrCall): IrCall =
         when (expression) {
             is IrCallWithShallowCopy ->
                 expression.shallowCopy(

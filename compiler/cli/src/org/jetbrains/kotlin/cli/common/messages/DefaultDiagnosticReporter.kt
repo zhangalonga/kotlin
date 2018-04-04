@@ -29,7 +29,7 @@ interface MessageCollectorBasedReporter : DiagnosticMessageReporter {
 
     val messageCollector: MessageCollector
 
-    override fun report(diagnostic: Diagnostic, file: PsiFile, render: String) = messageCollector.report(
+    override fun report(diagnostic: Diagnostic, file: PsiFile, render: String): Unit = messageCollector.report(
             AnalyzerWithCompilerReport.convertSeverity(diagnostic.severity),
             render,
             MessageUtil.psiFileToMessageLocation(file, file.name, DiagnosticUtils.getLineAndColumn(diagnostic))

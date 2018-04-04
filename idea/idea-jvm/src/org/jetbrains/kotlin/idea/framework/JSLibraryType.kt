@@ -33,12 +33,13 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.kotlin.config.TargetPlatformKind
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.idea.KotlinIcons
+import javax.swing.Icon
 import javax.swing.JComponent
 
 class JSLibraryType : LibraryType<DummyLibraryProperties>(JSLibraryKind) {
-    override fun createPropertiesEditor(editorComponent: LibraryEditorComponent<DummyLibraryProperties>) = null
+    override fun createPropertiesEditor(editorComponent: LibraryEditorComponent<DummyLibraryProperties>): Nothing? = null
 
-    override fun getCreateActionName() = "Kotlin/JS"
+    override fun getCreateActionName(): String = "Kotlin/JS"
 
     override fun createNewLibrary(parentComponent: JComponent,
                                   contextDirectory: VirtualFile?,
@@ -48,10 +49,10 @@ class JSLibraryType : LibraryType<DummyLibraryProperties>(JSLibraryKind) {
                                                                        project)
     }
 
-    override fun getIcon(properties: DummyLibraryProperties?) = KotlinIcons.JS
+    override fun getIcon(properties: DummyLibraryProperties?): Icon? = KotlinIcons.JS
 
     companion object {
-        fun getInstance() = Extensions.findExtension(EP_NAME, JSLibraryType::class.java)
+        fun getInstance(): JSLibraryType = Extensions.findExtension(EP_NAME, JSLibraryType::class.java)
     }
 
     object RootsComponentDescriptor : DefaultLibraryRootsComponentDescriptor() {
@@ -67,7 +68,7 @@ class JSLibraryType : LibraryType<DummyLibraryProperties>(JSLibraryKind) {
             return descriptor
         }
 
-        override fun getRootTypes() = arrayOf(OrderRootType.CLASSES, OrderRootType.SOURCES)
+        override fun getRootTypes(): Array<OrderRootType> = arrayOf(OrderRootType.CLASSES, OrderRootType.SOURCES)
 
         override fun getRootDetectors(): List<RootDetector> {
             return arrayListOf(
@@ -78,7 +79,7 @@ class JSLibraryType : LibraryType<DummyLibraryProperties>(JSLibraryKind) {
     }
 
     object JSRootFilter : FileTypeBasedRootFilter(OrderRootType.CLASSES, false, PlainTextFileType.INSTANCE, "JS files") {
-        override fun isFileAccepted(virtualFile: VirtualFile) = isAcceptedForJsLibrary(virtualFile.extension)
+        override fun isFileAccepted(virtualFile: VirtualFile): Boolean = isAcceptedForJsLibrary(virtualFile.extension)
 
     }
 }

@@ -519,4 +519,4 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
     }
 }
 
-fun main(args: Array<String>) = K2JVMCompiler.main(args)
+fun main(args: Array<String>): Unit = K2JVMCompiler.main(args)

@@ -45,7 +45,7 @@ abstract class SymbolWithIrBuilder<out S: IrSymbol, out D: IrDeclaration> {
 
     protected abstract fun buildIr(): D
 
-    val symbol by lazy { buildSymbol() }
+    val symbol: S by lazy { buildSymbol() }
 
     private val builtIr by lazy { buildIr() }
     private var initialized: Boolean = false
@@ -64,8 +64,7 @@ abstract class SymbolWithIrBuilder<out S: IrSymbol, out D: IrDeclaration> {
 }
 
 fun BackendContext.createPropertyGetterBuilder(startOffset: Int, endOffset: Int, origin: IrDeclarationOrigin,
-                                               fieldSymbol: IrFieldSymbol, type: KotlinType)
-        = object: SymbolWithIrBuilder<IrSimpleFunctionSymbol, IrSimpleFunction>() {
+                                               fieldSymbol: IrFieldSymbol, type: KotlinType): SymbolWithIrBuilder<IrSimpleFunctionSymbol, IrSimpleFunction> = object: SymbolWithIrBuilder<IrSimpleFunctionSymbol, IrSimpleFunction>() {
 
     override fun buildSymbol() = IrSimpleFunctionSymbolImpl(
             PropertyGetterDescriptorImpl(
@@ -160,8 +159,7 @@ private fun BackendContext.createPropertySetterBuilder(startOffset: Int, endOffs
 }
 
 fun BackendContext.createPropertyWithBackingFieldBuilder(startOffset: Int, endOffset: Int, origin: IrDeclarationOrigin,
-                                                         owner: ClassDescriptor, name: Name, type: KotlinType, isMutable: Boolean)
-        = object: SymbolWithIrBuilder<IrFieldSymbol, IrProperty>() {
+                                                         owner: ClassDescriptor, name: Name, type: KotlinType, isMutable: Boolean): SymbolWithIrBuilder<IrFieldSymbol, IrProperty> = object: SymbolWithIrBuilder<IrFieldSymbol, IrProperty>() {
 
     private lateinit var getterBuilder: SymbolWithIrBuilder<IrSimpleFunctionSymbol, IrSimpleFunction>
     private var setterBuilder: SymbolWithIrBuilder<IrSimpleFunctionSymbol, IrSimpleFunction>? = null

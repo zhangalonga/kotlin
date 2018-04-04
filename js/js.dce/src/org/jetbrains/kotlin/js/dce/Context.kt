@@ -24,12 +24,12 @@ import org.jetbrains.kotlin.js.translate.utils.jsAstUtils.array
 import org.jetbrains.kotlin.js.translate.utils.jsAstUtils.index
 
 class Context {
-    val globalScope = Node()
-    val moduleExportsNode = globalScope.member("module").member("exports")
-    var currentModule = globalScope
-    val nodes = mutableMapOf<JsName, Node>()
+    val globalScope: Node = Node()
+    val moduleExportsNode: Node = globalScope.member("module").member("exports")
+    var currentModule: Node = globalScope
+    val nodes: MutableMap<JsName, Node> = mutableMapOf()
     var thisNode: Node? = globalScope
-    val namesOfLocalVars = mutableSetOf<JsName>()
+    val namesOfLocalVars: MutableSet<JsName> = mutableSetOf()
 
     fun addNodesForLocalVars(names: Collection<JsName>) {
         nodes += names.filter { it !in nodes }.associate { it to Node(it) }

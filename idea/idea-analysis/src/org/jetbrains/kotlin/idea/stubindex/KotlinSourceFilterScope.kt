@@ -34,7 +34,7 @@ class KotlinSourceFilterScope private constructor(
 
     private val index = ProjectRootManager.getInstance(project).fileIndex
 
-    override fun getProject() = project
+    override fun getProject(): Project = project
 
     override fun contains(file: VirtualFile): Boolean {
         if (!super.contains(file)) return false
@@ -77,25 +77,25 @@ class KotlinSourceFilterScope private constructor(
 
     companion object {
         @JvmStatic
-        fun sourcesAndLibraries(delegate: GlobalSearchScope, project: Project) = create(delegate, true, true, true, true, project)
+        fun sourcesAndLibraries(delegate: GlobalSearchScope, project: Project): GlobalSearchScope = create(delegate, true, true, true, true, project)
 
         @JvmStatic
-        fun sourceAndClassFiles(delegate: GlobalSearchScope, project: Project) = create(delegate, true, false, true, true, project)
+        fun sourceAndClassFiles(delegate: GlobalSearchScope, project: Project): GlobalSearchScope = create(delegate, true, false, true, true, project)
 
         @JvmStatic
-        fun projectSourceAndClassFiles(delegate: GlobalSearchScope, project: Project) = create(delegate, true, false, true, false, project)
+        fun projectSourceAndClassFiles(delegate: GlobalSearchScope, project: Project): GlobalSearchScope = create(delegate, true, false, true, false, project)
 
         @JvmStatic
-        fun projectSources(delegate: GlobalSearchScope, project: Project) = create(delegate, true, false, false, false, project)
+        fun projectSources(delegate: GlobalSearchScope, project: Project): GlobalSearchScope = create(delegate, true, false, false, false, project)
 
         @JvmStatic
-        fun librarySources(delegate: GlobalSearchScope, project: Project) = create(delegate, false, true, false, true, project)
+        fun librarySources(delegate: GlobalSearchScope, project: Project): GlobalSearchScope = create(delegate, false, true, false, true, project)
 
         @JvmStatic
-        fun libraryClassFiles(delegate: GlobalSearchScope, project: Project) = create(delegate, false, false, true, true, project)
+        fun libraryClassFiles(delegate: GlobalSearchScope, project: Project): GlobalSearchScope = create(delegate, false, false, true, true, project)
 
         @JvmStatic
-        fun projectAndLibrariesSources(delegate: GlobalSearchScope, project: Project) = create(delegate, true, true, false, false, project)
+        fun projectAndLibrariesSources(delegate: GlobalSearchScope, project: Project): GlobalSearchScope = create(delegate, true, true, false, false, project)
 
         private fun create(
                 delegate: GlobalSearchScope,

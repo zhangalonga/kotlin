@@ -29,5 +29,5 @@ class KotlinCreateTestDialog(project: Project,
                              targetModule: Module) : CreateTestDialog(project, title, targetClass, targetPackage, targetModule) {
     var explicitClassName: String? = null
 
-    override fun getClassName() = explicitClassName ?: super.getClassName()
+    override fun getClassName(): String = explicitClassName ?: super.getClassName()
 }

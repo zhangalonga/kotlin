@@ -37,7 +37,7 @@ class ChangePackageIntention: SelfTargetingOffsetIndependentIntention<KtPackageD
         private val PACKAGE_NAME_VAR = "PACKAGE_NAME"
     }
 
-    override fun isApplicableTo(element: KtPackageDirective) = element.packageNameExpression != null
+    override fun isApplicableTo(element: KtPackageDirective): Boolean = element.packageNameExpression != null
 
     override fun applyTo(element: KtPackageDirective, editor: Editor?) {
         if (ApplicationManager.getApplication().isUnitTestMode) {

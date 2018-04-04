@@ -68,11 +68,11 @@ class ReflectKotlinClass private constructor(
         ReflectClassStructure.visitMembers(klass, visitor)
     }
 
-    override fun equals(other: Any?) = other is ReflectKotlinClass && klass == other.klass
+    override fun equals(other: Any?): Boolean = other is ReflectKotlinClass && klass == other.klass
 
-    override fun hashCode() = klass.hashCode()
+    override fun hashCode(): Int = klass.hashCode()
 
-    override fun toString() = this::class.java.name + ": " + klass
+    override fun toString(): String = this::class.java.name + ": " + klass
 }
 
 private object ReflectClassStructure {

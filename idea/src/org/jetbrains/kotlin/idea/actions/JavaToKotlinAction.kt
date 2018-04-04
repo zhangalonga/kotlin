@@ -63,7 +63,7 @@ class JavaToKotlinAction : AnAction() {
             }
         }
 
-        val title = "Convert Java to Kotlin"
+        val title: String = "Convert Java to Kotlin"
 
         private fun saveResults(javaFiles: List<PsiJavaFile>, convertedTexts: List<String>): List<VirtualFile> {
             val result = ArrayList<VirtualFile>()

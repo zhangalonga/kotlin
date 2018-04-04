@@ -50,7 +50,7 @@ class IfThenToDoubleBangIntention : SelfTargetingRangeIntention<KtIfExpression>(
         return TextRange(element.startOffset, rParen.endOffset)
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtIfExpression, editor: Editor?) {
         val (_, _, receiverExpression) = element.buildSelectTransformationData() ?: return

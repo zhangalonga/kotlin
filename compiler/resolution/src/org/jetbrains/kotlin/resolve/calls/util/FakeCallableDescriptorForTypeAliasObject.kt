@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.descriptors.impl.DescriptorDerivedFromTypeAlias
 class FakeCallableDescriptorForTypeAliasObject(override val typeAliasDescriptor: TypeAliasDescriptor) :
     FakeCallableDescriptorForObject(typeAliasDescriptor.classDescriptor!!),
     DescriptorDerivedFromTypeAlias {
-    override fun getReferencedDescriptor() =
+    override fun getReferencedDescriptor(): TypeAliasDescriptor =
         typeAliasDescriptor
 
     override fun equals(other: Any?): Boolean =

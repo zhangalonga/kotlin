@@ -62,19 +62,19 @@ class KotlinUFunctionCallExpression(
         _resolvedCall ?: psi.getResolvedCall(psi.analyze())
     }
 
-    override val receiverType by lz {
+    override val receiverType: PsiType? by lz {
         val resolvedCall = this.resolvedCall ?: return@lz null
         val receiver = resolvedCall.dispatchReceiver ?: resolvedCall.extensionReceiver ?: return@lz null
         receiver.type.toPsiType(this, psi, boxed = true)
     }
 
-    override val methodName by lz { resolvedCall?.resultingDescriptor?.name?.asString() }
+    override val methodName: String? by lz { resolvedCall?.resultingDescriptor?.name?.asString() }
 
-    override val classReference by lz {
+    override val classReference: KotlinClassViaConstructorUSimpleReferenceExpression by lz {
         KotlinClassViaConstructorUSimpleReferenceExpression(psi, methodName.orAnonymous("class"), this)
     }
 
-    override val methodIdentifier by lz {
+    override val methodIdentifier: UIdentifier? by lz {
         val calleeExpression = psi.calleeExpression ?: return@lz null
         UIdentifier(calleeExpression, this)
     }
@@ -82,12 +82,12 @@ class KotlinUFunctionCallExpression(
     override val valueArgumentCount: Int
         get() = psi.valueArguments.size
 
-    override val valueArguments by lz { psi.valueArguments.map { KotlinConverter.convertOrEmpty(it.getArgumentExpression(), this) } }
+    override val valueArguments: List<UExpression> by lz { psi.valueArguments.map { KotlinConverter.convertOrEmpty(it.getArgumentExpression(), this) } }
 
     override val typeArgumentCount: Int
         get() = psi.typeArguments.size
 
-    override val typeArguments by lz { psi.typeArguments.map { it.typeReference.toPsiType(this, boxed = true) } }
+    override val typeArguments: List<PsiType> by lz { psi.typeArguments.map { it.typeReference.toPsiType(this, boxed = true) } }
 
     override val returnType: PsiType?
         get() = getExpressionType()

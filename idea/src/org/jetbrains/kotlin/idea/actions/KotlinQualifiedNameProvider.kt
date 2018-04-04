@@ -27,9 +27,9 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtProperty
 
 class KotlinQualifiedNameProvider: QualifiedNameProvider {
-    override fun adjustElementToCopy(element: PsiElement?) = null
+    override fun adjustElementToCopy(element: PsiElement?): Nothing? = null
 
-    override fun getQualifiedName(element: PsiElement?) = when(element) {
+    override fun getQualifiedName(element: PsiElement?): String? = when(element) {
         is KtClassOrObject -> element.fqName?.asString()
         is KtNamedFunction -> getJavaQualifiedName(LightClassUtil.getLightClassMethod(element))
 
@@ -43,7 +43,7 @@ class KotlinQualifiedNameProvider: QualifiedNameProvider {
 
     private fun getJavaQualifiedName(element: PsiElement?) = element?.let { JavaQualifiedNameProvider().getQualifiedName(element) }
 
-    override fun qualifiedNameToElement(fqn: String?, project: Project?) = null
+    override fun qualifiedNameToElement(fqn: String?, project: Project?): Nothing? = null
 
     override fun insertQualifiedName(fqn: String?, element: PsiElement?, editor: Editor?, project: Project?) {
     }

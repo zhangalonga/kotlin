@@ -50,7 +50,7 @@ interface SamAdapterExtensionFunctionDescriptor : FunctionDescriptor, SyntheticM
     override val baseDescriptorForSynthetic: FunctionDescriptor
 }
 
-val SAM_LOOKUP_NAME = Name.special("<SAM-CONSTRUCTOR>")
+val SAM_LOOKUP_NAME: Name = Name.special("<SAM-CONSTRUCTOR>")
 
 class SamAdapterFunctionsScope(
         storageManager: StorageManager,

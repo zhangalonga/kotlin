@@ -47,9 +47,9 @@ abstract class IncrementalCompilerRunner<
         private val localStateDirs: Collection<File> = emptyList()
 ) {
 
-    protected val cacheDirectory = File(workingDir, cacheDirName)
-    protected val dirtySourcesSinceLastTimeFile = File(workingDir, DIRTY_SOURCES_FILE_NAME)
-    protected val lastBuildInfoFile = File(workingDir, LAST_BUILD_INFO_FILE_NAME)
+    protected val cacheDirectory: File = File(workingDir, cacheDirName)
+    protected val dirtySourcesSinceLastTimeFile: File = File(workingDir, DIRTY_SOURCES_FILE_NAME)
+    protected val lastBuildInfoFile: File = File(workingDir, LAST_BUILD_INFO_FILE_NAME)
 
     protected abstract fun isICEnabled(): Boolean
     protected abstract fun createCacheManager(args: Args): CacheManager
@@ -295,8 +295,8 @@ abstract class IncrementalCompilerRunner<
     }
 
     companion object {
-        const val DIRTY_SOURCES_FILE_NAME = "dirty-sources.txt"
-        const val LAST_BUILD_INFO_FILE_NAME = "last-build.bin"
+        const val DIRTY_SOURCES_FILE_NAME: String = "dirty-sources.txt"
+        const val LAST_BUILD_INFO_FILE_NAME: String = "last-build.bin"
     }
 
     private object EmptyCompilationCanceledStatus : CompilationCanceledStatus {

@@ -200,8 +200,8 @@ open class LookupStorage(targetDataDir: File) : BasicMapsOwner(targetDataDir) {
 }
 
 class LookupTrackerImpl(private val delegate: LookupTracker) : LookupTracker {
-    val lookups = MultiMap.createSet<LookupSymbol, String>()
-    val pathInterner = StringInterner()
+    val lookups: MultiMap<LookupSymbol, String> = MultiMap.createSet<LookupSymbol, String>()
+    val pathInterner: StringInterner = StringInterner()
     private val interner = StringInterner()
 
     override val requiresPosition: Boolean

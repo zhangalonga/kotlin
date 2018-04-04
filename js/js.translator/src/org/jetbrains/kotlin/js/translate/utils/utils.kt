@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
+import org.jetbrains.kotlin.resolve.checkers.PrimitiveNumericComparisonInfo
 import org.jetbrains.kotlin.resolve.descriptorUtil.hasOrInheritsParametersWithDefaultValue
 import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.types.KotlinType
@@ -267,7 +268,7 @@ fun TranslationContext.getPrecisePrimitiveTypeNotNull(expression: KtExpression):
     return getPrecisePrimitiveType(expression) ?: throw IllegalStateException("Type must be not null for " + expression)
 }
 
-fun TranslationContext.getPrimitiveNumericComparisonInfo(expression: KtExpression) =
+fun TranslationContext.getPrimitiveNumericComparisonInfo(expression: KtExpression): PrimitiveNumericComparisonInfo? =
     config.configuration.languageVersionSettings.let {
         if (it.supportsFeature(LanguageFeature.ProperIeee754Comparisons)) {
             bindingContext().get(BindingContext.PRIMITIVE_NUMERIC_COMPARISON_INFO, expression)

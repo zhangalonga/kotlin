@@ -30,5 +30,5 @@ class KotlinReferenceUsageInfo(reference: PsiReference) : UsageInfo(reference) {
 }
 
 class KotlinReferencePreservingUsageInfo(private val reference: PsiReference) : UsageInfo(reference) {
-    override fun getReference() = reference
+    override fun getReference(): PsiReference = reference
 }

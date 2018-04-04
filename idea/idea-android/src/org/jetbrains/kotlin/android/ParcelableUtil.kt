@@ -63,7 +63,7 @@ private val CONSTRUCTOR_TEXT = "constructor($PARCEL_NAME: $CLASS_PARCEL)"
 private val PARCELIZE_FQNAME = FqName(Parcelize::class.java.name)
 
 //TODO add test
-fun KtClass.isParcelize() = findAnnotation(PARCELIZE_FQNAME) != null
+fun KtClass.isParcelize(): Boolean = findAnnotation(PARCELIZE_FQNAME) != null
 
 fun KtClass.canAddParcelable(): Boolean =
         findParcelableSupertype() == null

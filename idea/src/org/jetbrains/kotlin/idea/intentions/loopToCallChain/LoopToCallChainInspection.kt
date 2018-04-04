@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 class LoopToCallChainInspection : AbstractKotlinInspection() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
             object : KtVisitorVoid() {
                 val nonLazyIntention = LoopToCallChainIntention()
                 val lazyIntention = LoopToLazyCallChainIntention()
@@ -72,7 +72,7 @@ class LoopToCallChainInspection : AbstractKotlinInspection() {
             }
         }
 
-        override fun getName() = text
+        override fun getName(): String = text
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val expression = descriptor.psiElement.getParentOfType<KtForExpression>(strict = true) ?: return
@@ -142,6 +142,6 @@ abstract class AbstractLoopToCallChainIntention(
     }
 
     companion object {
-        const val MAX = 3
+        const val MAX: Int = 3
     }
 }

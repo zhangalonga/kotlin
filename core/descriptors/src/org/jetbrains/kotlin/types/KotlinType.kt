@@ -147,7 +147,7 @@ abstract class FlexibleType(val lowerBound: SimpleType, val upperBound: SimpleTy
     override val superTypeRepresentative: KotlinType
         get() = upperBound
 
-    override fun sameTypeConstructor(type: KotlinType) = false
+    override fun sameTypeConstructor(type: KotlinType): Boolean = false
 
     abstract fun render(renderer: DescriptorRenderer, options: DescriptorRendererOptions): String
 

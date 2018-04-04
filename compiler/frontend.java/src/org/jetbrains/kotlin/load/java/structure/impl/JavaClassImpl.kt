@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.load.java.structure.impl
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiModifierList
 import com.intellij.psi.PsiTypeParameter
 import com.intellij.psi.search.SearchScope
 import org.jetbrains.kotlin.asJava.KtLightClassMarker
@@ -116,7 +117,7 @@ class JavaClassImpl(psiClass: PsiClass) : JavaClassifierImpl<PsiClass>(psiClass)
 
     override fun isFromSourceCodeInScope(scope: SearchScope): Boolean = psi.containingFile.virtualFile in scope
 
-    override fun getAnnotationOwnerPsi() = psi.modifierList
+    override fun getAnnotationOwnerPsi(): PsiModifierList? = psi.modifierList
 
     private fun assertNotLightClass() {
         val psiClass = psi

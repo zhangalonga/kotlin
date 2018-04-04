@@ -26,7 +26,7 @@ class KotlinGotoClassContributor : GotoClassContributor {
         return declaration.fqName?.asString()
     }
 
-    override fun getQualifiedNameSeparator() = "."
+    override fun getQualifiedNameSeparator(): String = "."
 
     override fun getNames(project: Project, includeNonProjectItems: Boolean): Array<String> {
         val classes = KotlinClassShortNameIndex.getInstance().getAllKeys(project)

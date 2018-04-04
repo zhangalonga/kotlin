@@ -23,16 +23,17 @@ import com.intellij.openapi.roots.libraries.NewLibraryConfiguration
 import com.intellij.openapi.roots.libraries.ui.LibraryEditorComponent
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.kotlin.idea.KotlinIcons
+import javax.swing.Icon
 import javax.swing.JComponent
 
 object CommonLibraryType : LibraryType<DummyLibraryProperties>(CommonLibraryKind) {
-    override fun createPropertiesEditor(editorComponent: LibraryEditorComponent<DummyLibraryProperties>) = null
+    override fun createPropertiesEditor(editorComponent: LibraryEditorComponent<DummyLibraryProperties>): Nothing? = null
 
-    override fun getCreateActionName() = null
+    override fun getCreateActionName(): Nothing? = null
 
     override fun createNewLibrary(parentComponent: JComponent,
                                   contextDirectory: VirtualFile?,
                                   project: Project): NewLibraryConfiguration? = null
 
-    override fun getIcon(properties: DummyLibraryProperties?) = KotlinIcons.MPP
+    override fun getIcon(properties: DummyLibraryProperties?): Icon? = KotlinIcons.MPP
 }

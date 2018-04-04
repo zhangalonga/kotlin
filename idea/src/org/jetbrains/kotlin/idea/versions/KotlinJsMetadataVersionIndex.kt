@@ -28,11 +28,11 @@ import java.util.*
 object KotlinJsMetadataVersionIndex : KotlinMetadataVersionIndexBase<KotlinJsMetadataVersionIndex, JsMetadataVersion>(
         KotlinJsMetadataVersionIndex::class.java, ::JsMetadataVersion
 ) {
-    override fun getIndexer() = INDEXER
+    override fun getIndexer(): DataIndexer<JsMetadataVersion, Void?, FileContent> = INDEXER
 
-    override fun getInputFilter() = FileBasedIndex.InputFilter { file -> JavaScript.EXTENSION == file.extension }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = FileBasedIndex.InputFilter { file -> JavaScript.EXTENSION == file.extension }
 
-    override fun getVersion() = VERSION
+    override fun getVersion(): Int = VERSION
 
     private val VERSION = 3
 

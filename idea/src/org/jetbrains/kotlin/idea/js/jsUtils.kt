@@ -49,7 +49,7 @@ val Module.jsProductionOutputFilePath: String?
         return JpsPathUtil.urlToPath("$outputDir/$name.js")
     }
 
-fun Module.jsOrJsImpl() = when (TargetPlatformDetector.getPlatform(this)) {
+fun Module.jsOrJsImpl(): Module? = when (TargetPlatformDetector.getPlatform(this)) {
     is TargetPlatform.Common -> implementingModules.firstOrNull { TargetPlatformDetector.getPlatform(it) is JsPlatform }
     is JsPlatform -> this
     else -> null

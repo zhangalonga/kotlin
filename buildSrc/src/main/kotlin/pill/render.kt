@@ -10,7 +10,7 @@ class PFile(val path: File, val text: String) {
     }
 }
 
-fun PFile(path: File, xml: xml) = PFile(path, xml.toString())
+fun PFile(path: File, xml: xml): PFile = PFile(path, xml.toString())
 
 fun render(project: PProject): List<PFile> {
     val files = mutableListOf<PFile>()
@@ -152,4 +152,4 @@ private fun renderLibraryToXml(library: PLibrary, pathContext: PathContext, name
     }
 }
 
-fun PLibrary.renderName() = name?.takeIf { it != "unspecified" } ?: classes.first().nameWithoutExtension
+fun PLibrary.renderName(): String = name?.takeIf { it != "unspecified" } ?: classes.first().nameWithoutExtension

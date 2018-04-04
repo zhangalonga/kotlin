@@ -108,7 +108,7 @@ abstract class AndroidPackageFragmentProviderExtension : PackageFragmentProvider
 }
 
 class AndroidSyntheticPackageFragmentProvider(val packageFragments: Collection<PackageFragmentDescriptor>) : PackageFragmentProvider {
-    override fun getPackageFragments(fqName: FqName) = packageFragments.filter { it.fqName == fqName }
+    override fun getPackageFragments(fqName: FqName): List<PackageFragmentDescriptor> = packageFragments.filter { it.fqName == fqName }
 
     override fun getSubPackagesOf(fqName: FqName, nameFilter: (Name) -> Boolean): List<FqName> {
         return packageFragments.asSequence()

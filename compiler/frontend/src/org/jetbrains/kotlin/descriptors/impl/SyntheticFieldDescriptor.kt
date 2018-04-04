@@ -19,9 +19,11 @@ package org.jetbrains.kotlin.descriptors.impl
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyAccessorDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
+import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValue
 import org.jetbrains.kotlin.resolve.source.toSourceElement
 
 class SyntheticFieldDescriptor private constructor(
@@ -39,15 +41,15 @@ class SyntheticFieldDescriptor private constructor(
         property: KtProperty
     ) : this(accessorDescriptor.correspondingProperty, accessorDescriptor, property)
 
-    override fun getDispatchReceiverParameter() = null
+    override fun getDispatchReceiverParameter(): Nothing? = null
 
-    fun getDispatchReceiverForBackend() = getDispatchReceiverParameterForBackend()?.value
+    fun getDispatchReceiverForBackend(): ReceiverValue? = getDispatchReceiverParameterForBackend()?.value
 
-    fun getDispatchReceiverParameterForBackend() = propertyDescriptor.dispatchReceiverParameter
+    fun getDispatchReceiverParameterForBackend(): ReceiverParameterDescriptor? = propertyDescriptor.dispatchReceiverParameter
 
     companion object {
         @JvmField
-        val NAME = Name.identifier("field")
+        val NAME: Name = Name.identifier("field")
     }
 }
 

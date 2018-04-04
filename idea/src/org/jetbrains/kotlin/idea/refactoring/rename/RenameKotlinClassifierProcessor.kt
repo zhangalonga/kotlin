@@ -42,19 +42,19 @@ class RenameKotlinClassifierProcessor : RenameKotlinPsiProcessor() {
         return element is KtClassOrObject || element is KtLightClass || element is KtConstructor<*> || element is KtTypeAlias
     }
 
-    override fun isToSearchInComments(psiElement: PsiElement) = JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_CLASS
+    override fun isToSearchInComments(psiElement: PsiElement): Boolean = JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_CLASS
 
     override fun setToSearchInComments(element: PsiElement, enabled: Boolean) {
         JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_CLASS = enabled
     }
 
-    override fun isToSearchForTextOccurrences(element: PsiElement) = JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_CLASS
+    override fun isToSearchForTextOccurrences(element: PsiElement): Boolean = JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_CLASS
 
     override fun setToSearchForTextOccurrences(element: PsiElement, enabled: Boolean) {
         JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_CLASS = enabled
     }
 
-    override fun substituteElementToRename(element: PsiElement, editor: Editor?) = getClassOrObject(element)
+    override fun substituteElementToRename(element: PsiElement, editor: Editor?): PsiElement? = getClassOrObject(element)
 
     override fun prepareRenaming(element: PsiElement, newName: String, allRenames: MutableMap<PsiElement, String>) {
         super.prepareRenaming(element, newName, allRenames)

@@ -96,7 +96,7 @@ abstract class NamingConventionInspection(
         return "doesn't match regex '$namePattern'"
     }
 
-    override fun createOptionsPanel() = NamingConventionOptionsPanel(this)
+    override fun createOptionsPanel(): NamingConventionOptionsPanel = NamingConventionOptionsPanel(this)
 }
 
 class ClassNameInspection : NamingConventionInspection(

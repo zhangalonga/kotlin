@@ -34,10 +34,10 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 interface AddValVarToConstructorParameterAction {
     companion object {
-        val actionFamily = "Add val/var to primary constructor parameter"
+        val actionFamily: String = "Add val/var to primary constructor parameter"
     }
 
-    fun getActionText(element: KtParameter) = "Add val/var to parameter '${element.name ?: ""}'"
+    fun getActionText(element: KtParameter): String = "Add val/var to parameter '${element.name ?: ""}'"
 
     fun canInvoke(element: KtParameter): Boolean {
         return element.valOrVarKeyword == null && (element.parent as? KtParameterList)?.parent is KtPrimaryConstructor
@@ -74,15 +74,15 @@ interface AddValVarToConstructorParameterAction {
             return element.nameIdentifier?.textRange
         }
 
-        override fun applyTo(element: KtParameter, editor: Editor?) = invoke(element, editor)
+        override fun applyTo(element: KtParameter, editor: Editor?): Unit = invoke(element, editor)
     }
 
     class QuickFix(parameter: KtParameter) :
             KotlinQuickFixAction<KtParameter>(parameter),
             AddValVarToConstructorParameterAction {
-        override fun getText() = element?.let { getActionText(it) } ?: ""
+        override fun getText(): String = element?.let { getActionText(it) } ?: ""
 
-        override fun getFamilyName() = actionFamily
+        override fun getFamilyName(): String = actionFamily
 
         override fun invoke(project: Project, editor: Editor?, file: KtFile) {
             invoke(element ?: return, editor)
@@ -90,6 +90,6 @@ interface AddValVarToConstructorParameterAction {
     }
 
     object QuickFixFactory : KotlinSingleIntentionActionFactory() {
-        override fun createAction(diagnostic: Diagnostic) = QuickFix(Errors.DATA_CLASS_NOT_PROPERTY_PARAMETER.cast(diagnostic).psiElement)
+        override fun createAction(diagnostic: Diagnostic): QuickFix = QuickFix(Errors.DATA_CLASS_NOT_PROPERTY_PARAMETER.cast(diagnostic).psiElement)
     }
 }

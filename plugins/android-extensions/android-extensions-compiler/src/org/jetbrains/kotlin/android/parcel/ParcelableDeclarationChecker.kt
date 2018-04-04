@@ -43,9 +43,9 @@ import org.jetbrains.kotlin.resolve.jvm.annotations.findJvmFieldAnnotation
 import org.jetbrains.kotlin.types.TypeUtils
 import org.jetbrains.kotlin.types.isError
 
-val ANDROID_PARCELABLE_CLASS_FQNAME = FqName("android.os.Parcelable")
-val ANDROID_PARCELABLE_CREATOR_CLASS_FQNAME = FqName("android.os.Parcelable.Creator")
-val ANDROID_PARCEL_CLASS_FQNAME = FqName("android.os.Parcel")
+val ANDROID_PARCELABLE_CLASS_FQNAME: FqName = FqName("android.os.Parcelable")
+val ANDROID_PARCELABLE_CREATOR_CLASS_FQNAME: FqName = FqName("android.os.Parcelable.Creator")
+val ANDROID_PARCEL_CLASS_FQNAME: FqName = FqName("android.os.Parcel")
 
 class ParcelableDeclarationChecker : DeclarationChecker {
     private companion object {

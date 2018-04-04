@@ -33,7 +33,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_withIndex = fn("withIndex()") {
+    val f_withIndex: FamilyPrimitiveMemberDefinition = fn("withIndex()") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -51,7 +51,7 @@ object Mapping : TemplateGroupBase() {
         body(Sequences) { """return IndexingSequence(this)""" }
     }
 
-    val f_mapIndexed = fn("mapIndexed(transform: (index: Int, T) -> R)") {
+    val f_mapIndexed: FamilyPrimitiveMemberDefinition = fn("mapIndexed(transform: (index: Int, T) -> R)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -85,7 +85,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_map = fn("map(transform: (T) -> R)") {
+    val f_map: FamilyPrimitiveMemberDefinition = fn("map(transform: (T) -> R)") {
         includeDefault()
         include(Maps, CharSequences)
     } builder {
@@ -118,7 +118,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_mapNotNull = fn("mapNotNull(transform: (T) -> R?)") {
+    val f_mapNotNull: FamilyPrimitiveMemberDefinition = fn("mapNotNull(transform: (T) -> R?)") {
         include(Iterables, ArraysOfObjects, Sequences, Maps, CharSequences)
     } builder {
         inline()
@@ -144,7 +144,7 @@ object Mapping : TemplateGroupBase() {
 
     }
 
-    val f_mapIndexedNotNull = fn("mapIndexedNotNull(transform: (index: Int, T) -> R?)") {
+    val f_mapIndexedNotNull: FamilyPrimitiveMemberDefinition = fn("mapIndexedNotNull(transform: (index: Int, T) -> R?)") {
         include(Iterables, ArraysOfObjects, Sequences, CharSequences)
     } builder {
         inline()
@@ -171,7 +171,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_mapTo = fn("mapTo(destination: C, transform: (T) -> R)") {
+    val f_mapTo: FamilyPrimitiveMemberDefinition = fn("mapTo(destination: C, transform: (T) -> R)") {
         includeDefault()
         include(Maps, CharSequences)
     } builder {
@@ -196,7 +196,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_mapIndexedTo = fn("mapIndexedTo(destination: C, transform: (index: Int, T) -> R)") {
+    val f_mapIndexedTo: FamilyPrimitiveMemberDefinition = fn("mapIndexedTo(destination: C, transform: (index: Int, T) -> R)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -224,7 +224,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_mapNotNullTo = fn("mapNotNullTo(destination: C, transform: (T) -> R?)") {
+    val f_mapNotNullTo: FamilyPrimitiveMemberDefinition = fn("mapNotNullTo(destination: C, transform: (T) -> R?)") {
         include(Iterables, ArraysOfObjects, Sequences, Maps, CharSequences)
     } builder {
         inline()
@@ -245,7 +245,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_mapIndexedNotNullTo = fn("mapIndexedNotNullTo(destination: C, transform: (index: Int, T) -> R?)") {
+    val f_mapIndexedNotNullTo: FamilyPrimitiveMemberDefinition = fn("mapIndexedNotNullTo(destination: C, transform: (index: Int, T) -> R?)") {
         include(Iterables, ArraysOfObjects, Sequences, CharSequences)
     } builder {
         inline()
@@ -268,7 +268,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_flatMap = fn("flatMap(transform: (T) -> Iterable<R>)") {
+    val f_flatMap: FamilyPrimitiveMemberDefinition = fn("flatMap(transform: (T) -> Iterable<R>)") {
         includeDefault()
         include(Maps, CharSequences)
     } builder {
@@ -291,7 +291,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_flatMapTo = fn("flatMapTo(destination: C, transform: (T) -> Iterable<R>)") {
+    val f_flatMapTo: FamilyPrimitiveMemberDefinition = fn("flatMapTo(destination: C, transform: (T) -> Iterable<R>)") {
         includeDefault()
         include(Maps, CharSequences)
     } builder {
@@ -314,7 +314,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_groupBy_key = fn("groupBy(keySelector: (T) -> K)") {
+    val f_groupBy_key: FamilyPrimitiveMemberDefinition = fn("groupBy(keySelector: (T) -> K)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -336,7 +336,7 @@ object Mapping : TemplateGroupBase() {
         body { "return groupByTo(LinkedHashMap<K, MutableList<T>>(), keySelector)" }
     }
 
-    val f_groupByTo_key = fn("groupByTo(destination: M, keySelector: (T) -> K)") {
+    val f_groupByTo_key: FamilyPrimitiveMemberDefinition = fn("groupByTo(destination: M, keySelector: (T) -> K)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -368,7 +368,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_groupBy_key_value = fn("groupBy(keySelector: (T) -> K, valueTransform: (T) -> V)") {
+    val f_groupBy_key_value: FamilyPrimitiveMemberDefinition = fn("groupBy(keySelector: (T) -> K, valueTransform: (T) -> V)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -392,7 +392,7 @@ object Mapping : TemplateGroupBase() {
     }
 
 
-    val f_groupByTo_key_value = fn("groupByTo(destination: M, keySelector: (T) -> K, valueTransform: (T) -> V)") {
+    val f_groupByTo_key_value: FamilyPrimitiveMemberDefinition = fn("groupByTo(destination: M, keySelector: (T) -> K, valueTransform: (T) -> V)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -426,7 +426,7 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    val f_groupingBy = fn("groupingBy(crossinline keySelector: (T) -> K)") {
+    val f_groupingBy: FamilyPrimitiveMemberDefinition = fn("groupingBy(crossinline keySelector: (T) -> K)") {
         include(Iterables, Sequences, ArraysOfObjects, CharSequences)
     } builder {
         since("1.1")

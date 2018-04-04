@@ -68,7 +68,7 @@ class IrClassSymbolImpl(descriptor: ClassDescriptor) :
     IrBindableSymbolBase<ClassDescriptor, IrClass>(descriptor),
     IrClassSymbol
 
-fun createClassSymbolOrNull(descriptor: ClassDescriptor?) =
+fun createClassSymbolOrNull(descriptor: ClassDescriptor?): IrClassSymbolImpl? =
     descriptor?.let { IrClassSymbolImpl(it) }
 
 class IrEnumEntrySymbolImpl(descriptor: ClassDescriptor) :

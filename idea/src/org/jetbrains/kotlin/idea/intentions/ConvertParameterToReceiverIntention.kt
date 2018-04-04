@@ -47,7 +47,7 @@ class ConvertParameterToReceiverIntention : SelfTargetingIntention<KtParameter>(
         }
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtParameter, editor: Editor?) {
         val function = element.getStrictParentOfType<KtNamedFunction>() ?: return

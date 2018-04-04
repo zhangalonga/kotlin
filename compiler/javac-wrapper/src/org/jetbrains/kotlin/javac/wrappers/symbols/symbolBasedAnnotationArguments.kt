@@ -55,7 +55,7 @@ class SymbolBasedAnnotationAsAnnotationArgument(
         javac: JavacWrapper
 ) : SymbolBasedAnnotationArgument(name, javac), JavaAnnotationAsAnnotationArgument {
 
-    override fun getAnnotation() = SymbolBasedAnnotation(mirror, javac)
+    override fun getAnnotation(): SymbolBasedAnnotation = SymbolBasedAnnotation(mirror, javac)
 
 }
 
@@ -83,7 +83,7 @@ class SymbolBasedClassObjectAnnotationArgument(
         javac: JavacWrapper
 ) : SymbolBasedAnnotationArgument(name, javac), JavaClassObjectAnnotationArgument {
 
-    override fun getReferencedType() = SymbolBasedType.create(type, javac)
+    override fun getReferencedType(): SymbolBasedType<TypeMirror> = SymbolBasedType.create(type, javac)
 
 }
 
@@ -93,7 +93,7 @@ class SymbolBasedArrayAnnotationArgument(
         javac: JavacWrapper
 ) : SymbolBasedAnnotationArgument(name, javac), JavaArrayAnnotationArgument {
 
-    override fun getElements() = args
+    override fun getElements(): List<JavaAnnotationArgument> = args
 
 }
 

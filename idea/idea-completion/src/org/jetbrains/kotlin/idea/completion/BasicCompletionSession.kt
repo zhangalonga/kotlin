@@ -130,8 +130,8 @@ class BasicCompletionSession(
     fun shouldDisableAutoPopup(): Boolean
             = completionKind.shouldDisableAutoPopup()
 
-    override fun shouldCompleteTopLevelCallablesFromIndex()
-            = super.shouldCompleteTopLevelCallablesFromIndex() && prefix.isNotEmpty()
+    override fun shouldCompleteTopLevelCallablesFromIndex(): Boolean =
+        super.shouldCompleteTopLevelCallablesFromIndex() && prefix.isNotEmpty()
 
     override fun doComplete() {
         assert(parameters.completionType == CompletionType.BASIC)

@@ -41,8 +41,7 @@ fun getDefaultInitializer(property: Property): Expression? {
     return result?.assignNoPrototype()
 }
 
-fun shouldGenerateDefaultInitializer(searcher: ReferenceSearcher, field: PsiField)
-        = field.initializer == null && (field.isVar(searcher) || !field.hasWriteAccesses(searcher, field.containingClass))
+fun shouldGenerateDefaultInitializer(searcher: ReferenceSearcher, field: PsiField): Boolean = field.initializer == null && (field.isVar(searcher) || !field.hasWriteAccesses(searcher, field.containingClass))
 
 fun PsiReferenceExpression.isQualifierEmptyOrThis(): Boolean {
     val qualifier = qualifierExpression
@@ -126,10 +125,10 @@ fun PsiMember.isImported(file: PsiJavaFile): Boolean {
     }
 }
 
-fun PsiExpression.isNullLiteral() = this is PsiLiteralExpression && type == PsiType.NULL
+fun PsiExpression.isNullLiteral(): Boolean = this is PsiLiteralExpression && type == PsiType.NULL
 
 // TODO: set origin for facade classes in library
-fun isFacadeClassFromLibrary(element: PsiElement?) = element is KtLightClass && element.kotlinOrigin == null
+fun isFacadeClassFromLibrary(element: PsiElement?): Boolean = element is KtLightClass && element.kotlinOrigin == null
 
 fun Converter.convertToKotlinAnalog(classQualifiedName: String?, mutability: Mutability): String? {
     if (classQualifiedName == null) return null

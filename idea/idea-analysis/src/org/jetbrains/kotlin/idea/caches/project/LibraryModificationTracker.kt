@@ -27,7 +27,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent
 class LibraryModificationTracker(project: Project) : SimpleModificationTracker() {
     companion object {
         @JvmStatic
-        fun getInstance(project: Project) = ServiceManager.getService(project, LibraryModificationTracker::class.java)!!
+        fun getInstance(project: Project): LibraryModificationTracker = ServiceManager.getService(project, LibraryModificationTracker::class.java)!!
     }
 
     init {

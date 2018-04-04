@@ -47,7 +47,7 @@ class MemberBuilder(
         get() = field ?: signature
         private set
 
-    val f get() = family
+    val f: Family get() = family
 
     private val legacyMode = true
     var hasPlatformSpecializations: Boolean = legacyMode
@@ -55,7 +55,7 @@ class MemberBuilder(
 
     var doc: String? = null; private set
 
-    val sequenceClassification = mutableListOf<SequenceClass>()
+    val sequenceClassification: MutableList<SequenceClass> = mutableListOf<SequenceClass>()
     var deprecate: Deprecation? = null; private set
     var since: String? = null; private set
     var platformName: String? = null; private set
@@ -65,7 +65,7 @@ class MemberBuilder(
     var inline: Inline = Inline.No; private set
     var infix: Boolean = false; private set
     var operator: Boolean = false; private set
-    val typeParams = mutableListOf<String>()
+    val typeParams: MutableList<String> = mutableListOf<String>()
     var customReceiver: String? = null; private set
     var receiverAsterisk: Boolean = false // TODO: rename to genericStarProjection
     var toNullableT: Boolean = false
@@ -96,14 +96,14 @@ class MemberBuilder(
 
     fun receiver(value: String) { customReceiver = value }
     @Deprecated("Use receiver()", ReplaceWith("receiver(value)"))
-    fun customReceiver(value: String) = receiver(value)
+    fun customReceiver(value: String): Unit = receiver(value)
     fun signature(value: String, notForSorting: Boolean = false) {
         if (notForSorting) sortingSignature = signature
         signature = value
     }
     fun returns(type: String) { returns = type }
     @Deprecated("Use specialFor", ReplaceWith("specialFor(*fs) { returns(run(valueBuilder)) }"))
-    fun returns(vararg fs: Family, valueBuilder: () -> String) = specialFor(*fs) { returns(run(valueBuilder)) }
+    fun returns(vararg fs: Family, valueBuilder: () -> String): Unit = specialFor(*fs) { returns(run(valueBuilder)) }
 
     fun typeParam(typeParameterName: String) {
         typeParams += typeParameterName
@@ -122,7 +122,7 @@ class MemberBuilder(
     }
 
     @Deprecated("Use specialFor", ReplaceWith("specialFor(*fs) { doc(valueBuilder) }"))
-    fun doc(vararg fs: Family, valueBuilder: DocExtensions.() -> String) = specialFor(*fs) { doc(valueBuilder) }
+    fun doc(vararg fs: Family, valueBuilder: DocExtensions.() -> String): Unit = specialFor(*fs) { doc(valueBuilder) }
 
     fun body(valueBuilder: () -> String) {
         body = valueBuilder()

@@ -8,13 +8,11 @@ import org.gradle.api.internal.AbstractTask
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSetOutput
-import org.gradle.kotlin.dsl.creating
-import org.gradle.kotlin.dsl.extra
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.*
 import java.io.File
 
-inline fun <reified T : Task> Project.task(noinline configuration: T.() -> Unit) = tasks.creating(T::class, configuration)
+inline fun <reified T : Task> Project.task(noinline configuration: T.() -> Unit): PolymorphicDomainObjectContainerDelegateProvider<Task, T> =
+    tasks.creating(T::class, configuration)
 
 fun Project.callGroovy(name: String, vararg args: Any?): Any? {
     return (property(name) as Closure<*>).call(*args)
@@ -51,7 +49,7 @@ var Project.javaHome: String?
     get() = extra.takeIf { it.has("javaHome") }?.get("javaHome") as? String
     set(v) { extra["javaHome"] = v }
 
-fun Project.generator(fqName: String) = task<JavaExec> {
+fun Project.generator(fqName: String): PolymorphicDomainObjectContainerDelegateProvider<Task, JavaExec> = task {
     classpath = the<JavaPluginConvention>().sourceSets["test"].runtimeClasspath
     main = fqName
     workingDir = rootDir

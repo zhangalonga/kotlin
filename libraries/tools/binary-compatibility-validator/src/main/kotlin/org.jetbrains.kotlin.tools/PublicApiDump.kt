@@ -4,6 +4,8 @@ import org.objectweb.asm.*
 import org.objectweb.asm.tree.*
 import java.io.File
 import java.io.InputStream
+import java.io.PrintStream
+import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
 fun main(args: Array<String>) {
@@ -15,7 +17,7 @@ fun main(args: Array<String>) {
 }
 
 
-fun JarFile.classEntries() = entries().asSequence().filter { !it.isDirectory && it.name.endsWith(".class") }
+fun JarFile.classEntries(): Sequence<JarEntry> = entries().asSequence().filter { !it.isDirectory && it.name.endsWith(".class") }
 
 
 fun getBinaryAPI(jar: JarFile, visibilityMap: Map<String, ClassVisibility>): List<ClassBinarySignature> =
@@ -81,7 +83,7 @@ fun List<ClassBinarySignature>.filterOutNonPublic(nonPublicPackages: List<String
             .filterNot { it.isNotUsedWhenEmpty && it.memberSignatures.isEmpty()}
 }
 
-fun List<ClassBinarySignature>.dump() = dump(to = System.out)
+fun List<ClassBinarySignature>.dump(): PrintStream? = dump(to = System.out)
 
 fun <T: Appendable> List<ClassBinarySignature>.dump(to: T): T = to.apply { this@dump.forEach {
     append(it.signature).appendln(" {")

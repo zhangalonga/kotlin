@@ -27,10 +27,10 @@ abstract class TreeBasedElement<out T : JCTree>(
         val javac: JavacWrapper
 ) : JavaElement {
 
-    override fun equals(other: Any?) = (other as? TreeBasedElement<*>)?.tree == tree
+    override fun equals(other: Any?): Boolean = (other as? TreeBasedElement<*>)?.tree == tree
 
-    override fun hashCode() = tree.hashCode()
+    override fun hashCode(): Int = tree.hashCode()
 
-    override fun toString() = tree.toString()
+    override fun toString(): String = tree.toString()
 
 }

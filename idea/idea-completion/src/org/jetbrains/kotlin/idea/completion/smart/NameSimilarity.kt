@@ -23,11 +23,10 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.codeStyle.NameUtil
 import org.jetbrains.kotlin.idea.core.ExpectedInfo
 
-val NAME_SIMILARITY_KEY = Key<Int>("NAME_SIMILARITY_KEY")
+val NAME_SIMILARITY_KEY: Key<Int> = Key<Int>("NAME_SIMILARITY_KEY")
 
 object NameSimilarityWeigher : LookupElementWeigher("kotlin.nameSimilarity") {
-    override fun weigh(element: LookupElement, context: WeighingContext)
-            = -(element.getUserData(NAME_SIMILARITY_KEY) ?: 0)
+    override fun weigh(element: LookupElement, context: WeighingContext): Int = -(element.getUserData(NAME_SIMILARITY_KEY) ?: 0)
 }
 
 fun calcNameSimilarity(name: String, expectedInfos: Collection<ExpectedInfo>): Int {

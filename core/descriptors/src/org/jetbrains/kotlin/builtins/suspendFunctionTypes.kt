@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.builtIns
 
 
-val FAKE_CONTINUATION_CLASS_DESCRIPTOR =
+val FAKE_CONTINUATION_CLASS_DESCRIPTOR: MutableClassDescriptor =
         MutableClassDescriptor(
                 EmptyPackageFragmentDescriptor(ErrorUtils.getErrorModule(), DescriptorUtils.COROUTINES_PACKAGE_FQ_NAME),
                 ClassKind.INTERFACE, /* isInner = */ false, /* isExternal = */ false,

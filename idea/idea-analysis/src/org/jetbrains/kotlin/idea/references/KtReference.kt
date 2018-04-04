@@ -71,7 +71,7 @@ abstract class AbstractKtReference<T : KtElement>(element: T) : PsiPolyVariantRe
 
     protected abstract fun getTargetDescriptors(context: BindingContext): Collection<DeclarationDescriptor>
 
-    override fun toString() = this::class.java.simpleName + ": " + expression.text
+    override fun toString(): String = this::class.java.simpleName + ": " + expression.text
 
     companion object {
         class KotlinReferenceResolver : ResolveCache.PolyVariantResolver<AbstractKtReference<KtElement>> {
@@ -121,12 +121,12 @@ abstract class AbstractKtReference<T : KtElement>(element: T) : PsiPolyVariantRe
             }
         }
 
-        val KOTLIN_RESOLVER = KotlinReferenceResolver()
+        val KOTLIN_RESOLVER: KotlinReferenceResolver = KotlinReferenceResolver()
     }
 }
 
 abstract class KtSimpleReference<T : KtReferenceExpression>(expression: T) : AbstractKtReference<T>(expression) {
-    override fun getTargetDescriptors(context: BindingContext) = expression.getReferenceTargets(context)
+    override fun getTargetDescriptors(context: BindingContext): Collection<DeclarationDescriptor> = expression.getReferenceTargets(context)
 }
 
 abstract class KtMultiReference<T : KtElement>(expression: T) : AbstractKtReference<T>(expression)

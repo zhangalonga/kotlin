@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 object LambdaWithSuspendModifierCallChecker : CallChecker {
     @JvmField
-    val KOTLIN_SUSPEND_BUILT_IN_FUNCTION_FQ_NAME = FqName("kotlin.suspend")
+    val KOTLIN_SUSPEND_BUILT_IN_FUNCTION_FQ_NAME: FqName = FqName("kotlin.suspend")
 
     override fun check(resolvedCall: ResolvedCall<*>, reportOn: PsiElement, context: CallCheckerContext) {
         val descriptor = resolvedCall.candidateDescriptor

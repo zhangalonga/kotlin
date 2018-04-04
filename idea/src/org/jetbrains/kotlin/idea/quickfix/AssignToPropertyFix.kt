@@ -34,9 +34,9 @@ import org.jetbrains.kotlin.types.KotlinType
 
 class AssignToPropertyFix(element: KtNameReferenceExpression) : KotlinQuickFixAction<KtNameReferenceExpression>(element) {
 
-    override fun getText() = "Assign to property"
+    override fun getText(): String = "Assign to property"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

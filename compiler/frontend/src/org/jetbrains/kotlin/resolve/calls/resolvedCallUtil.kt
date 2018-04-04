@@ -94,10 +94,10 @@ private fun ResolvedCall<*>.hasSafeNullableReceiver(context: CallResolutionConte
     return context.dataFlowInfo.getStableNullability(receiverValue).canBeNull()
 }
 
-fun ResolvedCall<*>.makeNullableTypeIfSafeReceiver(type: KotlinType?, context: CallResolutionContext<*>) =
+fun ResolvedCall<*>.makeNullableTypeIfSafeReceiver(type: KotlinType?, context: CallResolutionContext<*>): KotlinType? =
     type?.let { TypeUtils.makeNullableIfNeeded(type, hasSafeNullableReceiver(context)) }
 
-fun ResolvedCall<*>.hasBothReceivers() = dispatchReceiver != null && extensionReceiver != null
+fun ResolvedCall<*>.hasBothReceivers(): Boolean = dispatchReceiver != null && extensionReceiver != null
 
 fun ResolvedCall<*>.getDispatchReceiverWithSmartCast(): ReceiverValue? =
     getReceiverValueWithSmartCast(dispatchReceiver, smartCastDispatchReceiverType)

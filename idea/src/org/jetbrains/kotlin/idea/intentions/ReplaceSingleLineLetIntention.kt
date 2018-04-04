@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 
 class ReplaceSingleLineLetInspection : IntentionBasedInspection<KtCallExpression>(ReplaceSingleLineLetIntention::class) {
-    override fun inspectionTarget(element: KtCallExpression) = element.calleeExpression
+    override fun inspectionTarget(element: KtCallExpression): KtExpression? = element.calleeExpression
 }
 
 class ReplaceSingleLineLetIntention : SelfTargetingOffsetIndependentIntention<KtCallExpression>(

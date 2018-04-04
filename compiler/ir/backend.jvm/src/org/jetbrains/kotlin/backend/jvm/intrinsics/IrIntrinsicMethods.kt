@@ -28,7 +28,7 @@ import org.jetbrains.org.objectweb.asm.Type
 
 class IrIntrinsicMethods(irBuiltIns: IrBuiltIns) {
 
-    val intrinsics = IntrinsicMethods()
+    val intrinsics: IntrinsicMethods = IntrinsicMethods()
 
     private val irMapping = hashMapOf<CallableMemberDescriptor, IntrinsicMethod>()
 

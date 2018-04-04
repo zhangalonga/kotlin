@@ -90,7 +90,7 @@ abstract class KtLightClassForSourceDeclaration(protected val classOrObject: KtC
     override val lightClassData: LightClassData
         get() = findLightClassData()
 
-    open protected fun findLightClassData() = getLightClassDataHolder().findDataForClassOrObject(classOrObject)
+    open protected fun findLightClassData(): LightClassData = getLightClassDataHolder().findDataForClassOrObject(classOrObject)
 
     private fun getJavaFileStub(): PsiJavaFileStub = getLightClassDataHolder().javaFileStub
 
@@ -296,7 +296,7 @@ abstract class KtLightClassForSourceDeclaration(protected val classOrObject: KtC
         return this
     }
 
-    override fun toString() = "${this::class.java.simpleName}:${classOrObject.getDebugText()}"
+    override fun toString(): String = "${this::class.java.simpleName}:${classOrObject.getDebugText()}"
 
     override fun getOwnInnerClasses(): List<PsiClass> {
         val result = ArrayList<PsiClass>()
@@ -320,9 +320,9 @@ abstract class KtLightClassForSourceDeclaration(protected val classOrObject: KtC
 
     override fun getNameIdentifier(): KtLightIdentifier? = lightIdentifier
 
-    override fun getExtendsList() = _extendsList
+    override fun getExtendsList(): KtLightPsiReferenceList? = _extendsList
 
-    override fun getImplementsList() = _implementsList
+    override fun getImplementsList(): KtLightPsiReferenceList? = _implementsList
 
     companion object {
         private val JAVA_API_STUB = Key.create<CachedValue<LightClassDataHolder.ForClass>>("JAVA_API_STUB")
@@ -479,7 +479,7 @@ abstract class KtLightClassForSourceDeclaration(protected val classOrObject: KtC
     }
 }
 
-fun KtLightClassForSourceDeclaration.isPossiblyAffectedByAllOpen() = !isAnnotationType && !isInterface && kotlinOrigin.annotationEntries.isNotEmpty()
+fun KtLightClassForSourceDeclaration.isPossiblyAffectedByAllOpen(): Boolean = !isAnnotationType && !isInterface && kotlinOrigin.annotationEntries.isNotEmpty()
 
 fun getOutermostClassOrObject(classOrObject: KtClassOrObject): KtClassOrObject {
     val outermostClass = KtPsiUtil.getOutermostClassOrObject(classOrObject) ?:
@@ -496,7 +496,7 @@ interface LightClassInheritanceHelper {
     ): ImpreciseResolveResult
 
     object NoHelp : LightClassInheritanceHelper {
-        override fun isInheritor(lightClass: KtLightClass, baseClass: PsiClass, checkDeep: Boolean) = UNSURE
+        override fun isInheritor(lightClass: KtLightClass, baseClass: PsiClass, checkDeep: Boolean): ImpreciseResolveResult = UNSURE
     }
 
     companion object {
@@ -516,5 +516,5 @@ fun KtClassOrObject.defaultJavaAncestorQualifiedName(): String? {
     }
 }
 
-fun KtClassOrObject.shouldNotBeVisibleAsLightClass() =
+fun KtClassOrObject.shouldNotBeVisibleAsLightClass(): Boolean =
     parentsWithSelf.filterIsInstance<KtClassOrObject>().any { it.hasExpectModifier() }

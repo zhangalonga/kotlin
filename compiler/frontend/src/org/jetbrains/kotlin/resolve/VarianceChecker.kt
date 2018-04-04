@@ -85,7 +85,7 @@ class VarianceCheckerCore(
         }
     }
 
-    fun checkMember(member: KtCallableDeclaration, descriptor: CallableMemberDescriptor) =
+    fun checkMember(member: KtCallableDeclaration, descriptor: CallableMemberDescriptor): Boolean =
         Visibilities.isPrivate(descriptor.visibility) || checkCallableDeclaration(context, member, descriptor)
 
     private fun TypeParameterDescriptor.varianceWithManual() =

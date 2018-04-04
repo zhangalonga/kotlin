@@ -56,7 +56,7 @@ class Converter private constructor(
 
     val referenceSearcher: ReferenceSearcher = CachingReferenceSearcher(services.referenceSearcher)
 
-    val propertyDetectionCache = PropertyDetectionCache(this)
+    val propertyDetectionCache: PropertyDetectionCache = PropertyDetectionCache(this)
 
     companion object {
         fun create(elementToConvert: PsiElement, settings: ConverterSettings, services: JavaToKotlinConverterServices,
@@ -71,7 +71,7 @@ class Converter private constructor(
     private fun createDefaultCodeConverter() = CodeConverter(this, DefaultExpressionConverter(), DefaultStatementConverter(), null)
 
     /* special code converter for type, based on this with detached deferred elements list, to prevent recursive deferred elements */
-    val codeConverterForType by lazy { withCommonState(CommonState {}).createDefaultCodeConverter() }
+    val codeConverterForType: CodeConverter by lazy { withCommonState(CommonState {}).createDefaultCodeConverter() }
 
     data class IntermediateResult(
             val codeGenerator: (Map<PsiElement, Collection<UsageProcessing>>) -> Result,

@@ -35,7 +35,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.psi.KtParameter
 
-val PUSH_MEMBERS_DOWN = "Push Members Down"
+val PUSH_MEMBERS_DOWN: String = "Push Members Down"
 
 class KotlinPushDownHandler : AbstractPullPushMembersHandler(
         refactoringName = PUSH_MEMBERS_DOWN,
@@ -43,7 +43,7 @@ class KotlinPushDownHandler : AbstractPullPushMembersHandler(
         wrongPositionMessage = RefactoringBundle.message("the.caret.should.be.positioned.inside.a.class.to.push.members.from")
 ) {
     companion object {
-        val PUSH_DOWN_TEST_HELPER_KEY = "PUSH_DOWN_TEST_HELPER_KEY"
+        val PUSH_DOWN_TEST_HELPER_KEY: String = "PUSH_DOWN_TEST_HELPER_KEY"
     }
 
     interface TestHelper {

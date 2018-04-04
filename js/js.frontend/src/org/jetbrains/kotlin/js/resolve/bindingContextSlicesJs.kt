@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.serialization.js.ModuleKind
 import org.jetbrains.kotlin.util.slicedMap.BasicWritableSlice
 import org.jetbrains.kotlin.util.slicedMap.RewritePolicy
 
-@JvmField val MODULE_KIND = BasicWritableSlice<ModuleDescriptor, ModuleKind>(RewritePolicy.DO_NOTHING)
+@JvmField val MODULE_KIND: BasicWritableSlice<ModuleDescriptor, ModuleKind> = BasicWritableSlice(RewritePolicy.DO_NOTHING)
 
-@JvmField val LEXICAL_SCOPE_FOR_JS = BasicWritableSlice<ResolvedCall<out FunctionDescriptor>, LexicalScope>(RewritePolicy.DO_NOTHING)
+@JvmField val LEXICAL_SCOPE_FOR_JS: BasicWritableSlice<ResolvedCall<out FunctionDescriptor>, LexicalScope> =
+    BasicWritableSlice(RewritePolicy.DO_NOTHING)

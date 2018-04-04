@@ -65,7 +65,7 @@ fun replaceReturnTypeForCallable(type: KotlinType, given: KotlinType): KotlinTyp
     return replaceTypeArguments(type, newArguments)
 }
 
-fun replaceReturnTypeByUnknown(type: KotlinType) = replaceReturnTypeForCallable(type, DONT_CARE)
+fun replaceReturnTypeByUnknown(type: KotlinType): KotlinType = replaceReturnTypeForCallable(type, DONT_CARE)
 
 private fun replaceTypeArguments(type: KotlinType, newArguments: List<TypeProjection>) =
     KotlinTypeFactory.simpleType(type.annotations, type.constructor, newArguments, type.isMarkedNullable)
@@ -73,7 +73,7 @@ private fun replaceTypeArguments(type: KotlinType, newArguments: List<TypeProjec
 private fun getParameterArgumentsOfCallableType(type: KotlinType) =
     type.arguments.dropLast(1)
 
-fun getReturnTypeForCallable(type: KotlinType) =
+fun getReturnTypeForCallable(type: KotlinType): KotlinType =
     type.arguments.last().type
 
 private fun CallableDescriptor.hasReturnTypeDependentOnUninferredParams(constraintSystem: ConstraintSystem): Boolean {

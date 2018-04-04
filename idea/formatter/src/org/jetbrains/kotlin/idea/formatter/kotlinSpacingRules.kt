@@ -27,9 +27,9 @@ import org.jetbrains.kotlin.psi.psiUtil.isObjectLiteral
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.textRangeWithoutComments
 
-val MODIFIERS_LIST_ENTRIES = TokenSet.orSet(TokenSet.create(ANNOTATION_ENTRY, ANNOTATION), MODIFIER_KEYWORDS)
+val MODIFIERS_LIST_ENTRIES: TokenSet = TokenSet.orSet(TokenSet.create(ANNOTATION_ENTRY, ANNOTATION), MODIFIER_KEYWORDS)
 
-val EXTEND_COLON_ELEMENTS =
+val EXTEND_COLON_ELEMENTS: TokenSet =
         TokenSet.create(TYPE_CONSTRAINT, CLASS, OBJECT_DECLARATION, TYPE_PARAMETER, ENUM_ENTRY, SECONDARY_CONSTRUCTOR)
 
 fun SpacingBuilder.beforeInside(element: IElementType, tokenSet: TokenSet, spacingFun: RuleBuilder.() -> Unit) {
@@ -40,7 +40,7 @@ fun SpacingBuilder.afterInside(element: IElementType, tokenSet: TokenSet, spacin
     tokenSet.types.forEach { inType -> afterInside(element, inType).spacingFun() }
 }
 
-fun SpacingBuilder.RuleBuilder.spacesNoLineBreak(spaces: Int) =
+fun SpacingBuilder.RuleBuilder.spacesNoLineBreak(spaces: Int): SpacingBuilder? =
         spacing(spaces, spaces, 0, false, 0)
 
 fun createSpacingBuilder(settings: CodeStyleSettings, builderUtil: KotlinSpacingBuilderUtil): KotlinSpacingBuilder {

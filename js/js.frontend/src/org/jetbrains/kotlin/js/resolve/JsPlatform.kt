@@ -37,7 +37,7 @@ object JsPlatform : TargetPlatform("JS") {
     val builtIns: KotlinBuiltIns
         get() = DefaultBuiltIns.Instance
 
-    override val multiTargetPlatform = MultiTargetPlatform.Specific(platformName)
+    override val multiTargetPlatform: MultiTargetPlatform.Specific = MultiTargetPlatform.Specific(platformName)
 
     override val excludedImports: List<FqName> = listOf("Promise", "Date", "Console", "Math", "RegExp", "RegExpMatch", "Json", "json").map { FqName("kotlin.js.$it") }
 }

@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.backend.common.ir.Ir
 import org.jetbrains.kotlin.backend.common.ir.Symbols
 import org.jetbrains.kotlin.backend.jvm.descriptors.JvmSharedVariablesManager
 import org.jetbrains.kotlin.backend.jvm.descriptors.SpecialDescriptorsFactory
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
@@ -45,9 +46,9 @@ class JvmBackendContext(
         override val irBuiltIns: IrBuiltIns,
         irModuleFragment: IrModuleFragment, symbolTable: SymbolTable
 ) : CommonBackendContext {
-    override val builtIns = state.module.builtIns
-    val specialDescriptorsFactory = SpecialDescriptorsFactory(psiSourceManager, builtIns)
-    override val sharedVariablesManager = JvmSharedVariablesManager(builtIns)
+    override val builtIns: KotlinBuiltIns = state.module.builtIns
+    val specialDescriptorsFactory: SpecialDescriptorsFactory = SpecialDescriptorsFactory(psiSourceManager, builtIns)
+    override val sharedVariablesManager: JvmSharedVariablesManager = JvmSharedVariablesManager(builtIns)
 
     override val reflectionTypes: ReflectionTypes by lazy(LazyThreadSafetyMode.PUBLICATION) {
         ReflectionTypes(state.module, FqName("kotlin.reflect.jvm.internal"))

@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.idea.caches.lightClasses
 
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.compiled.ClsClassImpl
@@ -33,9 +34,9 @@ class KtLightClassForDecompiledDeclaration(
     override val kotlinOrigin: KtClassOrObject?,
     private val file: KtClsFile
 ) : KtLightClassBase(clsDelegate.manager) {
-    val fqName = kotlinOrigin?.fqName ?: FqName(clsDelegate.qualifiedName.orEmpty())
+    val fqName: FqName = kotlinOrigin?.fqName ?: FqName(clsDelegate.qualifiedName.orEmpty())
 
-    override fun copy() = this
+    override fun copy(): KtLightClassForDecompiledDeclaration = this
 
     override fun getOwnInnerClasses(): List<PsiClass> {
         val nestedClasses = kotlinOrigin?.declarations?.filterIsInstance<KtClassOrObject>() ?: emptyList()
@@ -54,9 +55,9 @@ class KtLightClassForDecompiledDeclaration(
         return clsDelegate.ownMethods.map { KtLightMethodImpl.create(it, LightMemberOriginForCompiledMethod(it, file), this) }
     }
 
-    override fun getNavigationElement() = kotlinOrigin?.navigationElement ?: file
+    override fun getNavigationElement(): PsiElement = kotlinOrigin?.navigationElement ?: file
 
-    override fun getParent() = clsDelegate.parent
+    override fun getParent(): PsiElement = clsDelegate.parent
 
     override fun equals(other: Any?): Boolean =
         other is KtLightClassForDecompiledDeclaration &&

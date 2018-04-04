@@ -16,10 +16,7 @@
 
 package org.jetbrains.kotlin.resolve.scopes
 
-import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.DescriptorWithDeprecation
-import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.scopes.utils.takeSnapshot
@@ -40,12 +37,12 @@ class LexicalChainedScope @JvmOverloads constructor(
     @Deprecated("This value is temporary hack for resolve -- don't use it!")
     val isStaticScope: Boolean = false
 ) : LexicalScope {
-    override val parent = parent.takeSnapshot()
+    override val parent: HierarchicalScope = parent.takeSnapshot()
 
-    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean) =
+    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> =
         getFromAllScopes(memberScopes) { it.getContributedDescriptors() }
 
-    override fun getContributedClassifier(name: Name, location: LookupLocation) =
+    override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? =
         getFirstClassifierDiscriminateHeaders(memberScopes) { it.getContributedClassifier(name, location) }
 
     override fun getContributedClassifierIncludeDeprecated(name: Name, location: LookupLocation): DescriptorWithDeprecation<ClassifierDescriptor>? {
@@ -64,10 +61,10 @@ class LexicalChainedScope @JvmOverloads constructor(
         return DescriptorWithDeprecation.createDeprecated(firstClassifier)
     }
 
-    override fun getContributedVariables(name: Name, location: LookupLocation) =
+    override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> =
         getFromAllScopes(memberScopes) { it.getContributedVariables(name, location) }
 
-    override fun getContributedFunctions(name: Name, location: LookupLocation) =
+    override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> =
         getFromAllScopes(memberScopes) { it.getContributedFunctions(name, location) }
 
     override fun toString(): String = kind.toString()

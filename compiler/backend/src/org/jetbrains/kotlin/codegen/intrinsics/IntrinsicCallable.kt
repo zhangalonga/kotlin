@@ -51,7 +51,7 @@ open class IntrinsicCallable(
     override val returnKotlinType: KotlinType?
         get() = null
 
-    override fun isStaticCall() = false
+    override fun isStaticCall(): Boolean = false
 
     override val generateCalleeType: Type?
         get() = null

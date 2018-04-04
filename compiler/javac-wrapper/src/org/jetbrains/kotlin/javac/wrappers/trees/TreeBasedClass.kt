@@ -47,7 +47,7 @@ class TreeBasedClass(
         tree.annotations().map { annotation -> TreeBasedAnnotation(annotation, compilationUnit, javac, this) }
     }
 
-    override fun findAnnotation(fqName: FqName) =
+    override fun findAnnotation(fqName: FqName): JavaAnnotation? =
             annotations.find { it.classId?.asSingleFqName() == fqName }
 
     override val isDeprecatedInJavaDoc: Boolean
@@ -143,7 +143,7 @@ class TreeBasedClass(
 
     override fun isFromSourceCodeInScope(scope: SearchScope): Boolean = true
 
-    override fun findInnerClass(name: Name) = innerClasses[name]
+    override fun findInnerClass(name: Name): TreeBasedClass? = innerClasses[name]
 
 }
 

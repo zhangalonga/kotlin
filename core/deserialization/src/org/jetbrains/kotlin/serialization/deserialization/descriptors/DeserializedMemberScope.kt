@@ -81,8 +81,8 @@ abstract class DeserializedMemberScope protected constructor(
 
     internal val classNames by c.storageManager.createLazyValue { classNames().toSet() }
 
-    override fun getFunctionNames() = functionNamesLazy
-    override fun getVariableNames() = variableNamesLazy
+    override fun getFunctionNames(): Set<Name> = functionNamesLazy
+    override fun getVariableNames(): Set<Name> = variableNamesLazy
     override fun getClassifierNames(): Set<Name>? = classNames + typeAliasNames
 
     override fun definitelyDoesNotContainName(name: Name): Boolean {

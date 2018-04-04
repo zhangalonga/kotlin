@@ -31,9 +31,9 @@ import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
 import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
 
-fun wrapOrSkip(s: String, inCode: Boolean) = if (inCode) "<code>$s</code>" else s
+fun wrapOrSkip(s: String, inCode: Boolean): String = if (inCode) "<code>$s</code>" else s
 
-fun formatClassDescriptor(classDescriptor: DeclarationDescriptor) = IdeDescriptorRenderers.SOURCE_CODE_SHORT_NAMES_IN_TYPES.render(classDescriptor)
+fun formatClassDescriptor(classDescriptor: DeclarationDescriptor): String = IdeDescriptorRenderers.SOURCE_CODE_SHORT_NAMES_IN_TYPES.render(classDescriptor)
 
 fun formatPsiClass(
         psiClass: PsiClass,
@@ -101,4 +101,4 @@ fun formatJavaOrLightMethod(method: PsiMethod): String {
     }
 }
 
-fun formatClass(classOrObject: KtClassOrObject) = formatClassDescriptor(classOrObject.unsafeResolveToDescriptor() as ClassDescriptor)
+fun formatClass(classOrObject: KtClassOrObject): String = formatClassDescriptor(classOrObject.unsafeResolveToDescriptor() as ClassDescriptor)

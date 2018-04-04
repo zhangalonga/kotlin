@@ -26,5 +26,5 @@ class KotlinAwareJavaMoveClassesOrPackagesHandler : JavaMoveClassesOrPackagesHan
             directory: PsiDirectory,
             elementsToMove: Array<out PsiElement>,
             moveCallback: MoveCallback?
-    ) = KotlinAwareMoveClassesOrPackagesToNewDirectoryDialog(directory, elementsToMove, moveCallback)
+    ): KotlinAwareMoveClassesOrPackagesToNewDirectoryDialog = KotlinAwareMoveClassesOrPackagesToNewDirectoryDialog(directory, elementsToMove, moveCallback)
 }

@@ -33,7 +33,7 @@ interface AnnotationBasedPluginModel : Serializable {
     val annotations: List<String>
     val presets: List<String>
 
-    val isEnabled get() = annotations.isNotEmpty() || presets.isNotEmpty()
+    val isEnabled: Boolean get() = annotations.isNotEmpty() || presets.isNotEmpty()
 }
 
 @Suppress("unused")
@@ -45,9 +45,9 @@ abstract class AnnotationBasedPluginProjectResolverExtension<T : AnnotationBased
     abstract val modelClass: Class<T>
     abstract val userDataKey: Key<T>
 
-    override fun getExtraProjectModelClasses() = setOf(modelClass)
+    override fun getExtraProjectModelClasses(): Set<Class<T>> = setOf(modelClass)
 
-    override fun getToolingExtensionsClasses() = setOf(
+    override fun getToolingExtensionsClasses(): Set<Class<out Any>> = setOf(
             modelClass,
             AnnotationBasedPluginProjectResolverExtension::class.java,
             Unit::class.java)

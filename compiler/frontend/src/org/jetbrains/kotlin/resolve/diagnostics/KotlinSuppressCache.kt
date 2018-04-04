@@ -50,7 +50,7 @@ abstract class KotlinSuppressCache {
 
     val filter: (Diagnostic) -> Boolean = { diagnostic: Diagnostic -> !isSuppressed(diagnostic) }
 
-    fun isSuppressed(psiElement: PsiElement, suppressionKey: String, severity: Severity) =
+    fun isSuppressed(psiElement: PsiElement, suppressionKey: String, severity: Severity): Boolean =
         isSuppressed(StringSuppressRequest(psiElement, severity, suppressionKey.toLowerCase()))
 
     fun isSuppressed(diagnostic: Diagnostic): Boolean = isSuppressed(DiagnosticSuppressRequest(diagnostic))

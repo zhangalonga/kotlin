@@ -34,11 +34,12 @@ import org.jetbrains.kotlin.cfg.pseudocodeTraverser.TraverseInstructionResult
 import org.jetbrains.kotlin.cfg.pseudocodeTraverser.traverseFollowingInstructions
 import org.jetbrains.kotlin.psi.KtElement
 import java.util.*
+import kotlin.collections.HashSet
 
 class PseudocodeImpl(override val correspondingElement: KtElement, override val isInlined: Boolean) : Pseudocode {
 
     internal val mutableInstructionList = ArrayList<Instruction>()
-    override val instructions = ArrayList<Instruction>()
+    override val instructions: ArrayList<Instruction> = ArrayList<Instruction>()
 
     private val elementsToValues = BidirectionalMap<KtElement, PseudoValue>()
 
@@ -53,7 +54,7 @@ class PseudocodeImpl(override val correspondingElement: KtElement, override val 
         getLocalDeclarations(this)
     }
 
-    val reachableInstructions = hashSetOf<Instruction>()
+    val reachableInstructions: HashSet<Instruction> = hashSetOf<Instruction>()
 
     private val representativeInstructions = HashMap<KtElement, KtElementInstruction>()
 
@@ -184,13 +185,13 @@ class PseudocodeImpl(override val correspondingElement: KtElement, override val 
     override val enterInstruction: SubroutineEnterInstruction
         get() = mutableInstructionList[0] as SubroutineEnterInstruction
 
-    override fun getElementValue(element: KtElement?) = elementsToValues[element]
+    override fun getElementValue(element: KtElement?): PseudoValue? = elementsToValues[element]
 
     override fun getValueElements(value: PseudoValue?): List<KtElement> = elementsToValues.getKeysByValue(value) ?: emptyList()
 
-    override fun getUsages(value: PseudoValue?) = valueUsages[value] ?: mutableListOf()
+    override fun getUsages(value: PseudoValue?): MutableList<Instruction> = valueUsages[value] ?: mutableListOf()
 
-    override fun isSideEffectFree(instruction: Instruction) = sideEffectFree.contains(instruction)
+    override fun isSideEffectFree(instruction: Instruction): Boolean = sideEffectFree.contains(instruction)
 
     fun bindElementToValue(element: KtElement, value: PseudoValue) {
         elementsToValues.put(element, value)

@@ -85,8 +85,8 @@ abstract class CoveringTryCatchNodeProcessor(parameterSize: Int) {
 }
 
 class IntervalMetaInfo<T : SplittableInterval<T>>(private val processor: CoveringTryCatchNodeProcessor) {
-    val intervalStarts = LinkedListMultimap.create<LabelNode, T>()
-    val intervalEnds = LinkedListMultimap.create<LabelNode, T>()
+    val intervalStarts: LinkedListMultimap<LabelNode, T> = LinkedListMultimap.create<LabelNode, T>()
+    val intervalEnds: LinkedListMultimap<LabelNode, T> = LinkedListMultimap.create<LabelNode, T>()
     val allIntervals: ArrayList<T> = arrayListOf()
     val currentIntervals: MutableSet<T> = linkedSetOf()
 
@@ -152,7 +152,7 @@ class IntervalMetaInfo<T : SplittableInterval<T>>(private val processor: Coverin
             if (isOpen) intervalStarts.get(curIns) else intervalEnds.get(curIns)
 }
 
-fun TryCatchBlockNode.isMeaningless() = SimpleInterval(start, end).isMeaningless()
+fun TryCatchBlockNode.isMeaningless(): Boolean = SimpleInterval(start, end).isMeaningless()
 
 fun Interval.isMeaningless(): Boolean {
     val start = this.startLabel

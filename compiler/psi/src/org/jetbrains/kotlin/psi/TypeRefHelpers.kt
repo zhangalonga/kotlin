@@ -86,14 +86,14 @@ private inline fun <T : KtElement> T.doSetReceiverTypeReference(
     }
 }
 
-fun KtCallableDeclaration.setReceiverTypeReference(typeRef: KtTypeReference?) =
+fun KtCallableDeclaration.setReceiverTypeReference(typeRef: KtTypeReference?): KtTypeReference? =
     doSetReceiverTypeReference(
         typeRef,
         { receiverTypeReference },
         { this.addBefore(it, nameIdentifier ?: valueParameterList) as KtTypeReference }
     )
 
-fun KtFunctionType.setReceiverTypeReference(typeRef: KtTypeReference?) =
+fun KtFunctionType.setReceiverTypeReference(typeRef: KtTypeReference?): KtTypeReference? =
     doSetReceiverTypeReference(
         typeRef,
         { receiverTypeReference },

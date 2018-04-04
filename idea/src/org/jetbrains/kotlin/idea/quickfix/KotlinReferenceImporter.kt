@@ -37,8 +37,7 @@ import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class KotlinReferenceImporter : ReferenceImporter {
-    override fun autoImportReferenceAtCursor(editor: Editor, file: PsiFile)
-            = autoImportReferenceAtCursor(editor, file, allowCaretNearRef = false)
+    override fun autoImportReferenceAtCursor(editor: Editor, file: PsiFile): Boolean = autoImportReferenceAtCursor(editor, file, allowCaretNearRef = false)
 
     override fun autoImportReferenceAt(editor: Editor, file: PsiFile, offset: Int): Boolean {
         if (file !is KtFile) return false

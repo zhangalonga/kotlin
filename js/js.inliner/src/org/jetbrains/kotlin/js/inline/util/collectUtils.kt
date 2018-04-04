@@ -131,13 +131,13 @@ fun collectDefinedNamesInAllScopes(scope: JsNode): Set<JsName> {
     return names
 }
 
-fun JsFunction.collectFreeVariables() = collectUsedNames(body) - collectDefinedNames(body) - parameters.map { it.name }
+fun JsFunction.collectFreeVariables(): Set<JsName> = collectUsedNames(body) - collectDefinedNames(body) - parameters.map { it.name }
 
-fun JsFunction.collectLocalVariables() = collectDefinedNames(body) + parameters.map { it.name }
+fun JsFunction.collectLocalVariables(): Set<JsName> = collectDefinedNames(body) + parameters.map { it.name }
 
-fun collectNamedFunctions(scope: JsNode) = collectNamedFunctionsAndMetadata(scope).mapValues { it.value.first.function }
+fun collectNamedFunctions(scope: JsNode): Map<JsName, JsFunction> = collectNamedFunctionsAndMetadata(scope).mapValues { it.value.first.function }
 
-fun collectNamedFunctionsOrMetadata(scope: JsNode) = collectNamedFunctionsAndMetadata(scope).mapValues { it.value.second }
+fun collectNamedFunctionsOrMetadata(scope: JsNode): Map<JsName, JsExpression> = collectNamedFunctionsAndMetadata(scope).mapValues { it.value.second }
 
 fun collectNamedFunctions(fragments: List<JsProgramFragment>): Map<JsName, JsFunction> {
     val result = mutableMapOf<JsName, JsFunction>()
@@ -225,7 +225,7 @@ fun collectAccessors(fragments: List<JsProgramFragment>): Map<String, FunctionWi
     return result
 }
 
-fun extractFunction(expression: JsExpression) = when (expression) {
+fun extractFunction(expression: JsExpression): FunctionWithWrapper? = when (expression) {
     is JsFunction -> FunctionWithWrapper(expression, null)
     else -> InlineMetadata.decompose(expression)?.function ?: InlineMetadata.tryExtractFunction(expression)
 }

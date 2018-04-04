@@ -47,29 +47,20 @@ interface SyntheticScopes {
 }
 
 
-fun SyntheticScopes.collectSyntheticExtensionProperties(receiverTypes: Collection<KotlinType>, name: Name, location: LookupLocation)
-        = scopes.flatMap { it.getSyntheticExtensionProperties(receiverTypes, name, location) }
+fun SyntheticScopes.collectSyntheticExtensionProperties(receiverTypes: Collection<KotlinType>, name: Name, location: LookupLocation): List<PropertyDescriptor> = scopes.flatMap { it.getSyntheticExtensionProperties(receiverTypes, name, location) }
 
-fun SyntheticScopes.collectSyntheticMemberFunctions(receiverTypes: Collection<KotlinType>, name: Name, location: LookupLocation)
-        = scopes.flatMap { it.getSyntheticMemberFunctions(receiverTypes, name, location) }
+fun SyntheticScopes.collectSyntheticMemberFunctions(receiverTypes: Collection<KotlinType>, name: Name, location: LookupLocation): List<FunctionDescriptor> = scopes.flatMap { it.getSyntheticMemberFunctions(receiverTypes, name, location) }
 
-fun SyntheticScopes.collectSyntheticStaticFunctions(scope: ResolutionScope, name: Name, location: LookupLocation)
-        = scopes.flatMap { it.getSyntheticStaticFunctions(scope, name, location) }
+fun SyntheticScopes.collectSyntheticStaticFunctions(scope: ResolutionScope, name: Name, location: LookupLocation): List<FunctionDescriptor> = scopes.flatMap { it.getSyntheticStaticFunctions(scope, name, location) }
 
-fun SyntheticScopes.collectSyntheticConstructors(scope: ResolutionScope, name: Name, location: LookupLocation)
-        = scopes.flatMap { it.getSyntheticConstructors(scope, name, location) }
+fun SyntheticScopes.collectSyntheticConstructors(scope: ResolutionScope, name: Name, location: LookupLocation): List<FunctionDescriptor> = scopes.flatMap { it.getSyntheticConstructors(scope, name, location) }
 
-fun SyntheticScopes.collectSyntheticExtensionProperties(receiverTypes: Collection<KotlinType>)
-        = scopes.flatMap { it.getSyntheticExtensionProperties(receiverTypes) }
+fun SyntheticScopes.collectSyntheticExtensionProperties(receiverTypes: Collection<KotlinType>): List<PropertyDescriptor> = scopes.flatMap { it.getSyntheticExtensionProperties(receiverTypes) }
 
-fun SyntheticScopes.collectSyntheticMemberFunctions(receiverTypes: Collection<KotlinType>)
-        = scopes.flatMap { it.getSyntheticMemberFunctions(receiverTypes) }
+fun SyntheticScopes.collectSyntheticMemberFunctions(receiverTypes: Collection<KotlinType>): List<FunctionDescriptor> = scopes.flatMap { it.getSyntheticMemberFunctions(receiverTypes) }
 
-fun SyntheticScopes.collectSyntheticStaticFunctions(scope: ResolutionScope)
-        = scopes.flatMap { it.getSyntheticStaticFunctions(scope) }
+fun SyntheticScopes.collectSyntheticStaticFunctions(scope: ResolutionScope): List<FunctionDescriptor> = scopes.flatMap { it.getSyntheticStaticFunctions(scope) }
 
-fun SyntheticScopes.collectSyntheticConstructors(scope: ResolutionScope)
-        = scopes.flatMap { it.getSyntheticConstructors(scope) }
+fun SyntheticScopes.collectSyntheticConstructors(scope: ResolutionScope): List<FunctionDescriptor> = scopes.flatMap { it.getSyntheticConstructors(scope) }
 
-fun SyntheticScopes.collectSyntheticConstructors(constructor: ConstructorDescriptor)
-        = scopes.mapNotNull { it.getSyntheticConstructor(constructor) }
+fun SyntheticScopes.collectSyntheticConstructors(constructor: ConstructorDescriptor): List<ConstructorDescriptor> = scopes.mapNotNull { it.getSyntheticConstructor(constructor) }

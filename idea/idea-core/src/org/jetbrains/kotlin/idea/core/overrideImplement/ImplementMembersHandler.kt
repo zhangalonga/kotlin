@@ -35,18 +35,18 @@ open class ImplementMembersHandler : OverrideImplementMembersHandler(), Intentio
                 .map { OverrideMemberChooserObject.create(project, it, it, OverrideMemberChooserObject.BodyType.EMPTY) }
     }
 
-    override fun getChooserTitle() = "Implement Members"
+    override fun getChooserTitle(): String = "Implement Members"
 
-    override fun getNoMembersFoundHint() = "No members to implement have been found"
+    override fun getNoMembersFoundHint(): String = "No members to implement have been found"
 
-    override fun getText() = KotlinBundle.message("implement.members")
-    override fun getFamilyName() = KotlinBundle.message("implement.members")
+    override fun getText(): String = KotlinBundle.message("implement.members")
+    override fun getFamilyName(): String = KotlinBundle.message("implement.members")
 
-    override fun isAvailable(project: Project, editor: Editor, file: PsiFile) = isValidFor(editor, file)
+    override fun isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = isValidFor(editor, file)
 }
 
 class ImplementAsConstructorParameter : ImplementMembersHandler() {
-    override fun getText() = "Implement as constructor parameters"
+    override fun getText(): String = "Implement as constructor parameters"
 
     override fun isValidForClass(classOrObject: KtClassOrObject): Boolean {
         if (classOrObject !is KtClass || classOrObject is KtEnumEntry || classOrObject.isInterface()) return false

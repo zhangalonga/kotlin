@@ -23,19 +23,20 @@ import org.jetbrains.kotlin.idea.framework.getLibraryPlatform
 import org.jetbrains.kotlin.resolve.TargetPlatform
 import org.jetbrains.kotlin.utils.addIfNotNull
 import java.util.*
+import java.util.concurrent.ConcurrentMap
 
 internal typealias LibrariesAndSdks = Pair<List<Library>, List<Sdk>>
 
 interface LibraryDependenciesCache {
     companion object {
-        fun getInstance(project: Project) = ServiceManager.getService(project, LibraryDependenciesCache::class.java)!!
+        fun getInstance(project: Project): LibraryDependenciesCache = ServiceManager.getService(project, LibraryDependenciesCache::class.java)!!
     }
 
     fun getLibrariesAndSdksUsedWith(library: Library): LibrariesAndSdks
 }
 
 class LibraryDependenciesCacheImpl(private val project: Project) : LibraryDependenciesCache {
-    val cache by CachedValue(project) {
+    val cache: ConcurrentMap<Library, LibrariesAndSdks> by CachedValue(project) {
         CachedValueProvider.Result(
             ContainerUtil.createConcurrentWeakMap<Library, LibrariesAndSdks>(),
             ProjectRootManager.getInstance(project)

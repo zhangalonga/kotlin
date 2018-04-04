@@ -111,7 +111,7 @@ class Kapt3CommandLineProcessor : CommandLineProcessor {
     companion object {
         val ANNOTATION_PROCESSING_COMPILER_PLUGIN_ID: String = "org.jetbrains.kotlin.kapt3"
 
-        val CONFIGURATION = CliOption("configuration", "<encoded>", "Encoded configuration", required = false)
+        val CONFIGURATION: CliOption = CliOption("configuration", "<encoded>", "Encoded configuration", required = false)
 
         val SOURCE_OUTPUT_DIR_OPTION: CliOption =
                 CliOption("sources", "<path>", "Output path for the generated files", required = false)
@@ -330,10 +330,10 @@ class Kapt3ComponentRegistrar : ComponentRegistrar {
 enum class AptMode {
     WITH_COMPILATION, STUBS_AND_APT, STUBS_ONLY, APT_ONLY;
 
-    val runAnnotationProcessing
+    val runAnnotationProcessing: Boolean
         get() = this != STUBS_ONLY
 
-    val generateStubs
+    val generateStubs: Boolean
         get() = this != APT_ONLY
 
     companion object {

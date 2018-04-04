@@ -40,7 +40,7 @@ import java.io.DataInput
 import java.io.DataOutput
 import java.io.File
 
-val CONVERTING_JAVA_CLASSES_TO_PROTO = PerformanceCounter.create("Converting Java sources to proto")
+val CONVERTING_JAVA_CLASSES_TO_PROTO: PerformanceCounter = PerformanceCounter.create("Converting Java sources to proto")
 
 class JavaClassesTrackerImpl(
         private val cache: IncrementalJvmCache,
@@ -116,9 +116,9 @@ data class SerializedJavaClassWithSource(
         val proto: SerializedJavaClass
 )
 
-fun SerializedJavaClass.toProtoData() = ClassProtoData(proto, NameResolverImpl(stringTable, qualifiedNameTable))
+fun SerializedJavaClass.toProtoData(): ClassProtoData = ClassProtoData(proto, NameResolverImpl(stringTable, qualifiedNameTable))
 
-val JAVA_CLASS_PROTOBUF_REGISTRY =
+val JAVA_CLASS_PROTOBUF_REGISTRY: ExtensionRegistryLite? =
         ExtensionRegistryLite.newInstance()
                 .also(JavaClassProtoBuf::registerAllExtensions)
                 // Built-ins extensions are used for annotations' serialization

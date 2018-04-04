@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.psi.*
 class AccessorToPropertyProcessing(val accessorMethod: PsiMethod, val accessorKind: AccessorKind, val propertyName: String) : UsageProcessing {
     override val targetElement: PsiElement get() = accessorMethod
 
-    override val convertedCodeProcessor = object : ConvertedCodeProcessor {
+    override val convertedCodeProcessor: ConvertedCodeProcessor = object : ConvertedCodeProcessor {
         override fun convertMethodUsage(methodCall: PsiMethodCallExpression, codeConverter: CodeConverter): Expression? {
             val isNullable = codeConverter.typeConverter.methodNullability(accessorMethod).isNullable(codeConverter.settings)
 
@@ -52,9 +52,9 @@ class AccessorToPropertyProcessing(val accessorMethod: PsiMethod, val accessorKi
         }
     }
 
-    override val javaCodeProcessors = emptyList<ExternalCodeProcessor>()
+    override val javaCodeProcessors: List<ExternalCodeProcessor> = emptyList<ExternalCodeProcessor>()
 
-    override val kotlinCodeProcessors =
+    override val kotlinCodeProcessors: List<AccessorToPropertyProcessor> =
             if (accessorMethod.hasModifierProperty(PsiModifier.PRIVATE))
                 emptyList()
             else

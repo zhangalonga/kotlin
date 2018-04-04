@@ -68,10 +68,10 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return if (expression.text == text) expression else null
     }
 
-    fun createThisExpression() =
+    fun createThisExpression(): KtThisExpression =
         (createExpression("this.x") as KtQualifiedExpression).receiverExpression as KtThisExpression
 
-    fun createThisExpression(qualifier: String) =
+    fun createThisExpression(qualifier: String): KtThisExpression =
         (createExpression("this@$qualifier.x") as KtQualifiedExpression).receiverExpression as KtThisExpression
 
     fun createCallArguments(text: String): KtValueArgumentList {
@@ -84,7 +84,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return (property.initializer as KtCallExpression).typeArgumentList!!
     }
 
-    fun createTypeArgument(text: String) = createTypeArguments("<$text>").arguments.first()
+    fun createTypeArgument(text: String): KtTypeProjection = createTypeArguments("<$text>").arguments.first()
 
     fun createType(type: String): KtTypeReference {
         val typeReference = createTypeIfPossible(type)
@@ -94,7 +94,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return typeReference
     }
 
-    fun createType(typeElement: KtTypeElement) = createType("X").apply { this.typeElement!!.replace(typeElement) }
+    fun createType(typeElement: KtTypeElement): KtTypeReference = createType("X").apply { this.typeElement!!.replace(typeElement) }
 
     fun createTypeIfPossible(type: String): KtTypeReference? {
         val typeReference = createProperty("val x : $type").typeReference
@@ -291,9 +291,9 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return declarations.first() as TDeclaration
     }
 
-    fun createNameIdentifier(name: String) = createNameIdentifierIfPossible(name)!!
+    fun createNameIdentifier(name: String): PsiElement = createNameIdentifierIfPossible(name)!!
 
-    fun createNameIdentifierIfPossible(name: String) = createProperty(name, null, false).nameIdentifier
+    fun createNameIdentifierIfPossible(name: String): PsiElement? = createProperty(name, null, false).nameIdentifier
 
     fun createSimpleName(name: String): KtSimpleNameExpression {
         return createProperty(name, null, false, name).initializer as KtSimpleNameExpression
@@ -311,7 +311,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return createDeclaration(funDecl)
     }
 
-    fun createCallableReferenceExpression(text: String) = createExpression(text) as? KtCallableReferenceExpression
+    fun createCallableReferenceExpression(text: String): KtCallableReferenceExpression? = createExpression(text) as? KtCallableReferenceExpression
 
     fun createSecondaryConstructor(decl: String): KtSecondaryConstructor {
         return createClass("class Foo {\n $decl \n}").secondaryConstructors.first()
@@ -325,7 +325,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return createProperty(text + " val x").modifierList!!
     }
 
-    fun createEmptyModifierList() = createModifierList(KtTokens.PRIVATE_KEYWORD).apply { firstChild.delete() }
+    fun createEmptyModifierList(): KtModifierList = createModifierList(KtTokens.PRIVATE_KEYWORD).apply { firstChild.delete() }
 
     fun createModifier(modifier: KtModifierKeywordToken): PsiElement {
         return createModifierList(modifier.value).getModifier(modifier)!!
@@ -356,14 +356,14 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return createFunction("fun foo$text{}").valueParameterList!!
     }
 
-    fun createTypeParameterList(text: String) = createClass("class Foo$text").typeParameterList!!
+    fun createTypeParameterList(text: String): KtTypeParameterList = createClass("class Foo$text").typeParameterList!!
 
-    fun createTypeParameter(text: String) = createTypeParameterList("<$text>").parameters.first()!!
+    fun createTypeParameter(text: String): KtTypeParameter = createTypeParameterList("<$text>").parameters.first()!!
 
-    fun createLambdaParameterListIfAny(text: String) =
+    fun createLambdaParameterListIfAny(text: String): KtParameterList? =
         createLambdaExpression(text, "0").functionLiteral.valueParameterList
 
-    fun createLambdaParameterList(text: String) = createLambdaParameterListIfAny(text)!!
+    fun createLambdaParameterList(text: String): KtParameterList = createLambdaParameterListIfAny(text)!!
 
     fun createLambdaExpression(parameters: String, body: String): KtLambdaExpression =
         (if (parameters.isNotEmpty()) createExpression("{ $parameters -> $body }")
@@ -404,7 +404,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return stringTemplateExpression.entries[0] as KtSimpleNameStringTemplateEntry
     }
 
-    fun createStringTemplate(content: String) = createExpression("\"$content\"") as KtStringTemplateExpression
+    fun createStringTemplate(content: String): KtStringTemplateExpression = createExpression("\"$content\"") as KtStringTemplateExpression
 
     fun createPackageDirective(fqName: FqName): KtPackageDirective {
         return createFile("package ${fqName.asString()}").packageDirective!!
@@ -501,7 +501,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
         return argumentList.arguments.single()
     }
 
-    fun createArgument(text: String) = createCallArguments("($text)").arguments.first()!!
+    fun createArgument(text: String): KtValueArgument = createCallArguments("($text)").arguments.first()!!
 
     fun createSuperTypeCallEntry(text: String): KtSuperTypeCallEntry {
         return createClass("class A: $text").superTypeListEntries.first() as KtSuperTypeCallEntry
@@ -599,7 +599,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
             return this
         }
 
-        fun transform(f: StringBuilder.() -> Unit) = sb.f()
+        fun transform(f: StringBuilder.() -> Unit): Unit = sb.f()
 
         fun asString(): String {
             if (state != State.DONE) {
@@ -613,7 +613,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
     class CallableBuilder(private val target: Target) {
 
         companion object {
-            val CONSTRUCTOR_NAME = KtTokens.CONSTRUCTOR_KEYWORD.value
+            val CONSTRUCTOR_NAME: String = KtTokens.CONSTRUCTOR_KEYWORD.value
         }
 
         enum class Target {
@@ -797,7 +797,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
             return this
         }
 
-        fun transform(f: StringBuilder.() -> Unit) = sb.f()
+        fun transform(f: StringBuilder.() -> Unit): Unit = sb.f()
 
         fun asString(): String {
             if (state != State.DONE) {

@@ -48,16 +48,16 @@ class ShortenReferences(val options: (KtElement) -> Options = { Options.DEFAULT 
         val dropBracesInStringTemplates: Boolean = true
     ) {
         companion object {
-            val DEFAULT = Options()
-            val ALL_ENABLED = Options(true, true)
+            val DEFAULT: Options = Options()
+            val ALL_ENABLED: Options = Options(true, true)
         }
     }
 
     companion object {
         @JvmField
-        val DEFAULT = ShortenReferences()
+        val DEFAULT: ShortenReferences = ShortenReferences()
 
-        val RETAIN_COMPANION = ShortenReferences { Options(removeExplicitCompanion = false) }
+        val RETAIN_COMPANION: ShortenReferences = ShortenReferences { Options(removeExplicitCompanion = false) }
 
         private fun DeclarationDescriptor.asString() = DescriptorRenderer.FQ_NAMES_IN_TYPES.render(this)
 

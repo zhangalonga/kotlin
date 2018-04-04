@@ -34,7 +34,7 @@ interface ModuleVisibilityManager {
     val friendPaths: Collection<String>
     fun addModule(module: Module)
     fun addFriendPath(path: String)
-    val enabled
+    val enabled: Boolean
         get() = true
 
     object SERVICE {

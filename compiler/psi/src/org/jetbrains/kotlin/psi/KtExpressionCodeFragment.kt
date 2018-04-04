@@ -28,5 +28,5 @@ class KtExpressionCodeFragment(
     context: PsiElement?
 ) : KtCodeFragment(project, name, text, imports, KtNodeTypes.EXPRESSION_CODE_FRAGMENT, context) {
 
-    override fun getContentElement() = findChildByClass(KtExpression::class.java)
+    override fun getContentElement(): KtExpression? = findChildByClass(KtExpression::class.java)
 }

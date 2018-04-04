@@ -37,7 +37,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getQualifiedExpressionForSelector
 import java.util.*
 
 class KotlinResolveSnapshotProvider : ResolveSnapshotProvider() {
-    override fun createSnapshot(scope: PsiElement) = object : ResolveSnapshot() {
+    override fun createSnapshot(scope: PsiElement): ResolveSnapshot = object : ResolveSnapshot() {
         private val project = scope.project
         private val document = PsiDocumentManager.getInstance(project).getDocument(scope.containingFile)!!
         private val refExpressionToDescriptor = HashMap<SmartPsiElementPointer<*>, PropertyDescriptor>()

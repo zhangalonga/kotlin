@@ -50,9 +50,9 @@ class RemoveRedundantSpreadOperatorInspection : AbstractKotlinInspection() {
 }
 
 class RemoveRedundantSpreadOperatorQuickfix : LocalQuickFix {
-    override fun getName() = "Remove redundant spread operator"
+    override fun getName(): String = "Remove redundant spread operator"
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         // Argument & expression under *

@@ -53,7 +53,7 @@ fun classpathFromFQN(classLoader: ClassLoader, fqn: String): List<File>? {
     }
 }
 
-fun File.matchMaybeVersionedFile(baseName: String) =
+fun File.matchMaybeVersionedFile(baseName: String): Boolean =
         name == baseName ||
         name == baseName.removeSuffix(".jar") || // for classes dirs
         Regex(Regex.escape(baseName.removeSuffix(".jar")) + "(-\\d.*)?\\.jar").matches(name)
@@ -115,5 +115,5 @@ object KotlinJars {
         getLib(KOTLIN_SCRIPT_RUNTIME_JAR_PROPERTY, KOTLIN_JAVA_SCRIPT_RUNTIME_JAR, ScriptTemplateWithArgs::class)
     }
 
-    val kotlinScriptStandardJars get() = listOf(stdlib, scriptRuntime).filterNotNull()
+    val kotlinScriptStandardJars: List<File> get() = listOf(stdlib, scriptRuntime).filterNotNull()
 }

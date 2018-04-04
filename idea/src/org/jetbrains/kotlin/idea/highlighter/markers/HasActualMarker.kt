@@ -36,7 +36,7 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.resolve.multiplatform.ExpectedActualResolver
 import java.awt.event.MouseEvent
 
-fun ModuleDescriptor.hasActualsFor(descriptor: MemberDescriptor) =
+fun ModuleDescriptor.hasActualsFor(descriptor: MemberDescriptor): Boolean =
         actualsFor(descriptor).isNotEmpty()
 
 fun ModuleDescriptor.actualsFor(descriptor: MemberDescriptor, checkCompatible: Boolean = false): List<DeclarationDescriptor> =

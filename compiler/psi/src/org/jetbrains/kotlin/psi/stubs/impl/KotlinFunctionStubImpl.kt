@@ -40,12 +40,12 @@ class KotlinFunctionStubImpl(
         }
     }
 
-    override fun getFqName() = fqName
+    override fun getFqName(): FqName? = fqName
 
-    override fun getName() = StringRef.toString(nameRef)
-    override fun isTopLevel() = isTopLevel
-    override fun isExtension() = isExtension
-    override fun hasBlockBody() = hasBlockBody
-    override fun hasBody() = hasBody
-    override fun hasTypeParameterListBeforeFunctionName() = hasTypeParameterListBeforeFunctionName
+    override fun getName(): String? = StringRef.toString(nameRef)
+    override fun isTopLevel(): Boolean = isTopLevel
+    override fun isExtension(): Boolean = isExtension
+    override fun hasBlockBody(): Boolean = hasBlockBody
+    override fun hasBody(): Boolean = hasBody
+    override fun hasTypeParameterListBeforeFunctionName(): Boolean = hasTypeParameterListBeforeFunctionName
 }

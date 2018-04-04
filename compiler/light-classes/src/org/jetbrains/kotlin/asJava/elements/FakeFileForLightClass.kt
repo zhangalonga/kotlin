@@ -36,13 +36,13 @@ open class FakeFileForLightClass(
 ) : ClsFileImpl(ClassFileViewProvider(ktFile.manager, ktFile.virtualFile ?:
                                                       ktFile.originalFile.virtualFile ?:
                                                       ktFile.viewProvider.virtualFile)) {
-    override fun getPackageName() = packageFqName.asString()
+    override fun getPackageName(): String = packageFqName.asString()
 
-    override fun getStub() = stub()
+    override fun getStub(): PsiClassHolderFileStub<*> = stub()
 
-    override fun getClasses() = arrayOf(lightClass())
+    override fun getClasses(): Array<KtLightClass> = arrayOf(lightClass())
 
-    override fun getNavigationElement() = ktFile
+    override fun getNavigationElement(): KtFile = ktFile
 
     override fun accept(visitor: PsiElementVisitor) {
         // Prevent access to compiled PSI
@@ -50,7 +50,7 @@ open class FakeFileForLightClass(
     }
 
     // this should be equal to current compiler target language level
-    override fun getLanguageLevel() = LanguageLevel.JDK_1_6
+    override fun getLanguageLevel(): LanguageLevel = LanguageLevel.JDK_1_6
 
     override fun hashCode(): Int {
         val thisClass = lightClass()
@@ -71,7 +71,7 @@ open class FakeFileForLightClass(
         return thisClass == anotherClass
     }
 
-    override fun isEquivalentTo(another: PsiElement?) = this == another
+    override fun isEquivalentTo(another: PsiElement?): Boolean = this == another
 
     override fun setPackageName(packageName: String) {
         if (lightClass() is KtLightClassForFacade) {
@@ -82,5 +82,5 @@ open class FakeFileForLightClass(
         }
     }
 
-    override fun isPhysical() = false
+    override fun isPhysical(): Boolean = false
 }

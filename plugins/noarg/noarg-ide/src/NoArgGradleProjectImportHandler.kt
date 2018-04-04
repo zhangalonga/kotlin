@@ -16,18 +16,20 @@
 
 package org.jetbrains.kotlin.noarg.ide
 
+import com.intellij.openapi.util.Key
 import org.jetbrains.kotlin.annotation.plugin.ide.AbstractGradleImportHandler
 import org.jetbrains.kotlin.annotation.plugin.ide.AnnotationBasedCompilerPluginSetup
 import org.jetbrains.kotlin.annotation.plugin.ide.AnnotationBasedCompilerPluginSetup.PluginOption
 import org.jetbrains.kotlin.noarg.NoArgCommandLineProcessor
 import org.jetbrains.kotlin.utils.PathUtil
+import java.io.File
 
 class NoArgGradleProjectImportHandler : AbstractGradleImportHandler<NoArgModel>() {
-    override val compilerPluginId = NoArgCommandLineProcessor.PLUGIN_ID
-    override val pluginName = "noarg"
-    override val annotationOptionName = NoArgCommandLineProcessor.ANNOTATION_OPTION.name
-    override val pluginJarFileFromIdea = PathUtil.kotlinPathsForIdeaPlugin.noArgPluginJarPath
-    override val modelKey = NoArgProjectResolverExtension.KEY
+    override val compilerPluginId: String = NoArgCommandLineProcessor.PLUGIN_ID
+    override val pluginName: String = "noarg"
+    override val annotationOptionName: String = NoArgCommandLineProcessor.ANNOTATION_OPTION.name
+    override val pluginJarFileFromIdea: File = PathUtil.kotlinPathsForIdeaPlugin.noArgPluginJarPath
+    override val modelKey: Key<NoArgModel> = NoArgProjectResolverExtension.KEY
 
     override fun getAdditionalOptions(model: NoArgModel): List<PluginOption> {
         return listOf(PluginOption(

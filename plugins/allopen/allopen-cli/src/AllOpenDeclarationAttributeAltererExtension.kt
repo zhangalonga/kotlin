@@ -28,12 +28,12 @@ import org.jetbrains.kotlin.resolve.BindingContext
 class CliAllOpenDeclarationAttributeAltererExtension(
         private val allOpenAnnotationFqNames: List<String>
 ) : AbstractAllOpenDeclarationAttributeAltererExtension() {
-    override fun getAnnotationFqNames(modifierListOwner: KtModifierListOwner?) = allOpenAnnotationFqNames
+    override fun getAnnotationFqNames(modifierListOwner: KtModifierListOwner?): List<String> = allOpenAnnotationFqNames
 }
 
 abstract class AbstractAllOpenDeclarationAttributeAltererExtension : DeclarationAttributeAltererExtension, AnnotationBasedExtension {
     companion object {
-        val ANNOTATIONS_FOR_TESTS = listOf("AllOpen", "AllOpen2", "test.AllOpen")
+        val ANNOTATIONS_FOR_TESTS: List<String> = listOf("AllOpen", "AllOpen2", "test.AllOpen")
     }
 
     override fun refineDeclarationModality(

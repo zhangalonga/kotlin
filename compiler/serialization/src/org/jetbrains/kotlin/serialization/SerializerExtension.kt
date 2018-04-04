@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.types.KotlinType
 abstract class SerializerExtension {
     abstract val stringTable: DescriptorAwareStringTable
 
-    val annotationSerializer by lazy { AnnotationSerializer(stringTable) }
+    val annotationSerializer: AnnotationSerializer by lazy { AnnotationSerializer(stringTable) }
 
     open fun shouldUseTypeTable(): Boolean = false
     open fun shouldUseNormalizedVisibility(): Boolean = false

@@ -48,7 +48,7 @@ open class PomFileActionBase(generateProvider: AbstractDomGenerateProvider<*>) :
         return MavenDomUtil.isMavenFile(file) && super.isValidForFile(project, editor, file)
     }
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 }
 
 private class KotlinMavenPluginProvider :

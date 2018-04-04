@@ -38,15 +38,15 @@ interface KtSimpleNameExpression : KtReferenceExpression {
 abstract class KtSimpleNameExpressionImpl(node: ASTNode) : KtExpressionImpl(node), KtSimpleNameExpression {
     override fun getIdentifier(): PsiElement? = findChildByType(KtTokens.IDENTIFIER)
 
-    override fun getReferencedNameElementType() = getReferencedNameElementTypeImpl(this)
+    override fun getReferencedNameElementType(): IElementType = getReferencedNameElementTypeImpl(this)
 
     override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R {
         return visitor.visitSimpleNameExpression(this, data)
     }
 
-    override fun getReferencedNameAsName() = getReferencedNameAsNameImpl(this)
+    override fun getReferencedNameAsName(): Name = getReferencedNameAsNameImpl(this)
 
-    override fun getReferencedName() = getReferencedNameImpl(this)
+    override fun getReferencedName(): String = getReferencedNameImpl(this)
 
     //NOTE: an unfortunate way to share an implementation between stubbed and not stubbed tree
     companion object {

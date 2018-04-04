@@ -21,16 +21,17 @@ import org.jetbrains.kotlin.annotation.plugin.ide.AnnotationBasedCompilerPluginS
 import org.jetbrains.kotlin.annotation.plugin.ide.AnnotationBasedCompilerPluginSetup.PluginOption
 import org.jetbrains.kotlin.samWithReceiver.SamWithReceiverCommandLineProcessor
 import org.jetbrains.kotlin.utils.PathUtil
+import java.io.File
 
 class SamWithReceiverMavenProjectImportHandler : AbstractMavenImportHandler() {
     private companion object {
         val ANNOTATION_PARAMETER_PREFIX = "sam-with-receiver:${SamWithReceiverCommandLineProcessor.ANNOTATION_OPTION.name}="
     }
 
-    override val compilerPluginId = SamWithReceiverCommandLineProcessor.PLUGIN_ID
-    override val pluginName = "samWithReceiver"
-    override val mavenPluginArtifactName = "kotlin-maven-sam-with-receiver"
-    override val pluginJarFileFromIdea = PathUtil.kotlinPathsForIdeaPlugin.allOpenPluginJarPath
+    override val compilerPluginId: String = SamWithReceiverCommandLineProcessor.PLUGIN_ID
+    override val pluginName: String = "samWithReceiver"
+    override val mavenPluginArtifactName: String = "kotlin-maven-sam-with-receiver"
+    override val pluginJarFileFromIdea: File = PathUtil.kotlinPathsForIdeaPlugin.allOpenPluginJarPath
 
     override fun getOptions(enabledCompilerPlugins: List<String>, compilerPluginOptions: List<String>): List<PluginOption>? {
         if ("sam-with-receiver" !in enabledCompilerPlugins) {

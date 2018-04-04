@@ -1019,7 +1019,7 @@ class ControlFlowInformationProvider private constructor(
     companion object {
 
         // Should return KtDeclarationWithBody, KtClassOrObject, or KtClassInitializer
-        fun getElementParentDeclaration(element: KtElement) =
+        fun getElementParentDeclaration(element: KtElement): KtDeclaration? =
             getParentOfType(element, KtDeclarationWithBody::class.java, KtClassOrObject::class.java, KtClassInitializer::class.java)
 
         fun getDeclarationDescriptorIncludingConstructors(context: BindingContext, declaration: KtDeclaration?): DeclarationDescriptor? {

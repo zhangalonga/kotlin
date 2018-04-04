@@ -61,7 +61,7 @@ class NameSuggestion {
      * list consists of exactly one string for any declaration except for package. Package name lists
      * have at least one string.
      */
-    fun suggest(descriptor: DeclarationDescriptor) = cache.getOrPut(descriptor) { generate(descriptor.original) }
+    fun suggest(descriptor: DeclarationDescriptor): SuggestedName? = cache.getOrPut(descriptor) { generate(descriptor.original) }
 
     private fun generate(descriptor: DeclarationDescriptor): SuggestedName? {
         // Members of companion objects of classes are treated as static members of these classes
@@ -356,14 +356,14 @@ class NameSuggestion {
 }
 
 // See ES 5.1 spec: https://www.ecma-international.org/ecma-262/5.1/#sec-7.6
-fun Char.isES5IdentifierStart() =
+fun Char.isES5IdentifierStart(): Boolean =
         Character.isLetter(this) ||   // Lu | Ll | Lt | Lm | Lo
         Character.getType(this).toByte() == Character.LETTER_NUMBER ||
         // Nl which is missing in Character.isLetter, but present in UnicodeLetter in spec
         this == '_' ||
         this == '$'
 
-fun Char.isES5IdentifierPart() =
+fun Char.isES5IdentifierPart(): Boolean =
         isES5IdentifierStart() ||
         when (Character.getType(this).toByte()) {
             Character.NON_SPACING_MARK,
@@ -375,7 +375,7 @@ fun Char.isES5IdentifierPart() =
         this == '\u200C' ||   // Zero-width non-joiner
         this == '\u200D'      // Zero-width joiner
 
-fun String.isValidES5Identifier() =
+fun String.isValidES5Identifier(): Boolean =
         isNotEmpty() &&
         first().isES5IdentifierStart() &&
         drop(1).all { it.isES5IdentifierPart() }

@@ -968,9 +968,9 @@ class KotlinChangeSignatureUsageProcessor : ChangeSignatureUsageProcessor {
         return true
     }
 
-    override fun shouldPreviewUsages(changeInfo: ChangeInfo, usages: Array<UsageInfo>) = false
+    override fun shouldPreviewUsages(changeInfo: ChangeInfo, usages: Array<UsageInfo>): Boolean = false
 
-    override fun setupDefaultValues(changeInfo: ChangeInfo, refUsages: Ref<Array<UsageInfo>>, project: Project) = true
+    override fun setupDefaultValues(changeInfo: ChangeInfo, refUsages: Ref<Array<UsageInfo>>, project: Project): Boolean = true
 
     override fun registerConflictResolvers(
             snapshots: List<ResolveSnapshotProvider.ResolveSnapshot>,

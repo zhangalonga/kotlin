@@ -20,5 +20,5 @@ interface FirResolvedFunctionType : @VisitedSupertype FirResolvedType, FirFuncti
         visitor.visitResolvedFunctionType(this, data)
 }
 
-inline fun <reified T : ConeKotlinType> FirType.coneTypeUnsafe() = (this as FirResolvedType).type as T
-inline fun <reified T : ConeKotlinType> FirType.coneTypeSafe() = (this as? FirResolvedType)?.type as? T
+inline fun <reified T : ConeKotlinType> FirType.coneTypeUnsafe(): T = (this as FirResolvedType).type as T
+inline fun <reified T : ConeKotlinType> FirType.coneTypeSafe(): T? = (this as? FirResolvedType)?.type as? T

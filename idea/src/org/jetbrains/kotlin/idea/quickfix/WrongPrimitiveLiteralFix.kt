@@ -89,8 +89,8 @@ class WrongPrimitiveLiteralFix(element: KtConstantExpression, type: KotlinType) 
         return constValue.toLong() in valueRanges[typeName] ?: return false
     }
 
-    override fun getFamilyName() = "Change to correct primitive type"
-    override fun getText() = "Change to '$fixedExpression'"
+    override fun getFamilyName(): String = "Change to correct primitive type"
+    override fun getText(): String = "Change to '$fixedExpression'"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

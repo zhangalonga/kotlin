@@ -29,7 +29,7 @@ class IfStatementReduction(private val root: JsStatement) {
         return hasChanges
     }
 
-    val visitor = object : JsVisitorWithContextImpl() {
+    val visitor: JsVisitorWithContextImpl = object : JsVisitorWithContextImpl() {
         override fun visit(x: JsIf, ctx: JsContext<JsNode>): Boolean {
             val thenStatementRaw = x.thenStatement
             val elseStatementRaw = x.elseStatement

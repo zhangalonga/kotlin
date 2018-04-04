@@ -55,7 +55,7 @@ class JvmPackagePartSource(
         kotlinClass
     )
 
-    val moduleName =
+    val moduleName: String =
         packageProto.getExtensionOrNull(JvmProtoBuf.packageModuleName)?.let(nameResolver::getString)
                 ?: JvmAbi.DEFAULT_MODULE_NAME
 
@@ -66,7 +66,7 @@ class JvmPackagePartSource(
 
     val classId: ClassId get() = ClassId(className.packageFqName, simpleName)
 
-    override fun toString() = "${this::class.java.simpleName}: $className"
+    override fun toString(): String = "${this::class.java.simpleName}: $className"
 
     override fun getContainingFile(): SourceFile = SourceFile.NO_SOURCE_FILE
 }

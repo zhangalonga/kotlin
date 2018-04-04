@@ -29,6 +29,7 @@ import com.intellij.usageView.UsageViewDescriptor
 import org.jetbrains.kotlin.asJava.unwrapped
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.idea.caches.resolve.util.getJavaClassDescriptor
 import org.jetbrains.kotlin.idea.caches.resolve.getResolutionFacade
@@ -36,6 +37,7 @@ import org.jetbrains.kotlin.idea.codeInsight.shorten.addToShorteningWaitSet
 import org.jetbrains.kotlin.idea.refactoring.memberInfo.KotlinMemberInfo
 import org.jetbrains.kotlin.idea.refactoring.memberInfo.KtPsiClassWrapper
 import org.jetbrains.kotlin.idea.refactoring.pullUp.*
+import org.jetbrains.kotlin.idea.resolve.ResolutionFacade
 import org.jetbrains.kotlin.idea.runSynchronouslyWithProgress
 import org.jetbrains.kotlin.idea.search.declarationsSearch.HierarchySearchRequest
 import org.jetbrains.kotlin.idea.search.declarationsSearch.searchInheritors
@@ -52,13 +54,13 @@ class KotlinPushDownContext(
         val sourceClass: KtClass,
         val membersToMove: List<KotlinMemberInfo>
 ) {
-    val resolutionFacade = sourceClass.getResolutionFacade()
+    val resolutionFacade: ResolutionFacade = sourceClass.getResolutionFacade()
 
-    val sourceClassContext = resolutionFacade.analyzeFullyAndGetResult(listOf(sourceClass)).bindingContext
+    val sourceClassContext: BindingContext = resolutionFacade.analyzeFullyAndGetResult(listOf(sourceClass)).bindingContext
 
-    val sourceClassDescriptor = sourceClassContext[BindingContext.DECLARATION_TO_DESCRIPTOR, sourceClass] as ClassDescriptor
+    val sourceClassDescriptor: ClassDescriptor = sourceClassContext[BindingContext.DECLARATION_TO_DESCRIPTOR, sourceClass] as ClassDescriptor
 
-    val memberDescriptors = membersToMove
+    val memberDescriptors: Map<KtNamedDeclaration, DeclarationDescriptor> = membersToMove
             .map { it.member }
             .keysToMap {
                 when (it) {
@@ -76,28 +78,28 @@ class KotlinPushDownProcessor(
     private val context = KotlinPushDownContext(sourceClass, membersToMove)
 
     inner class UsageViewDescriptorImpl : UsageViewDescriptor {
-        override fun getProcessedElementsHeader() = RefactoringBundle.message("push.down.members.elements.header")
+        override fun getProcessedElementsHeader(): String = RefactoringBundle.message("push.down.members.elements.header")
 
-        override fun getElements() = arrayOf(context.sourceClass)
+        override fun getElements(): Array<KtClass> = arrayOf(context.sourceClass)
 
-        override fun getCodeReferencesText(usagesCount: Int, filesCount: Int) =
+        override fun getCodeReferencesText(usagesCount: Int, filesCount: Int): String =
                 RefactoringBundle.message("classes.to.push.down.members.to", UsageViewBundle.getReferencesString(usagesCount, filesCount))
 
-        override fun getCommentReferencesText(usagesCount: Int, filesCount: Int) = null
+        override fun getCommentReferencesText(usagesCount: Int, filesCount: Int): Nothing? = null
     }
 
     class SubclassUsage(element: PsiElement) : UsageInfo(element)
 
-    override fun getCommandName() = PUSH_MEMBERS_DOWN
+    override fun getCommandName(): String = PUSH_MEMBERS_DOWN
 
-    override fun createUsageViewDescriptor(usages: Array<out UsageInfo>) = UsageViewDescriptorImpl()
+    override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptorImpl = UsageViewDescriptorImpl()
 
-    override fun getBeforeData() = RefactoringEventData().apply {
+    override fun getBeforeData(): RefactoringEventData = RefactoringEventData().apply {
         addElement(context.sourceClass)
         addElements(context.membersToMove.map { it.member }.toTypedArray())
     }
 
-    override fun getAfterData(usages: Array<out UsageInfo>) = RefactoringEventData().apply {
+    override fun getAfterData(usages: Array<out UsageInfo>): RefactoringEventData = RefactoringEventData().apply {
         addElements(usages.mapNotNull { it.element as? KtClassOrObject })
     }
 

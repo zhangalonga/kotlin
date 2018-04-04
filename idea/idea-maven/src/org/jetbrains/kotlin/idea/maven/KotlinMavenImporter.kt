@@ -62,10 +62,10 @@ interface MavenProjectImportHandler {
 
 class KotlinMavenImporter : MavenImporter(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_ARTIFACT_ID) {
     companion object {
-        const val KOTLIN_PLUGIN_GROUP_ID = "org.jetbrains.kotlin"
-        const val KOTLIN_PLUGIN_ARTIFACT_ID = "kotlin-maven-plugin"
+        const val KOTLIN_PLUGIN_GROUP_ID: String = "org.jetbrains.kotlin"
+        const val KOTLIN_PLUGIN_ARTIFACT_ID: String = "kotlin-maven-plugin"
 
-        const val KOTLIN_PLUGIN_SOURCE_DIRS_CONFIG = "sourceDirs"
+        const val KOTLIN_PLUGIN_SOURCE_DIRS_CONFIG: String = "sourceDirs"
     }
 
     override fun preProcess(

@@ -35,10 +35,10 @@ class RenameKotlinFileProcessor : RenamePsiFileProcessor() {
         private val psiClass: KtLightClass,
         private val file: KtFile
     ) : KtLightClass by psiClass {
-        override fun isValid() = file.isValid
+        override fun isValid(): Boolean = file.isValid
     }
 
-    override fun canProcessElement(element: PsiElement) = element is KtFile && ProjectRootsUtil.isInProjectSource(element)
+    override fun canProcessElement(element: PsiElement): Boolean = element is KtFile && ProjectRootsUtil.isInProjectSource(element)
 
     override fun prepareRenaming(element: PsiElement?,
                                  newName: String,

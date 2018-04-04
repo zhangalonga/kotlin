@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.resolve.jvm.diagnostics.ConflictingJvmDeclarationsDa
 
 object IdeRenderers {
 
-    @JvmField val HTML_AMBIGUOUS_CALLS = Renderer {
+    @JvmField val HTML_AMBIGUOUS_CALLS: DiagnosticParameterRenderer<Collection<ResolvedCall<*>>> = Renderer {
         calls: Collection<ResolvedCall<*>> ->
         val descriptors = calls
                 .map { it.resultingDescriptor }
@@ -36,9 +36,9 @@ object IdeRenderers {
         descriptors.joinToString("") { "<li>${HTML.render(it, context)}</li>" }
     }
 
-    @JvmField val HTML_RENDER_TYPE = SmartTypeRenderer(DescriptorRenderer.HTML.withOptions { parameterNamesInFunctionalTypes = false })
+    @JvmField val HTML_RENDER_TYPE: SmartTypeRenderer = SmartTypeRenderer(DescriptorRenderer.HTML.withOptions { parameterNamesInFunctionalTypes = false })
 
-    @JvmField val HTML_NONE_APPLICABLE_CALLS = Renderer {
+    @JvmField val HTML_NONE_APPLICABLE_CALLS: DiagnosticParameterRenderer<Collection<ResolvedCall<*>>> = Renderer {
         calls: Collection<ResolvedCall<*>> ->
         val context = RenderingContext.Impl(calls.map { it.resultingDescriptor })
         val comparator = compareBy(MemberComparator.INSTANCE) { c: ResolvedCall<*> -> c.resultingDescriptor }
@@ -47,28 +47,28 @@ object IdeRenderers {
                 .joinToString("") { "<li>${renderResolvedCall(it, context)}</li>" }
     }
 
-    @JvmField val HTML_TYPE_INFERENCE_CONFLICTING_SUBSTITUTIONS_RENDERER = Renderer<InferenceErrorData> {
+    @JvmField val HTML_TYPE_INFERENCE_CONFLICTING_SUBSTITUTIONS_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer {
         Renderers.renderConflictingSubstitutionsInferenceError(it, HtmlTabledDescriptorRenderer.create()).toString()
     }
 
-    @JvmField val HTML_TYPE_INFERENCE_PARAMETER_CONSTRAINT_ERROR_RENDERER = Renderer<InferenceErrorData> {
+    @JvmField val HTML_TYPE_INFERENCE_PARAMETER_CONSTRAINT_ERROR_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer {
         Renderers.renderParameterConstraintError(it, HtmlTabledDescriptorRenderer.create()).toString()
     }
 
-    @JvmField val HTML_TYPE_INFERENCE_NO_INFORMATION_FOR_PARAMETER_RENDERER = Renderer<InferenceErrorData> {
+    @JvmField val HTML_TYPE_INFERENCE_NO_INFORMATION_FOR_PARAMETER_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer {
         Renderers.renderNoInformationForParameterError(it, HtmlTabledDescriptorRenderer.create()).toString()
     }
 
-    @JvmField val HTML_TYPE_INFERENCE_UPPER_BOUND_VIOLATED_RENDERER = Renderer<InferenceErrorData> {
+    @JvmField val HTML_TYPE_INFERENCE_UPPER_BOUND_VIOLATED_RENDERER: DiagnosticParameterRenderer<InferenceErrorData> = Renderer {
         Renderers.renderUpperBoundViolatedInferenceError(it, HtmlTabledDescriptorRenderer.create()).toString()
     }
 
-    @JvmField val HTML_RENDER_RETURN_TYPE = ContextDependentRenderer<CallableMemberDescriptor> {
+    @JvmField val HTML_RENDER_RETURN_TYPE: DiagnosticParameterRenderer<CallableMemberDescriptor> = ContextDependentRenderer {
         member, context ->
         HTML_RENDER_TYPE.render(member.returnType!!, context)
     }
 
-    @JvmField val HTML_CONFLICTING_JVM_DECLARATIONS_DATA = Renderer {
+    @JvmField val HTML_CONFLICTING_JVM_DECLARATIONS_DATA: DiagnosticParameterRenderer<ConflictingJvmDeclarationsData> = Renderer {
         data: ConflictingJvmDeclarationsData ->
 
         val descriptors = data.signatureOrigins
@@ -80,10 +80,10 @@ object IdeRenderers {
         "The following declarations have the same JVM signature (<code>${data.signature.name}${data.signature.desc}</code>):<br/>\n<ul>\n$conflicts</ul>"
     }
 
-    @JvmField val HTML_THROWABLE = ContextDependentRenderer<Throwable> {
+    @JvmField val HTML_THROWABLE: DiagnosticParameterRenderer<Throwable> = ContextDependentRenderer {
         throwable, context ->
         Renderers.THROWABLE.render(throwable, context).replace("\n", "<br/>")
     }
 
-    @JvmField val HTML = DescriptorRenderer.HTML.asRenderer()
+    @JvmField val HTML: SmartDescriptorRenderer = DescriptorRenderer.HTML.asRenderer()
 }

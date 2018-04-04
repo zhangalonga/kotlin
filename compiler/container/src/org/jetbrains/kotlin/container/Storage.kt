@@ -36,7 +36,7 @@ enum class ComponentStorageState {
 internal class InvalidCardinalityException(message: String, val descriptors: Collection<ComponentDescriptor>) : Exception(message)
 
 class ComponentStorage(private val myId: String, parent: ComponentStorage?) : ValueResolver {
-    var state = ComponentStorageState.Initial
+    var state: ComponentStorageState = ComponentStorageState.Initial
     private val registry = ComponentRegistry()
     init {
         parent?.let { registry.addAll(it.registry) }

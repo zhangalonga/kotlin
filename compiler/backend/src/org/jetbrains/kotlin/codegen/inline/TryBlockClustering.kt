@@ -84,7 +84,7 @@ class TryCatchBlockNodeInfo(
     }
 }
 
-val TryCatchBlockNodeInfo.bodyInstuctions
+val TryCatchBlockNodeInfo.bodyInstuctions: InsnSequence
     get() = InsnSequence(startLabel, endLabel)
 
 class TryCatchBlockNodePosition(

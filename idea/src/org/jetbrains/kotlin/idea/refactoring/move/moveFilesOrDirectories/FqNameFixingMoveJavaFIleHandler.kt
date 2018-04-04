@@ -30,10 +30,10 @@ internal var PsiJavaFile.shouldFixFqName: Boolean by NotNullableUserDataProperty
 class FqNameFixingMoveJavaFileHandler : MoveFileHandler() {
     private val delegate = MoveJavaFileHandler()
 
-    override fun canProcessElement(element: PsiFile) =
+    override fun canProcessElement(element: PsiFile): Boolean =
             delegate.canProcessElement(element)
 
-    override fun findUsages(psiFile: PsiFile, newParent: PsiDirectory?, searchInComments: Boolean, searchInNonJavaFiles: Boolean) =
+    override fun findUsages(psiFile: PsiFile, newParent: PsiDirectory?, searchInComments: Boolean, searchInNonJavaFiles: Boolean): MutableList<UsageInfo>? =
             delegate.findUsages(psiFile, newParent, searchInComments, searchInNonJavaFiles)
 
     override fun prepareMovedFile(file: PsiFile, moveDestination: PsiDirectory, oldToNewMap: MutableMap<PsiElement, PsiElement>) {
@@ -46,9 +46,9 @@ class FqNameFixingMoveJavaFileHandler : MoveFileHandler() {
         }
     }
 
-    override fun updateMovedFile(file: PsiFile) =
+    override fun updateMovedFile(file: PsiFile): Unit =
             delegate.updateMovedFile(file)
 
-    override fun retargetUsages(usageInfos: MutableList<UsageInfo>, oldToNewMap: MutableMap<PsiElement, PsiElement>) =
+    override fun retargetUsages(usageInfos: MutableList<UsageInfo>, oldToNewMap: MutableMap<PsiElement, PsiElement>): Unit =
             delegate.retargetUsages(usageInfos, oldToNewMap)
 }

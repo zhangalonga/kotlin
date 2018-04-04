@@ -31,9 +31,9 @@ class SurroundWithArrayOfWithSpreadOperatorInFunctionFix(
         val wrapper: Name,
         argument: KtExpression
 ) : KotlinQuickFixAction<KtExpression>(argument) {
-    override fun getText() = "Surround with *$wrapper(...)"
+    override fun getText(): String = "Surround with *$wrapper(...)"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val argument = element?.getParentOfType<KtValueArgument>(false) ?: return

@@ -35,7 +35,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfTypeAndBranch
 import org.jetbrains.kotlin.types.typeUtil.containsError
 
 object CreateTypeAliasFromTypeReferenceActionFactory : KotlinSingleIntentionActionFactoryWithDelegate<KtUserType, TypeAliasInfo>(IntentionActionPriority.LOW) {
-    override fun getElementOfInterest(diagnostic: Diagnostic) = CreateClassFromTypeReferenceActionFactory.getElementOfInterest(diagnostic)
+    override fun getElementOfInterest(diagnostic: Diagnostic): KtUserType? = CreateClassFromTypeReferenceActionFactory.getElementOfInterest(diagnostic)
 
     override fun extractFixData(element: KtUserType, diagnostic: Diagnostic): TypeAliasInfo? {
         if (element.getParentOfTypeAndBranch<KtUserType>(true) { qualifier } != null) return null
@@ -55,5 +55,5 @@ object CreateTypeAliasFromTypeReferenceActionFactory : KotlinSingleIntentionActi
         return TypeAliasInfo(classInfo.name, targetParent, typeParameterNames, expectedType)
     }
 
-    override fun createFix(originalElement: KtUserType, data: TypeAliasInfo) = CreateTypeAliasFromUsageFix(originalElement, data)
+    override fun createFix(originalElement: KtUserType, data: TypeAliasInfo): CreateTypeAliasFromUsageFix<KtUserType> = CreateTypeAliasFromUsageFix(originalElement, data)
 }

@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.contracts.model.ESExpressionVisitor
 import org.jetbrains.kotlin.contracts.model.ESOperator
 import org.jetbrains.kotlin.contracts.model.ESValue
 import org.jetbrains.kotlin.contracts.model.functors.*
+import org.jetbrains.kotlin.types.KotlinType
 
 class ESAnd(val left: ESExpression, val right: ESExpression) : ESOperator {
     override val functor: AndFunctor = AndFunctor()
@@ -33,13 +34,13 @@ class ESOr(val left: ESExpression, val right: ESExpression) : ESOperator {
 }
 
 class ESNot(val arg: ESExpression) : ESOperator {
-    override val functor = NotFunctor()
+    override val functor: NotFunctor = NotFunctor()
     override fun <T> accept(visitor: ESExpressionVisitor<T>): T = visitor.visitNot(this)
 
 }
 
 class ESIs(val left: ESValue, override val functor: IsFunctor) : ESOperator {
-    val type = functor.type
+    val type: KotlinType = functor.type
     override fun <T> accept(visitor: ESExpressionVisitor<T>): T = visitor.visitIs(this)
 }
 

@@ -32,11 +32,11 @@ import org.jetbrains.kotlin.psi.psiUtil.*
 class MakeConstructorParameterPropertyFix(
         element: KtParameter, private val kotlinValVar: KotlinValVar, className: String?
 ) : KotlinQuickFixAction<KtParameter>(element) {
-    override fun getFamilyName() = "Make constructor parameter a property"
+    override fun getFamilyName(): String = "Make constructor parameter a property"
 
     private val suffix = if (className != null) " in class '$className'" else ""
 
-    override fun getText() =
+    override fun getText(): String =
             "Make constructor parameter a property$suffix"
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {

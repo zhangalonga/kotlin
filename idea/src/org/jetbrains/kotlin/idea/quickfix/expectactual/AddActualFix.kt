@@ -38,9 +38,9 @@ class AddActualFix(
 
     private val expectedClassPointer = expectedClassOrObject.createSmartPointer()
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
-    override fun getText() = "Add missing actual members"
+    override fun getText(): String = "Add missing actual members"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

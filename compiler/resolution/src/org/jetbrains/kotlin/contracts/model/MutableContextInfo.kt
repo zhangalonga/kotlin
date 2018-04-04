@@ -46,21 +46,21 @@ class MutableContextInfo private constructor(
             )
     }
 
-    fun subtype(value: ESValue, type: KotlinType) = apply { subtypes.initAndAdd(value, type) }
+    fun subtype(value: ESValue, type: KotlinType): MutableContextInfo = apply { subtypes.initAndAdd(value, type) }
 
-    fun notSubtype(value: ESValue, type: KotlinType) = apply { notSubtypes.initAndAdd(value, type) }
+    fun notSubtype(value: ESValue, type: KotlinType): MutableContextInfo = apply { notSubtypes.initAndAdd(value, type) }
 
-    fun equal(left: ESValue, right: ESValue) = apply {
+    fun equal(left: ESValue, right: ESValue): MutableContextInfo = apply {
         equalValues.initAndAdd(left, right)
         equalValues.initAndAdd(right, left)
     }
 
-    fun notEqual(left: ESValue, right: ESValue) = apply {
+    fun notEqual(left: ESValue, right: ESValue): MutableContextInfo = apply {
         notEqualValues.initAndAdd(left, right)
         notEqualValues.initAndAdd(right, left)
     }
 
-    fun fire(effect: ESEffect) = apply { firedEffects += effect }
+    fun fire(effect: ESEffect): MutableContextInfo = apply { firedEffects += effect }
 
     fun or(other: MutableContextInfo): MutableContextInfo = MutableContextInfo(
         firedEffects = firedEffects.intersect(other.firedEffects).toMutableList(),

@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.idea.inspections
 
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.idea.core.getModalityFromDescriptor
 import org.jetbrains.kotlin.idea.intentions.SpecifyTypeExplicitlyIntention
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -31,5 +32,5 @@ class ImplicitNullableNothingTypeInspection : IntentionBasedInspection<KtCallabl
         },
         problemText = "Implicit `Nothing?` type"
 ) {
-    override fun inspectionTarget(element: KtCallableDeclaration) = element.nameIdentifier
+    override fun inspectionTarget(element: KtCallableDeclaration): PsiElement? = element.nameIdentifier
 }

@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.psi2ir.generators
 
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.ir.expressions.IrStatementOriginImpl
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
 import org.jetbrains.kotlin.lexer.KtTokens
 
@@ -79,10 +80,10 @@ fun getIrTypeOperator(ktOperator: IElementType): IrTypeOperator? =
         else -> null
     }
 
-val AUGMENTED_ASSIGNMENTS =
+val AUGMENTED_ASSIGNMENTS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.PLUSEQ, IrStatementOrigin.MINUSEQ, IrStatementOrigin.MULTEQ, IrStatementOrigin.DIVEQ, IrStatementOrigin.PERCEQ)
 
-val OPERATORS_DESUGARED_TO_CALLS =
+val OPERATORS_DESUGARED_TO_CALLS: Set<IrStatementOriginImpl> =
     setOf(
         IrStatementOrigin.PLUS,
         IrStatementOrigin.MINUS,
@@ -95,23 +96,23 @@ val OPERATORS_DESUGARED_TO_CALLS =
         IrStatementOrigin.UPLUS
     )
 
-val COMPARISON_OPERATORS =
+val COMPARISON_OPERATORS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.LT, IrStatementOrigin.LTEQ, IrStatementOrigin.GT, IrStatementOrigin.GTEQ)
 
-val EQUALITY_OPERATORS =
+val EQUALITY_OPERATORS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.EQEQ, IrStatementOrigin.EXCLEQ)
 
-val IDENTITY_OPERATORS =
+val IDENTITY_OPERATORS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.EQEQEQ, IrStatementOrigin.EXCLEQEQ)
 
-val IN_OPERATORS =
+val IN_OPERATORS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.IN, IrStatementOrigin.NOT_IN)
 
-val BINARY_BOOLEAN_OPERATORS =
+val BINARY_BOOLEAN_OPERATORS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.ANDAND, IrStatementOrigin.OROR)
 
-val INCREMENT_DECREMENT_OPERATORS =
+val INCREMENT_DECREMENT_OPERATORS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.PREFIX_INCR, IrStatementOrigin.PREFIX_DECR, IrStatementOrigin.POSTFIX_INCR, IrStatementOrigin.POSTFIX_DECR)
 
-val POSTFIX_INCREMENT_DECREMENT_OPERATORS =
+val POSTFIX_INCREMENT_DECREMENT_OPERATORS: Set<IrStatementOriginImpl> =
     setOf(IrStatementOrigin.POSTFIX_INCR, IrStatementOrigin.POSTFIX_DECR)

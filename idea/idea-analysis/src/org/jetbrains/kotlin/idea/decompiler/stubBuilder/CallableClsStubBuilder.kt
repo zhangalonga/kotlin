@@ -95,8 +95,8 @@ abstract class CallableClsStubBuilder(
         protected val protoContainer: ProtoContainer,
         private val typeParameters: List<ProtoBuf.TypeParameter>
 ) {
-    protected val c = outerContext.child(typeParameters)
-    protected val typeStubBuilder = TypeClsStubBuilder(c)
+    protected val c: ClsStubBuilderContext = outerContext.child(typeParameters)
+    protected val typeStubBuilder: TypeClsStubBuilder = TypeClsStubBuilder(c)
     protected val isTopLevel: Boolean get() = protoContainer is ProtoContainer.Package
     protected val callableStub: StubElement<out PsiElement> by lazy(LazyThreadSafetyMode.NONE) { doCreateCallableStub(parent) }
 

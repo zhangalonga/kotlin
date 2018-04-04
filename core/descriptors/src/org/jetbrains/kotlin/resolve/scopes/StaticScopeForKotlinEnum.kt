@@ -37,15 +37,15 @@ class StaticScopeForKotlinEnum(
         assert(containingClass.kind == ClassKind.ENUM_CLASS) { "Class should be an enum: $containingClass" }
     }
 
-    override fun getContributedClassifier(name: Name, location: LookupLocation) = null // TODO
+    override fun getContributedClassifier(name: Name, location: LookupLocation): Nothing? = null // TODO
 
     private val functions: List<SimpleFunctionDescriptor> by storageManager.createLazyValue {
         listOf(createEnumValueOfMethod(containingClass), createEnumValuesMethod(containingClass))
     }
 
-    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean) = functions
+    override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): List<SimpleFunctionDescriptor> = functions
 
-    override fun getContributedFunctions(name: Name, location: LookupLocation) =
+    override fun getContributedFunctions(name: Name, location: LookupLocation): ArrayList<SimpleFunctionDescriptor> =
             functions.filterTo(ArrayList<SimpleFunctionDescriptor>(1)) { it.name == name }
 
     override fun printScopeStructure(p: Printer) {

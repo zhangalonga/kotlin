@@ -26,16 +26,16 @@ class KtLabeledExpression(node: ASTNode) : KtExpressionWithLabel(node), PsiNameI
     val baseExpression: KtExpression?
         get() = findChildByClass(KtExpression::class.java)
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitLabeledExpression(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitLabeledExpression(this, data)
 
-    override fun getName() = getLabelName()
+    override fun getName(): String? = getLabelName()
 
     override fun setName(name: String): PsiElement {
         getTargetLabel()?.replace(KtPsiFactory(project).createLabeledExpression(name).getTargetLabel()!!)
         return this
     }
 
-    override fun getNameIdentifier() = getTargetLabel()?.getIdentifier()
+    override fun getNameIdentifier(): PsiElement? = getTargetLabel()?.getIdentifier()
 
-    override fun getUseScope() = LocalSearchScope(this)
+    override fun getUseScope(): LocalSearchScope = LocalSearchScope(this)
 }

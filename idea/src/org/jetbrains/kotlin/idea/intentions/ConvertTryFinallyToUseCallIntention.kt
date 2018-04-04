@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.idea.intentions
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.inspections.IntentionBasedInspection
@@ -33,7 +34,7 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.ImplicitReceiver
 import org.jetbrains.kotlin.types.typeUtil.supertypes
 
 class ConvertTryFinallyToUseCallInspection : IntentionBasedInspection<KtTryExpression>(ConvertTryFinallyToUseCallIntention::class) {
-    override fun inspectionTarget(element: KtTryExpression) = element.tryKeyword ?: element.tryBlock
+    override fun inspectionTarget(element: KtTryExpression): PsiElement = element.tryKeyword ?: element.tryBlock
 }
 
 class ConvertTryFinallyToUseCallIntention : SelfTargetingRangeIntention<KtTryExpression>(

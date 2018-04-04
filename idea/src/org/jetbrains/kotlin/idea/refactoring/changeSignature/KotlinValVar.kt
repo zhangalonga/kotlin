@@ -23,13 +23,13 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 
 enum class KotlinValVar(val keywordName: String) {
     None("none") {
-        override fun createKeyword(factory: KtPsiFactory) = null
+        override fun createKeyword(factory: KtPsiFactory): Nothing? = null
     },
     Val("val") {
-        override fun createKeyword(factory: KtPsiFactory) = factory.createValKeyword()
+        override fun createKeyword(factory: KtPsiFactory): PsiElement = factory.createValKeyword()
     },
     Var("var"){
-        override fun createKeyword(factory: KtPsiFactory) = factory.createVarKeyword()
+        override fun createKeyword(factory: KtPsiFactory): PsiElement = factory.createVarKeyword()
     };
 
     override fun toString(): String = keywordName

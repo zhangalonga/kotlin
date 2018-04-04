@@ -27,19 +27,19 @@ import javax.swing.Icon
 
 class KotlinFacetTypeImpl : KotlinFacetType<KotlinFacetConfiguration>() {
 
-    override fun isSuitableModuleType(moduleType: ModuleType<*>) = moduleType is JavaModuleType
+    override fun isSuitableModuleType(moduleType: ModuleType<*>): Boolean = moduleType is JavaModuleType
 
     override fun getIcon(): Icon = KotlinIcons.SMALL_LOGO
 
-    override fun createDefaultConfiguration() = KotlinFacetConfigurationImpl()
+    override fun createDefaultConfiguration(): KotlinFacetConfigurationImpl = KotlinFacetConfigurationImpl()
 
     override fun createFacet(
             module: Module,
             name: String,
             configuration: KotlinFacetConfiguration,
             underlyingFacet: Facet<*>?
-    ) = KotlinFacet(module, name, configuration)
+    ): KotlinFacet = KotlinFacet(module, name, configuration)
 
-    override fun createMultipleConfigurationsEditor(project: Project, editors: Array<out FacetEditor>) =
+    override fun createMultipleConfigurationsEditor(project: Project, editors: Array<out FacetEditor>): MultipleKotlinFacetEditor =
             MultipleKotlinFacetEditor(project, editors)
 }

@@ -41,7 +41,7 @@ class PlatformExtensionReceiverOfInlineInspection : AbstractKotlinInspection() {
         }
 
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
         object : KtVisitorVoid() {
             override fun visitDotQualifiedExpression(expression: KtDotQualifiedExpression) {
                 super.visitDotQualifiedExpression(expression)
@@ -72,7 +72,7 @@ class PlatformExtensionReceiverOfInlineInspection : AbstractKotlinInspection() {
             }
         }
 
-    override fun createOptionsPanel() = OptionsPanel(this)
+    override fun createOptionsPanel(): OptionsPanel = OptionsPanel(this)
 
     class OptionsPanel internal constructor(owner: PlatformExtensionReceiverOfInlineInspection) : JPanel() {
         init {
@@ -92,6 +92,6 @@ class PlatformExtensionReceiverOfInlineInspection : AbstractKotlinInspection() {
     }
 
     companion object {
-        const val defaultNamePattern = "(toBoolean)|(content.*)"
+        const val defaultNamePattern: String = "(toBoolean)|(content.*)"
     }
 }

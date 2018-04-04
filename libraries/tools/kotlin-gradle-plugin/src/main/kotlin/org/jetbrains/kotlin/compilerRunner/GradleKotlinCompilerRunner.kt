@@ -43,12 +43,12 @@ internal const val KOTLIN_COMPILER_EXECUTION_STRATEGY_PROPERTY = "kotlin.compile
 internal const val DAEMON_EXECUTION_STRATEGY = "daemon"
 internal const val IN_PROCESS_EXECUTION_STRATEGY = "in-process"
 internal const val OUT_OF_PROCESS_EXECUTION_STRATEGY = "out-of-process"
-const val CREATED_CLIENT_FILE_PREFIX = "Created client-is-alive flag file: "
-const val EXISTING_CLIENT_FILE_PREFIX = "Existing client-is-alive flag file: "
-const val CREATED_SESSION_FILE_PREFIX = "Created session-is-alive flag file: "
-const val EXISTING_SESSION_FILE_PREFIX = "Existing session-is-alive flag file: "
-const val DELETED_SESSION_FILE_PREFIX = "Deleted session-is-alive flag file: "
-const val COULD_NOT_CONNECT_TO_DAEMON_MESSAGE = "Could not connect to Kotlin compile daemon"
+const val CREATED_CLIENT_FILE_PREFIX: String = "Created client-is-alive flag file: "
+const val EXISTING_CLIENT_FILE_PREFIX: String = "Existing client-is-alive flag file: "
+const val CREATED_SESSION_FILE_PREFIX: String = "Created session-is-alive flag file: "
+const val EXISTING_SESSION_FILE_PREFIX: String = "Existing session-is-alive flag file: "
+const val DELETED_SESSION_FILE_PREFIX: String = "Deleted session-is-alive flag file: "
+const val COULD_NOT_CONNECT_TO_DAEMON_MESSAGE: String = "Could not connect to Kotlin compile daemon"
 
 internal class GradleCompilerRunner(private val project: Project) : KotlinCompilerRunner<GradleCompilerEnvironment>() {
     override val log = GradleKotlinLogger(project.logger)

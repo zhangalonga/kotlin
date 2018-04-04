@@ -43,7 +43,7 @@ class TypeVariableDirectionCalculator(
     }
 
     data class NodeWithDirection(val variableWithConstraints: VariableWithConstraints, val direction: ResolveDirection) {
-        override fun toString() = "$variableWithConstraints to $direction"
+        override fun toString(): String = "$variableWithConstraints to $direction"
     }
 
     private val directions = HashMap<Variable, ResolveDirection>()

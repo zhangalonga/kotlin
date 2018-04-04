@@ -64,9 +64,9 @@ class LazyJavaClassMemberScope(
         private val jClass: JavaClass
 ) : LazyJavaScope(c) {
 
-    override fun computeMemberIndex() = ClassDeclaredMemberIndex(jClass, { !it.isStatic })
+    override fun computeMemberIndex(): ClassDeclaredMemberIndex = ClassDeclaredMemberIndex(jClass, { !it.isStatic })
 
-    override fun computeFunctionNames(kindFilter: DescriptorKindFilter, nameFilter: ((Name) -> Boolean)?) =
+    override fun computeFunctionNames(kindFilter: DescriptorKindFilter, nameFilter: ((Name) -> Boolean)?): HashSet<Name> =
         ownerDescriptor.typeConstructor.supertypes.flatMapTo(HashSet()) {
             it.memberScope.getFunctionNames()
         }.apply {
@@ -676,5 +676,5 @@ class LazyJavaClassMemberScope(
         c.components.lookupTracker.record(location, ownerDescriptor, name)
     }
 
-    override fun toString() = "Lazy Java member scope for " + jClass.fqName
+    override fun toString(): String = "Lazy Java member scope for " + jClass.fqName
 }

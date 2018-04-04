@@ -55,5 +55,5 @@ class ModuleBuilder(
     override fun getModuleName(): String = name
     override fun getModuleType(): String = type
 
-    override fun toString() = "$name ($type)"
+    override fun toString(): String = "$name ($type)"
 }

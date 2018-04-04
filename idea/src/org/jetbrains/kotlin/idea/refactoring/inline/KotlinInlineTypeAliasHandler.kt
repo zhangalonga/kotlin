@@ -50,16 +50,16 @@ import org.jetbrains.kotlin.types.Variance
 
 class KotlinInlineTypeAliasHandler : InlineActionHandler() {
     companion object {
-        val REFACTORING_NAME = "Inline Type Alias"
+        val REFACTORING_NAME: String = "Inline Type Alias"
     }
 
     private fun showErrorHint(project: Project, editor: Editor?, message: String) {
         CommonRefactoringUtil.showErrorHint(project, editor, message, REFACTORING_NAME, null)
     }
 
-    override fun isEnabledForLanguage(l: Language?) = l == KotlinLanguage.INSTANCE
+    override fun isEnabledForLanguage(l: Language?): Boolean = l == KotlinLanguage.INSTANCE
 
-    override fun canInlineElement(element: PsiElement?) = element is KtTypeAlias
+    override fun canInlineElement(element: PsiElement?): Boolean = element is KtTypeAlias
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         val typeAlias = element as? KtTypeAlias ?: return

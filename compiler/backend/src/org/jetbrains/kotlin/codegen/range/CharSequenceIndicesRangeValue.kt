@@ -32,7 +32,7 @@ class CharSequenceIndicesRangeValue(rangeCall: ResolvedCall<out CallableDescript
 
     private val expectedReceiverType: KotlinType = ExpressionCodegen.getExpectedReceiverType(rangeCall)
 
-    override fun getBoundedValue(codegen: ExpressionCodegen) =
+    override fun getBoundedValue(codegen: ExpressionCodegen): SimpleBoundedValue =
         SimpleBoundedValue(
             codegen.asmType(rangeCall.resultingDescriptor.returnType!!),
             StackValue.constant(0, asmElementType),
@@ -44,10 +44,10 @@ class CharSequenceIndicesRangeValue(rangeCall: ResolvedCall<out CallableDescript
             false
         )
 
-    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression) =
+    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression): ForInSimpleProgressionLoopGenerator =
         ForInSimpleProgressionLoopGenerator.fromBoundedValueWithStep1(codegen, forExpression, getBoundedValue(codegen))
 
-    override fun createForInReversedLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression) =
+    override fun createForInReversedLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression): ForInDefinitelySafeSimpleProgressionLoopGenerator =
         ForInDefinitelySafeSimpleProgressionLoopGenerator.fromBoundedValueWithStepMinus1(
             codegen, forExpression, getBoundedValue(codegen)
         )

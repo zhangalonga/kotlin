@@ -33,10 +33,10 @@ class KotlinLightClassBuilderFactory(private val javaFileStub: PsiJavaFileStub) 
     }
 
     override fun getClassBuilderMode(): ClassBuilderMode = ClassBuilderMode.LIGHT_CLASSES
-    override fun newClassBuilder(origin: JvmDeclarationOrigin) = StubClassBuilder(stubStack, javaFileStub)
+    override fun newClassBuilder(origin: JvmDeclarationOrigin): StubClassBuilder = StubClassBuilder(stubStack, javaFileStub)
 
-    override fun asText(builder: ClassBuilder) = throw UnsupportedOperationException("asText is not implemented")
-    override fun asBytes(builder: ClassBuilder) = throw UnsupportedOperationException("asBytes is not implemented")
+    override fun asText(builder: ClassBuilder): Nothing = throw UnsupportedOperationException("asText is not implemented")
+    override fun asBytes(builder: ClassBuilder): Nothing = throw UnsupportedOperationException("asBytes is not implemented")
     override fun close() {}
 
     fun result(): PsiJavaFileStub {

@@ -26,20 +26,20 @@ class TypeMappingMode private constructor(
          * kotlin.Int is mapped to Ljava/lang/Integer;
          */
         @JvmField
-        val GENERIC_ARGUMENT = TypeMappingMode()
+        val GENERIC_ARGUMENT: TypeMappingMode = TypeMappingMode()
 
         /**
          * see KotlinTypeMapper.forceBoxedReturnType()
          * This configuration should be called only for method return type
          */
         @JvmField
-        val RETURN_TYPE_BOXED = TypeMappingMode(needInlineClassWrapping = true)
+        val RETURN_TYPE_BOXED: TypeMappingMode = TypeMappingMode(needInlineClassWrapping = true)
 
         /**
          * kotlin.Int is mapped to I
          */
         @JvmField
-        val DEFAULT = TypeMappingMode(genericArgumentMode = GENERIC_ARGUMENT, needPrimitiveBoxing = false, needInlineClassWrapping = false)
+        val DEFAULT: TypeMappingMode = TypeMappingMode(genericArgumentMode = GENERIC_ARGUMENT, needPrimitiveBoxing = false, needInlineClassWrapping = false)
 
         /**
          * kotlin.Int is mapped to I
@@ -47,7 +47,7 @@ class TypeMappingMode private constructor(
          * but in signature fun bar(f: Foo), Foo is mapped to I
          */
         @JvmField
-        val CLASS_DECLARATION = TypeMappingMode(
+        val CLASS_DECLARATION: TypeMappingMode = TypeMappingMode(
             genericArgumentMode = GENERIC_ARGUMENT,
             needPrimitiveBoxing = false,
             needInlineClassWrapping = true
@@ -58,10 +58,10 @@ class TypeMappingMode private constructor(
          * No projections allowed in immediate arguments
          */
         @JvmField
-        val SUPER_TYPE = TypeMappingMode(skipDeclarationSiteWildcards = true, genericArgumentMode = GENERIC_ARGUMENT)
+        val SUPER_TYPE: TypeMappingMode = TypeMappingMode(skipDeclarationSiteWildcards = true, genericArgumentMode = GENERIC_ARGUMENT)
 
         @JvmField
-        val SUPER_TYPE_KOTLIN_COLLECTIONS_AS_IS = TypeMappingMode(
+        val SUPER_TYPE_KOTLIN_COLLECTIONS_AS_IS: TypeMappingMode = TypeMappingMode(
                 skipDeclarationSiteWildcards = true,
                 genericArgumentMode = GENERIC_ARGUMENT,
                 kotlinCollectionsToJavaCollections = false
@@ -72,7 +72,7 @@ class TypeMappingMode private constructor(
          * Other types mapped as DEFAULT
          */
         @JvmField
-        val VALUE_FOR_ANNOTATION = TypeMappingMode(
+        val VALUE_FOR_ANNOTATION: TypeMappingMode = TypeMappingMode(
                 isForAnnotationParameter = true,
                 needPrimitiveBoxing = false,
                 genericArgumentMode = TypeMappingMode(isForAnnotationParameter = true, genericArgumentMode = GENERIC_ARGUMENT))
@@ -81,18 +81,18 @@ class TypeMappingMode private constructor(
         @JvmStatic
         fun getModeForReturnTypeNoGeneric(
                 isAnnotationMethod: Boolean
-        ) = if (isAnnotationMethod) VALUE_FOR_ANNOTATION else DEFAULT
+        ): TypeMappingMode = if (isAnnotationMethod) VALUE_FOR_ANNOTATION else DEFAULT
 
         @JvmStatic
         fun getOptimalModeForValueParameter(
                 type: KotlinType
-        ) = getOptimalModeForSignaturePart(type, isForAnnotationParameter = false, canBeUsedInSupertypePosition = true)
+        ): TypeMappingMode = getOptimalModeForSignaturePart(type, isForAnnotationParameter = false, canBeUsedInSupertypePosition = true)
 
         @JvmStatic
         fun getOptimalModeForReturnType(
                 type: KotlinType,
                 isAnnotationMethod: Boolean
-        ) = getOptimalModeForSignaturePart(type, isForAnnotationParameter = isAnnotationMethod, canBeUsedInSupertypePosition = false)
+        ): TypeMappingMode = getOptimalModeForSignaturePart(type, isForAnnotationParameter = isAnnotationMethod, canBeUsedInSupertypePosition = false)
 
         private fun getOptimalModeForSignaturePart(
                 type: KotlinType,
@@ -131,7 +131,7 @@ class TypeMappingMode private constructor(
                 skipDeclarationSiteWildcards: Boolean,
                 isForAnnotationParameter: Boolean,
                 fallbackMode: TypeMappingMode? = null
-        ) = TypeMappingMode(
+        ): TypeMappingMode = TypeMappingMode(
                 isForAnnotationParameter = isForAnnotationParameter,
                 skipDeclarationSiteWildcards = skipDeclarationSiteWildcards,
                 genericArgumentMode = fallbackMode)

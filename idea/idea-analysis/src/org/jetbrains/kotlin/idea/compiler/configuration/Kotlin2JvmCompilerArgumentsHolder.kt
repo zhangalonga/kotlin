@@ -26,13 +26,13 @@ import org.jetbrains.kotlin.idea.compiler.configuration.BaseKotlinCompilerSettin
        storages = arrayOf(Storage(file = StoragePathMacros.PROJECT_FILE),
                           Storage(file = KOTLIN_COMPILER_SETTINGS_PATH, scheme = StorageScheme.DIRECTORY_BASED)))
 class Kotlin2JvmCompilerArgumentsHolder(project: Project) : BaseKotlinCompilerSettings<K2JVMCompilerArguments>(project) {
-    override fun createSettings() = K2JVMCompilerArguments()
+    override fun createSettings(): K2JVMCompilerArguments = K2JVMCompilerArguments()
 
     override fun validateNewSettings(settings: K2JVMCompilerArguments) {
         validateInheritedFieldsUnchanged(settings)
     }
 
     companion object {
-        fun getInstance(project: Project) = ServiceManager.getService(project, Kotlin2JvmCompilerArgumentsHolder::class.java)!!
+        fun getInstance(project: Project): Kotlin2JvmCompilerArgumentsHolder = ServiceManager.getService(project, Kotlin2JvmCompilerArgumentsHolder::class.java)!!
     }
 }

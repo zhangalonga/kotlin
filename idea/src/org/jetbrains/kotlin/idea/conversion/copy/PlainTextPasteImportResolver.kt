@@ -57,7 +57,7 @@ class PlainTextPasteImportResolver(val dataForConversion: DataForConversion, val
     private var ambiguityInResolution = false
     private var couldNotResolve = false
 
-    val addedImports = ArrayList<PsiImportStatementBase>()
+    val addedImports: ArrayList<PsiImportStatementBase> = ArrayList<PsiImportStatementBase>()
 
     private fun canBeImported(descriptor: DeclarationDescriptorWithVisibility?): Boolean {
         return descriptor != null

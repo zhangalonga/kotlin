@@ -36,8 +36,8 @@ abstract class IrNoArgumentsCallableReferenceBase(
 
     override fun getValueArgument(index: Int): IrExpression? = throwNoValueArguments()
 
-    override fun putValueArgument(index: Int, valueArgument: IrExpression?) = throwNoValueArguments()
+    override fun putValueArgument(index: Int, valueArgument: IrExpression?): Nothing = throwNoValueArguments()
 
-    override fun removeValueArgument(index: Int) = throwNoValueArguments()
+    override fun removeValueArgument(index: Int): Nothing = throwNoValueArguments()
 }
 

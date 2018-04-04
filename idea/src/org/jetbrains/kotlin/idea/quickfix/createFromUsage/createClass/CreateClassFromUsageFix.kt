@@ -67,7 +67,7 @@ enum class ClassKind(val keyword: String, val description: String) {
     DEFAULT("", "") // Used as a placeholder and must be replaced with one of the kinds above
 }
 
-fun ClassKind.toIdeaClassKind() = IdeaClassKind { this@toIdeaClassKind.description.capitalize() }
+fun ClassKind.toIdeaClassKind(): com.intellij.codeInsight.daemon.impl.quickfix.ClassKind = IdeaClassKind { this@toIdeaClassKind.description.capitalize() }
 
 val ClassKind.actionPriority: IntentionActionPriority
     get() = if (this == ANNOTATION_CLASS) IntentionActionPriority.LOW else IntentionActionPriority.NORMAL
@@ -82,7 +82,7 @@ data class ClassInfo(
         val typeArguments: List<TypeInfo> = Collections.emptyList(),
         val parameterInfos: List<ParameterInfo> = Collections.emptyList()
 ) {
-    val applicableParents by lazy {
+    val applicableParents: List<PsiElement> by lazy {
         targetParents.filter {
             if (kind == ClassKind.OBJECT && it is KtClass && (it.isInner() || it.isLocal)) return@filter false
             true
@@ -94,7 +94,7 @@ open class CreateClassFromUsageFix<E : KtElement> protected constructor (
         element: E,
         private val classInfo: ClassInfo
 ): CreateFromUsageFixBase<E>(element) {
-    override fun getText() = "Create ${classInfo.kind.description} '${classInfo.name}'"
+    override fun getText(): String = "Create ${classInfo.kind.description} '${classInfo.name}'"
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         with(classInfo) {
@@ -111,7 +111,7 @@ open class CreateClassFromUsageFix<E : KtElement> protected constructor (
         return true
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         if (editor == null) return

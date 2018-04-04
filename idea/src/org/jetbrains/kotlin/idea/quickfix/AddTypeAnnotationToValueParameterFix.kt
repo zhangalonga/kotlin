@@ -65,8 +65,8 @@ class AddTypeAnnotationToValueParameterFix(element: KtParameter) : KotlinQuickFi
         return element.typeReference == null && typeNameShort != null
     }
 
-    override fun getFamilyName() = "Add type annotation"
-    override fun getText() = element?.let { "Add type '$typeNameShort' to parameter '${it.name}'" } ?: ""
+    override fun getFamilyName(): String = "Add type annotation"
+    override fun getText(): String = element?.let { "Add type '$typeNameShort' to parameter '${it.name}'" } ?: ""
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

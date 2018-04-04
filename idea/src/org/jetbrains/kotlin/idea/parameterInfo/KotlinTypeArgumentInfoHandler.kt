@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.caches.resolve.getResolutionFacade
 import org.jetbrains.kotlin.idea.core.resolveCandidates
 import org.jetbrains.kotlin.idea.references.resolveMainReferenceToDescriptors
+import org.jetbrains.kotlin.lexer.KtSingleValueToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
@@ -41,18 +42,18 @@ import org.jetbrains.kotlin.types.typeUtil.isAnyOrNullableAny
 import org.jetbrains.kotlin.types.typeUtil.nullability
 
 class KotlinClassTypeArgumentInfoHandler : KotlinTypeArgumentInfoHandlerBase<ClassDescriptor>() {
-    override fun fetchTypeParameters(descriptor: ClassDescriptor) = descriptor.typeConstructor.parameters
+    override fun fetchTypeParameters(descriptor: ClassDescriptor): List<TypeParameterDescriptor> = descriptor.typeConstructor.parameters
 
     override fun findParameterOwners(argumentList: KtTypeArgumentList): Collection<ClassDescriptor>? {
         val userType = argumentList.parent as? KtUserType ?: return null
         return userType.referenceExpression?.resolveMainReferenceToDescriptors()?.mapNotNull { it as? ClassDescriptor }
     }
 
-    override fun getArgumentListAllowedParentClasses() = setOf(KtUserType::class.java)
+    override fun getArgumentListAllowedParentClasses(): Set<Class<KtUserType>> = setOf(KtUserType::class.java)
 }
 
 class KotlinFunctionTypeArgumentInfoHandler : KotlinTypeArgumentInfoHandlerBase<FunctionDescriptor>() {
-    override fun fetchTypeParameters(descriptor: FunctionDescriptor) = descriptor.typeParameters
+    override fun fetchTypeParameters(descriptor: FunctionDescriptor): List<TypeParameterDescriptor> = descriptor.typeParameters
 
     override fun findParameterOwners(argumentList: KtTypeArgumentList): Collection<FunctionDescriptor>? {
         val callElement = argumentList.parent as? KtCallElement ?: return null
@@ -64,29 +65,29 @@ class KotlinFunctionTypeArgumentInfoHandler : KotlinTypeArgumentInfoHandlerBase<
                 .distinctBy { buildPresentation(it.typeParameters, -1).first }
     }
 
-    override fun getArgumentListAllowedParentClasses() = setOf(KtCallElement::class.java)
+    override fun getArgumentListAllowedParentClasses(): Set<Class<KtCallElement>> = setOf(KtCallElement::class.java)
 }
 
 abstract class KotlinTypeArgumentInfoHandlerBase<TParameterOwner : DeclarationDescriptor> : ParameterInfoHandlerWithTabActionSupport<KtTypeArgumentList, TParameterOwner, KtTypeProjection> {
     protected abstract fun fetchTypeParameters(descriptor: TParameterOwner): List<TypeParameterDescriptor>
     protected abstract fun findParameterOwners(argumentList: KtTypeArgumentList): Collection<TParameterOwner>?
 
-    override fun getActualParameterDelimiterType() = KtTokens.COMMA
-    override fun getActualParametersRBraceType() = KtTokens.GT
+    override fun getActualParameterDelimiterType(): KtSingleValueToken = KtTokens.COMMA
+    override fun getActualParametersRBraceType(): KtSingleValueToken = KtTokens.GT
 
-    override fun getArgumentListClass() = KtTypeArgumentList::class.java
+    override fun getArgumentListClass(): Class<KtTypeArgumentList> = KtTypeArgumentList::class.java
 
-    override fun getActualParameters(o: KtTypeArgumentList) = o.arguments.toTypedArray()
+    override fun getActualParameters(o: KtTypeArgumentList): Array<KtTypeProjection> = o.arguments.toTypedArray()
 
-    override fun getArgListStopSearchClasses() = setOf(KtNamedFunction::class.java, KtVariableDeclaration::class.java, KtClassOrObject::class.java)
+    override fun getArgListStopSearchClasses(): Set<Class<out KtTypeParameterListOwner>> = setOf(KtNamedFunction::class.java, KtVariableDeclaration::class.java, KtClassOrObject::class.java)
 
-    override fun getParameterCloseChars() = ParameterInfoUtils.DEFAULT_PARAMETER_CLOSE_CHARS
+    override fun getParameterCloseChars(): String = ParameterInfoUtils.DEFAULT_PARAMETER_CLOSE_CHARS
 
-    override fun tracksParameterIndex() = true
+    override fun tracksParameterIndex(): Boolean = true
 
-    override fun couldShowInLookup() = false
-    override fun getParametersForLookup(item: LookupElement?, context: ParameterInfoContext?) = emptyArray<Any>()
-    override fun getParametersForDocumentation(p: TParameterOwner, context: ParameterInfoContext?) = emptyArray<Any>()
+    override fun couldShowInLookup(): Boolean = false
+    override fun getParametersForLookup(item: LookupElement?, context: ParameterInfoContext?): Array<Any> = emptyArray<Any>()
+    override fun getParametersForDocumentation(p: TParameterOwner, context: ParameterInfoContext?): Array<Any> = emptyArray<Any>()
 
     override fun showParameterInfo(element: KtTypeArgumentList, context: CreateParameterInfoContext) {
         context.showHint(element, element.textRange.startOffset, this)

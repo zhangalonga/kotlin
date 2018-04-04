@@ -23,9 +23,9 @@ fun CommonBackendContext.reportWarning(message: String, irFile: IrFile, irElemen
     report(irElement, irFile, message, false)
 }
 
-fun <E> MutableList<E>.push(element: E) = this.add(element)
+fun <E> MutableList<E>.push(element: E): Boolean = this.add(element)
 
-fun <E> MutableList<E>.pop() = this.removeAt(size - 1)
+fun <E> MutableList<E>.pop(): E = this.removeAt(size - 1)
 
 fun <E> MutableList<E>.peek(): E? = if (size == 0) null else this[size - 1]
 

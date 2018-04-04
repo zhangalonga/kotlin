@@ -401,7 +401,7 @@ object NullabilityChecker {
     fun isSubtypeOfAny(type: UnwrappedType): Boolean =
             TypeCheckerContext(false).hasNotNullSupertype(type.lowerIfFlexible(), SupertypesPolicy.LowerIfFlexible)
 
-    fun hasPathByNotMarkedNullableNodes(start: SimpleType, end: TypeConstructor) =
+    fun hasPathByNotMarkedNullableNodes(start: SimpleType, end: TypeConstructor): Boolean =
             TypeCheckerContext(false).hasPathByNotMarkedNullableNodes(start, end)
 
     private fun TypeCheckerContext.runIsPossibleSubtype(subType: SimpleType, superType: SimpleType): Boolean {
@@ -457,10 +457,10 @@ object NullabilityChecker {
 
 }
 
-fun UnwrappedType.hasSupertypeWithGivenTypeConstructor(typeConstructor: TypeConstructor) =
+fun UnwrappedType.hasSupertypeWithGivenTypeConstructor(typeConstructor: TypeConstructor): Boolean =
         TypeCheckerContext(false).anySupertype(lowerIfFlexible(), { it.constructor == typeConstructor }, { SupertypesPolicy.LowerIfFlexible })
 
-fun UnwrappedType.anySuperTypeConstructor(predicate: (TypeConstructor) -> Boolean) =
+fun UnwrappedType.anySuperTypeConstructor(predicate: (TypeConstructor) -> Boolean): Boolean =
         TypeCheckerContext(false).anySupertype(lowerIfFlexible(), { predicate(it.constructor) }, { SupertypesPolicy.LowerIfFlexible })
 
 /**

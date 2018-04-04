@@ -16,34 +16,35 @@
 
 package org.jetbrains.kotlin.cli.jvm.repl
 
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtDestructuringDeclarationEntry
-import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.resolve.lazy.data.KtClassLikeInfo
 import org.jetbrains.kotlin.resolve.lazy.declarations.PackageMemberDeclarationProvider
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 
 open class DelegatePackageMemberDeclarationProvider(var delegate: PackageMemberDeclarationProvider) : PackageMemberDeclarationProvider {
     // Can't use Kotlin delegate feature because of inability to change delegate object in runtime (KT-5870)
 
-    override fun getAllDeclaredSubPackages(nameFilter: (Name) -> Boolean) = delegate.getAllDeclaredSubPackages(nameFilter)
+    override fun getAllDeclaredSubPackages(nameFilter: (Name) -> Boolean): Collection<FqName> = delegate.getAllDeclaredSubPackages(nameFilter)
 
-    override fun getPackageFiles() = delegate.getPackageFiles()
+    override fun getPackageFiles(): Collection<KtFile> = delegate.getPackageFiles()
 
-    override fun containsFile(file: KtFile) = delegate.containsFile(file)
+    override fun containsFile(file: KtFile): Boolean = delegate.containsFile(file)
 
     override fun getDeclarations(kindFilter: DescriptorKindFilter,
-                                 nameFilter: (Name) -> Boolean) = delegate.getDeclarations(kindFilter, nameFilter)
+                                 nameFilter: (Name) -> Boolean): List<KtDeclaration> = delegate.getDeclarations(kindFilter, nameFilter)
 
-    override fun getFunctionDeclarations(name: Name) = delegate.getFunctionDeclarations(name)
+    override fun getFunctionDeclarations(name: Name): Collection<KtNamedFunction> = delegate.getFunctionDeclarations(name)
 
-    override fun getPropertyDeclarations(name: Name) = delegate.getPropertyDeclarations(name)
+    override fun getPropertyDeclarations(name: Name): Collection<KtProperty> = delegate.getPropertyDeclarations(name)
 
     override fun getDestructuringDeclarationsEntries(name: Name): Collection<KtDestructuringDeclarationEntry> =
             delegate.getDestructuringDeclarationsEntries(name)
 
-    override fun getClassOrObjectDeclarations(name: Name) = delegate.getClassOrObjectDeclarations(name)
+    override fun getClassOrObjectDeclarations(name: Name): Collection<KtClassLikeInfo> = delegate.getClassOrObjectDeclarations(name)
 
-    override fun getTypeAliasDeclarations(name: Name) = delegate.getTypeAliasDeclarations(name)
+    override fun getTypeAliasDeclarations(name: Name): Collection<KtTypeAlias> = delegate.getTypeAliasDeclarations(name)
 
-    override fun getDeclarationNames() = delegate.getDeclarationNames()
+    override fun getDeclarationNames(): Set<Name> = delegate.getDeclarationNames()
 }

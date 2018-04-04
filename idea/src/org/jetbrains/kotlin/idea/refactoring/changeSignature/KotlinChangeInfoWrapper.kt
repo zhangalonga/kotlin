@@ -16,6 +16,8 @@
 
 package org.jetbrains.kotlin.idea.refactoring.changeSignature
 
+import com.intellij.lang.Language
+import com.intellij.psi.PsiElement
 import com.intellij.refactoring.changeSignature.ChangeInfo
 
 class KotlinChangeInfoWrapper(delegate: KotlinChangeInfo) : ChangeInfo {
@@ -24,25 +26,25 @@ class KotlinChangeInfoWrapper(delegate: KotlinChangeInfo) : ChangeInfo {
 
     private val method = delegate.method
 
-    override fun getMethod() = method
+    override fun getMethod(): PsiElement = method
 
-    override fun isGenerateDelegate() = delegate!!.isGenerateDelegate
+    override fun isGenerateDelegate(): Boolean = delegate!!.isGenerateDelegate
 
-    override fun getNewName() = delegate!!.newName
+    override fun getNewName(): String = delegate!!.newName
 
-    override fun isParameterTypesChanged() = delegate!!.isParameterTypesChanged
+    override fun isParameterTypesChanged(): Boolean = delegate!!.isParameterTypesChanged
 
-    override fun getNewParameters() = delegate!!.newParameters
+    override fun getNewParameters(): Array<KotlinParameterInfo> = delegate!!.newParameters
 
-    override fun isParameterSetOrOrderChanged() = delegate!!.isParameterSetOrOrderChanged
+    override fun isParameterSetOrOrderChanged(): Boolean = delegate!!.isParameterSetOrOrderChanged
 
-    override fun isReturnTypeChanged() = delegate!!.isReturnTypeChanged
+    override fun isReturnTypeChanged(): Boolean = delegate!!.isReturnTypeChanged
 
-    override fun isParameterNamesChanged() = delegate!!.isParameterNamesChanged
+    override fun isParameterNamesChanged(): Boolean = delegate!!.isParameterNamesChanged
 
-    override fun isNameChanged() = delegate!!.isNameChanged
+    override fun isNameChanged(): Boolean = delegate!!.isNameChanged
 
-    override fun getLanguage() = delegate!!.language
+    override fun getLanguage(): Language = delegate!!.language
 
     // Only getMethod() may be called after invalidate()
     fun invalidate() {

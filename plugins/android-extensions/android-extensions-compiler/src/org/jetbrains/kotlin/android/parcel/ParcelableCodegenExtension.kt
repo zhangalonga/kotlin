@@ -61,7 +61,7 @@ open class ParcelableCodegenExtension : ExpressionCodegenExtension {
         private val CREATOR_NAME = Name.identifier("CREATOR")
     }
 
-    protected open fun isExperimental(element: KtElement) = true
+    protected open fun isExperimental(element: KtElement): Boolean = true
 
     override val shouldGenerateClassSyntheticPartsInLightClassesMode: Boolean
         get() = true

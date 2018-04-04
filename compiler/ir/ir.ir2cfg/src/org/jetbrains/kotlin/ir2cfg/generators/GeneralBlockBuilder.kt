@@ -31,5 +31,5 @@ class GeneralBlockBuilder(override val incoming: BlockConnectorBuilder?) : Basic
     override val last: IrStatement?
         get() = elements.lastOrNull()
 
-    override fun build() = BasicBlockImpl(elements.toList())
+    override fun build(): BasicBlockImpl = BasicBlockImpl(elements.toList())
 }

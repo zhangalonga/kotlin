@@ -165,7 +165,7 @@ private fun BuilderByPattern<KtExpression>.appendConditionWithSubjectRemoved(con
     }
 }
 
-fun KtPsiFactory.combineWhenConditions(conditions: Array<KtWhenCondition>, subject: KtExpression?) = when (conditions.size) {
+fun KtPsiFactory.combineWhenConditions(conditions: Array<KtWhenCondition>, subject: KtExpression?): KtExpression? = when (conditions.size) {
     0 -> null
     1 -> conditions[0].toExpression(subject)
     else -> buildExpression {

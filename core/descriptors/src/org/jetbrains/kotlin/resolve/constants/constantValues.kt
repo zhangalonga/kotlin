@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.types.ErrorUtils
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.SimpleType
 
 abstract class ConstantValue<out T>(open val value: T) {
     abstract fun getType(module: ModuleDescriptor): KotlinType
@@ -44,7 +45,7 @@ abstract class IntegerValueConstant<out T> protected constructor(value: T) : Con
 class AnnotationValue(value: AnnotationDescriptor) : ConstantValue<AnnotationDescriptor>(value) {
     override fun getType(module: ModuleDescriptor): KotlinType = value.type
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitAnnotationValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitAnnotationValue(this, data)
 }
 
 class ArrayValue(
@@ -55,27 +56,27 @@ class ArrayValue(
         assert(KotlinBuiltIns.isArray(type) || KotlinBuiltIns.isPrimitiveArray(type)) { "Type should be an array, but was $type: $value" }
     }
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitArrayValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitArrayValue(this, data)
 }
 
 class BooleanValue(value: Boolean) : ConstantValue<Boolean>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.booleanType
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitBooleanValue(this, data)
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.booleanType
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitBooleanValue(this, data)
 }
 
 class ByteValue(value: Byte) : IntegerValueConstant<Byte>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.byteType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.byteType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitByteValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitByteValue(this, data)
     override fun toString(): String = "$value.toByte()"
 }
 
 class CharValue(value: Char) : IntegerValueConstant<Char>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.charType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.charType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitCharValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitCharValue(this, data)
 
-    override fun toString() = "\\u%04X ('%s')".format(value.toInt(), getPrintablePart(value))
+    override fun toString(): String = "\\u%04X ('%s')".format(value.toInt(), getPrintablePart(value))
 
     private fun getPrintablePart(c: Char): String = when (c) {
         '\b' -> "\\b"
@@ -100,11 +101,11 @@ class CharValue(value: Char) : IntegerValueConstant<Char>(value) {
 }
 
 class DoubleValue(value: Double) : ConstantValue<Double>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.doubleType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.doubleType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitDoubleValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitDoubleValue(this, data)
 
-    override fun toString() = "$value.toDouble()"
+    override fun toString(): String = "$value.toDouble()"
 }
 
 class EnumValue(val enumClassId: ClassId, val enumEntryName: Name) : ConstantValue<Pair<ClassId, Name>>(enumClassId to enumEntryName) {
@@ -112,9 +113,9 @@ class EnumValue(val enumClassId: ClassId, val enumEntryName: Name) : ConstantVal
             module.findClassAcrossModuleDependencies(enumClassId)?.takeIf(DescriptorUtils::isEnumClass)?.defaultType
             ?: ErrorUtils.createErrorType("Containing class for error-class based enum entry $enumClassId.$enumEntryName")
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitEnumValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitEnumValue(this, data)
 
-    override fun toString() = "${enumClassId.shortClassName}.$enumEntryName"
+    override fun toString(): String = "${enumClassId.shortClassName}.$enumEntryName"
 }
 
 abstract class ErrorValue : ConstantValue<Unit>(Unit) {
@@ -122,12 +123,12 @@ abstract class ErrorValue : ConstantValue<Unit>(Unit) {
     override val value: Unit
         get() = throw UnsupportedOperationException()
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitErrorValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitErrorValue(this, data)
 
     class ErrorValueWithMessage(val message: String) : ErrorValue() {
-        override fun getType(module: ModuleDescriptor) = ErrorUtils.createErrorType(message)
+        override fun getType(module: ModuleDescriptor): SimpleType = ErrorUtils.createErrorType(message)
 
-        override fun toString() = message
+        override fun toString(): String = message
     }
 
     companion object {
@@ -138,17 +139,17 @@ abstract class ErrorValue : ConstantValue<Unit>(Unit) {
 }
 
 class FloatValue(value: Float) : ConstantValue<Float>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.floatType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.floatType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitFloatValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitFloatValue(this, data)
 
-    override fun toString() = "$value.toFloat()"
+    override fun toString(): String = "$value.toFloat()"
 }
 
 class IntValue(value: Int) : IntegerValueConstant<Int>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.intType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.intType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitIntValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitIntValue(this, data)
 }
 
 class KClassValue(private val type: KotlinType) : ConstantValue<KotlinType>(type) {
@@ -157,35 +158,35 @@ class KClassValue(private val type: KotlinType) : ConstantValue<KotlinType>(type
     override val value: KotlinType
         get() = type.arguments.single().type
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitKClassValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitKClassValue(this, data)
 }
 
 class LongValue(value: Long) : IntegerValueConstant<Long>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.longType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.longType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitLongValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitLongValue(this, data)
 
-    override fun toString() = "$value.toLong()"
+    override fun toString(): String = "$value.toLong()"
 }
 
 class NullValue : ConstantValue<Void?>(null) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.nullableNothingType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.nullableNothingType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitNullValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitNullValue(this, data)
 }
 
 class ShortValue(value: Short) : IntegerValueConstant<Short>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.shortType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.shortType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitShortValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitShortValue(this, data)
 
-    override fun toString() = "$value.toShort()"
+    override fun toString(): String = "$value.toShort()"
 }
 
 class StringValue(value: String) : ConstantValue<String>(value) {
-    override fun getType(module: ModuleDescriptor) = module.builtIns.stringType
+    override fun getType(module: ModuleDescriptor): SimpleType = module.builtIns.stringType
 
-    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitStringValue(this, data)
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D): R = visitor.visitStringValue(this, data)
 
-    override fun toString() = "\"$value\""
+    override fun toString(): String = "\"$value\""
 }

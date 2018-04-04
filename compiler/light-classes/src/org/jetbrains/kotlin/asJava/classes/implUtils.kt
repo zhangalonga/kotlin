@@ -20,7 +20,7 @@ import com.intellij.psi.impl.light.LightElement
 import com.intellij.util.IncorrectOperationException
 
 // NOTE: avoid using blocking lazy in light classes, it leads to deadlocks
-fun <T> lazyPub(initializer: () -> T) = lazy(LazyThreadSafetyMode.PUBLICATION, initializer)
+fun <T> lazyPub(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.PUBLICATION, initializer)
 
 fun LightElement.cannotModify(): Nothing {
     throw IncorrectOperationException("Modification not implemented.")

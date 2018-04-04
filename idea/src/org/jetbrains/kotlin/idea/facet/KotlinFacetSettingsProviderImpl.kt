@@ -43,7 +43,7 @@ class KotlinFacetSettingsProviderImpl(private val project: Project) : KotlinFace
         )
     }
 
-    override fun getSettings(module: Module) = KotlinFacet.get(module)?.configuration?.settings
+    override fun getSettings(module: Module): KotlinFacetSettings? = KotlinFacet.get(module)?.configuration?.settings
 
     override fun getInitializedSettings(module: Module): KotlinFacetSettings {
         getSettings(module)?.let {

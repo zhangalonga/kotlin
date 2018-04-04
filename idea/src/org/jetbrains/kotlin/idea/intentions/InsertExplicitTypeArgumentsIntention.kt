@@ -36,7 +36,7 @@ class InsertExplicitTypeArgumentsIntention : SelfTargetingRangeIntention<KtCallE
         return if (isApplicableTo(element, element.analyze())) element.calleeExpression!!.textRange else null
     }
 
-    override fun applyTo(element: KtCallExpression, editor: Editor?) = applyTo(element)
+    override fun applyTo(element: KtCallExpression, editor: Editor?): Unit = applyTo(element)
 
     companion object {
         fun isApplicableTo(element: KtCallElement, bindingContext: BindingContext = element.analyze(BodyResolveMode.PARTIAL)): Boolean {

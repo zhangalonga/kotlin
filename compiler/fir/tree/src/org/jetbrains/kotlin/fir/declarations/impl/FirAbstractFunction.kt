@@ -21,7 +21,7 @@ abstract class FirAbstractFunction(
     declarationKind: IrDeclarationKind,
     final override val body: FirBody?
 ) : FirAbstractAnnotatedDeclaration(session, psi, declarationKind), FirFunction {
-    final override val valueParameters = mutableListOf<FirValueParameter>()
+    final override val valueParameters: MutableList<FirValueParameter> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         annotations.transformInplace(transformer, data)

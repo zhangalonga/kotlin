@@ -45,7 +45,7 @@ class KotlinPullUpHandler : AbstractPullPushMembersHandler(
         wrongPositionMessage = RefactoringBundle.message("the.caret.should.be.positioned.inside.a.class.to.pull.members.from")
 ) {
     companion object {
-        val PULL_UP_TEST_HELPER_KEY = "PULL_UP_TEST_HELPER_KEY"
+        val PULL_UP_TEST_HELPER_KEY: String = "PULL_UP_TEST_HELPER_KEY"
     }
 
     interface TestHelper {
@@ -113,4 +113,4 @@ class KotlinPullUpHandler : AbstractPullPushMembersHandler(
     }
 }
 
-val PULL_MEMBERS_UP = "Pull Members Up"
+val PULL_MEMBERS_UP: String = "Pull Members Up"

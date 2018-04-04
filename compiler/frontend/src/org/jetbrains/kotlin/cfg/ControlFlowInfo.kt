@@ -42,15 +42,15 @@ internal constructor(
     }
 
     override fun getOrNull(variableDescriptor: VariableDescriptor): D? = this[variableDescriptor].getOrElse(null as D?)
-    override fun asMap() = this
+    override fun asMap(): ControlFlowInfo<S, D> = this
 
     fun retainAll(predicate: (VariableDescriptor) -> Boolean): S = copy(map.removeAll(map.keySet().filterNot(predicate)))
 
-    override fun equals(other: Any?) = map == (other as? ControlFlowInfo<*, *>)?.map
+    override fun equals(other: Any?): Boolean = map == (other as? ControlFlowInfo<*, *>)?.map
 
-    override fun hashCode() = map.hashCode()
+    override fun hashCode(): Int = map.hashCode()
 
-    override fun toString() = map.toString()
+    override fun toString(): String = map.toString()
 }
 
 operator fun <T> Tuple2<T, *>.component1(): T = _1()
@@ -70,7 +70,7 @@ typealias ReadOnlyUseControlFlowInfo = ReadOnlyControlFlowInfo<VariableUseState>
 
 class InitControlFlowInfo(map: ImmutableMap<VariableDescriptor, VariableControlFlowState> = ImmutableHashMap.empty()) :
     ControlFlowInfo<InitControlFlowInfo, VariableControlFlowState>(map), ReadOnlyInitControlFlowInfo {
-    override fun copy(newMap: ImmutableMap<VariableDescriptor, VariableControlFlowState>) = InitControlFlowInfo(newMap)
+    override fun copy(newMap: ImmutableMap<VariableDescriptor, VariableControlFlowState>): InitControlFlowInfo = InitControlFlowInfo(newMap)
 
     // this = output of EXHAUSTIVE_WHEN_ELSE instruction
     // merge = input of MergeInstruction
@@ -88,7 +88,7 @@ class InitControlFlowInfo(map: ImmutableMap<VariableDescriptor, VariableControlF
 
 class UseControlFlowInfo(map: ImmutableMap<VariableDescriptor, VariableUseState> = ImmutableHashMap.empty()) :
     ControlFlowInfo<UseControlFlowInfo, VariableUseState>(map), ReadOnlyUseControlFlowInfo {
-    override fun copy(newMap: ImmutableMap<VariableDescriptor, VariableUseState>) = UseControlFlowInfo(newMap)
+    override fun copy(newMap: ImmutableMap<VariableDescriptor, VariableUseState>): UseControlFlowInfo = UseControlFlowInfo(newMap)
 }
 
 enum class InitState(private val s: String) {
@@ -110,7 +110,7 @@ enum class InitState(private val s: String) {
         return UNKNOWN
     }
 
-    override fun toString() = s
+    override fun toString(): String = s
 }
 
 class VariableControlFlowState private constructor(val initState: InitState, val isDeclared: Boolean) {

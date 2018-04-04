@@ -50,11 +50,11 @@ class InlineTypeParameterFix(val typeReference: KtTypeReference) : KotlinQuickFi
         }
     }
 
-    override fun getText() = "Inline type parameter"
+    override fun getText(): String = "Inline type parameter"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     companion object Factory : KotlinSingleIntentionActionFactory() {
-        override fun createAction(diagnostic: Diagnostic) = InlineTypeParameterFix(Errors.FINAL_UPPER_BOUND.cast(diagnostic).psiElement)
+        override fun createAction(diagnostic: Diagnostic): InlineTypeParameterFix = InlineTypeParameterFix(Errors.FINAL_UPPER_BOUND.cast(diagnostic).psiElement)
     }
 }

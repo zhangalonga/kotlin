@@ -18,7 +18,7 @@ abstract class FirAbstractAnnotatedType(
     final override val psi: PsiElement?,
     final override val isNullable: Boolean
 ) : FirTypeWithNullability {
-    override val annotations = mutableListOf<FirAnnotationCall>()
+    override val annotations: MutableList<FirAnnotationCall> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         annotations.transformInplace(transformer, data)

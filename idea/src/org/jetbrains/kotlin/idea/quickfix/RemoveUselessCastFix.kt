@@ -22,11 +22,12 @@ import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.idea.core.dropEnclosingParenthesesIfPossible
 import org.jetbrains.kotlin.idea.core.replaced
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
+import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 class RemoveUselessCastFix(element: KtBinaryExpressionWithTypeRHS) : KotlinQuickFixAction<KtBinaryExpressionWithTypeRHS>(element), CleanupFix {
-    override fun getFamilyName() = "Remove useless cast"
+    override fun getFamilyName(): String = "Remove useless cast"
 
     override fun getText(): String = familyName
 
@@ -35,7 +36,7 @@ class RemoveUselessCastFix(element: KtBinaryExpressionWithTypeRHS) : KotlinQuick
     }
 
     companion object : KotlinSingleIntentionActionFactory() {
-        fun invoke(element: KtBinaryExpressionWithTypeRHS) = dropEnclosingParenthesesIfPossible(element.replaced(element.left))
+        fun invoke(element: KtBinaryExpressionWithTypeRHS): KtExpression = dropEnclosingParenthesesIfPossible(element.replaced(element.left))
 
         override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtBinaryExpressionWithTypeRHS>? {
             val expression = diagnostic.psiElement.getNonStrictParentOfType<KtBinaryExpressionWithTypeRHS>() ?: return null

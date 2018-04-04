@@ -26,7 +26,7 @@ class BuiltinOverridabilityCondition : ExternalOverridabilityCondition {
             superDescriptor: CallableDescriptor,
             subDescriptor: CallableDescriptor,
             subClassDescriptor: ClassDescriptor?
-    ) = Result.UNKNOWN
+    ): Result = Result.UNKNOWN
 
-    override fun getContract() = ExternalOverridabilityCondition.Contract.CONFLICTS_ONLY
+    override fun getContract(): ExternalOverridabilityCondition.Contract = ExternalOverridabilityCondition.Contract.CONFLICTS_ONLY
 }

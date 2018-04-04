@@ -41,7 +41,7 @@ class AccessorForConstructorDescriptor(
 
     override fun getSuperCallTarget(): ClassDescriptor? = superCallTarget
 
-    override fun substitute(substitutor: TypeSubstitutor) = super.substitute(substitutor) as ClassConstructorDescriptor
+    override fun substitute(substitutor: TypeSubstitutor): ClassConstructorDescriptor = super.substitute(substitutor) as ClassConstructorDescriptor
 
     override fun copy(
             newOwner: DeclarationDescriptor,

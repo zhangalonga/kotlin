@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.descriptorUtil.computeSealedSubclasses
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
+import org.jetbrains.kotlin.resolve.scopes.MemberScopeImpl
 import org.jetbrains.kotlin.resolve.scopes.StaticScopeForKotlinEnum
 import org.jetbrains.kotlin.serialization.deserialization.*
 import org.jetbrains.kotlin.types.AbstractClassTypeConstructor
@@ -47,7 +48,7 @@ class DeserializedClassDescriptor(
     private val visibility = ProtoEnumFlags.visibility(Flags.VISIBILITY.get(classProto.flags))
     private val kind = ProtoEnumFlags.classKind(Flags.CLASS_KIND.get(classProto.flags))
 
-    val c = outerContext.childContext(this, classProto.typeParameterList, nameResolver, TypeTable(classProto.typeTable))
+    val c: DeserializationContext = outerContext.childContext(this, classProto.typeParameterList, nameResolver, TypeTable(classProto.typeTable))
 
     private val staticScope = if (kind == ClassKind.ENUM_CLASS) StaticScopeForKotlinEnum(c.storageManager, this) else MemberScope.Empty
     private val typeConstructor = DeserializedClassTypeConstructor()
@@ -68,7 +69,7 @@ class DeserializedClassDescriptor(
     val versionRequirement: VersionRequirement?
         get() = VersionRequirement.create(classProto, c.nameResolver, c.versionRequirementTable)
 
-    override val annotations =
+    override val annotations: Annotations =
             if (!Flags.HAS_ANNOTATIONS.get(classProto.flags)) {
                 Annotations.EMPTY
             }
@@ -80,27 +81,27 @@ class DeserializedClassDescriptor(
 
     override fun getTypeConstructor(): TypeConstructor = typeConstructor
 
-    override fun getKind() = kind
+    override fun getKind(): ClassKind = kind
 
-    override fun getModality() = modality
+    override fun getModality(): Modality = modality
 
-    override fun getVisibility() = visibility
+    override fun getVisibility(): Visibility = visibility
 
-    override fun isInner() = Flags.IS_INNER.get(classProto.flags)
+    override fun isInner(): Boolean = Flags.IS_INNER.get(classProto.flags)
 
-    override fun isData() = Flags.IS_DATA.get(classProto.flags)
+    override fun isData(): Boolean = Flags.IS_DATA.get(classProto.flags)
 
-    override fun isInline() = Flags.IS_INLINE_CLASS.get(classProto.flags)
+    override fun isInline(): Boolean = Flags.IS_INLINE_CLASS.get(classProto.flags)
 
-    override fun isExpect() = Flags.IS_EXPECT_CLASS.get(classProto.flags)
+    override fun isExpect(): Boolean = Flags.IS_EXPECT_CLASS.get(classProto.flags)
 
-    override fun isActual() = false
+    override fun isActual(): Boolean = false
 
-    override fun isExternal() = Flags.IS_EXTERNAL_CLASS.get(classProto.flags)
+    override fun isExternal(): Boolean = Flags.IS_EXTERNAL_CLASS.get(classProto.flags)
 
     override fun getUnsubstitutedMemberScope(): MemberScope = memberScope
 
-    override fun getStaticScope() = staticScope
+    override fun getStaticScope(): MemberScopeImpl = staticScope
 
     override fun isCompanionObject(): Boolean = Flags.CLASS_KIND.get(classProto.flags) == ProtoBuf.Class.Kind.COMPANION_OBJECT
 
@@ -127,7 +128,7 @@ class DeserializedClassDescriptor(
                 c.memberDeserializer.loadConstructor(it, false)
             }
 
-    override fun getConstructors() = constructors()
+    override fun getConstructors(): Collection<ClassConstructorDescriptor> = constructors()
 
     private fun computeCompanionObjectDescriptor(): ClassDescriptor? {
         if (!classProto.hasCompanionObjectName()) return null
@@ -155,13 +156,13 @@ class DeserializedClassDescriptor(
         return computeSealedSubclasses(this)
     }
 
-    override fun getSealedSubclasses() = sealedSubclasses()
+    override fun getSealedSubclasses(): Collection<ClassDescriptor> = sealedSubclasses()
 
-    override fun toString() = "deserialized class $name" // not using descriptor render to preserve laziness
+    override fun toString(): String = "deserialized class $name" // not using descriptor render to preserve laziness
 
-    override fun getSource() = sourceElement
+    override fun getSource(): SourceElement = sourceElement
 
-    override fun getDeclaredTypeParameters() = c.typeDeserializer.ownTypeParameters
+    override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> = c.typeDeserializer.ownTypeParameters
 
     private inner class DeserializedClassTypeConstructor : AbstractClassTypeConstructor(c.storageManager) {
         private val parameters = c.storageManager.createLazyValue {

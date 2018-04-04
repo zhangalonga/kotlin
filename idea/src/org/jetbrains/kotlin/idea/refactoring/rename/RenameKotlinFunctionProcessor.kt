@@ -59,13 +59,13 @@ class RenameKotlinFunctionProcessor : RenameKotlinPsiProcessor() {
         return element is KtNamedFunction || (element is KtLightMethod && element.kotlinOrigin is KtNamedFunction) || element is FunctionWithSupersWrapper
     }
 
-    override fun isToSearchInComments(psiElement: PsiElement) = JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_METHOD
+    override fun isToSearchInComments(psiElement: PsiElement): Boolean = JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_METHOD
 
     override fun setToSearchInComments(element: PsiElement, enabled: Boolean) {
         JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_METHOD = enabled
     }
 
-    override fun isToSearchForTextOccurrences(element: PsiElement) = JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_METHOD
+    override fun isToSearchForTextOccurrences(element: PsiElement): Boolean = JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_METHOD
 
     override fun setToSearchForTextOccurrences(element: PsiElement, enabled: Boolean) {
         JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_METHOD = enabled

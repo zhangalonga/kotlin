@@ -406,7 +406,7 @@ abstract class KotlinWithLibraryConfigurator internal constructor() : KotlinProj
     }
 
     companion object {
-        val DEFAULT_LIBRARY_DIR = "lib"
+        val DEFAULT_LIBRARY_DIR: String = "lib"
 
         fun getPathFromLibrary(library: Library?, type: OrderRootType): String? {
             if (library == null) return null

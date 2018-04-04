@@ -53,9 +53,9 @@ abstract class AbstractScopeAdapter : MemberScope {
         return workerScope.getContributedDescriptors(kindFilter, nameFilter)
     }
 
-    override fun getFunctionNames() = workerScope.getFunctionNames()
-    override fun getVariableNames() = workerScope.getVariableNames()
-    override fun getClassifierNames() = workerScope.getClassifierNames()
+    override fun getFunctionNames(): Set<Name> = workerScope.getFunctionNames()
+    override fun getVariableNames(): Set<Name> = workerScope.getVariableNames()
+    override fun getClassifierNames(): Set<Name>? = workerScope.getClassifierNames()
 
     override fun recordLookup(name: Name, location: LookupLocation) {
         workerScope.recordLookup(name, location)

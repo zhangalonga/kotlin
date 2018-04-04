@@ -172,9 +172,9 @@ object IntExternalizer : DataExternalizer<Int> {
 }
 
 object PathStringDescriptor : EnumeratorStringDescriptor() {
-    override fun getHashCode(value: String) = FileUtil.pathHashCode(value)
+    override fun getHashCode(value: String): Int = FileUtil.pathHashCode(value)
 
-    override fun isEqual(val1: String, val2: String?) = FileUtil.pathsEqual(val1, val2)
+    override fun isEqual(val1: String, val2: String?): Boolean = FileUtil.pathsEqual(val1, val2)
 }
 
 object FileKeyDescriptor : KeyDescriptor<File> {

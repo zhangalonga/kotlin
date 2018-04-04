@@ -26,130 +26,129 @@ import java.util.*
 
 enum class SpecialMethod(val qualifiedClassName: String?, val methodName: String, val parameterCount: Int?) {
     CHAR_SEQUENCE_LENGTH(CharSequence::class.java.name, "length", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse()
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse()
     },
 
     COLLECTION_SIZE(Collection::class.java.name, "size", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse()
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse()
     },
 
     COLLECTION_TO_ARRAY(Collection::class.java.name, "toArray", 0) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("toTypedArray", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("toTypedArray", argumentsNotNull())
     },
 
     COLLECTION_TO_ARRAY_WITH_ARG(Collection::class.java.name, "toArray", 1) {
-        override fun ConvertCallData.convertCall() = copy(arguments = emptyList()).convertWithChangedName("toTypedArray", emptyList())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = copy(arguments = emptyList()).convertWithChangedName("toTypedArray", emptyList())
     },
 
     MAP_SIZE(Map::class.java.name, "size", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse()
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse()
     },
 
     MAP_KEY_SET(Map::class.java.name, "keySet", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse("keys")
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse("keys")
     },
 
     MAP_PUT_IF_ABSENT(Map::class.java.name, "putIfAbsent", 2) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_REMOVE(Map::class.java.name, "remove", 2) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_REPLACE(Map::class.java.name, "replace", 3) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_REPLACE_ALL(Map::class.java.name, "replaceAll", 1) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_COMPUTE(Map::class.java.name, "compute", 2) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_COMPUTE_IF_ABSENT(Map::class.java.name, "computeIfAbsent", 2) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_COMPUTE_IF_PRESENT(Map::class.java.name, "computeIfPresent", 2) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_MERGE(Map::class.java.name, "merge", 3) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_GET_OR_DEFAULT(Map::class.java.name, "getOrDefault", 2) {
-        override fun ConvertCallData.convertCall() = convertWithReceiverCast()
+        override fun ConvertCallData.convertCall(): MethodCallExpression? = convertWithReceiverCast()
     },
 
     MAP_VALUES(Map::class.java.name, "values", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse()
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse()
     },
 
     MAP_ENTRY_SET(Map::class.java.name, "entrySet", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse("entries")
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse("entries")
     },
 
     ENUM_NAME(Enum::class.java.name, "name", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse("name")
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse("name")
     },
 
     ENUM_ORDINAL(Enum::class.java.name, "ordinal", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse()
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse()
     },
 
     CHAR_AT(CharSequence::class.java.name, "charAt", 1) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("get", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("get", argumentsNotNull())
     },
 
     NUMBER_BYTE_VALUE(Number::class.java.name, "byteValue", 0) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("toByte", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("toByte", argumentsNotNull())
     },
 
     NUMBER_SHORT_VALUE(Number::class.java.name, "shortValue", 0) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("toShort", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("toShort", argumentsNotNull())
     },
 
     NUMBER_INT_VALUE(Number::class.java.name, "intValue", 0) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("toInt", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("toInt", argumentsNotNull())
     },
 
     NUMBER_LONG_VALUE(Number::class.java.name, "longValue", 0) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("toLong", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("toLong", argumentsNotNull())
     },
 
     NUMBER_FLOAT_VALUE(Number::class.java.name, "floatValue", 0) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("toFloat", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("toFloat", argumentsNotNull())
     },
 
     NUMBER_DOUBLE_VALUE(Number::class.java.name, "doubleValue", 0) {
-        override fun ConvertCallData.convertCall() = convertWithChangedName("toDouble", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("toDouble", argumentsNotNull())
     },
 
     LIST_REMOVE(List::class.java.name, "remove", 1) {
-        override fun matches(method: PsiMethod, superMethodsSearcher: SuperMethodsSearcher)
-                = super.matches(method, superMethodsSearcher) && method.parameterList.parameters.single().type.canonicalText == "int"
+        override fun matches(method: PsiMethod, superMethodsSearcher: SuperMethodsSearcher): Boolean = super.matches(method, superMethodsSearcher) && method.parameterList.parameters.single().type.canonicalText == "int"
 
-        override fun ConvertCallData.convertCall() = convertWithChangedName("removeAt", argumentsNotNull())
+        override fun ConvertCallData.convertCall(): MethodCallExpression = convertWithChangedName("removeAt", argumentsNotNull())
     },
 
     THROWABLE_GET_MESSAGE(Throwable::class.java.name, "getMessage", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse("message")
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse("message")
     },
 
     THROWABLE_GET_CAUSE(Throwable::class.java.name, "getCause", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse("cause")
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse("cause")
     },
 
     MAP_ENTRY_GET_KEY(Map::class.java.name + ".Entry", "getKey", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse("key")
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse("key")
     },
 
     MAP_ENTRY_GET_VALUE(Map::class.java.name + ".Entry", "getValue", 0) {
-        override fun ConvertCallData.convertCall() = convertMethodCallToPropertyUse("value")
+        override fun ConvertCallData.convertCall(): Expression = convertMethodCallToPropertyUse("value")
     },
 
     OBJECT_EQUALS(null, "equals", 1) {
@@ -173,23 +172,19 @@ enum class SpecialMethod(val qualifiedClassName: String?, val methodName: String
     },
 
     OBJECTS_EQUALS("java.util.Objects", "equals", 2) {
-        override fun ConvertCallData.convertCall()
-                = BinaryExpression(codeConverter.convertExpression(arguments[0]), codeConverter.convertExpression(arguments[1]), Operator.EQEQ)
+        override fun ConvertCallData.convertCall(): BinaryExpression = BinaryExpression(codeConverter.convertExpression(arguments[0]), codeConverter.convertExpression(arguments[1]), Operator.EQEQ)
     },
 
     COLLECTIONS_EMPTY_LIST(Collections::class.java.name, "emptyList", 0) {
-        override fun ConvertCallData.convertCall()
-                = MethodCallExpression.buildNonNull(null, "emptyList", ArgumentList.withNoPrototype(), typeArgumentsConverted)
+        override fun ConvertCallData.convertCall(): MethodCallExpression = MethodCallExpression.buildNonNull(null, "emptyList", ArgumentList.withNoPrototype(), typeArgumentsConverted)
     },
 
     COLLECTIONS_EMPTY_SET(Collections::class.java.name, "emptySet", 0) {
-        override fun ConvertCallData.convertCall()
-                = MethodCallExpression.buildNonNull(null, "emptySet", ArgumentList.withNoPrototype(), typeArgumentsConverted)
+        override fun ConvertCallData.convertCall(): MethodCallExpression = MethodCallExpression.buildNonNull(null, "emptySet", ArgumentList.withNoPrototype(), typeArgumentsConverted)
     },
 
     COLLECTIONS_EMPTY_MAP(Collections::class.java.name, "emptyMap", 0) {
-        override fun ConvertCallData.convertCall()
-                = MethodCallExpression.buildNonNull(null, "emptyMap", ArgumentList.withNoPrototype(), typeArgumentsConverted)
+        override fun ConvertCallData.convertCall(): MethodCallExpression = MethodCallExpression.buildNonNull(null, "emptyMap", ArgumentList.withNoPrototype(), typeArgumentsConverted)
     },
 
     COLLECTIONS_SINGLETON_LIST(Collections::class.java.name, "singletonList", 1) {
@@ -326,21 +321,19 @@ enum class SpecialMethod(val qualifiedClassName: String?, val methodName: String
     },
 
     STRING_CONCAT(JAVA_LANG_STRING, "concat", 1) {
-        override fun ConvertCallData.convertCall()
-                = BinaryExpression(codeConverter.convertExpression(qualifier), codeConverter.convertExpression(arguments.single()), Operator(JavaTokenType.PLUS).assignNoPrototype())
+        override fun ConvertCallData.convertCall(): BinaryExpression = BinaryExpression(codeConverter.convertExpression(qualifier), codeConverter.convertExpression(arguments.single()), Operator(JavaTokenType.PLUS).assignNoPrototype())
     },
 
     STRING_COMPARE_TO_IGNORE_CASE(JAVA_LANG_STRING, "compareToIgnoreCase", 1) {
-        override fun ConvertCallData.convertCall() = convertWithIgnoreCaseArgument("compareTo")
+        override fun ConvertCallData.convertCall(): Expression = convertWithIgnoreCaseArgument("compareTo")
     },
 
     STRING_EQUALS_IGNORE_CASE(JAVA_LANG_STRING, "equalsIgnoreCase", 1) {
-        override fun ConvertCallData.convertCall() = convertWithIgnoreCaseArgument("equals")
+        override fun ConvertCallData.convertCall(): Expression = convertWithIgnoreCaseArgument("equals")
     },
 
     STRING_REGION_MATCHES(JAVA_LANG_STRING, "regionMatches", 5) {
-        override fun ConvertCallData.convertCall()
-                = copy(arguments = arguments.drop(1)).convertWithIgnoreCaseArgument("regionMatches", ignoreCaseArgument = arguments.first())
+        override fun ConvertCallData.convertCall(): Expression = copy(arguments = arguments.drop(1)).convertWithIgnoreCaseArgument("regionMatches", ignoreCaseArgument = arguments.first())
     },
 
     STRING_GET_BYTES(JAVA_LANG_STRING, "getBytes", null) {
@@ -381,8 +374,7 @@ enum class SpecialMethod(val qualifiedClassName: String?, val methodName: String
                     && method.parameterList.parameters.first().type.canonicalText == "char[]"
         }
 
-        override fun ConvertCallData.convertCall()
-                = MethodCallExpression.buildNonNull(null, "String", ArgumentList.withNoPrototype(codeConverter.convertExpressionsInList(arguments)))
+        override fun ConvertCallData.convertCall(): MethodCallExpression = MethodCallExpression.buildNonNull(null, "String", ArgumentList.withNoPrototype(codeConverter.convertExpressionsInList(arguments)))
     },
 
     STRING_COPY_VALUE_OF_CHAR_ARRAY(JAVA_LANG_STRING, "copyValueOf", null) {
@@ -392,21 +384,19 @@ enum class SpecialMethod(val qualifiedClassName: String?, val methodName: String
                     && method.parameterList.parameters.first().type.canonicalText == "char[]"
         }
 
-        override fun ConvertCallData.convertCall()
-                = STRING_VALUE_OF_CHAR_ARRAY.convertCall(this)
+        override fun ConvertCallData.convertCall(): Expression? = STRING_VALUE_OF_CHAR_ARRAY.convertCall(this)
     },
 
     STRING_VALUE_OF(JAVA_LANG_STRING, "valueOf", 1) {
-        override fun ConvertCallData.convertCall()
-                = MethodCallExpression.buildNonNull(codeConverter.convertExpression(arguments.single(), shouldParenthesize = true), "toString")
+        override fun ConvertCallData.convertCall(): MethodCallExpression = MethodCallExpression.buildNonNull(codeConverter.convertExpression(arguments.single(), shouldParenthesize = true), "toString")
     },
 
     SYSTEM_OUT_PRINTLN(PrintStream::class.java.name, "println", null) {
-        override fun ConvertCallData.convertCall() = convertSystemOutMethodCall(methodName)
+        override fun ConvertCallData.convertCall(): Expression? = convertSystemOutMethodCall(methodName)
     },
 
     SYSTEM_OUT_PRINT(PrintStream::class.java.name, "print", null) {
-        override fun ConvertCallData.convertCall() = convertSystemOutMethodCall(methodName)
+        override fun ConvertCallData.convertCall(): Expression? = convertSystemOutMethodCall(methodName)
     };
 
     open fun matches(method: PsiMethod, superMethodsSearcher: SuperMethodsSearcher): Boolean
@@ -421,7 +411,7 @@ enum class SpecialMethod(val qualifiedClassName: String?, val methodName: String
             superMethods.any { it.containingClass?.qualifiedName == qualifiedClassName }
     }
 
-    protected fun matchesParameterCount(method: PsiMethod) = parameterCount == null || parameterCount == method.parameterList.parametersCount
+    protected fun matchesParameterCount(method: PsiMethod): Boolean = parameterCount == null || parameterCount == method.parameterList.parametersCount
 
     data class ConvertCallData(
             val qualifier: PsiExpression?,
@@ -446,7 +436,7 @@ enum class SpecialMethod(val qualifiedClassName: String?, val methodName: String
             identifier
     }
 
-    protected fun ConvertCallData.argumentsNotNull() = arguments.map { Nullability.NotNull }
+    protected fun ConvertCallData.argumentsNotNull(): List<Nullability> = arguments.map { Nullability.NotNull }
 
     protected fun ConvertCallData.convertWithChangedName(name: String, argumentNullabilities: List<Nullability>): MethodCallExpression {
         assert(argumentNullabilities.size == arguments.size)

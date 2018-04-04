@@ -226,9 +226,9 @@ class FirExplorerToolWindow(private val project: Project, private val toolWindow
         }
 
         companion object {
-            val firElementKlass = FirElement::class
-            val firElementType = firElementKlass.starProjectedType
-            val listElementType = List::class.starProjectedType
+            val firElementKlass: KClass<FirElement> = FirElement::class
+            val firElementType: KType = firElementKlass.starProjectedType
+            val listElementType: KType = List::class.starProjectedType
         }
     }
 

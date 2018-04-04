@@ -31,7 +31,7 @@ interface LocationInfo {
 
 data class Position(val line: Int, val column: Int) : Serializable {
     companion object {
-        val NO_POSITION = Position(-1, -1)
+        val NO_POSITION: Position = Position(-1, -1)
     }
 }
 

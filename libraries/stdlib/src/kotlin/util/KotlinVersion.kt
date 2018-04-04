@@ -63,7 +63,7 @@ public class KotlinVersion(val major: Int, val minor: Int, val patch: Int) : Com
          * Maximum value a version component can have, a constant value 255.
          */
         // NOTE: Must be placed before CURRENT because its initialization requires this field being initialized in JS
-        public const val MAX_COMPONENT_VALUE = 255
+        public const val MAX_COMPONENT_VALUE: Int = 255
 
         /**
          * Returns the current version of the Kotlin standard library.

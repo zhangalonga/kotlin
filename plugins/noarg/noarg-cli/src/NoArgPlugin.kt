@@ -48,26 +48,26 @@ object NoArgConfigurationKeys {
 
 class NoArgCommandLineProcessor : CommandLineProcessor {
     companion object {
-        val SUPPORTED_PRESETS = mapOf(
+        val SUPPORTED_PRESETS: Map<String, List<String>> = mapOf(
                 "jpa" to listOf("javax.persistence.Entity", "javax.persistence.Embeddable", "javax.persistence.MappedSuperclass"))
 
-        val ANNOTATION_OPTION = CliOption("annotation", "<fqname>", "Annotation qualified names",
-                                          required = false, allowMultipleOccurrences = true)
+        val ANNOTATION_OPTION: CliOption = CliOption("annotation", "<fqname>", "Annotation qualified names",
+                                                     required = false, allowMultipleOccurrences = true)
 
-        val PRESET_OPTION = CliOption("preset", "<name>", "Preset name (${SUPPORTED_PRESETS.keys.joinToString()})",
-                                      required = false, allowMultipleOccurrences = true)
+        val PRESET_OPTION: CliOption = CliOption("preset", "<name>", "Preset name (${SUPPORTED_PRESETS.keys.joinToString()})",
+                                                 required = false, allowMultipleOccurrences = true)
 
-        val INVOKE_INITIALIZERS_OPTION = CliOption("invokeInitializers", "true/false",
-                                                   "Invoke instance initializers in a no-arg constructor",
-                                                   required = false, allowMultipleOccurrences = false)
+        val INVOKE_INITIALIZERS_OPTION: CliOption = CliOption("invokeInitializers", "true/false",
+                                                              "Invoke instance initializers in a no-arg constructor",
+                                                              required = false, allowMultipleOccurrences = false)
 
-        val PLUGIN_ID = "org.jetbrains.kotlin.noarg"
+        val PLUGIN_ID: String = "org.jetbrains.kotlin.noarg"
     }
 
-    override val pluginId = PLUGIN_ID
-    override val pluginOptions = listOf(ANNOTATION_OPTION, PRESET_OPTION, INVOKE_INITIALIZERS_OPTION)
+    override val pluginId: String = PLUGIN_ID
+    override val pluginOptions: List<CliOption> = listOf(ANNOTATION_OPTION, PRESET_OPTION, INVOKE_INITIALIZERS_OPTION)
 
-    override fun processOption(option: CliOption, value: String, configuration: CompilerConfiguration) = when (option) {
+    override fun processOption(option: CliOption, value: String, configuration: CompilerConfiguration): Unit = when (option) {
         ANNOTATION_OPTION -> configuration.appendList(ANNOTATION, value)
         PRESET_OPTION -> configuration.appendList(PRESET, value)
         INVOKE_INITIALIZERS_OPTION -> configuration.put(INVOKE_INITIALIZERS, value == "true")

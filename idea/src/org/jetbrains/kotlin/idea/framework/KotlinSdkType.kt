@@ -21,11 +21,12 @@ import org.jetbrains.kotlin.idea.KotlinIcons
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
 import org.jetbrains.kotlin.idea.versions.bundledRuntimeVersion
 import org.jetbrains.kotlin.utils.PathUtil
+import javax.swing.Icon
 import javax.swing.JComponent
 
 class KotlinSdkType : SdkType("KotlinSDK") {
     companion object {
-        @JvmField val INSTANCE = KotlinSdkType()
+        @JvmField val INSTANCE: KotlinSdkType = KotlinSdkType()
 
         val defaultHomePath: String
             get() = PathUtil.kotlinPathsForIdeaPlugin.homePath.absolutePath
@@ -42,21 +43,21 @@ class KotlinSdkType : SdkType("KotlinSDK") {
         }
     }
 
-    override fun getPresentableName() = "Kotlin SDK"
+    override fun getPresentableName(): String = "Kotlin SDK"
 
-    override fun getIcon() = KotlinIcons.SMALL_LOGO
+    override fun getIcon(): Icon = KotlinIcons.SMALL_LOGO
 
-    override fun isValidSdkHome(path: String?) = true
+    override fun isValidSdkHome(path: String?): Boolean = true
 
-    override fun suggestSdkName(currentSdkName: String?, sdkHome: String?) = "Kotlin SDK"
+    override fun suggestSdkName(currentSdkName: String?, sdkHome: String?): String = "Kotlin SDK"
 
-    override fun suggestHomePath() = null
+    override fun suggestHomePath(): Nothing? = null
 
-    override fun sdkHasValidPath(sdk: Sdk) = true
+    override fun sdkHasValidPath(sdk: Sdk): Boolean = true
 
-    override fun getVersionString(sdk: Sdk) = bundledRuntimeVersion()
+    override fun getVersionString(sdk: Sdk): String = bundledRuntimeVersion()
 
-    override fun supportsCustomCreateUI() = true
+    override fun supportsCustomCreateUI(): Boolean = true
 
     override fun showCustomCreateUI(sdkModel: SdkModel, parentComponent: JComponent, selectedSdk: Sdk?, sdkCreatedCallback: Consumer<Sdk>) {
         sdkCreatedCallback.consume(createSdkWithUniqueName(sdkModel.sdks.toList()))
@@ -69,7 +70,7 @@ class KotlinSdkType : SdkType("KotlinSDK") {
         }
     }
 
-    override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator) = null
+    override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator): Nothing? = null
 
     override fun saveAdditionalData(additionalData: SdkAdditionalData, additional: Element) {
 

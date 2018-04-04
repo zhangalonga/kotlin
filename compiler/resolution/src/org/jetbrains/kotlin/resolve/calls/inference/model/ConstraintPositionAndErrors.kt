@@ -28,31 +28,31 @@ import org.jetbrains.kotlin.types.UnwrappedType
 sealed class ConstraintPosition
 
 class ExplicitTypeParameterConstraintPosition(val typeArgument: SimpleTypeArgument) : ConstraintPosition() {
-    override fun toString() = "TypeParameter $typeArgument"
+    override fun toString(): String = "TypeParameter $typeArgument"
 }
 
 class ExpectedTypeConstraintPosition(val topLevelCall: KotlinCall) : ConstraintPosition() {
-    override fun toString() = "ExpectedType for call $topLevelCall"
+    override fun toString(): String = "ExpectedType for call $topLevelCall"
 }
 
 class DeclaredUpperBoundConstraintPosition(val typeParameterDescriptor: TypeParameterDescriptor) : ConstraintPosition() {
-    override fun toString() = "DeclaredUpperBound ${typeParameterDescriptor.name} from ${typeParameterDescriptor.containingDeclaration}"
+    override fun toString(): String = "DeclaredUpperBound ${typeParameterDescriptor.name} from ${typeParameterDescriptor.containingDeclaration}"
 }
 
 class ArgumentConstraintPosition(val argument: KotlinCallArgument) : ConstraintPosition() {
-    override fun toString() = "Argument $argument"
+    override fun toString(): String = "Argument $argument"
 }
 
 class ReceiverConstraintPosition(val argument: KotlinCallArgument) : ConstraintPosition() {
-    override fun toString() = "Receiver $argument"
+    override fun toString(): String = "Receiver $argument"
 }
 
 class FixVariableConstraintPosition(val variable: NewTypeVariable) : ConstraintPosition() {
-    override fun toString() = "Fix variable $variable"
+    override fun toString(): String = "Fix variable $variable"
 }
 
 class KnownTypeParameterConstraintPosition(val typeArgument: KotlinType) : ConstraintPosition() {
-    override fun toString() = "TypeArgument $typeArgument"
+    override fun toString(): String = "TypeArgument $typeArgument"
 }
 
 class LambdaArgumentConstraintPosition(val lambda: ResolvedLambdaAtom) : ConstraintPosition() {
@@ -62,14 +62,14 @@ class LambdaArgumentConstraintPosition(val lambda: ResolvedLambdaAtom) : Constra
 }
 
 class IncorporationConstraintPosition(val from: ConstraintPosition, val initialConstraint: InitialConstraint) : ConstraintPosition() {
-    override fun toString() = "Incorporate $initialConstraint from position $from"
+    override fun toString(): String = "Incorporate $initialConstraint from position $from"
 }
 
 @Deprecated("Should be used only in SimpleConstraintSystemImpl")
 object SimpleConstraintSystemConstraintPosition : ConstraintPosition()
 
 abstract class ConstraintSystemCallDiagnostic(applicability: ResolutionCandidateApplicability) : KotlinCallDiagnostic(applicability) {
-    override fun report(reporter: DiagnosticReporter) = reporter.constraintError(this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.constraintError(this)
 }
 
 class NewConstraintError(

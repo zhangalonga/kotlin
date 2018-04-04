@@ -27,9 +27,9 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 class MoveWhenElseBranchFix(element: KtWhenExpression) : KotlinQuickFixAction<KtWhenExpression>(element) {
-    override fun getFamilyName() = "Move else branch to the end"
+    override fun getFamilyName(): String = "Move else branch to the end"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         val element = element ?: return false

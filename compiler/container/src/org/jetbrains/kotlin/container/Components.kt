@@ -31,5 +31,5 @@ open class InstanceComponentDescriptor(val instance: Any) : ComponentDescriptor 
 }
 
 class DefaultInstanceComponentDescriptor(instance: Any): InstanceComponentDescriptor(instance) {
-    override fun toString() = "Default instance: ${instance.javaClass.simpleName}"
+    override fun toString(): String = "Default instance: ${instance.javaClass.simpleName}"
 }

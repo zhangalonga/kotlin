@@ -47,7 +47,7 @@ class ScriptDefinitionsManager(private val project: Project): ScriptDefinitionPr
     private var definitionsByContributor = mutableMapOf<ScriptDefinitionContributor, List<KotlinScriptDefinition>>()
     private var definitions: List<KotlinScriptDefinition> = emptyList()
 
-    fun reloadDefinitionsBy(contributor: ScriptDefinitionContributor) = lock.write {
+    fun reloadDefinitionsBy(contributor: ScriptDefinitionContributor): Unit = lock.write {
         val notLoadedYet = definitions.isEmpty()
         if (notLoadedYet) return
 
@@ -82,7 +82,7 @@ class ScriptDefinitionsManager(private val project: Project): ScriptDefinitionPr
         currentDefinitions().firstOrNull { it.isScript(fileName) }
     }
 
-    override fun isScript(fileName: String) = lock.read {
+    override fun isScript(fileName: String): Boolean = lock.read {
         currentDefinitions().any { it.isScript(fileName) }
     }
 
@@ -94,7 +94,7 @@ class ScriptDefinitionsManager(private val project: Project): ScriptDefinitionPr
         return fromDeprecatedEP + fromNewEp
     }
 
-    fun reloadScriptDefinitions() = lock.write {
+    fun reloadScriptDefinitions(): Unit = lock.write {
         for (contributor in getContributors()) {
             val definitions = contributor.safeGetDefinitions()
             definitionsByContributor[contributor] = definitions
@@ -167,21 +167,21 @@ interface ScriptDefinitionContributor {
         val EP_NAME: ExtensionPointName<ScriptDefinitionContributor> =
                 ExtensionPointName.create<ScriptDefinitionContributor>("org.jetbrains.kotlin.scriptDefinitionContributor")
 
-        inline fun <reified T> find(project: Project) =
+        inline fun <reified T> find(project: Project): T? =
                 Extensions.getArea(project).getExtensionPoint(ScriptDefinitionContributor.EP_NAME).extensions.filterIsInstance<T>().firstOrNull()
     }
 
 }
 
 class StandardScriptDefinitionContributor(private val project: Project) : ScriptDefinitionContributor {
-    override fun getDefinitions() = listOf(StandardIdeScriptDefinition(project))
+    override fun getDefinitions(): List<StandardIdeScriptDefinition> = listOf(StandardIdeScriptDefinition(project))
 
     override val id: String = "StandardKotlinScript"
 }
 
 
 class StandardIdeScriptDefinition(project: Project) : KotlinScriptDefinition(ScriptTemplateWithArgs::class) {
-    override val dependencyResolver = BundledKotlinScriptDependenciesResolver(project)
+    override val dependencyResolver: BundledKotlinScriptDependenciesResolver = BundledKotlinScriptDependenciesResolver(project)
 }
 
 class BundledKotlinScriptDependenciesResolver(private val project: Project) : DependenciesResolver {

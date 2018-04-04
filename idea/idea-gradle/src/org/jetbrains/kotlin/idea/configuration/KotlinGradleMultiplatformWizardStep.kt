@@ -138,7 +138,7 @@ class KotlinGradleMultiplatformWizardStep(
         builder.jsModuleName = jsModuleName
     }
 
-    override fun getComponent() = panel
+    override fun getComponent(): JPanel = panel
 
     private val commonModuleIsRoot: Boolean
         get() = hierarchyKindComponent.selectedIndex != 0

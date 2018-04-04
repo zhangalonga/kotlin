@@ -36,7 +36,7 @@ private val DYNAMIC_EXTENSION_FQ_NAME = FqName("kotlin.internal.DynamicExtension
 private val RESTRICTS_SUSPENSION_FQ_NAME = DescriptorUtils.COROUTINES_PACKAGE_FQ_NAME.child(Name.identifier("RestrictsSuspension"))
 
 // @HidesMembers annotation only has effect for members with these names
-val HIDES_MEMBERS_NAME_LIST = setOf(Name.identifier("forEach"))
+val HIDES_MEMBERS_NAME_LIST: Set<Name> = setOf(Name.identifier("forEach"))
 
 fun KotlinType.hasNoInferAnnotation(): Boolean = annotations.hasAnnotation(NO_INFER_ANNOTATION_FQ_NAME)
 
@@ -45,7 +45,7 @@ fun KotlinType.hasExactAnnotation(): Boolean = annotations.hasAnnotation(EXACT_A
 fun Annotations.hasInternalAnnotationForResolve(): Boolean =
         hasAnnotation(NO_INFER_ANNOTATION_FQ_NAME) || hasAnnotation(EXACT_ANNOTATION_FQ_NAME)
 
-fun FqName.isInternalAnnotationForResolve() = this == NO_INFER_ANNOTATION_FQ_NAME || this == EXACT_ANNOTATION_FQ_NAME
+fun FqName.isInternalAnnotationForResolve(): Boolean = this == NO_INFER_ANNOTATION_FQ_NAME || this == EXACT_ANNOTATION_FQ_NAME
 
 fun CallableDescriptor.hasLowPriorityInOverloadResolution(): Boolean = annotations.hasAnnotation(LOW_PRIORITY_IN_OVERLOAD_RESOLUTION_FQ_NAME)
 

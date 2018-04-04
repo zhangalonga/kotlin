@@ -36,7 +36,7 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.scopes.utils.findClassifier
 
 object CreateTypeParameterUnmatchedTypeArgumentActionFactory : KotlinIntentionActionFactoryWithDelegate<KtTypeArgumentList, CreateTypeParameterData>() {
-    override fun getElementOfInterest(diagnostic: Diagnostic) = diagnostic.psiElement as? KtTypeArgumentList
+    override fun getElementOfInterest(diagnostic: Diagnostic): KtTypeArgumentList? = diagnostic.psiElement as? KtTypeArgumentList
 
     override fun extractFixData(element: KtTypeArgumentList, diagnostic: Diagnostic): CreateTypeParameterData? {
         val project = element.project

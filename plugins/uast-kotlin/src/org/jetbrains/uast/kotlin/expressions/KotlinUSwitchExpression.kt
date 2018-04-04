@@ -27,7 +27,7 @@ class KotlinUSwitchExpression(
         override val psi: KtWhenExpression,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), USwitchExpression, KotlinUElementWithType {
-    override val expression by lz { KotlinConverter.convertOrNull(psi.subjectExpression, this) }
+    override val expression: UExpression? by lz { KotlinConverter.convertOrNull(psi.subjectExpression, this) }
 
     override val body: UExpressionList by lz {
         object : KotlinUExpressionList(psi, KotlinSpecialExpressionKinds.WHEN, this@KotlinUSwitchExpression) {
@@ -37,7 +37,7 @@ class KotlinUSwitchExpression(
         }
     }
 
-    override fun asRenderString() = buildString {
+    override fun asRenderString(): String = buildString {
         val expr = expression?.let { "(" + it.asRenderString() + ") " } ?: ""
         appendln("switch $expr {")
         appendln(body.asRenderString())
@@ -52,7 +52,7 @@ class KotlinUSwitchEntry(
         override val psi: KtWhenEntry,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), USwitchClauseExpressionWithBody {
-    override val caseValues by lz {
+    override val caseValues: List<UExpression> by lz {
         psi.conditions.map { KotlinConverter.convertWhenCondition(it, this) ?: UastEmptyExpression }
     }
 

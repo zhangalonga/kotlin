@@ -22,6 +22,6 @@ interface ModuleVisibilityHelper {
     fun isInFriendModule(what: DeclarationDescriptor, from: DeclarationDescriptor): Boolean
 
     object EMPTY: ModuleVisibilityHelper {
-        override fun isInFriendModule(what: DeclarationDescriptor, from: DeclarationDescriptor) = true
+        override fun isInFriendModule(what: DeclarationDescriptor, from: DeclarationDescriptor): Boolean = true
     }
 }

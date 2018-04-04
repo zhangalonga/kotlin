@@ -128,7 +128,7 @@ class DeserializedPropertyDescriptor(
         )
     }
 
-    override fun isExternal() = Flags.IS_EXTERNAL_PROPERTY.get(proto.flags)
+    override fun isExternal(): Boolean = Flags.IS_EXTERNAL_PROPERTY.get(proto.flags)
 }
 
 class DeserializedClassConstructorDescriptor(

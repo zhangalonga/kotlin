@@ -1009,7 +1009,7 @@ private fun createCompileTimeConstantForCompareTo(result: Any?, operationReferen
     return null
 }
 
-fun isIntegerType(value: Any?) = value is Byte || value is Short || value is Int || value is Long
+fun isIntegerType(value: Any?): Boolean = value is Byte || value is Short || value is Int || value is Long
 
 private fun getReceiverExpressionType(resolvedCall: ResolvedCall<*>): KotlinType? {
     return when (resolvedCall.explicitReceiverKind) {

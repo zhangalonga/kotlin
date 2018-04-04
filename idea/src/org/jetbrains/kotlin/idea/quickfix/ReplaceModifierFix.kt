@@ -34,9 +34,9 @@ class ReplaceModifierFix(
 
     private val text = "Replace with '${replacement.value}'"
 
-    override fun getText() = text
+    override fun getText(): String = text
 
-    override fun getFamilyName() = "Replace modifier"
+    override fun getFamilyName(): String = "Replace modifier"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         element?.addModifier(replacement)

@@ -21,7 +21,7 @@ import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
-const val DEFAULT_SCRIPT_FILE_PATTERN = ".*\\.kts"
+const val DEFAULT_SCRIPT_FILE_PATTERN: String = ".*\\.kts"
 
 // TODO: remove this file and all the usages after releasing GSK 1.0
 

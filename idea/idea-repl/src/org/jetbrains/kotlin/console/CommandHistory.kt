@@ -28,9 +28,9 @@ class CommandHistory {
     var processedEntriesCount: Int = 0
         private set
 
-    val listeners = arrayListOf<HistoryUpdateListener>()
+    val listeners: ArrayList<HistoryUpdateListener> = arrayListOf()
 
-    operator fun get(i: Int) = entries[i]
+    operator fun get(i: Int): Entry = entries[i]
 
     fun addEntry(entry: Entry) {
         entries.add(entry)

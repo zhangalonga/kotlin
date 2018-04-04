@@ -46,7 +46,7 @@ open class MemberDescription protected constructor(
         return result
     }
 
-    override fun toString() = "MemberDescription(ownerInternalName = $ownerInternalName, name = $name, desc = $desc, isStatic = $isStatic)"
+    override fun toString(): String = "MemberDescription(ownerInternalName = $ownerInternalName, name = $name, desc = $desc, isStatic = $isStatic)"
 }
 
 val MemberDescription.ownerType: Type

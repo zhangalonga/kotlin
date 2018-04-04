@@ -57,7 +57,7 @@ class IterateExpressionIntention : SelfTargetingIntention<KtExpression>(KtExpres
         return Data(type, elementType)
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtExpression, editor: Editor?) {
         if (editor == null) throw IllegalArgumentException("This intention requires an editor")

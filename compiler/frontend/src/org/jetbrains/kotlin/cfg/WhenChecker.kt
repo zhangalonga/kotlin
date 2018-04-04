@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.diagnostics.Errors
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.checkReservedPrefixWord
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -44,9 +45,9 @@ sealed class WhenMissingCase {
 
 // Always must be first in the list
 object UnknownMissingCase : WhenMissingCase() {
-    override fun toString() = "unknown"
+    override fun toString(): String = "unknown"
 
-    override val branchConditionText = "else"
+    override val branchConditionText: String = "else"
 }
 
 val List<WhenMissingCase>.hasUnknown: Boolean
@@ -64,9 +65,9 @@ private interface WhenExhaustivenessChecker {
 }
 
 object NullMissingCase : WhenMissingCase() {
-    override fun toString() = branchConditionText
+    override fun toString(): String = branchConditionText
 
-    override val branchConditionText = "null"
+    override val branchConditionText: String = "null"
 }
 
 // It's not a regular exhaustiveness checker, invoke it only inside other checkers
@@ -92,9 +93,9 @@ private object WhenOnNullableExhaustivenessChecker /* : WhenExhaustivenessChecke
 }
 
 class BooleanMissingCase(val b: Boolean) : WhenMissingCase() {
-    override fun toString() = branchConditionText
+    override fun toString(): String = branchConditionText
 
-    override val branchConditionText = b.toString()
+    override val branchConditionText: String = b.toString()
 }
 
 private object WhenOnBooleanExhaustivenessChecker : WhenExhaustivenessChecker {
@@ -127,13 +128,13 @@ private object WhenOnBooleanExhaustivenessChecker : WhenExhaustivenessChecker {
 }
 
 class ClassMissingCase(val descriptor: ClassDescriptor) : WhenMissingCase() {
-    val classIsSingleton get() = descriptor.kind.isSingleton
+    val classIsSingleton: Boolean get() = descriptor.kind.isSingleton
 
-    val classFqName get() = DescriptorUtils.getFqNameFromTopLevelClass(descriptor)
+    val classFqName: FqName get() = DescriptorUtils.getFqNameFromTopLevelClass(descriptor)
 
-    override fun toString() = descriptor.name.identifier.let { if (classIsSingleton) it else "is $it" }
+    override fun toString(): String = descriptor.name.identifier.let { if (classIsSingleton) it else "is $it" }
 
-    override val branchConditionText = classFqName.asString().let { if (classIsSingleton) it else "is $it" }
+    override val branchConditionText: String = classFqName.asString().let { if (classIsSingleton) it else "is $it" }
 }
 
 internal abstract class WhenOnClassExhaustivenessChecker : WhenExhaustivenessChecker {
@@ -264,7 +265,7 @@ object WhenChecker {
     )
 
     @JvmStatic
-    fun isWhenByEnum(expression: KtWhenExpression, context: BindingContext) =
+    fun isWhenByEnum(expression: KtWhenExpression, context: BindingContext): Boolean =
         getClassDescriptorOfTypeIfEnum(whenSubjectType(expression, context)) != null
 
     @JvmStatic
@@ -282,7 +283,7 @@ object WhenChecker {
 
 
     @JvmStatic
-    fun whenSubjectType(expression: KtWhenExpression, context: BindingContext) =
+    fun whenSubjectType(expression: KtWhenExpression, context: BindingContext): KotlinType? =
         expression.subjectExpression?.let { context.get(SMARTCAST, it)?.defaultType ?: context.getType(it) }
 
     @JvmStatic
@@ -290,14 +291,14 @@ object WhenChecker {
         expression: KtWhenExpression,
         context: BindingContext,
         enumClassDescriptor: ClassDescriptor
-    ) = WhenOnEnumExhaustivenessChecker.getMissingCases(expression, context, enumClassDescriptor, false)
+    ): List<WhenMissingCase> = WhenOnEnumExhaustivenessChecker.getMissingCases(expression, context, enumClassDescriptor, false)
 
     @JvmStatic
     fun getSealedMissingCases(
         expression: KtWhenExpression,
         context: BindingContext,
         sealedClassDescriptor: ClassDescriptor
-    ) = WhenOnSealedExhaustivenessChecker.getMissingCases(expression, context, sealedClassDescriptor, false)
+    ): List<WhenMissingCase> = WhenOnSealedExhaustivenessChecker.getMissingCases(expression, context, sealedClassDescriptor, false)
 
     fun getMissingCases(expression: KtWhenExpression, context: BindingContext): List<WhenMissingCase> {
         val type = whenSubjectType(expression, context) ?: return listOf(UnknownMissingCase)
@@ -308,7 +309,7 @@ object WhenChecker {
     }
 
     @JvmStatic
-    fun isWhenExhaustive(expression: KtWhenExpression, trace: BindingTrace) =
+    fun isWhenExhaustive(expression: KtWhenExpression, trace: BindingTrace): Boolean =
         if (getMissingCases(expression, trace.bindingContext).isEmpty()) {
             trace.record(BindingContext.EXHAUSTIVE_WHEN, expression)
             true
@@ -316,7 +317,7 @@ object WhenChecker {
             false
         }
 
-    fun containsNullCase(expression: KtWhenExpression, context: BindingContext) =
+    fun containsNullCase(expression: KtWhenExpression, context: BindingContext): Boolean =
         WhenOnNullableExhaustivenessChecker.getMissingCases(expression, context, true).isEmpty()
 
     fun checkDuplicatedLabels(expression: KtWhenExpression, trace: BindingTrace) {

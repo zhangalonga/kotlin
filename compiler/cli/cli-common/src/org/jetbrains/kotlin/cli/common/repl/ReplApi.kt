@@ -23,8 +23,8 @@ import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.reflect.KClass
 
-const val REPL_CODE_LINE_FIRST_NO = 1
-const val REPL_CODE_LINE_FIRST_GEN = 1
+const val REPL_CODE_LINE_FIRST_NO: Int = 1
+const val REPL_CODE_LINE_FIRST_GEN: Int = 1
 
 data class ReplCodeLine(val no: Int, val generation: Int, val code: String) : Serializable {
     companion object {

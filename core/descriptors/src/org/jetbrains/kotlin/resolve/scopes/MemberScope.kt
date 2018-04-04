@@ -45,9 +45,9 @@ interface MemberScope : ResolutionScope {
             p.println("Empty member scope")
         }
 
-        override fun getFunctionNames() = emptySet<Name>()
-        override fun getVariableNames() = emptySet<Name>()
-        override fun getClassifierNames() = emptySet<Name>()
+        override fun getFunctionNames(): Set<Name> = emptySet<Name>()
+        override fun getVariableNames(): Set<Name> = emptySet<Name>()
+        override fun getClassifierNames(): Set<Name> = emptySet<Name>()
     }
 
     companion object {
@@ -55,7 +55,7 @@ interface MemberScope : ResolutionScope {
     }
 }
 
-fun MemberScope.computeAllNames() = getClassifierNames()?.let { getFunctionNames() + getVariableNames() + it }
+fun MemberScope.computeAllNames(): Set<Name>? = getClassifierNames()?.let { getFunctionNames() + getVariableNames() + it }
 
 fun Collection<MemberScope>.flatMapClassifierNamesOrNull(): MutableSet<Name>? =
         flatMapToNullable(hashSetOf(), MemberScope::getClassifierNames)
@@ -107,7 +107,7 @@ class DescriptorKindFilter(
         return DescriptorKindFilter(mask, excludes)
     }
 
-    fun intersect(other: DescriptorKindFilter) = DescriptorKindFilter(kindMask and other.kindMask, excludes + other.excludes)
+    fun intersect(other: DescriptorKindFilter): DescriptorKindFilter = DescriptorKindFilter(kindMask and other.kindMask, excludes + other.excludes)
 
     override fun toString(): String {
         val predefinedFilterName = DEBUG_PREDEFINED_FILTERS_MASK_NAMES.firstOrNull { it.mask == kindMask } ?.name
@@ -188,26 +188,22 @@ abstract class DescriptorKindExclude {
      */
     abstract val fullyExcludedDescriptorKinds: Int
 
-    override fun toString() = this::class.java.simpleName
+    override fun toString(): String = this::class.java.simpleName
 
     object Extensions : DescriptorKindExclude() {
-        override fun excludes(descriptor: DeclarationDescriptor)
-                = descriptor is CallableDescriptor && descriptor.extensionReceiverParameter != null
+        override fun excludes(descriptor: DeclarationDescriptor): Boolean = descriptor is CallableDescriptor && descriptor.extensionReceiverParameter != null
 
         override val fullyExcludedDescriptorKinds: Int get() = 0
     }
 
     object NonExtensions : DescriptorKindExclude() {
-        override fun excludes(descriptor: DeclarationDescriptor)
-                = descriptor !is CallableDescriptor || descriptor.extensionReceiverParameter == null
+        override fun excludes(descriptor: DeclarationDescriptor): Boolean = descriptor !is CallableDescriptor || descriptor.extensionReceiverParameter == null
 
-        override val fullyExcludedDescriptorKinds
-                = DescriptorKindFilter.ALL_KINDS_MASK and (DescriptorKindFilter.FUNCTIONS_MASK or DescriptorKindFilter.VARIABLES_MASK).inv()
+        override val fullyExcludedDescriptorKinds: Int = DescriptorKindFilter.ALL_KINDS_MASK and (DescriptorKindFilter.FUNCTIONS_MASK or DescriptorKindFilter.VARIABLES_MASK).inv()
     }
 
     object EnumEntry : DescriptorKindExclude() {
-        override fun excludes(descriptor: DeclarationDescriptor)
-                = descriptor is ClassDescriptor && descriptor.kind == ClassKind.ENUM_ENTRY
+        override fun excludes(descriptor: DeclarationDescriptor): Boolean = descriptor is ClassDescriptor && descriptor.kind == ClassKind.ENUM_ENTRY
 
         override val fullyExcludedDescriptorKinds: Int get() = 0
     }

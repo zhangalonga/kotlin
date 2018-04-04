@@ -21,7 +21,7 @@ open class SetSlice<K> @JvmOverloads constructor(rewritePolicy: RewritePolicy, i
     BasicWritableSlice<K, Boolean>(rewritePolicy, isCollective) {
     companion object {
         @JvmField
-        val DEFAULT = false
+        val DEFAULT: Boolean = false
     }
 
     override fun check(key: K, value: Boolean?): Boolean {

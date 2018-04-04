@@ -23,7 +23,7 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 
 class KotlinNewActivityNotification : EditorNotifications.Provider<EditorNotificationPanel>() {
-    override fun getKey() = KEY
+    override fun getKey(): Key<EditorNotificationPanel> = KEY
 
     override fun createNotificationPanel(file: VirtualFile, editor: FileEditor): EditorNotificationPanel? {
         if (NewKotlinActivityAction.willBeConvertedToKotlin(file)) {

@@ -28,8 +28,8 @@ class KotlinStyleGuideCodeStyle : PredefinedCodeStyle("Kotlin style guide", Kotl
     }
 
     companion object {
-        const val CODE_STYLE_ID = "KOTLIN_OFFICIAL"
-        const val CODE_STYLE_TITLE = "Kotlin Coding Conventions"
+        const val CODE_STYLE_ID: String = "KOTLIN_OFFICIAL"
+        const val CODE_STYLE_TITLE: String = "Kotlin Coding Conventions"
 
         fun apply(settings: CodeStyleSettings) {
             applyToKotlinCustomSettings(settings.kotlinCustomSettings)

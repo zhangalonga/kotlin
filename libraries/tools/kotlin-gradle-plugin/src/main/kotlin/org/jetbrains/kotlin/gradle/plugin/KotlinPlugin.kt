@@ -30,16 +30,17 @@ import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin.Companion.getKa
 import org.jetbrains.kotlin.gradle.tasks.*
 import org.jetbrains.kotlin.gradle.utils.*
 import org.jetbrains.kotlin.incremental.configureMultiProjectIncrementalCompilation
+import org.jetbrains.kotlin.incremental.multiproject.ArtifactDifferenceRegistryProvider
 import java.io.File
 import java.net.URL
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.jar.Manifest
 
-val KOTLIN_AFTER_JAVA_TASK_SUFFIX = "AfterJava"
-val KOTLIN_DSL_NAME = "kotlin"
-val KOTLIN_JS_DSL_NAME = "kotlin2js"
-val KOTLIN_OPTIONS_DSL_NAME = "kotlinOptions"
+val KOTLIN_AFTER_JAVA_TASK_SUFFIX: String = "AfterJava"
+val KOTLIN_DSL_NAME: String = "kotlin"
+val KOTLIN_JS_DSL_NAME: String = "kotlin2js"
+val KOTLIN_OPTIONS_DSL_NAME: String = "kotlinOptions"
 
 internal abstract class KotlinSourceSetProcessor<T : AbstractKotlinCompile<*>>(
         val project: Project,
@@ -500,10 +501,11 @@ class KotlinConfigurationTools internal constructor(val kotlinSourceSetProvider:
  *       with the new public API */
 abstract class AbstractAndroidProjectHandler<V>(private val kotlinConfigurationTools: KotlinConfigurationTools) {
 
-    protected val artifactDifferenceRegistryProvider get() =
+    protected val artifactDifferenceRegistryProvider: ArtifactDifferenceRegistryProvider
+        get() =
             kotlinConfigurationTools.kotlinGradleBuildServices.artifactDifferenceRegistryProvider
 
-    protected val logger = Logging.getLogger(this.javaClass)
+    protected val logger: Logger? = Logging.getLogger(this.javaClass)
 
     abstract fun forEachVariant(project: Project, action: (V) -> Unit): Unit
     abstract fun getTestedVariantData(variantData: V): V?
@@ -515,7 +517,7 @@ abstract class AbstractAndroidProjectHandler<V>(private val kotlinConfigurationT
     protected abstract fun getJavaTask(variantData: V): AbstractCompile?
     protected abstract fun addJavaSourceDirectoryToVariantModel(variantData: V, javaSourceDirectory: File): Unit
 
-    protected open fun checkVariantIsValid(variant: V) = Unit
+    protected open fun checkVariantIsValid(variant: V): Unit = Unit
 
     protected abstract fun wireKotlinTasks(project: Project,
                                            androidPlugin: BasePlugin,

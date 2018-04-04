@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.types.typeUtil.isBoolean
 import org.jetbrains.kotlin.utils.sure
 
 class KotlinWithIfExpressionSurrounder(val withElse: Boolean) : KotlinExpressionSurrounder() {
-    override fun isApplicable(expression: KtExpression) =
+    override fun isApplicable(expression: KtExpression): Boolean =
         super.isApplicable(expression) && (expression.analyze(BodyResolveMode.PARTIAL).getType(expression)?.isBoolean() ?: false)
 
     override fun surroundExpression(project: Project, editor: Editor, expression: KtExpression): TextRange? {
@@ -54,5 +54,5 @@ class KotlinWithIfExpressionSurrounder(val withElse: Boolean) : KotlinExpression
         return TextRange(firstStatementInThenRange.startOffset, firstStatementInThenRange.startOffset)
     }
 
-    override fun getTemplateDescription() = "if (expr) { ... }" + (if (withElse) " else { ... }" else "")
+    override fun getTemplateDescription(): String = "if (expr) { ... }" + (if (withElse) " else { ... }" else "")
 }

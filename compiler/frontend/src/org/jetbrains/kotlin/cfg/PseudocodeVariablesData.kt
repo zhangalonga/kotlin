@@ -67,7 +67,7 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
     fun getDeclaredVariables(pseudocode: Pseudocode, includeInsideLocalDeclarations: Boolean): Set<VariableDescriptor> =
         getAllDeclaredVariables(pseudocode, includeInsideLocalDeclarations).allVars
 
-    fun isVariableWithTrivialInitializer(variableDescriptor: VariableDescriptor) =
+    fun isVariableWithTrivialInitializer(variableDescriptor: VariableDescriptor): Boolean =
         variableDescriptor in rootVariables.valsWithTrivialInitializer
 
     private fun getAllDeclaredVariables(pseudocode: Pseudocode, includeInsideLocalDeclarations: Boolean): VariablesForDeclaration {

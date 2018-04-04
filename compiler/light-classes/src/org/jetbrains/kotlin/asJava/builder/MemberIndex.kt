@@ -24,7 +24,7 @@ import com.intellij.psi.StubBasedPsiElement
 data class MemberIndex(private val index: Int) {
     companion object {
         @JvmField
-        val KEY = Key.create<MemberIndex>("MEMBER_INDEX")
+        val KEY: Key<MemberIndex> = Key.create<MemberIndex>("MEMBER_INDEX")
     }
 }
 

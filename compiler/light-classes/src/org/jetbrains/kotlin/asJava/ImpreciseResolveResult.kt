@@ -21,7 +21,7 @@ enum class ImpreciseResolveResult {
     NO_MATCH,
     UNSURE;
 
-    inline fun ifSure(body: (Boolean) -> Unit) = when (this) {
+    inline fun ifSure(body: (Boolean) -> Unit): Unit = when (this) {
         MATCH -> body(true)
         NO_MATCH -> body(false)
         UNSURE -> Unit

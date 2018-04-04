@@ -75,7 +75,7 @@ class DescriptorBasedFunctionHandle(
     override val isInterfaceDeclaration: Boolean
         get() = DescriptorUtils.isInterface(descriptor.containingDeclaration)
 
-    override fun getOverridden() = overridden
+    override fun getOverridden(): List<DescriptorBasedFunctionHandle> = overridden
 
     override fun hashCode(): Int {
         return descriptor.hashCode()

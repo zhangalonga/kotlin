@@ -29,7 +29,7 @@ import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
 
-fun Element.getOption(name: String) = getChildren("option").firstOrNull { it.getAttribute("name").value == name }
+fun Element.getOption(name: String): Element? = getChildren("option").firstOrNull { it.getAttribute("name").value == name }
 
 private fun Element.getOptionValue(name: String) = getOption(name)?.getAttribute("value")?.value
 

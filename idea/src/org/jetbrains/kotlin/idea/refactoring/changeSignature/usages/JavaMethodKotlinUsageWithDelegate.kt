@@ -36,7 +36,7 @@ class JavaMethodKotlinCallUsage(
         propagationCall: Boolean
 ): JavaMethodKotlinUsageWithDelegate<KtCallElement>(callElement, javaMethodChangeInfo) {
     @Suppress("UNCHECKED_CAST")
-    override val delegateUsage = when {
+    override val delegateUsage: KotlinUsageInfo<KtCallElement> = when {
         propagationCall -> KotlinCallerCallUsage(psiElement)
         psiElement is KtConstructorDelegationCall -> KotlinConstructorDelegationCallUsage(psiElement, javaMethodChangeInfo)
         else -> KotlinFunctionCallUsage(psiElement, javaMethodChangeInfo.methodDescriptor.originalPrimaryCallable)

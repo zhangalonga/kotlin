@@ -30,8 +30,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import java.util.*
 
 class KotlinDeclarationSelectioner : ExtendWordSelectionHandlerBase() {
-    override fun canSelect(e: PsiElement)
-            = e is KtDeclaration
+    override fun canSelect(e: PsiElement): Boolean = e is KtDeclaration
 
     override fun select(e: PsiElement, editorText: CharSequence, cursorOffset: Int, editor: Editor): List<TextRange>? {
         if (e is KtDestructuringDeclaration) {

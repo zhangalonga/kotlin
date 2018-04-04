@@ -54,9 +54,9 @@ class AutomaticOverloadsRenamer(function: KtNamedFunction, newName: String) : Au
         suggestAllNames(function.name, newName)
     }
 
-    override fun getDialogTitle() = "Rename Overloads"
-    override fun getDialogDescription() = "Rename overloads to:"
-    override fun entityName() = "Overload"
+    override fun getDialogTitle(): String = "Rename Overloads"
+    override fun getDialogDescription(): String = "Rename overloads to:"
+    override fun entityName(): String = "Overload"
     override fun isSelectedByDefault(): Boolean = true
 }
 
@@ -86,14 +86,14 @@ class AutomaticOverloadsRenamerFactory : AutomaticRenamerFactory {
         return element.getOverloads().size > 1
     }
 
-    override fun getOptionName() = RefactoringBundle.message("rename.overloads")
+    override fun getOptionName(): String? = RefactoringBundle.message("rename.overloads")
 
-    override fun isEnabled() = JavaRefactoringSettings.getInstance().isRenameOverloads
+    override fun isEnabled(): Boolean = JavaRefactoringSettings.getInstance().isRenameOverloads
 
     override fun setEnabled(enabled: Boolean) {
         JavaRefactoringSettings.getInstance().isRenameOverloads = enabled
     }
 
-    override fun createRenamer(element: PsiElement, newName: String, usages: Collection<UsageInfo>)
-            = AutomaticOverloadsRenamer(element as KtNamedFunction, newName)
+    override fun createRenamer(element: PsiElement, newName: String, usages: Collection<UsageInfo>): AutomaticOverloadsRenamer =
+        AutomaticOverloadsRenamer(element as KtNamedFunction, newName)
 }

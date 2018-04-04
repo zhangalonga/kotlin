@@ -7,13 +7,14 @@ package org.jetbrains.kotlin.ir.backend.js.transformers.irToJs
 
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.js.backend.ast.JsDynamicScope
+import org.jetbrains.kotlin.js.backend.ast.JsName
 import org.jetbrains.kotlin.js.backend.ast.JsVars
 import org.jetbrains.kotlin.name.Name
 
 // TODO don't use JsDynamicScope
-val dummyScope = JsDynamicScope
+val dummyScope: JsDynamicScope = JsDynamicScope
 
-fun Name.toJsName() =
+fun Name.toJsName(): JsName =
     // TODO sanitize
     dummyScope.declareName(asString())
 

@@ -68,7 +68,7 @@ class LookupCancelWatcher(project: Project) : AbstractProjectComponent(project) 
     companion object {
         fun getInstance(project: Project): LookupCancelWatcher = project.getComponent(LookupCancelWatcher::class.java)!!
 
-        val AUTO_POPUP_AT = Key<Int>("LookupCancelWatcher.AUTO_POPUP_AT")
+        val AUTO_POPUP_AT: Key<Int> = Key<Int>("LookupCancelWatcher.AUTO_POPUP_AT")
     }
 
     fun wasAutoPopupRecentlyCancelled(editor: Editor, offset: Int): Boolean {

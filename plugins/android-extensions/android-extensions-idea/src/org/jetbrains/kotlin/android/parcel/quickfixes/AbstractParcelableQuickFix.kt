@@ -30,10 +30,10 @@ import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 abstract class AbstractParcelableQuickFix<T: KtElement>(element: T) : KotlinQuickFixAction<T>(element) {
     protected companion object {
-        fun <T : KtElement> T.shortenReferences() = ShortenReferences.DEFAULT.process(this)
+        fun <T : KtElement> T.shortenReferences(): KtElement = ShortenReferences.DEFAULT.process(this)
     }
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     abstract fun invoke(ktPsiFactory: KtPsiFactory, element: T)
 
@@ -45,9 +45,9 @@ abstract class AbstractParcelableQuickFix<T: KtElement>(element: T) : KotlinQuic
 
     abstract class AbstractFactory(private val f: Diagnostic.() -> IntentionAction?) : KotlinSingleIntentionActionFactory() {
         companion object {
-            inline fun <reified T: KtElement> Diagnostic.findElement() = psiElement.getNonStrictParentOfType<T>()
+            inline fun <reified T: KtElement> Diagnostic.findElement(): T? = psiElement.getNonStrictParentOfType<T>()
         }
 
-        override fun createAction(diagnostic: Diagnostic) = f(diagnostic)
+        override fun createAction(diagnostic: Diagnostic): IntentionAction? = f(diagnostic)
     }
 }

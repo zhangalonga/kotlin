@@ -38,16 +38,16 @@ open class QuickFixWithDelegateFactory(
         startInWriteAction = delegate != null && delegate.startInWriteAction()
     }
 
-    override fun getFamilyName() = familyName
+    override fun getFamilyName(): String = familyName
 
-    override fun getText() = text
+    override fun getText(): String = text
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile): Boolean {
         val action = delegateFactory() ?: return false
         return action.isAvailable(project, editor, file)
     }
 
-    override fun startInWriteAction() = startInWriteAction
+    override fun startInWriteAction(): Boolean = startInWriteAction
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         if (!FileModificationService.getInstance().prepareFileForWrite(file)) {

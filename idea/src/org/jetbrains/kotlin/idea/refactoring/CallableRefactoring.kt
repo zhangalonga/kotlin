@@ -57,7 +57,7 @@ abstract class CallableRefactoring<out T: CallableDescriptor>(
     private val LOG = Logger.getInstance(CallableRefactoring::class.java)
 
     @Suppress("UNCHECKED_CAST")
-    val callableDescriptor = callableDescriptor.liftToExpected() as? T ?: callableDescriptor
+    val callableDescriptor: T = callableDescriptor.liftToExpected() as? T ?: callableDescriptor
 
     private val kind = (callableDescriptor as? CallableMemberDescriptor)?.kind ?: CallableMemberDescriptor.Kind.DECLARATION
 

@@ -41,9 +41,9 @@ interface KaptSourceSetModel : Serializable {
     val generatedClassesDir: String
     val generatedKotlinSourcesDir: String
 
-    val generatedSourcesDirFile get() = generatedSourcesDir.takeIf { it.isNotEmpty() }?.let(::File)
-    val generatedClassesDirFile get() = generatedClassesDir.takeIf { it.isNotEmpty() }?.let(::File)
-    val generatedKotlinSourcesDirFile get() = generatedKotlinSourcesDir.takeIf { it.isNotEmpty() }?.let(::File)
+    val generatedSourcesDirFile: File? get() = generatedSourcesDir.takeIf { it.isNotEmpty() }?.let(::File)
+    val generatedClassesDirFile: File? get() = generatedClassesDir.takeIf { it.isNotEmpty() }?.let(::File)
+    val generatedKotlinSourcesDirFile: File? get() = generatedKotlinSourcesDir.takeIf { it.isNotEmpty() }?.let(::File)
 }
 
 class KaptSourceSetModelImpl(
@@ -72,8 +72,8 @@ class KaptProjectResolverExtension : AbstractProjectResolverExtension() {
         private val LOG = Logger.getInstance(KaptProjectResolverExtension::class.java)
     }
 
-    override fun getExtraProjectModelClasses() = setOf(KaptGradleModel::class.java)
-    override fun getToolingExtensionsClasses() = setOf(KaptModelBuilderService::class.java, Unit::class.java)
+    override fun getExtraProjectModelClasses(): Set<Class<KaptGradleModel>> = setOf(KaptGradleModel::class.java)
+    override fun getToolingExtensionsClasses(): Set<Class<out Any>> = setOf(KaptModelBuilderService::class.java, Unit::class.java)
 
     override fun populateModuleExtraModels(gradleModule: IdeaModule, ideModule: DataNode<ModuleData>) {
         val kaptModel = resolverCtx.getExtraProject(gradleModule, KaptGradleModel::class.java) ?: return

@@ -185,5 +185,5 @@ abstract class DeclarationGeneratorExtension(val declarationGenerator: Declarati
         }
 }
 
-fun Generator.createBodyGenerator(scopeOwnerSymbol: IrSymbol) =
+fun Generator.createBodyGenerator(scopeOwnerSymbol: IrSymbol): BodyGenerator =
     BodyGenerator(scopeOwnerSymbol, context)

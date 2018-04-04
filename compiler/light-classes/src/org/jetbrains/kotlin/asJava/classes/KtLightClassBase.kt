@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.asJava.classes
 
+import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.ItemPresentationProviders
 import com.intellij.psi.*
 import com.intellij.psi.impl.PsiClassImplUtil
@@ -31,27 +32,27 @@ abstract class KtLightClassBase protected constructor(manager: PsiManager)
     : AbstractLightClass(manager, KotlinLanguage.INSTANCE), KtLightClass, PsiExtensibleClass {
     private val myInnersCache = ClassInnerStuffCache(this)
 
-    override fun getDelegate() = clsDelegate
+    override fun getDelegate(): PsiClass = clsDelegate
 
-    override fun getFields() = myInnersCache.fields
+    override fun getFields(): Array<out PsiField> = myInnersCache.fields
 
-    override fun getMethods() = myInnersCache.methods
+    override fun getMethods(): Array<out PsiMethod> = myInnersCache.methods
 
-    override fun getConstructors() = myInnersCache.constructors
+    override fun getConstructors(): Array<out PsiMethod> = myInnersCache.constructors
 
-    override fun getInnerClasses() = myInnersCache.innerClasses
+    override fun getInnerClasses(): Array<out PsiClass> = myInnersCache.innerClasses
 
-    override fun getAllFields() = PsiClassImplUtil.getAllFields(this)
+    override fun getAllFields(): Array<out PsiField> = PsiClassImplUtil.getAllFields(this)
 
-    override fun getAllMethods() = PsiClassImplUtil.getAllMethods(this)
+    override fun getAllMethods(): Array<out PsiMethod> = PsiClassImplUtil.getAllMethods(this)
 
-    override fun getAllInnerClasses() = PsiClassImplUtil.getAllInnerClasses(this)
+    override fun getAllInnerClasses(): Array<out PsiClass> = PsiClassImplUtil.getAllInnerClasses(this)
 
-    override fun findFieldByName(name: String, checkBases: Boolean) = myInnersCache.findFieldByName(name, checkBases)
+    override fun findFieldByName(name: String, checkBases: Boolean): PsiField? = myInnersCache.findFieldByName(name, checkBases)
 
-    override fun findMethodsByName(name: String, checkBases: Boolean) = myInnersCache.findMethodsByName(name, checkBases)
+    override fun findMethodsByName(name: String, checkBases: Boolean): Array<out PsiMethod> = myInnersCache.findMethodsByName(name, checkBases)
 
-    override fun findInnerClassByName(name: String, checkBases: Boolean) = myInnersCache.findInnerClassByName(name, checkBases)
+    override fun findInnerClassByName(name: String, checkBases: Boolean): PsiClass? = myInnersCache.findInnerClassByName(name, checkBases)
 
     override fun getOwnFields(): List<PsiField> = KtLightFieldImpl.fromClsFields(delegate, this)
 
@@ -72,13 +73,13 @@ abstract class KtLightClassBase protected constructor(manager: PsiManager)
         return if (origin == null) "" else origin.text
     }
 
-    override fun getLanguage() = KotlinLanguage.INSTANCE
+    override fun getLanguage(): KotlinLanguage = KotlinLanguage.INSTANCE
 
-    override fun getPresentation() = ItemPresentationProviders.getItemPresentation(this)
+    override fun getPresentation(): ItemPresentation? = ItemPresentationProviders.getItemPresentation(this)
 
     abstract override fun equals(other: Any?): Boolean
 
     abstract override fun hashCode(): Int
 
-    override fun getContext() = parent
+    override fun getContext(): PsiElement? = parent
 }

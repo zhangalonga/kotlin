@@ -47,7 +47,7 @@ class DecompileKotlinToJavaAction : AnAction() {
 
 }
 
-fun KtFile.canBeDecompiledToJava() = isCompiled && virtualFile?.fileType == JavaClassFileType.INSTANCE
+fun KtFile.canBeDecompiledToJava(): Boolean = isCompiled && virtualFile?.fileType == JavaClassFileType.INSTANCE
 
 // Add action to "Attach sources" notification panel
 class DecompileKotlinToJavaActionProvider : AttachSourcesProvider {

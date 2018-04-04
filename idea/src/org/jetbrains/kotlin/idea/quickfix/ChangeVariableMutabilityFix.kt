@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
 
 class ChangeVariableMutabilityFix(element: KtValVarKeywordOwner, private val makeVar: Boolean) : KotlinQuickFixAction<KtValVarKeywordOwner>(element) {
 
-    override fun getText() = if (makeVar) "Make variable mutable" else "Make variable immutable"
+    override fun getText(): String = if (makeVar) "Make variable mutable" else "Make variable immutable"
 
     override fun getFamilyName(): String = text
 
@@ -63,11 +63,11 @@ class ChangeVariableMutabilityFix(element: KtValVarKeywordOwner, private val mak
             }
         }
 
-        val VAL_REASSIGNMENT_FACTORY = ReassignmentActionFactory(Errors.VAL_REASSIGNMENT)
+        val VAL_REASSIGNMENT_FACTORY: ReassignmentActionFactory = ReassignmentActionFactory(Errors.VAL_REASSIGNMENT)
 
-        val CAPTURED_VAL_INITIALIZATION_FACTORY = ReassignmentActionFactory(Errors.CAPTURED_VAL_INITIALIZATION)
+        val CAPTURED_VAL_INITIALIZATION_FACTORY: ReassignmentActionFactory = ReassignmentActionFactory(Errors.CAPTURED_VAL_INITIALIZATION)
 
-        val CAPTURED_MEMBER_VAL_INITIALIZATION_FACTORY = ReassignmentActionFactory(Errors.CAPTURED_MEMBER_VAL_INITIALIZATION)
+        val CAPTURED_MEMBER_VAL_INITIALIZATION_FACTORY: ReassignmentActionFactory = ReassignmentActionFactory(Errors.CAPTURED_MEMBER_VAL_INITIALIZATION)
 
         val VAR_OVERRIDDEN_BY_VAL_FACTORY: KotlinSingleIntentionActionFactory = object: KotlinSingleIntentionActionFactory() {
             override fun createAction(diagnostic: Diagnostic): IntentionAction? {
@@ -86,7 +86,7 @@ class ChangeVariableMutabilityFix(element: KtValVarKeywordOwner, private val mak
             }
         }
 
-        val LATEINIT_VAL_FACTORY = object: KotlinSingleIntentionActionFactory() {
+        val LATEINIT_VAL_FACTORY: KotlinSingleIntentionActionFactory = object: KotlinSingleIntentionActionFactory() {
             override fun createAction(diagnostic: Diagnostic): IntentionAction? {
                 val lateinitElement = Errors.INAPPLICABLE_LATEINIT_MODIFIER.cast(diagnostic).psiElement
                 val property = lateinitElement.getStrictParentOfType<KtProperty>() ?: return null

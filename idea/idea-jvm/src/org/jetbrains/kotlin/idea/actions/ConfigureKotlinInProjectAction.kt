@@ -43,7 +43,7 @@ abstract class ConfigureKotlinInProjectAction : AnAction() {
 
 
 class ConfigureKotlinJsInProjectAction: ConfigureKotlinInProjectAction() {
-    override fun getApplicableConfigurators(project: Project) = getAbleToRunConfigurators(project).filter {
+    override fun getApplicableConfigurators(project: Project): List<KotlinProjectConfigurator> = getAbleToRunConfigurators(project).filter {
         it.targetPlatform == JsPlatform
     }
 
@@ -56,7 +56,7 @@ class ConfigureKotlinJsInProjectAction: ConfigureKotlinInProjectAction() {
 }
 
 class ConfigureKotlinJavaInProjectAction: ConfigureKotlinInProjectAction() {
-    override fun getApplicableConfigurators(project: Project) = getAbleToRunConfigurators(project).filter {
+    override fun getApplicableConfigurators(project: Project): List<KotlinProjectConfigurator> = getAbleToRunConfigurators(project).filter {
         it.targetPlatform is JvmPlatform
     }
 }

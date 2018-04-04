@@ -60,9 +60,9 @@ sealed class SyntheticPropertyAccessorReference(expression: KtNameReferenceExpre
         return name.startsWith("set")
     }
 
-    override fun getRangeInElement() = TextRange(0, expression.textLength)
+    override fun getRangeInElement(): TextRange = TextRange(0, expression.textLength)
 
-    override fun canRename() = true
+    override fun canRename(): Boolean = true
 
     private fun renameByPropertyName(newName: String): PsiElement? {
         val nameIdentifier = KtPsiFactory(expression).createNameIdentifier(newName)

@@ -33,5 +33,5 @@ class TypeTable(typeTable: ProtoBuf.TypeTable) {
         else originalTypes
     }
 
-    operator fun get(index: Int) = types[index]
+    operator fun get(index: Int): ProtoBuf.Type = types[index]
 }

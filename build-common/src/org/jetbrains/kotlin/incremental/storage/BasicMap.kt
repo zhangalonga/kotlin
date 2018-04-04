@@ -28,7 +28,7 @@ abstract class BasicMap<K : Comparable<K>, V>(
         keyDescriptor: KeyDescriptor<K>,
         valueExternalizer: DataExternalizer<V>
 ) {
-    protected val storage = LazyStorage(storageFile, keyDescriptor, valueExternalizer)
+    protected val storage: LazyStorage<K, V> = LazyStorage(storageFile, keyDescriptor, valueExternalizer)
 
     fun clean() {
         storage.clean()

@@ -64,8 +64,10 @@ class AndroidExtensionsGradleModelImpl(
 
 @Suppress("unused")
 class AndroidExtensionsProjectResolverExtension : AbstractProjectResolverExtension() {
-    override fun getExtraProjectModelClasses() = setOf(AndroidExtensionsGradleModel::class.java)
-    override fun getToolingExtensionsClasses() = setOf(AndroidExtensionsModelBuilderService::class.java)
+    override fun getExtraProjectModelClasses(): Set<Class<AndroidExtensionsGradleModel>> =
+        setOf(AndroidExtensionsGradleModel::class.java)
+    override fun getToolingExtensionsClasses(): Set<Class<AndroidExtensionsModelBuilderService>> =
+        setOf(AndroidExtensionsModelBuilderService::class.java)
 
     override fun populateModuleExtraModels(gradleModule: IdeaModule, ideModule: DataNode<ModuleData>) {
         val androidExtensionsModel = resolverCtx.getExtraProject(gradleModule, AndroidExtensionsGradleModel::class.java) ?: return

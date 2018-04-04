@@ -21,5 +21,5 @@ import org.jetbrains.kotlin.container.StorageComponentContainer
 abstract class TargetEnvironment(private val name: String) {
     abstract fun configure(container: StorageComponentContainer)
 
-    override fun toString() = name
+    override fun toString(): String = name
 }

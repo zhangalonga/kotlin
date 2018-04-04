@@ -24,16 +24,16 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 class StarProjectionImpl(
         private val typeParameter: TypeParameterDescriptor
 ) : TypeProjectionBase() {
-    override fun isStarProjection() = true
+    override fun isStarProjection(): Boolean = true
 
-    override fun getProjectionKind() = Variance.OUT_VARIANCE
+    override fun getProjectionKind(): Variance = Variance.OUT_VARIANCE
 
     // No synchronization here: there's no problem in accidentally computing this twice
     private val _type: KotlinType by lazy(LazyThreadSafetyMode.PUBLICATION) {
         typeParameter.starProjectionType()
     }
 
-    override fun getType() = _type
+    override fun getType(): KotlinType = _type
 }
 
 fun TypeParameterDescriptor.starProjectionType(): KotlinType {
@@ -53,9 +53,9 @@ fun TypeParameterDescriptor.starProjectionType(): KotlinType {
 class TypeBasedStarProjectionImpl(
         private val _type: KotlinType
 ) : TypeProjectionBase() {
-    override fun isStarProjection() = true
+    override fun isStarProjection(): Boolean = true
 
-    override fun getProjectionKind() = Variance.OUT_VARIANCE
+    override fun getProjectionKind(): Variance = Variance.OUT_VARIANCE
 
-    override fun getType() = _type
+    override fun getType(): KotlinType = _type
 }

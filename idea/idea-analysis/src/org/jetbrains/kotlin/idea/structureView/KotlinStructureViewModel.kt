@@ -36,9 +36,9 @@ class KotlinStructureViewModel(ktFile: KtFile, editor: Editor?) :
         withSorters(Sorter.ALPHA_SORTER)
     }
 
-    override fun getNodeProviders() = NODE_PROVIDERS
+    override fun getNodeProviders(): List<KotlinInheritedMembersNodeProvider> = NODE_PROVIDERS
 
-    override fun getFilters() = FILTERS
+    override fun getFilters(): Array<Filter> = FILTERS
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean {
         val value = element.value
@@ -65,9 +65,9 @@ object PublicElementsFilter : Filter {
         return ActionPresentationData("Show non-public", null, PlatformIcons.PRIVATE_ICON)
     }
 
-    override fun getName() = ID
+    override fun getName(): String = ID
 
-    override fun isReverted() = true
+    override fun isReverted(): Boolean = true
 
-    const val ID = "KOTLIN_SHOW_NON_PUBLIC"
+    const val ID: String = "KOTLIN_SHOW_NON_PUBLIC"
 }

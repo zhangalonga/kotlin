@@ -46,12 +46,12 @@ interface IndexedImports {
 }
 
 class AllUnderImportsIndexed(allImports: Collection<KtImportDirective>) : IndexedImports {
-    override val imports = allImports.filter { it.isAllUnder }
-    override fun importsForName(name: Name) = imports
+    override val imports: List<KtImportDirective> = allImports.filter { it.isAllUnder }
+    override fun importsForName(name: Name): List<KtImportDirective> = imports
 }
 
 class ExplicitImportsIndexed(allImports: Collection<KtImportDirective>) : IndexedImports {
-    override val imports = allImports.filter { !it.isAllUnder }
+    override val imports: List<KtImportDirective> = allImports.filter { !it.isAllUnder }
 
     private val nameToDirectives: ListMultimap<Name, KtImportDirective> by lazy {
         val builder = ImmutableListMultimap.builder<Name, KtImportDirective>()
@@ -65,7 +65,7 @@ class ExplicitImportsIndexed(allImports: Collection<KtImportDirective>) : Indexe
         builder.build()
     }
 
-    override fun importsForName(name: Name) = nameToDirectives.get(name)
+    override fun importsForName(name: Name): MutableList<KtImportDirective> = nameToDirectives.get(name)
 }
 
 interface ImportResolver {
@@ -195,7 +195,7 @@ class LazyImportResolver(
         indexedImports.imports.flatMapToNullable(hashSetOf()) { getImportScope(it).computeImportedNames() }
     }
 
-    fun definitelyDoesNotContainName(name: Name) = allNames?.let { name !in it } == true
+    fun definitelyDoesNotContainName(name: Name): Boolean = allNames?.let { name !in it } == true
 
     fun recordLookup(name: Name, location: LookupLocation) {
         if (allNames == null) return
@@ -239,7 +239,7 @@ class LazyImportScope(
         }
     }
 
-    override fun getContributedPackage(name: Name) = null
+    override fun getContributedPackage(name: Name): Nothing? = null
 
     override fun getContributedVariables(name: Name, location: LookupLocation): Collection<VariableDescriptor> {
         if (filteringKind == FilteringKind.INVISIBLE_CLASSES) return listOf()
@@ -278,7 +278,7 @@ class LazyImportScope(
         }
     }
 
-    override fun toString() = "LazyImportScope: " + debugName
+    override fun toString(): String = "LazyImportScope: " + debugName
 
     override fun printStructure(p: Printer) {
         p.println(this::class.java.simpleName, ": ", debugName, " {")
@@ -288,11 +288,11 @@ class LazyImportScope(
         p.println("}")
     }
 
-    override fun definitelyDoesNotContainName(name: Name) = importResolver.definitelyDoesNotContainName(name)
+    override fun definitelyDoesNotContainName(name: Name): Boolean = importResolver.definitelyDoesNotContainName(name)
 
     override fun recordLookup(name: Name, location: LookupLocation) {
         importResolver.recordLookup(name, location)
     }
 
-    override fun computeImportedNames() = importResolver.allNames
+    override fun computeImportedNames(): Set<Name>? = importResolver.allNames
 }

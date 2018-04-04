@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
 object KotlinExtractInterfaceHandler : KotlinExtractSuperHandlerBase(true) {
-    val REFACTORING_NAME = "Extract Interface"
+    val REFACTORING_NAME: String = "Extract Interface"
 
     override fun getErrorMessage(klass: KtClassOrObject): String? {
         if (klass is KtClass && klass.isAnnotation()) return "Interface cannot be extracted from an annotation class"

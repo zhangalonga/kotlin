@@ -44,7 +44,7 @@ open class KotlinJsModuleConfigurator : KotlinWithLibraryConfigurator() {
     override val presentableText: String
         get() = JavaScript.FULL_NAME
 
-    override fun isConfigured(module: Module) = hasKotlinJsRuntimeInScope(module)
+    override fun isConfigured(module: Module): Boolean = hasKotlinJsRuntimeInScope(module)
 
     override val libraryName: String
         get() = JSLibraryStdDescription.LIBRARY_NAME
@@ -70,7 +70,7 @@ open class KotlinJsModuleConfigurator : KotlinWithLibraryConfigurator() {
         get() = JSLibraryType.getInstance()
 
     companion object {
-        const val NAME = JavaScript.LOWER_NAME
+        const val NAME: String = JavaScript.LOWER_NAME
     }
 
     /**

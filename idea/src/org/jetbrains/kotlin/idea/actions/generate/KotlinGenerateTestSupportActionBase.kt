@@ -99,7 +99,7 @@ abstract class KotlinGenerateTestSupportActionBase(
     }
 
     class Test : KotlinGenerateTestSupportActionBase(MethodKind.TEST) {
-        override fun isApplicableTo(framework: TestFramework, targetClass: KtClassOrObject) = true
+        override fun isApplicableTo(framework: TestFramework, targetClass: KtClassOrObject): Boolean = true
     }
 
     class Data : KotlinGenerateTestSupportActionBase(MethodKind.DATA) {

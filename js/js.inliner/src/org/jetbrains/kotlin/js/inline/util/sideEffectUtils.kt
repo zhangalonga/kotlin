@@ -21,10 +21,10 @@ import org.jetbrains.kotlin.js.backend.ast.metadata.SideEffectKind
 import org.jetbrains.kotlin.js.backend.ast.metadata.sideEffects
 import org.jetbrains.kotlin.js.translate.utils.jsAstUtils.any
 
-fun JsExpression.canHaveSideEffect(localVars: Set<JsName>) =
+fun JsExpression.canHaveSideEffect(localVars: Set<JsName>): Boolean =
         any { it is JsExpression && it.canHaveOwnSideEffect(localVars) }
 
-fun JsExpression.canHaveOwnSideEffect(vars: Set<JsName>) = when (this) {
+fun JsExpression.canHaveOwnSideEffect(vars: Set<JsName>): Boolean = when (this) {
     is JsConditional,
     is JsLiteral -> false
     is JsBinaryOperation -> operator.isAssignment

@@ -55,7 +55,7 @@ class IrReturnableBlockImpl(
     startOffset: Int, endOffset: Int, type: KotlinType,
     override val symbol: IrReturnableBlockSymbol, origin: IrStatementOrigin? = null, override val sourceFileName: String = "no source file"
 ) : IrContainerExpressionBase(startOffset, endOffset, type, origin), IrReturnableBlock {
-    override val descriptor = symbol.descriptor
+    override val descriptor: FunctionDescriptor = symbol.descriptor
 
     constructor(
         startOffset: Int,

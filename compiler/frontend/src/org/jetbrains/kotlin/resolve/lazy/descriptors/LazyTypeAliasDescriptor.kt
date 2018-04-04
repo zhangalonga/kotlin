@@ -87,7 +87,7 @@ class LazyTypeAliasDescriptor(
         declaredTypeParameters: List<TypeParameterDescriptor>,
         underlyingType: SimpleType,
         expandedType: SimpleType
-    ) = initialize(
+    ): Unit = initialize(
         declaredTypeParameters,
         storageManager.createLazyValue { underlyingType },
         storageManager.createLazyValue { expandedType }

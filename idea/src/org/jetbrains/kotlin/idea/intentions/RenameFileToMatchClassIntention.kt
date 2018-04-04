@@ -33,7 +33,7 @@ class RenameFileToMatchClassIntention : SelfTargetingRangeIntention<KtClassOrObj
         return element.nameIdentifier?.textRange
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtClassOrObject, editor: Editor?) {
         val file = element.containingKtFile

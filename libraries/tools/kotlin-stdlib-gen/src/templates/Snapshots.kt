@@ -26,7 +26,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_toCollection = fn("toCollection(destination: C)") {
+    val f_toCollection: FamilyPrimitiveMemberDefinition = fn("toCollection(destination: C)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -43,7 +43,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_toSet = fn("toSet()") {
+    val f_toSet: FamilyPrimitiveMemberDefinition = fn("toSet()") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -82,7 +82,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_toHashSet = fn("toHashSet()") {
+    val f_toHashSet: FamilyPrimitiveMemberDefinition = fn("toHashSet()") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -94,7 +94,7 @@ object Snapshots : TemplateGroupBase() {
         body(ArraysOfObjects, ArraysOfPrimitives) { "return toCollection(HashSet<T>(mapCapacity(size)))" }
     }
 
-    val f_toSortedSet = fn("toSortedSet()") {
+    val f_toSortedSet: FamilyPrimitiveMemberDefinition = fn("toSortedSet()") {
         includeDefault()
         include(CharSequences)
         platforms(Platform.JVM)
@@ -105,7 +105,7 @@ object Snapshots : TemplateGroupBase() {
         body { "return toCollection(java.util.TreeSet<T>())" }
     }
 
-    val f_toSortedSet_comparator = fn("toSortedSet(comparator: Comparator<in T>)") {
+    val f_toSortedSet_comparator: FamilyPrimitiveMemberDefinition = fn("toSortedSet(comparator: Comparator<in T>)") {
         include(Iterables, ArraysOfObjects, Sequences)
         platforms(Platform.JVM)
     } builder {
@@ -120,7 +120,7 @@ object Snapshots : TemplateGroupBase() {
         body { "return toCollection(java.util.TreeSet<T>(comparator))" }
     }
 
-    val f_toMutableList = fn("toMutableList()") {
+    val f_toMutableList: FamilyPrimitiveMemberDefinition = fn("toMutableList()") {
         includeDefault()
         include(Collections, CharSequences)
     } builder {
@@ -146,7 +146,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_toList = fn("toList()") {
+    val f_toList: FamilyPrimitiveMemberDefinition = fn("toList()") {
         includeDefault()
         include(Maps, CharSequences)
     } builder {
@@ -198,7 +198,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_associate = fn("associate(transform: (T) -> Pair<K, V>)") {
+    val f_associate: FamilyPrimitiveMemberDefinition = fn("associate(transform: (T) -> Pair<K, V>)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -241,7 +241,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_associateTo = fn("associateTo(destination: M, transform: (T) -> Pair<K, V>)") {
+    val f_associateTo: FamilyPrimitiveMemberDefinition = fn("associateTo(destination: M, transform: (T) -> Pair<K, V>)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -268,7 +268,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_associateBy_key = fn("associateBy(keySelector: (T) -> K)") {
+    val f_associateBy_key: FamilyPrimitiveMemberDefinition = fn("associateBy(keySelector: (T) -> K)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -313,7 +313,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_associateByTo_key = fn("associateByTo(destination: M, keySelector: (T) -> K)") {
+    val f_associateByTo_key: FamilyPrimitiveMemberDefinition = fn("associateByTo(destination: M, keySelector: (T) -> K)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -340,7 +340,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_associateBy_key_value = fn("associateBy(keySelector: (T) -> K, valueTransform: (T) -> V)") {
+    val f_associateBy_key_value: FamilyPrimitiveMemberDefinition = fn("associateBy(keySelector: (T) -> K, valueTransform: (T) -> V)") {
         includeDefault()
         include(CharSequences)
     } builder {
@@ -388,7 +388,7 @@ object Snapshots : TemplateGroupBase() {
         }
     }
 
-    val f_associateByTo_key_value = fn("associateByTo(destination: M, keySelector: (T) -> K, valueTransform: (T) -> V)") {
+    val f_associateByTo_key_value: FamilyPrimitiveMemberDefinition = fn("associateByTo(destination: M, keySelector: (T) -> K, valueTransform: (T) -> V)") {
         includeDefault()
         include(CharSequences)
     } builder {

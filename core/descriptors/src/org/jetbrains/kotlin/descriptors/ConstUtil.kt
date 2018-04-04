@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils
 
 object ConstUtil {
-    @JvmStatic fun canBeUsedForConstVal(type: KotlinType) = type.canBeUsedForConstVal()
+    @JvmStatic fun canBeUsedForConstVal(type: KotlinType): Boolean = type.canBeUsedForConstVal()
 }
 
-fun KotlinType.canBeUsedForConstVal() = KotlinBuiltIns.isPrimitiveType(this) && !TypeUtils.isNullableType(this) || KotlinBuiltIns.isString(this)
+fun KotlinType.canBeUsedForConstVal(): Boolean = KotlinBuiltIns.isPrimitiveType(this) && !TypeUtils.isNullableType(this) || KotlinBuiltIns.isString(this)

@@ -20,27 +20,27 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.name.ClassId
 import java.util.*
 
-inline fun <T> signatures(block: SignatureBuildingComponents.() -> T) = with(SignatureBuildingComponents, block)
+inline fun <T> signatures(block: SignatureBuildingComponents.() -> T): T = with(SignatureBuildingComponents, block)
 
 object SignatureBuildingComponents {
-    fun javaLang(name: String) = "java/lang/$name"
-    fun javaUtil(name: String) = "java/util/$name"
-    fun javaFunction(name: String) = "java/util/function/$name"
+    fun javaLang(name: String): String = "java/lang/$name"
+    fun javaUtil(name: String): String = "java/util/$name"
+    fun javaFunction(name: String): String = "java/util/function/$name"
 
-    fun constructors(vararg signatures: String) = signatures.map { "<init>($it)V" }.toTypedArray()
+    fun constructors(vararg signatures: String): Array<String> = signatures.map { "<init>($it)V" }.toTypedArray()
 
-    fun inJavaLang(name: String, vararg signatures: String) = inClass(javaLang(name), *signatures)
-    fun inJavaUtil(name: String, vararg signatures: String) = inClass(javaUtil(name), *signatures)
+    fun inJavaLang(name: String, vararg signatures: String): LinkedHashSet<String> = inClass(javaLang(name), *signatures)
+    fun inJavaUtil(name: String, vararg signatures: String): LinkedHashSet<String> = inClass(javaUtil(name), *signatures)
 
-    fun inClass(internalName: String, vararg signatures: String) = signatures.mapTo(LinkedHashSet()) { internalName + "." + it }
+    fun inClass(internalName: String, vararg signatures: String): LinkedHashSet<String> = signatures.mapTo(LinkedHashSet()) { internalName + "." + it }
 
-    fun signature(classDescriptor: ClassDescriptor, jvmDescriptor: String) = signature(classDescriptor.internalName, jvmDescriptor)
-    fun signature(classId: ClassId, jvmDescriptor: String) = signature(classId.internalName, jvmDescriptor)
-    fun signature(internalName: String, jvmDescriptor: String) = internalName + "." + jvmDescriptor
+    fun signature(classDescriptor: ClassDescriptor, jvmDescriptor: String): String = signature(classDescriptor.internalName, jvmDescriptor)
+    fun signature(classId: ClassId, jvmDescriptor: String): String = signature(classId.internalName, jvmDescriptor)
+    fun signature(internalName: String, jvmDescriptor: String): String = internalName + "." + jvmDescriptor
 
-    fun jvmDescriptor(name: String, vararg parameters: String, ret: String = "V") =
+    fun jvmDescriptor(name: String, vararg parameters: String, ret: String = "V"): String =
             jvmDescriptor(name, parameters.asList(), ret)
-    fun jvmDescriptor(name: String, parameters: List<String>, ret: String = "V") =
+    fun jvmDescriptor(name: String, parameters: List<String>, ret: String = "V"): String =
             "$name(${parameters.joinToString("") { escapeClassName(it) }})${escapeClassName(internalName = ret)}"
 
     private fun escapeClassName(internalName: String) = if (internalName.length > 1) "L$internalName;" else internalName

@@ -51,15 +51,15 @@ fun RepositoryHandler.intellijSdkRepo(project: Project): IvyArtifactRepository =
     artifactPattern("${baseDir.canonicalPath}/[organisation]/[revision]/sources/[artifact]-[revision]-[classifier].[ext]")
 }
 
-fun Project.intellijDep(module: String = "intellij") = "kotlin.build.custom.deps:$module:${rootProject.extra["versions.intellijSdk"]}"
+fun Project.intellijDep(module: String = "intellij"): String = "kotlin.build.custom.deps:$module:${rootProject.extra["versions.intellijSdk"]}"
 
-fun Project.intellijCoreDep() = intellijDep("intellij-core")
+fun Project.intellijCoreDep(): String = intellijDep("intellij-core")
 
-fun Project.intellijPluginDep(plugin: String) = intellijDep(plugin)
+fun Project.intellijPluginDep(plugin: String): String = intellijDep(plugin)
 
-fun Project.intellijUltimateDep() = intellijDep("intellij")
+fun Project.intellijUltimateDep(): String = intellijDep("intellij")
 
-fun Project.intellijUltimatePluginDep(plugin: String) = intellijDep(plugin)
+fun Project.intellijUltimatePluginDep(plugin: String): String = intellijDep(plugin)
 
 fun ModuleDependency.includeJars(vararg names: String, rootProject: Project? = null) {
     names.forEach {
@@ -89,19 +89,19 @@ object IntellijRootUtils {
     }
 }
 
-fun ModuleDependency.includeIntellijCoreJarDependencies(project: Project) =
+fun ModuleDependency.includeIntellijCoreJarDependencies(project: Project): Unit =
         includeJars(*(project.rootProject.extra["IntellijCoreDependencies"] as List<String>).toTypedArray(), rootProject = project.rootProject)
 
-fun ModuleDependency.includeIntellijCoreJarDependencies(project: Project, jarsFilterPredicate: (String) -> Boolean) =
+fun ModuleDependency.includeIntellijCoreJarDependencies(project: Project, jarsFilterPredicate: (String) -> Boolean): Unit =
         includeJars(*(project.rootProject.extra["IntellijCoreDependencies"] as List<String>).filter { jarsFilterPredicate(it) }.toTypedArray(), rootProject = project.rootProject)
 
-fun Project.isIntellijCommunityAvailable() = !(rootProject.extra["intellijUltimateEnabled"] as Boolean) || rootProject.extra["intellijSeparateSdks"] as Boolean
+fun Project.isIntellijCommunityAvailable(): Boolean = !(rootProject.extra["intellijUltimateEnabled"] as Boolean) || rootProject.extra["intellijSeparateSdks"] as Boolean
 
-fun Project.isIntellijUltimateSdkAvailable() = (rootProject.extra["intellijUltimateEnabled"] as Boolean)
+fun Project.isIntellijUltimateSdkAvailable(): Boolean = (rootProject.extra["intellijUltimateEnabled"] as Boolean)
 
-fun Project.intellijRootDir() = IntellijRootUtils.getIntellijRootDir(project)
+fun Project.intellijRootDir(): File = IntellijRootUtils.getIntellijRootDir(project)
 
-fun Project.intellijUltimateRootDir() =
+fun Project.intellijUltimateRootDir(): File =
         if (isIntellijUltimateSdkAvailable())
             File(intellijRepoDir(), "kotlin.build.custom.deps/${rootProject.extra["versions.intellijSdk"]}/intellijUltimate")
         else

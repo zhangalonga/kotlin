@@ -19,12 +19,14 @@ package org.jetbrains.kotlin.asJava.classes
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.asJava.builder.LightClassData
+import org.jetbrains.kotlin.asJava.elements.KtLightField
+import org.jetbrains.kotlin.asJava.elements.KtLightMethod
 
 abstract class KtLazyLightClass(manager: PsiManager) : KtLightClassBase(manager) {
     abstract val lightClassData: LightClassData
 
     override val clsDelegate: PsiClass by lazyPub { lightClassData.clsDelegate }
 
-    override fun getOwnFields() = lightClassData.getOwnFields(this)
-    override fun getOwnMethods() = lightClassData.getOwnMethods(this)
+    override fun getOwnFields(): List<KtLightField> = lightClassData.getOwnFields(this)
+    override fun getOwnMethods(): List<KtLightMethod> = lightClassData.getOwnMethods(this)
 }

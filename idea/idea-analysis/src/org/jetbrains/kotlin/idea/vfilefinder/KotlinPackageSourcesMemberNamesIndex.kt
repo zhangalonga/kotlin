@@ -19,13 +19,13 @@ object KotlinPackageSourcesMemberNamesIndex : FileBasedIndexExtension<String, Co
 
     private val KEY_DESCRIPTOR = EnumeratorStringDescriptor()
 
-    override fun getName() = KEY
+    override fun getName(): ID<String, Collection<String>> = KEY
 
-    override fun dependsOnFileContent() = true
+    override fun dependsOnFileContent(): Boolean = true
 
-    override fun getKeyDescriptor() = KEY_DESCRIPTOR
+    override fun getKeyDescriptor(): EnumeratorStringDescriptor = KEY_DESCRIPTOR
 
-    override fun getValueExternalizer() = StringSetExternalizer
+    override fun getValueExternalizer(): StringSetExternalizer = StringSetExternalizer
 
     override fun getInputFilter(): FileBasedIndex.InputFilter =
             FileBasedIndex.InputFilter { file -> file.extension == KotlinFileType.EXTENSION }

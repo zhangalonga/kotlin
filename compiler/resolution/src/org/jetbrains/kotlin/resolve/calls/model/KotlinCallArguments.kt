@@ -35,9 +35,9 @@ class QualifierReceiverKotlinCallArgument(override val receiver: QualifierReceiv
     override val isSafeCall: Boolean
         get() = false // TODO: add warning
 
-    override fun toString() = "$receiver"
+    override fun toString(): String = "$receiver"
 
-    override val isSpread get() = false
+    override val isSpread: Boolean get() = false
     override val argumentName: Name? get() = null
 }
 

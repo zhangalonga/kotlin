@@ -83,11 +83,11 @@ class AutomaticVariableRenamer(
         suggestAllNames(klass.name?.unquote(), newClassName.unquote())
     }
 
-    override fun getDialogTitle() = RefactoringBundle.message("rename.variables.title")
+    override fun getDialogTitle(): String = RefactoringBundle.message("rename.variables.title")
 
-    override fun getDialogDescription() = RefactoringBundle.message("rename.variables.with.the.following.names.to")
+    override fun getDialogDescription(): String = RefactoringBundle.message("rename.variables.with.the.following.names.to")
 
-    override fun entityName() = RefactoringBundle.message("entity.name.variable")
+    override fun entityName(): String = RefactoringBundle.message("entity.name.variable")
 
     override fun nameToCanonicalName(name: String, element: PsiNamedElement): String? {
         if (element !is KtNamedDeclaration) return name
@@ -124,7 +124,7 @@ class AutomaticVariableRenamer(
     }
 
     companion object {
-        val LOG = Logger.getInstance(AutomaticVariableRenamer::class.java)
+        val LOG: Logger = Logger.getInstance(AutomaticVariableRenamer::class.java)
     }
 }
 
@@ -140,32 +140,32 @@ private fun KotlinType.isCollectionLikeOf(classPsiElement: PsiNamedElement): Boo
 
 
 open class AutomaticVariableRenamerFactory: AutomaticRenamerFactory {
-    override fun isApplicable(element: PsiElement) = element is KtClass || element is KtTypeAlias
+    override fun isApplicable(element: PsiElement): Boolean = element is KtClass || element is KtTypeAlias
 
-    override fun createRenamer(element: PsiElement, newName: String, usages: Collection<UsageInfo>) =
+    override fun createRenamer(element: PsiElement, newName: String, usages: Collection<UsageInfo>): AutomaticVariableRenamer =
             AutomaticVariableRenamer(element as PsiNamedElement, newName, usages)
 
-    override fun isEnabled() = JavaRefactoringSettings.getInstance().isToRenameVariables
-    override fun setEnabled(enabled: Boolean) = JavaRefactoringSettings.getInstance().setRenameVariables(enabled)
+    override fun isEnabled(): Boolean = JavaRefactoringSettings.getInstance().isToRenameVariables
+    override fun setEnabled(enabled: Boolean): Unit = JavaRefactoringSettings.getInstance().setRenameVariables(enabled)
 
-    override fun getOptionName() = RefactoringBundle.message("rename.variables")
+    override fun getOptionName(): String? = RefactoringBundle.message("rename.variables")
 }
 
 class AutomaticVariableRenamerFactoryForJavaClass : AutomaticVariableRenamerFactory() {
-    override fun isApplicable(element: PsiElement) = element is PsiClass
+    override fun isApplicable(element: PsiElement): Boolean = element is PsiClass
 
-    override fun getOptionName() = null
+    override fun getOptionName(): Nothing? = null
 }
 
 class AutomaticVariableInJavaRenamerFactory: AutomaticRenamerFactory {
-    override fun isApplicable(element: PsiElement) = element is KtClass && element.toLightClass() != null
+    override fun isApplicable(element: PsiElement): Boolean = element is KtClass && element.toLightClass() != null
 
-    override fun createRenamer(element: PsiElement, newName: String, usages: Collection<UsageInfo>) =
+    override fun createRenamer(element: PsiElement, newName: String, usages: Collection<UsageInfo>): com.intellij.refactoring.rename.naming.AutomaticVariableRenamer =
             // Using java variable renamer for java usages
             com.intellij.refactoring.rename.naming.AutomaticVariableRenamer((element as KtClass).toLightClass()!!, newName, usages)
 
-    override fun isEnabled() = JavaRefactoringSettings.getInstance().isToRenameVariables
-    override fun setEnabled(enabled: Boolean) = JavaRefactoringSettings.getInstance().setRenameVariables(enabled)
+    override fun isEnabled(): Boolean = JavaRefactoringSettings.getInstance().isToRenameVariables
+    override fun setEnabled(enabled: Boolean): Unit = JavaRefactoringSettings.getInstance().setRenameVariables(enabled)
 
-    override fun getOptionName() = null
+    override fun getOptionName(): Nothing? = null
 }

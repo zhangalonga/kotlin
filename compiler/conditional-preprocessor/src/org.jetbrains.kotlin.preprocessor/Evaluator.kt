@@ -28,13 +28,11 @@ interface PlatformEvaluator : Evaluator {
 }
 
 data class JvmPlatformEvaluator(val version: Int): PlatformEvaluator {
-    override fun match(platformCondition: Conditional.PlatformVersion)
-            = platformCondition is Conditional.JvmVersion && version in platformCondition.versionRange
-    override fun toString() = "platform: JVM$version"
+    override fun match(platformCondition: Conditional.PlatformVersion): Boolean = platformCondition is Conditional.JvmVersion && version in platformCondition.versionRange
+    override fun toString(): String = "platform: JVM$version"
 }
 
 data class JsPlatformEvaluator(val ecmaScriptVersion: Int = 5): PlatformEvaluator {
-    override fun match(platformCondition: Conditional.PlatformVersion)
-            = platformCondition is Conditional.JsVersion
-    override fun toString() = "platform: JS"
+    override fun match(platformCondition: Conditional.PlatformVersion): Boolean = platformCondition is Conditional.JsVersion
+    override fun toString(): String = "platform: JS"
 }

@@ -109,7 +109,8 @@ private fun buildSignature(config: ExtractionGeneratorConfiguration, renderer: D
     }
 }
 
-fun ExtractionGeneratorConfiguration.getSignaturePreview(renderer: DescriptorRenderer) = buildSignature(this, renderer).asString()
+fun ExtractionGeneratorConfiguration.getSignaturePreview(renderer: DescriptorRenderer): String =
+    buildSignature(this, renderer).asString()
 
 fun ExtractionGeneratorConfiguration.getDeclarationPattern(
         descriptorRenderer: DescriptorRenderer = IdeDescriptorRenderers.SOURCE_CODE

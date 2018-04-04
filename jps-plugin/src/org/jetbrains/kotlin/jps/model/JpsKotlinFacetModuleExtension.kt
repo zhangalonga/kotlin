@@ -22,17 +22,17 @@ import org.jetbrains.jps.model.module.JpsModule
 import org.jetbrains.kotlin.config.KotlinFacetSettings
 
 class JpsKotlinFacetModuleExtension(settings: KotlinFacetSettings) : JpsElementBase<JpsKotlinFacetModuleExtension>() {
-    var settings = settings
+    var settings: KotlinFacetSettings = settings
         private set
 
     companion object {
-        val KIND = JpsElementChildRoleBase.create<JpsKotlinFacetModuleExtension>("kotlin facet extension")
+        val KIND: JpsElementChildRoleBase<JpsKotlinFacetModuleExtension>? = JpsElementChildRoleBase.create<JpsKotlinFacetModuleExtension>("kotlin facet extension")
         // These must be changed in sync with KotlinFacetType.TYPE_ID and KotlinFacetType.NAME
-        val FACET_TYPE_ID = "kotlin-language"
-        val FACET_NAME = "Kotlin"
+        val FACET_TYPE_ID: String = "kotlin-language"
+        val FACET_NAME: String = "Kotlin"
     }
 
-    override fun createCopy() = JpsKotlinFacetModuleExtension(settings)
+    override fun createCopy(): JpsKotlinFacetModuleExtension = JpsKotlinFacetModuleExtension(settings)
 
     override fun applyChanges(modified: JpsKotlinFacetModuleExtension) {
         this.settings = modified.settings

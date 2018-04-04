@@ -19,7 +19,7 @@ class FirUserTypeImpl(
     psi: PsiElement?,
     isNullable: Boolean
 ) : FirAbstractAnnotatedType(session, psi, isNullable), FirUserType {
-    override val qualifier = mutableListOf<FirQualifierPart>()
+    override val qualifier: MutableList<FirQualifierPart> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         for (part in qualifier) {

@@ -27,31 +27,31 @@ import java.rmi.server.RMIServerSocketFactory
 import java.util.*
 
 
-const val SOCKET_ANY_FREE_PORT  = 0
-const val JAVA_RMI_SERVER_HOSTNAME = "java.rmi.server.hostname"
-const val DAEMON_RMI_SOCKET_BACKLOG_SIZE_PROPERTY = "kotlin.daemon.socket.backlog.size"
-const val DAEMON_RMI_SOCKET_CONNECT_ATTEMPTS_PROPERTY = "kotlin.daemon.socket.connect.attempts"
-const val DAEMON_RMI_SOCKET_CONNECT_INTERVAL_PROPERTY = "kotlin.daemon.socket.connect.interval"
-const val DEFAULT_SERVER_SOCKET_BACKLOG_SIZE = 50
-const val DEFAULT_SOCKET_CONNECT_ATTEMPTS = 3
-const val DEFAULT_SOCKET_CONNECT_INTERVAL_MS = 10L
+const val SOCKET_ANY_FREE_PORT: Int = 0
+const val JAVA_RMI_SERVER_HOSTNAME: String = "java.rmi.server.hostname"
+const val DAEMON_RMI_SOCKET_BACKLOG_SIZE_PROPERTY: String = "kotlin.daemon.socket.backlog.size"
+const val DAEMON_RMI_SOCKET_CONNECT_ATTEMPTS_PROPERTY: String = "kotlin.daemon.socket.connect.attempts"
+const val DAEMON_RMI_SOCKET_CONNECT_INTERVAL_PROPERTY: String = "kotlin.daemon.socket.connect.interval"
+const val DEFAULT_SERVER_SOCKET_BACKLOG_SIZE: Int = 50
+const val DEFAULT_SOCKET_CONNECT_ATTEMPTS: Int = 3
+const val DEFAULT_SOCKET_CONNECT_INTERVAL_MS: Long = 10L
 
 object LoopbackNetworkInterface {
 
-    const val IPV4_LOOPBACK_INET_ADDRESS = "127.0.0.1"
-    const val IPV6_LOOPBACK_INET_ADDRESS = "::1"
+    const val IPV4_LOOPBACK_INET_ADDRESS: String = "127.0.0.1"
+    const val IPV6_LOOPBACK_INET_ADDRESS: String = "::1"
 
     // size of the requests queue for daemon services, so far seems that we don't need any big numbers here
     // but if we'll start getting "connection refused" errors, that could be the first place to try to fix it
-    val SERVER_SOCKET_BACKLOG_SIZE by lazy { System.getProperty(DAEMON_RMI_SOCKET_BACKLOG_SIZE_PROPERTY)?.toIntOrNull() ?: DEFAULT_SERVER_SOCKET_BACKLOG_SIZE }
-    val SOCKET_CONNECT_ATTEMPTS by lazy { System.getProperty(DAEMON_RMI_SOCKET_CONNECT_ATTEMPTS_PROPERTY)?.toIntOrNull() ?: DEFAULT_SOCKET_CONNECT_ATTEMPTS }
-    val SOCKET_CONNECT_INTERVAL_MS by lazy { System.getProperty(DAEMON_RMI_SOCKET_CONNECT_INTERVAL_PROPERTY)?.toLongOrNull() ?: DEFAULT_SOCKET_CONNECT_INTERVAL_MS }
+    val SERVER_SOCKET_BACKLOG_SIZE: Int by lazy { System.getProperty(DAEMON_RMI_SOCKET_BACKLOG_SIZE_PROPERTY)?.toIntOrNull() ?: DEFAULT_SERVER_SOCKET_BACKLOG_SIZE }
+    val SOCKET_CONNECT_ATTEMPTS: Int by lazy { System.getProperty(DAEMON_RMI_SOCKET_CONNECT_ATTEMPTS_PROPERTY)?.toIntOrNull() ?: DEFAULT_SOCKET_CONNECT_ATTEMPTS }
+    val SOCKET_CONNECT_INTERVAL_MS: Long by lazy { System.getProperty(DAEMON_RMI_SOCKET_CONNECT_INTERVAL_PROPERTY)?.toLongOrNull() ?: DEFAULT_SOCKET_CONNECT_INTERVAL_MS }
 
-    val serverLoopbackSocketFactory by lazy { ServerLoopbackSocketFactory() }
-    val clientLoopbackSocketFactory by lazy { ClientLoopbackSocketFactory() }
+    val serverLoopbackSocketFactory: ServerLoopbackSocketFactory by lazy { ServerLoopbackSocketFactory() }
+    val clientLoopbackSocketFactory: ClientLoopbackSocketFactory by lazy { ClientLoopbackSocketFactory() }
 
     // TODO switch to InetAddress.getLoopbackAddress on java 7+
-    val loopbackInetAddressName by lazy {
+    val loopbackInetAddressName: String by lazy {
         try {
             if (InetAddress.getByName(null) is Inet6Address) IPV6_LOOPBACK_INET_ADDRESS else IPV4_LOOPBACK_INET_ADDRESS
         }

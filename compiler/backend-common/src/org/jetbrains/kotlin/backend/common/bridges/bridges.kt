@@ -36,7 +36,7 @@ data class Bridge<out Signature>(
         val from: Signature,
         val to: Signature
 ) {
-    override fun toString() = "$from -> $to"
+    override fun toString(): String = "$from -> $to"
 }
 
 

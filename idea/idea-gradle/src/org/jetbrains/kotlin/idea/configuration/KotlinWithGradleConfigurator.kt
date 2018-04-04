@@ -80,7 +80,7 @@ abstract class KotlinWithGradleConfigurator : KotlinProjectConfigurator {
     protected open fun isApplicable(module: Module): Boolean =
         module.getBuildSystemType() == Gradle
 
-    protected open fun getMinimumSupportedVersion() = "1.0.0"
+    protected open fun getMinimumSupportedVersion(): String = "1.0.0"
 
     private fun isFileConfigured(buildScript: PsiFile): Boolean = getManipulator(buildScript).isConfigured(kotlinPluginName)
 
@@ -153,7 +153,7 @@ abstract class KotlinWithGradleConfigurator : KotlinProjectConfigurator {
         )
     }
 
-    protected open fun getStdlibArtifactName(sdk: Sdk?, version: String) = getStdlibArtifactId(sdk, version)
+    protected open fun getStdlibArtifactName(sdk: Sdk?, version: String): String = getStdlibArtifactId(sdk, version)
 
     protected open fun getJvmTarget(sdk: Sdk?, version: String): String? = null
 
@@ -257,17 +257,17 @@ abstract class KotlinWithGradleConfigurator : KotlinProjectConfigurator {
             else -> error("Unknown build script file type!")
         }
 
-        val GROUP_ID = "org.jetbrains.kotlin"
-        val GRADLE_PLUGIN_ID = "kotlin-gradle-plugin"
+        val GROUP_ID: String = "org.jetbrains.kotlin"
+        val GRADLE_PLUGIN_ID: String = "kotlin-gradle-plugin"
 
-        val CLASSPATH = "classpath \"$GROUP_ID:$GRADLE_PLUGIN_ID:\$kotlin_version\""
+        val CLASSPATH: String = "classpath \"$GROUP_ID:$GRADLE_PLUGIN_ID:\$kotlin_version\""
 
         private val KOTLIN_BUILD_SCRIPT_NAME = "build.gradle.kts"
 
-        fun getGroovyDependencySnippet(artifactName: String, scope: String) =
+        fun getGroovyDependencySnippet(artifactName: String, scope: String): String =
             "$scope \"org.jetbrains.kotlin:$artifactName:\$kotlin_version\""
 
-        fun getGroovyApplyPluginDirective(pluginName: String) = "apply plugin: '$pluginName'"
+        fun getGroovyApplyPluginDirective(pluginName: String): String = "apply plugin: '$pluginName'"
 
         fun addKotlinLibraryToModule(module: Module, scope: DependencyScope, libraryDescriptor: ExternalLibraryDescriptor) {
             val buildScript = module.getBuildScriptPsiFile() ?: return
@@ -289,7 +289,7 @@ abstract class KotlinWithGradleConfigurator : KotlinProjectConfigurator {
             getManipulator(it).changeCoroutineConfiguration(coroutineOption)
         }
 
-        fun changeLanguageVersion(module: Module, languageVersion: String?, apiVersion: String?, forTests: Boolean) =
+        fun changeLanguageVersion(module: Module, languageVersion: String?, apiVersion: String?, forTests: Boolean): PsiElement? =
             changeBuildGradle(module) { buildScriptFile ->
                 val manipulator = getManipulator(buildScriptFile)
                 var result: PsiElement? = null

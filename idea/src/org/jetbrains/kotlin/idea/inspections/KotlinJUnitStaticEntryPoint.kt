@@ -27,16 +27,16 @@ import com.intellij.psi.PsiMethod
 import org.jdom.Element
 
 class KotlinJUnitStaticEntryPoint(@JvmField var wasSelected: Boolean = true) : EntryPoint() {
-    override fun getDisplayName() = "JUnit static methods"
+    override fun getDisplayName(): String = "JUnit static methods"
 
-    override fun isSelected() = wasSelected
+    override fun isSelected(): Boolean = wasSelected
 
-    override fun isEntryPoint(refElement: RefElement, psiElement: PsiElement) = isEntryPoint(psiElement)
+    override fun isEntryPoint(refElement: RefElement, psiElement: PsiElement): Boolean = isEntryPoint(psiElement)
 
     private val staticJUnitAnnotations = listOf("org.junit.BeforeClass", "org.junit.AfterClass",
                                                 "org.junit.runners.Parameterized.Parameters")
 
-    override fun isEntryPoint(psiElement: PsiElement) = psiElement is PsiMethod &&
+    override fun isEntryPoint(psiElement: PsiElement): Boolean = psiElement is PsiMethod &&
             AnnotationUtil.isAnnotated(psiElement, staticJUnitAnnotations) &&
             AnnotationUtil.isAnnotated(psiElement, listOf("kotlin.jvm.JvmStatic"))
 

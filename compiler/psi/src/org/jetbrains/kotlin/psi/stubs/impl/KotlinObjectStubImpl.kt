@@ -35,11 +35,11 @@ class KotlinObjectStubImpl(
     private val isLocal: Boolean,
     private val isObjectLiteral: Boolean
 ) : KotlinStubBaseImpl<KtObjectDeclaration>(parent, KtStubElementTypes.OBJECT_DECLARATION), KotlinObjectStub {
-    override fun getFqName() = fqName
-    override fun getName() = StringRef.toString(name)
-    override fun getSuperNames() = superNames.map { it.toString() }
-    override fun isTopLevel() = isTopLevel
-    override fun isCompanion() = isDefault
-    override fun isObjectLiteral() = isObjectLiteral
-    override fun isLocal() = isLocal
+    override fun getFqName(): FqName? = fqName
+    override fun getName(): String? = StringRef.toString(name)
+    override fun getSuperNames(): List<String> = superNames.map { it.toString() }
+    override fun isTopLevel(): Boolean = isTopLevel
+    override fun isCompanion(): Boolean = isDefault
+    override fun isObjectLiteral(): Boolean = isObjectLiteral
+    override fun isLocal(): Boolean = isLocal
 }

@@ -365,26 +365,26 @@ class DeepCopyIrTreeWithDescriptors(val targetDescriptor: FunctionDescriptor,
 
     inner class InlineCopyIr : DeepCopyIrTree() {
 
-        override fun mapClassDeclaration            (descriptor: ClassDescriptor)                 = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassDescriptor
-        override fun mapTypeAliasDeclaration        (descriptor: TypeAliasDescriptor)             = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as TypeAliasDescriptor
-        override fun mapFunctionDeclaration         (descriptor: FunctionDescriptor)              = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as FunctionDescriptor
-        override fun mapConstructorDeclaration      (descriptor: ClassConstructorDescriptor)      = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassConstructorDescriptor
-        override fun mapPropertyDeclaration         (descriptor: PropertyDescriptor)              = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as PropertyDescriptor
-        override fun mapLocalPropertyDeclaration    (descriptor: VariableDescriptorWithAccessors) = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptorWithAccessors
-        override fun mapEnumEntryDeclaration        (descriptor: ClassDescriptor)                 = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassDescriptor
-        override fun mapVariableDeclaration         (descriptor: VariableDescriptor)              = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptor
-        override fun mapErrorDeclaration            (descriptor: DeclarationDescriptor)           = descriptorSubstituteMap.getOrDefault(descriptor, descriptor)
+        override fun mapClassDeclaration            (descriptor: ClassDescriptor): ClassDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassDescriptor
+        override fun mapTypeAliasDeclaration        (descriptor: TypeAliasDescriptor): TypeAliasDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as TypeAliasDescriptor
+        override fun mapFunctionDeclaration         (descriptor: FunctionDescriptor): FunctionDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as FunctionDescriptor
+        override fun mapConstructorDeclaration      (descriptor: ClassConstructorDescriptor): ClassConstructorDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassConstructorDescriptor
+        override fun mapPropertyDeclaration         (descriptor: PropertyDescriptor): PropertyDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as PropertyDescriptor
+        override fun mapLocalPropertyDeclaration    (descriptor: VariableDescriptorWithAccessors): VariableDescriptorWithAccessors = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptorWithAccessors
+        override fun mapEnumEntryDeclaration        (descriptor: ClassDescriptor): ClassDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassDescriptor
+        override fun mapVariableDeclaration         (descriptor: VariableDescriptor): VariableDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptor
+        override fun mapErrorDeclaration            (descriptor: DeclarationDescriptor): DeclarationDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor)
 
-        override fun mapClassReference              (descriptor: ClassDescriptor)                 = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassDescriptor
-        override fun mapValueReference              (descriptor: ValueDescriptor)                 = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ValueDescriptor
-        override fun mapVariableReference           (descriptor: VariableDescriptor)              = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptor
-        override fun mapPropertyReference           (descriptor: PropertyDescriptor)              = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as PropertyDescriptor
-        override fun mapCallee                      (descriptor: FunctionDescriptor)              = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as FunctionDescriptor
-        override fun mapDelegatedConstructorCallee  (descriptor: ClassConstructorDescriptor)      = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassConstructorDescriptor
-        override fun mapEnumConstructorCallee       (descriptor: ClassConstructorDescriptor)      = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassConstructorDescriptor
-        override fun mapLocalPropertyReference      (descriptor: VariableDescriptorWithAccessors) = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptorWithAccessors
-        override fun mapClassifierReference         (descriptor: ClassifierDescriptor)            = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassifierDescriptor
-        override fun mapReturnTarget                (descriptor: FunctionDescriptor)              = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as FunctionDescriptor
+        override fun mapClassReference              (descriptor: ClassDescriptor): ClassDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassDescriptor
+        override fun mapValueReference              (descriptor: ValueDescriptor): ValueDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ValueDescriptor
+        override fun mapVariableReference           (descriptor: VariableDescriptor): VariableDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptor
+        override fun mapPropertyReference           (descriptor: PropertyDescriptor): PropertyDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as PropertyDescriptor
+        override fun mapCallee                      (descriptor: FunctionDescriptor): FunctionDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as FunctionDescriptor
+        override fun mapDelegatedConstructorCallee  (descriptor: ClassConstructorDescriptor): ClassConstructorDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassConstructorDescriptor
+        override fun mapEnumConstructorCallee       (descriptor: ClassConstructorDescriptor): ClassConstructorDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassConstructorDescriptor
+        override fun mapLocalPropertyReference      (descriptor: VariableDescriptorWithAccessors): VariableDescriptorWithAccessors = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as VariableDescriptorWithAccessors
+        override fun mapClassifierReference         (descriptor: ClassifierDescriptor): ClassifierDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as ClassifierDescriptor
+        override fun mapReturnTarget                (descriptor: FunctionDescriptor): FunctionDescriptor = descriptorSubstituteMap.getOrDefault(descriptor, descriptor) as FunctionDescriptor
 
         //---------------------------------------------------------------------//
 

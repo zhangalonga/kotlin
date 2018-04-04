@@ -22,9 +22,9 @@ import javax.swing.JList
 import javax.swing.JPanel
 
 class KotlinSaveStylePanel(settings: CodeStyleSettings) : CodeStyleAbstractPanel(settings) {
-    override fun getRightMargin() = throw UnsupportedOperationException()
-    override fun createHighlighter(scheme: EditorColorsScheme) = throw UnsupportedOperationException()
-    override fun getFileType() = throw UnsupportedOperationException()
+    override fun getRightMargin(): Nothing = throw UnsupportedOperationException()
+    override fun createHighlighter(scheme: EditorColorsScheme): Nothing = throw UnsupportedOperationException()
+    override fun getFileType(): Nothing = throw UnsupportedOperationException()
     override fun getPreviewText(): String? = null
 
     override fun getTabTitle(): String = "Load/Save"
@@ -81,7 +81,7 @@ class KotlinSaveStylePanel(settings: CodeStyleSettings) : CodeStyleAbstractPanel
                 selectedId != settings.kotlinCommonSettings.CODE_STYLE_DEFAULTS
     }
 
-    override fun getPanel() = jPanel
+    override fun getPanel(): JPanel = jPanel
 
     override fun resetImpl(settings: CodeStyleSettings) {
         selectedId = settings.kotlinCustomSettings.CODE_STYLE_DEFAULTS ?: settings.kotlinCommonSettings.CODE_STYLE_DEFAULTS

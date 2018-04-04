@@ -36,5 +36,5 @@ class PsiBasedClassMemberDeclarationProvider(
         }
     }
 
-    override fun toString() = "Declarations for $ownerInfo"
+    override fun toString(): String = "Declarations for $ownerInfo"
 }

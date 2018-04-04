@@ -44,9 +44,9 @@ import org.jetbrains.kotlin.resolve.scopes.utils.*
 import java.util.*
 
 class KotlinImportOptimizer : ImportOptimizer {
-    override fun supports(file: PsiFile?) = file is KtFile
+    override fun supports(file: PsiFile?): Boolean = file is KtFile
 
-    override fun processFile(file: PsiFile?) = Runnable {
+    override fun processFile(file: PsiFile?): Runnable = Runnable {
         OptimizeProcess(file as KtFile).execute()
     }
 

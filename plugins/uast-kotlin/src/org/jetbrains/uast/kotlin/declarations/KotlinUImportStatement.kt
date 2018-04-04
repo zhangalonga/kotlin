@@ -31,9 +31,9 @@ class KotlinUImportStatement(
         givenParent: UElement?
 ) : KotlinAbstractUElement(givenParent), UImportStatement {
 
-    override val javaPsi = null
+    override val javaPsi: Nothing? = null
 
-    override val sourcePsi = psi
+    override val sourcePsi: KtImportDirective = psi
 
     override val isOnDemand: Boolean
         get() = psi.isAllUnder
@@ -47,7 +47,7 @@ class KotlinUImportStatement(
     override val importReference: UElement?
         get() = importRef
 
-    override fun resolve() = importRef?.resolve()
+    override fun resolve(): PsiElement? = importRef?.resolve()
 
     private class ImportReference(
             override val psi: KtExpression,

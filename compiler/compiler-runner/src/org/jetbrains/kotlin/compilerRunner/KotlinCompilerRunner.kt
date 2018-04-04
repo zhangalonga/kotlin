@@ -43,10 +43,10 @@ interface KotlinLogger {
 }
 
 abstract class KotlinCompilerRunner<in Env : CompilerEnvironment> {
-    protected val K2JVM_COMPILER = "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
-    protected val K2JS_COMPILER = "org.jetbrains.kotlin.cli.js.K2JSCompiler"
-    protected val K2METADATA_COMPILER = "org.jetbrains.kotlin.cli.metadata.K2MetadataCompiler"
-    protected val INTERNAL_ERROR = ExitCode.INTERNAL_ERROR.toString()
+    protected val K2JVM_COMPILER: String = "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
+    protected val K2JS_COMPILER: String = "org.jetbrains.kotlin.cli.js.K2JSCompiler"
+    protected val K2METADATA_COMPILER: String = "org.jetbrains.kotlin.cli.metadata.K2MetadataCompiler"
+    protected val INTERNAL_ERROR: String = ExitCode.INTERNAL_ERROR.toString()
 
     protected abstract val log: KotlinLogger
 

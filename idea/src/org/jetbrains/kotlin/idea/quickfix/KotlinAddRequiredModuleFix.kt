@@ -36,7 +36,7 @@ class KotlinAddRequiredModuleFix(module: PsiJavaModule, private val requiredName
     @Suppress("InvalidBundleOrProperty")
     override fun getText(): String = QuickFixBundle.message("module.info.add.requires.name", requiredName)
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 
     override fun isAvailable(project: Project, file: PsiFile, startElement: PsiElement, endElement: PsiElement): Boolean {
         return PsiUtil.isLanguageLevel9OrHigher(file) &&

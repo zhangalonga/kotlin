@@ -58,7 +58,7 @@ import javax.swing.JComponent
 
 class UsePropertyAccessSyntaxInspection : IntentionBasedInspection<KtCallExpression>(UsePropertyAccessSyntaxIntention::class), CleanupLocalInspectionTool {
 
-    val fqNameList = mutableListOf<FqNameUnsafe>()
+    val fqNameList: MutableList<FqNameUnsafe> = mutableListOf<FqNameUnsafe>()
 
     private var fqNameStrings: List<String>
         get() = fqNameList.map { it.asString() }
@@ -87,7 +87,7 @@ class NotPropertiesServiceImpl(private val project: Project) : NotPropertiesServ
 
     companion object {
 
-        val default = listOf(
+        val default: List<String> = listOf(
                 "java.net.Socket.getInputStream",
                 "java.net.Socket.getOutputStream",
                 "java.net.URLConnection.getInputStream",

@@ -34,7 +34,7 @@ class KtClassInitializer : KtDeclarationStub<KotlinPlaceHolderStub<KtClassInitia
 
     constructor(stub: KotlinPlaceHolderStub<KtClassInitializer>) : super(stub, KtStubElementTypes.CLASS_INITIALIZER)
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitClassInitializer(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitClassInitializer(this, data)
 
     override val body: KtExpression?
         get() = findChildByClass(KtExpression::class.java)
@@ -56,5 +56,5 @@ class KtScriptInitializer(node: ASTNode) : KtDeclarationImpl(node), KtAnonymousI
     override val containingDeclaration: KtScript
         get() = getParentOfType<KtScript>(true).sure { "Should only be present in script" }
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitScriptInitializer(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitScriptInitializer(this, data)
 }

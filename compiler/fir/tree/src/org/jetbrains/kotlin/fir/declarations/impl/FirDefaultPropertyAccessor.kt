@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.fir.declarations.impl
 
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.Visibilities
+import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
@@ -25,13 +26,13 @@ abstract class FirDefaultPropertyAccessor(
     final override val psi: PsiElement?,
     final override val isGetter: Boolean
 ) : FirPropertyAccessor {
-    final override val visibility =
+    final override val visibility: Visibility =
         Visibilities.UNKNOWN
 
     final override val body: FirBody? =
         null
 
-    final override val declarationKind =
+    final override val declarationKind: IrDeclarationKind =
         IrDeclarationKind.PROPERTY_ACCESSOR
 
     final override val annotations: List<FirAnnotationCall>
@@ -59,7 +60,7 @@ class FirDefaultPropertySetter(
     psi: PsiElement?,
     propertyType: FirType
 ) : FirDefaultPropertyAccessor(session, psi, isGetter = false) {
-    override val valueParameters = mutableListOf(FirDefaultSetterValueParameter(session, psi, propertyType))
+    override val valueParameters: MutableList<FirDefaultSetterValueParameter> = mutableListOf(FirDefaultSetterValueParameter(session, psi, propertyType))
 
     override var returnType: FirType = FirUnitType(session, psi)
 

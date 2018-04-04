@@ -23,6 +23,8 @@ import org.jetbrains.kotlin.backend.jvm.descriptors.JvmDescriptorWithExtraFlags
 import org.jetbrains.kotlin.codegen.*
 import org.jetbrains.kotlin.codegen.MemberCodegen.badDescriptor
 import org.jetbrains.kotlin.codegen.binding.CodegenBinding
+import org.jetbrains.kotlin.codegen.state.GenerationState
+import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.load.java.JavaVisibilities
@@ -47,17 +49,17 @@ class ClassCodegen private constructor(
 
     private val innerClasses = mutableListOf<ClassDescriptor>()
 
-    val state = context.state
+    val state: GenerationState = context.state
 
-    val typeMapper = context.state.typeMapper
+    val typeMapper: KotlinTypeMapper = context.state.typeMapper
 
-    val descriptor = irClass.descriptor
+    val descriptor: ClassDescriptor = irClass.descriptor
 
     private val isAnonymous = DescriptorUtils.isAnonymousObject(irClass.descriptor)
 
     val type: Type = if (isAnonymous) CodegenBinding.asmTypeForAnonymousClass(state.bindingContext, descriptor.source.getPsi() as KtElement) else typeMapper.mapType(descriptor)
 
-    val psiElement = irClass.descriptor.psiElement!!
+    val psiElement: PsiElement = irClass.descriptor.psiElement!!
 
     val visitor: ClassBuilder = state.factory.newVisitor(OtherOrigin(psiElement, descriptor), type, psiElement.containingFile)
 

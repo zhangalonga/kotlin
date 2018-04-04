@@ -38,7 +38,7 @@ open class ValueParameterDescriptorImpl(
 
     companion object {
         @JvmStatic
-        fun getDestructuringVariablesOrNull(valueParameterDescriptor: ValueParameterDescriptor) =
+        fun getDestructuringVariablesOrNull(valueParameterDescriptor: ValueParameterDescriptor): List<VariableDescriptor>? =
                 (valueParameterDescriptor as? ValueParameterDescriptorImpl.WithDestructuringDeclaration)?.destructuringVariables
 
         @JvmStatic
@@ -80,18 +80,18 @@ open class ValueParameterDescriptorImpl(
         // It's forced to be lazy because its resolution depends on receiver of relevant lambda, that is being created at the same moment
         // as value parameters.
         // Must be forced via ForceResolveUtil.forceResolveAllContents()
-        val destructuringVariables by lazy(destructuringVariables)
+        val destructuringVariables: List<VariableDescriptor> by lazy(destructuringVariables)
     }
 
     private val original: ValueParameterDescriptor = original ?: this
 
-    override fun getContainingDeclaration() = super.getContainingDeclaration() as CallableDescriptor
+    override fun getContainingDeclaration(): CallableDescriptor = super.getContainingDeclaration() as CallableDescriptor
 
     override fun declaresDefaultValue(): Boolean {
         return declaresDefaultValue && (containingDeclaration as CallableMemberDescriptor).kind.isReal
     }
 
-    override fun getOriginal() = if (original === this) this else original.original
+    override fun getOriginal(): ValueParameterDescriptor = if (original === this) this else original.original
 
     override fun substitute(substitutor: TypeSubstitutor): ValueParameterDescriptor {
         if (substitutor.isEmpty) return this
@@ -102,9 +102,9 @@ open class ValueParameterDescriptorImpl(
         return visitor.visitValueParameterDescriptor(this, data)
     }
 
-    override fun isVar() = false
+    override fun isVar(): Boolean = false
 
-    override fun getCompileTimeInitializer() = null
+    override fun getCompileTimeInitializer(): Nothing? = null
     override fun copy(newOwner: CallableDescriptor, newName: Name, newIndex: Int): ValueParameterDescriptor {
         return ValueParameterDescriptorImpl(
                 newOwner, null, newIndex, annotations, newName, type, declaresDefaultValue(),
@@ -112,7 +112,7 @@ open class ValueParameterDescriptorImpl(
         )
     }
 
-    override fun getVisibility() = Visibilities.LOCAL
+    override fun getVisibility(): Visibility = Visibilities.LOCAL
 
     override fun getOverriddenDescriptors(): Collection<ValueParameterDescriptor> {
         return containingDeclaration.overriddenDescriptors.map {

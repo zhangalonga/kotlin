@@ -47,7 +47,7 @@ class KotlinJsr223JvmDaemonCompileScriptEngine(
 
     private val daemon by lazy { connectToCompileService(compilerClasspath) }
 
-    override val replCompiler by lazy {
+    override val replCompiler: KotlinRemoteReplCompilerClient by lazy {
         daemon.let {
             KotlinRemoteReplCompilerClient(
                     it,
@@ -61,7 +61,7 @@ class KotlinJsr223JvmDaemonCompileScriptEngine(
     }
 
     // TODO: bindings passing works only once on the first eval, subsequent setContext/setBindings call have no effect. Consider making it dynamic, but take history into account
-    val localEvaluator by lazy { GenericReplCompilingEvaluator(replCompiler, templateClasspath, Thread.currentThread().contextClassLoader, getScriptArgs(getContext(), scriptArgsTypes)) }
+    val localEvaluator: GenericReplCompilingEvaluator by lazy { GenericReplCompilingEvaluator(replCompiler, templateClasspath, Thread.currentThread().contextClassLoader, getScriptArgs(getContext(), scriptArgsTypes)) }
 
     override val replEvaluator: ReplFullEvaluator get() = localEvaluator
 

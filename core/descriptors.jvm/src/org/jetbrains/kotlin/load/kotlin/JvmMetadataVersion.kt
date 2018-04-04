@@ -24,14 +24,14 @@ import org.jetbrains.kotlin.serialization.deserialization.BinaryVersion
  */
 class JvmMetadataVersion(vararg numbers: Int) : BinaryVersion(*numbers) {
     // NOTE: 1.1 is incompatible with 1.0 and hence with any other version except 1.1.*
-    override fun isCompatible() =
+    override fun isCompatible(): Boolean =
             this.major == 1 && this.minor == 1
 
     companion object {
         @JvmField
-        val INSTANCE = JvmMetadataVersion(1, 1, 10)
+        val INSTANCE: JvmMetadataVersion = JvmMetadataVersion(1, 1, 10)
 
         @JvmField
-        val INVALID_VERSION = JvmMetadataVersion()
+        val INVALID_VERSION: JvmMetadataVersion = JvmMetadataVersion()
     }
 }

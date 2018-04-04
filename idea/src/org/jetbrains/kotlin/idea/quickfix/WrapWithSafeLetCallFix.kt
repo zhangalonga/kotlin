@@ -36,9 +36,9 @@ class WrapWithSafeLetCallFix(
 ) : KotlinQuickFixAction<KtExpression>(expression) {
     private val nullableExpressionPointer = nullableExpression.createSmartPointer()
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
-    override fun getText() = "Wrap with '?.let { ... }' call"
+    override fun getText(): String = "Wrap with '?.let { ... }' call"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

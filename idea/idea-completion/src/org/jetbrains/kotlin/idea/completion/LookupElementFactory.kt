@@ -79,7 +79,7 @@ class LookupElementFactory(
         }
     }
 
-    val insertHandlerProvider = basicFactory.insertHandlerProvider
+    val insertHandlerProvider: InsertHandlerProvider = basicFactory.insertHandlerProvider
 
     private val superFunctions: Set<FunctionDescriptor> by lazy {
         inDescriptor.parentsWithSelf

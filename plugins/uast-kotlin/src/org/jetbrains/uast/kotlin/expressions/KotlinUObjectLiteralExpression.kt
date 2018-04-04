@@ -45,7 +45,7 @@ class KotlinUObjectLiteralExpression(
         }
     }
     
-    override fun getExpressionType() = psi.objectDeclaration.toPsiType()
+    override fun getExpressionType(): PsiType = psi.objectDeclaration.toPsiType()
 
     private val superClassConstructorCall by lz {
         psi.objectDeclaration.superTypeListEntries.firstOrNull { it is KtSuperTypeCallEntry } as? KtSuperTypeCallEntry
@@ -56,7 +56,7 @@ class KotlinUObjectLiteralExpression(
     override val valueArgumentCount: Int
         get() = superClassConstructorCall?.valueArguments?.size ?: 0
 
-    override val valueArguments by lz {
+    override val valueArguments: List<UExpression> by lz {
         val psi = superClassConstructorCall ?: return@lz emptyList<UExpression>()
         psi.valueArguments.map { KotlinConverter.convertOrEmpty(it.getArgumentExpression(), this) } 
     }
@@ -64,12 +64,12 @@ class KotlinUObjectLiteralExpression(
     override val typeArgumentCount: Int
         get() = superClassConstructorCall?.typeArguments?.size ?: 0
 
-    override val typeArguments by lz {
+    override val typeArguments: List<PsiType> by lz {
         val psi = superClassConstructorCall ?: return@lz emptyList<PsiType>()
         psi.typeArguments.map { it.typeReference.toPsiType(this, boxed = true) } 
     }
 
-    override fun resolve() = superClassConstructorCall?.resolveCallToDeclaration(this) as? PsiMethod
+    override fun resolve(): PsiMethod? = superClassConstructorCall?.resolveCallToDeclaration(this) as? PsiMethod
     
     private class ObjectLiteralClassReference(
             override val psi: KtSuperTypeCallEntry,
@@ -92,6 +92,6 @@ class KotlinUObjectLiteralExpression(
     }
 
     companion object {
-        val logger by lz { Logger.getInstance(KotlinUObjectLiteralExpression::class.java) }
+        val logger: Logger by lz { Logger.getInstance(KotlinUObjectLiteralExpression::class.java) }
     }
 }

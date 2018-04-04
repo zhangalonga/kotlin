@@ -28,9 +28,9 @@ class SimpleDiagnostics(diagnostics: Collection<Diagnostic>) : Diagnostics {
     @Suppress("UNCHECKED_CAST")
     private val elementsCache = DiagnosticsElementsCache(this, { true })
 
-    override fun all() = diagnostics
+    override fun all(): ArrayList<Diagnostic> = diagnostics
 
-    override fun forElement(psiElement: PsiElement) = elementsCache.getDiagnostics(psiElement)
+    override fun forElement(psiElement: PsiElement): MutableCollection<Diagnostic> = elementsCache.getDiagnostics(psiElement)
 
-    override fun noSuppression() = this
+    override fun noSuppression(): SimpleDiagnostics = this
 }

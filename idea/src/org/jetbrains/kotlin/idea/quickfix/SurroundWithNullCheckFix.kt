@@ -39,9 +39,9 @@ class SurroundWithNullCheckFix(
 ) : KotlinQuickFixAction<KtExpression>(expression), HighPriorityAction {
     private val nullableExpressionPointer = nullableExpression.createSmartPointer()
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
-    override fun getText() = "Surround with null check"
+    override fun getText(): String = "Surround with null check"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

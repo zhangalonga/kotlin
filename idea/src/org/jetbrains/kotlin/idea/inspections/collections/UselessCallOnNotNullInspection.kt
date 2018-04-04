@@ -30,12 +30,12 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.types.TypeUtils
 
 class UselessCallOnNotNullInspection : AbstractUselessCallInspection() {
-    override val uselessFqNames = mapOf("kotlin.collections.orEmpty" to deleteConversion,
-                                        "kotlin.text.orEmpty" to deleteConversion,
-                                        "kotlin.text.isNullOrEmpty" to Conversion("isEmpty"),
-                                        "kotlin.text.isNullOrBlank" to Conversion("isBlank"))
+    override val uselessFqNames: Map<String, Companion.Conversion> = mapOf("kotlin.collections.orEmpty" to deleteConversion,
+                                                                           "kotlin.text.orEmpty" to deleteConversion,
+                                                                           "kotlin.text.isNullOrEmpty" to Conversion("isEmpty"),
+                                                                           "kotlin.text.isNullOrBlank" to Conversion("isBlank"))
 
-    override val uselessNames = uselessFqNames.keys.toShortNames()
+    override val uselessNames: MutableSet<String> = uselessFqNames.keys.toShortNames()
 
     override fun QualifiedExpressionVisitor.suggestConversionIfNeeded(
             expression: KtQualifiedExpression,

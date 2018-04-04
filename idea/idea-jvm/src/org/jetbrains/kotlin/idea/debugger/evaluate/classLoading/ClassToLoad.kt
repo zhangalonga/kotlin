@@ -20,5 +20,5 @@ import org.jetbrains.kotlin.idea.debugger.evaluate.GENERATED_CLASS_NAME
 
 @Suppress("ArrayInDataClass")
 data class ClassToLoad(val className: String, val relativeFileName: String, val bytes: ByteArray) {
-    fun isMainClass() = className.endsWith(GENERATED_CLASS_NAME)
+    fun isMainClass(): Boolean = className.endsWith(GENERATED_CLASS_NAME)
 }

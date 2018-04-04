@@ -190,7 +190,7 @@ class BinaryClassSignatureParser {
         return (1..dimensions).fold(type) { result, _ -> PlainJavaArrayType(result) }
     }
 
-    fun mapAsmType(type: Type, context: ClassifierResolutionContext) = parseTypeString(StringCharacterIterator(type.descriptor), context)
+    fun mapAsmType(type: Type, context: ClassifierResolutionContext): JavaType = parseTypeString(StringCharacterIterator(type.descriptor), context)
 
     private fun parseTypeWithoutVarianceAndArray(signature: CharacterIterator, context: ClassifierResolutionContext) =
             when (signature.current()) {

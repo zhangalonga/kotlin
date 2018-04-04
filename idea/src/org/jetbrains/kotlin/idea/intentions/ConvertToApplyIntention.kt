@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getPrevSiblingIgnoringWhitespaceAndComme
 class ConvertToApplyIntention : ConvertToScopeIntention<KtExpression>(
         KtExpression::class.java, "Convert to apply"
 ) {
-    override fun findCallExpressionFrom(scopeExpression: KtExpression) =
+    override fun findCallExpressionFrom(scopeExpression: KtExpression): KtCallExpression? =
             ((scopeExpression as? KtProperty)?.initializer as? KtQualifiedExpression)?.callExpression
 
     override fun isApplicableTo(element: KtExpression, caretOffset: Int): Boolean {

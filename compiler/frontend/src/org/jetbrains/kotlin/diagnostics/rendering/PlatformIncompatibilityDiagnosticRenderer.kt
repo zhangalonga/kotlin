@@ -37,7 +37,7 @@ class PlatformIncompatibilityDiagnosticRenderer(
 
     companion object {
         @JvmField
-        val TEXT = PlatformIncompatibilityDiagnosticRenderer(MultiplatformDiagnosticRenderingMode())
+        val TEXT: PlatformIncompatibilityDiagnosticRenderer = PlatformIncompatibilityDiagnosticRenderer(MultiplatformDiagnosticRenderingMode())
     }
 }
 
@@ -58,7 +58,7 @@ class IncompatibleExpectedActualClassScopesRenderer(
 
     companion object {
         @JvmField
-        val TEXT = IncompatibleExpectedActualClassScopesRenderer(MultiplatformDiagnosticRenderingMode())
+        val TEXT: IncompatibleExpectedActualClassScopesRenderer = IncompatibleExpectedActualClassScopesRenderer(MultiplatformDiagnosticRenderingMode())
     }
 }
 

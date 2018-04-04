@@ -30,7 +30,7 @@ class KotlinSliceDereferenceUsage(
         // no children
     }
 
-    override fun getPresentation() = object : UsagePresentation by super.getPresentation() {
+    override fun getPresentation(): UsagePresentation = object : UsagePresentation by super.getPresentation() {
         override fun getTooltipText() = "Variable dereferenced"
     }
 }

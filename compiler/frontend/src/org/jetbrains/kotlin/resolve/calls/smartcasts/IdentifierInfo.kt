@@ -35,18 +35,18 @@ interface IdentifierInfo {
 
     val kind: DataFlowValue.Kind get() = OTHER
 
-    val canBeBound get() = false
+    val canBeBound: Boolean get() = false
 
     object NO : IdentifierInfo {
-        override fun toString() = "NO_IDENTIFIER_INFO"
+        override fun toString(): String = "NO_IDENTIFIER_INFO"
     }
 
     object NULL : IdentifierInfo {
-        override fun toString() = "NULL"
+        override fun toString(): String = "NULL"
     }
 
     object ERROR : IdentifierInfo {
-        override fun toString() = "ERROR"
+        override fun toString(): String = "ERROR"
     }
 
     class Variable(
@@ -54,26 +54,26 @@ interface IdentifierInfo {
         override val kind: DataFlowValue.Kind,
         val bound: DataFlowValue?
     ) : IdentifierInfo {
-        override val canBeBound
+        override val canBeBound: Boolean
             get() = kind == STABLE_VALUE
 
-        override fun equals(other: Any?) = other is Variable && variable == other.variable
+        override fun equals(other: Any?): Boolean = other is Variable && variable == other.variable
 
-        override fun hashCode() = variable.hashCode()
+        override fun hashCode(): Int = variable.hashCode()
 
-        override fun toString() = variable.toString()
+        override fun toString(): String = variable.toString()
     }
 
     data class Receiver(val value: ReceiverValue) : IdentifierInfo {
-        override val kind = STABLE_VALUE
+        override val kind: DataFlowValue.Kind = STABLE_VALUE
 
-        override fun toString() = value.toString()
+        override fun toString(): String = value.toString()
     }
 
     data class PackageOrClass(val descriptor: DeclarationDescriptor) : IdentifierInfo {
-        override val kind = STABLE_VALUE
+        override val kind: DataFlowValue.Kind = STABLE_VALUE
 
-        override fun toString() = descriptor.toString()
+        override fun toString(): String = descriptor.toString()
     }
 
     class Qualified(
@@ -85,39 +85,39 @@ interface IdentifierInfo {
 
         override val kind: DataFlowValue.Kind get() = if (receiverInfo.kind == STABLE_VALUE) selectorInfo.kind else OTHER
 
-        override val canBeBound
+        override val canBeBound: Boolean
             get() = receiverInfo.canBeBound
 
-        override fun equals(other: Any?) = other is Qualified && receiverInfo == other.receiverInfo && selectorInfo == other.selectorInfo
+        override fun equals(other: Any?): Boolean = other is Qualified && receiverInfo == other.receiverInfo && selectorInfo == other.selectorInfo
 
-        override fun hashCode() = 31 * receiverInfo.hashCode() + selectorInfo.hashCode()
+        override fun hashCode(): Int = 31 * receiverInfo.hashCode() + selectorInfo.hashCode()
 
-        override fun toString() = "$receiverInfo${if (safe) "?." else "."}$selectorInfo"
+        override fun toString(): String = "$receiverInfo${if (safe) "?." else "."}$selectorInfo"
     }
 
     data class SafeCast(val subjectInfo: IdentifierInfo, val subjectType: KotlinType?, val targetType: KotlinType?) : IdentifierInfo {
-        override val kind get() = OTHER
+        override val kind: DataFlowValue.Kind get() = OTHER
 
-        override val canBeBound get() = subjectInfo.canBeBound
+        override val canBeBound: Boolean get() = subjectInfo.canBeBound
 
-        override fun toString() = "$subjectInfo as? ${targetType ?: "???"}"
+        override fun toString(): String = "$subjectInfo as? ${targetType ?: "???"}"
     }
 
     class Expression(val expression: KtExpression, stableComplex: Boolean = false) : IdentifierInfo {
-        override val kind = if (stableComplex) DataFlowValue.Kind.STABLE_COMPLEX_EXPRESSION else OTHER
+        override val kind: DataFlowValue.Kind = if (stableComplex) DataFlowValue.Kind.STABLE_COMPLEX_EXPRESSION else OTHER
 
-        override fun equals(other: Any?) = other is Expression && expression == other.expression
+        override fun equals(other: Any?): Boolean = other is Expression && expression == other.expression
 
-        override fun hashCode() = expression.hashCode()
+        override fun hashCode(): Int = expression.hashCode()
 
-        override fun toString() = expression.text ?: "(empty expression)"
+        override fun toString(): String = expression.text ?: "(empty expression)"
     }
 
     // For only ++ and -- postfix operations
     data class PostfixIdentifierInfo(val argumentInfo: IdentifierInfo, val op: KtToken) : IdentifierInfo {
         override val kind: DataFlowValue.Kind get() = argumentInfo.kind
 
-        override fun toString() = "$argumentInfo($op)"
+        override fun toString(): String = "$argumentInfo($op)"
     }
 }
 

@@ -31,11 +31,11 @@ class KotlinUQualifiedReferenceExpression(
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UQualifiedReferenceExpression,
         KotlinUElementWithType, KotlinEvaluatableUElement {
-    override val receiver by lz { KotlinConverter.convertOrEmpty(psi.receiverExpression, this) }
-    override val selector by lz { KotlinConverter.convertOrEmpty(psi.selectorExpression, this) }
-    override val accessType = UastQualifiedExpressionAccessType.SIMPLE
+    override val receiver: UExpression by lz { KotlinConverter.convertOrEmpty(psi.receiverExpression, this) }
+    override val selector: UExpression by lz { KotlinConverter.convertOrEmpty(psi.selectorExpression, this) }
+    override val accessType: UastQualifiedExpressionAccessType = UastQualifiedExpressionAccessType.SIMPLE
     
-    override fun resolve() = psi.selectorExpression?.resolveCallToDeclaration(this)
+    override fun resolve(): PsiElement? = psi.selectorExpression?.resolveCallToDeclaration(this)
 
     override val resolvedName: String?
         get() = (resolve() as? PsiNamedElement)?.name
@@ -46,7 +46,7 @@ class KotlinUComponentQualifiedReferenceExpression(
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UQualifiedReferenceExpression,
         KotlinUElementWithType, KotlinEvaluatableUElement {
-    override val accessType = UastQualifiedExpressionAccessType.SIMPLE
+    override val accessType: UastQualifiedExpressionAccessType = UastQualifiedExpressionAccessType.SIMPLE
     
     override lateinit var receiver: UExpression
         internal set

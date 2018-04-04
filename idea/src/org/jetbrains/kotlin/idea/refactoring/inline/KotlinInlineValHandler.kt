@@ -49,7 +49,7 @@ class KotlinInlineValHandler(private val withPrompt: Boolean) : InlineActionHand
 
     constructor(): this(withPrompt = true)
 
-    override fun isEnabledForLanguage(l: Language) = l == KotlinLanguage.INSTANCE
+    override fun isEnabledForLanguage(l: Language): Boolean = l == KotlinLanguage.INSTANCE
 
     override fun canInlineElement(element: PsiElement): Boolean {
         return element is KtProperty && element.name != null

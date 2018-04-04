@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.idea.intentions
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.caches.resolve.analyzeWithContent
 import org.jetbrains.kotlin.idea.inspections.IntentionBasedInspection
@@ -36,7 +37,7 @@ class ConvertSecondaryConstructorToPrimaryInspection : IntentionBasedInspection<
         ConvertSecondaryConstructorToPrimaryIntention::class,
         { constructor -> constructor.containingClass()?.secondaryConstructors?.size == 1 }
 ) {
-    override fun inspectionTarget(element: KtSecondaryConstructor) = element.getConstructorKeyword()
+    override fun inspectionTarget(element: KtSecondaryConstructor): PsiElement = element.getConstructorKeyword()
 }
 
 class ConvertSecondaryConstructorToPrimaryIntention : SelfTargetingRangeIntention<KtSecondaryConstructor>(

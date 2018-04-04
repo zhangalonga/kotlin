@@ -210,5 +210,5 @@ fun findDeepestSuperMethodsNoWrapping(method: PsiElement): List<PsiElement> {
     }
 }
 
-fun findDeepestSuperMethodsKotlinAware(method: PsiElement) =
+fun findDeepestSuperMethodsKotlinAware(method: PsiElement): List<PsiMethod> =
     findDeepestSuperMethodsNoWrapping(method).mapNotNull { it.getRepresentativeLightMethod() }

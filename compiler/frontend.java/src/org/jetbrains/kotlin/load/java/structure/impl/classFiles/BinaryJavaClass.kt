@@ -44,21 +44,21 @@ class BinaryJavaClass(
     override val annotations: MutableCollection<JavaAnnotation> = ContainerUtil.newSmartList()
     override lateinit var typeParameters: List<JavaTypeParameter>
     override lateinit var supertypes: Collection<JavaClassifierType>
-    override val methods = arrayListOf<JavaMethod>()
-    override val fields = arrayListOf<JavaField>()
-    override val constructors = arrayListOf<JavaConstructor>()
+    override val methods: ArrayList<JavaMethod> = arrayListOf()
+    override val fields: ArrayList<JavaField> = arrayListOf()
+    override val constructors: ArrayList<JavaConstructor> = arrayListOf()
 
-    override val annotationsByFqName by buildLazyValueForMap()
+    override val annotationsByFqName: Map<FqName?, JavaAnnotation> by buildLazyValueForMap()
 
     private val innerClassNameToAccess: MutableMap<Name, Int> = THashMap()
-    override val innerClassNames get() = innerClassNameToAccess.keys
+    override val innerClassNames: MutableSet<Name> get() = innerClassNameToAccess.keys
 
     override val name: Name
         get() = fqName.shortName()
 
-    override val isInterface get() = isSet(Opcodes.ACC_INTERFACE)
-    override val isAnnotationType get() = isSet(Opcodes.ACC_ANNOTATION)
-    override val isEnum get() = isSet(Opcodes.ACC_ENUM)
+    override val isInterface: Boolean get() = isSet(Opcodes.ACC_INTERFACE)
+    override val isAnnotationType: Boolean get() = isSet(Opcodes.ACC_ANNOTATION)
+    override val isEnum: Boolean get() = isSet(Opcodes.ACC_ENUM)
     override val lightClassOriginKind: LightClassOriginKind? get() = null
 
     override fun isFromSourceCodeInScope(scope: SearchScope): Boolean = false
@@ -191,7 +191,7 @@ class BinaryJavaClass(
         }
     }
 
-    override fun visitAnnotation(desc: String, visible: Boolean) =
+    override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor =
             BinaryJavaAnnotation.addAnnotation(annotations, desc, context, signatureParser)
 
     override fun findInnerClass(name: Name): JavaClass? {

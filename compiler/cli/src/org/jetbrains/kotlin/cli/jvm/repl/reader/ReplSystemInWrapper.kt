@@ -40,7 +40,7 @@ class ReplSystemInWrapper(
     private val isAtBufferEnd: Boolean
         get() = curBytePos == inputByteArray.size
 
-    @Volatile var isReplScriptExecuting = false
+    @Volatile var isReplScriptExecuting: Boolean = false
 
     override fun read(): Int {
         if (isLastByteProcessed) {

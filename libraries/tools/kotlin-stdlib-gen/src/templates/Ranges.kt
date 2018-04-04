@@ -33,7 +33,7 @@ object RangeOps : TemplateGroupBase() {
     private val integralPermutations = primitivePermutations.filter { it.first.isIntegral() && it.second.isIntegral() }
 
 
-    val f_reversed = fn("reversed()") {
+    val f_reversed: FamilyPrimitiveMemberDefinition = fn("reversed()") {
         include(ProgressionsOfPrimitives, rangePrimitives)
     } builder {
         doc { "Returns a progression that goes over the same range in the opposite direction with the same step." }
@@ -43,7 +43,7 @@ object RangeOps : TemplateGroupBase() {
         }
     }
 
-    val f_step = fn("step(step: SUM)") {
+    val f_step: FamilyPrimitiveMemberDefinition = fn("step(step: SUM)") {
         include(ProgressionsOfPrimitives, rangePrimitives)
     } builder {
         infix(true)
@@ -57,7 +57,7 @@ object RangeOps : TemplateGroupBase() {
         }
     }
 
-    val f_downTo = fn("downTo(to: Primitive)").byTwoPrimitives {
+    val f_downTo: PairPrimitiveMemberDefinition = fn("downTo(to: Primitive)").byTwoPrimitives {
         include(Primitives, integralPermutations)
     } builderWith { (fromType, toType) ->
         sourceFile(SourceFile.Ranges)
@@ -93,7 +93,7 @@ object RangeOps : TemplateGroupBase() {
     }
 
 
-    val f_until = fn("until(to: Primitive)").byTwoPrimitives {
+    val f_until: PairPrimitiveMemberDefinition = fn("until(to: Primitive)").byTwoPrimitives {
         include(Primitives, integralPermutations)
     } builderWith { (fromType, toType) ->
         sourceFile(SourceFile.Ranges)
@@ -138,7 +138,7 @@ object RangeOps : TemplateGroupBase() {
         }
     }
 
-    val f_contains = fn("contains(value: Primitive)").byTwoPrimitives {
+    val f_contains: PairPrimitiveMemberDefinition = fn("contains(value: Primitive)").byTwoPrimitives {
         include(Ranges, numericPermutations)
         filter { _, (rangeType, itemType) -> rangeType != itemType }
     } builderWith { (rangeType, itemType) ->
@@ -157,7 +157,7 @@ object RangeOps : TemplateGroupBase() {
         }
     }
 
-    val f_toPrimitiveExactOrNull = fn("to{}ExactOrNull()").byTwoPrimitives {
+    val f_toPrimitiveExactOrNull: PairPrimitiveMemberDefinition = fn("to{}ExactOrNull()").byTwoPrimitives {
         include(Primitives, numericPermutations)
         filter { _, (fromType, toType) -> fromType.capacity > toType.capacity && toType.isIntegral() }
     } builderWith { (fromType, toType) ->

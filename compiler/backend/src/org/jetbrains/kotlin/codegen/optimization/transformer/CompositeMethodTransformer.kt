@@ -26,7 +26,7 @@ open class CompositeMethodTransformer(private val transformers: List<MethodTrans
     }
 
     companion object {
-        inline fun build(builder: MutableList<MethodTransformer>.() -> Unit) =
+        inline fun build(builder: MutableList<MethodTransformer>.() -> Unit): CompositeMethodTransformer =
             CompositeMethodTransformer(ArrayList<MethodTransformer>().apply { builder() })
     }
 }

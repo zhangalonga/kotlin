@@ -41,7 +41,7 @@ import org.jetbrains.kotlin.types.typeUtil.isBoolean
 
 
 class KtPostfixTemplateProvider : PostfixTemplateProvider {
-    override fun getTemplates() = setOf(
+    override fun getTemplates(): Set<PostfixTemplateWithExpressionSelector> = setOf(
             KtNotPostfixTemplate,
             KtIfExpressionPostfixTemplate,
             KtElseExpressionPostfixTemplate,
@@ -61,12 +61,12 @@ class KtPostfixTemplateProvider : PostfixTemplateProvider {
             KtWhilePostfixTemplate
     )
 
-    override fun isTerminalSymbol(currentChar: Char) = currentChar == '.' || currentChar == '!'
+    override fun isTerminalSymbol(currentChar: Char): Boolean = currentChar == '.' || currentChar == '!'
 
     override fun afterExpand(file: PsiFile, editor: Editor) {
     }
 
-    override fun preCheck(copyFile: PsiFile, realEditor: Editor, currentOffset: Int) = copyFile
+    override fun preCheck(copyFile: PsiFile, realEditor: Editor, currentOffset: Int): PsiFile = copyFile
 
     override fun preExpand(file: PsiFile, editor: Editor) {
     }
@@ -77,7 +77,7 @@ class KtPostfixTemplateProvider : PostfixTemplateProvider {
          */
         @TestOnly
         @Volatile
-        var previouslySuggestedExpressions = emptyList<String>()
+        var previouslySuggestedExpressions: List<String> = emptyList<String>()
     }
 }
 

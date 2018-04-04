@@ -39,7 +39,7 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
     private var currentCatchBlock = globalCatchBlock
     private val tryStack = mutableListOf(TryBlock(globalCatchBlock, null))
 
-    var hasFinallyBlocks = false
+    var hasFinallyBlocks: Boolean = false
         get
         private set
 
@@ -59,13 +59,13 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
         return orderedBlocks
     }
 
-    override fun visitBlock(x: JsBlock) = splitIfNecessary(x) {
+    override fun visitBlock(x: JsBlock): Unit = splitIfNecessary(x) {
         for (statement in x.statements) {
             statement.accept(this)
         }
     }
 
-    override fun visitIf(x: JsIf) = splitIfNecessary(x) {
+    override fun visitIf(x: JsIf): Unit = splitIfNecessary(x) {
         val ifBlock = currentBlock
 
         val thenEntryBlock = CoroutineBlock()
@@ -88,7 +88,7 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
         currentBlock = jointBlock
     }
 
-    override fun visit(x: JsSwitch) = splitIfNecessary(x) {
+    override fun visit(x: JsSwitch): Unit = splitIfNecessary(x) {
         val switchBlock = currentBlock
         val jointBlock = CoroutineBlock()
 
@@ -136,7 +136,7 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
         }
     }
 
-    override fun visitWhile(x: JsWhile) = splitIfNecessary(x) {
+    override fun visitWhile(x: JsWhile): Unit = splitIfNecessary(x) {
         val successor = CoroutineBlock()
         val bodyEntryBlock = CoroutineBlock()
         currentStatements += stateAndJump(bodyEntryBlock, x)
@@ -154,7 +154,7 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
         currentBlock = successor
     }
 
-    override fun visitDoWhile(x: JsDoWhile) = splitIfNecessary(x) {
+    override fun visitDoWhile(x: JsDoWhile): Unit = splitIfNecessary(x) {
         val successor = CoroutineBlock()
         val bodyEntryBlock = CoroutineBlock()
         currentStatements += stateAndJump(bodyEntryBlock, x)
@@ -173,7 +173,7 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
         currentBlock = successor
     }
 
-    override fun visitFor(x: JsFor) = splitIfNecessary(x) {
+    override fun visitFor(x: JsFor): Unit = splitIfNecessary(x) {
         x.initExpression?.let {
             JsExpressionStatement(it).accept(this)
         }
@@ -240,7 +240,7 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
         currentStatements += state(fullPath[0], fromNode)
     }
 
-    override fun visitTry(x: JsTry) = splitIfNecessary(x) {
+    override fun visitTry(x: JsTry): Unit = splitIfNecessary(x) {
         val catchNode = x.catches.firstOrNull()
         val finallyNode = x.finallyBlock
         val successor = CoroutineBlock()

@@ -118,7 +118,7 @@ abstract class KotlinAbstractUElement(private val givenParent: UElement?) : UEle
         return this.psi == other.psi
     }
 
-    override fun hashCode() = psi?.hashCode() ?: 0
+    override fun hashCode(): Int = psi?.hashCode() ?: 0
 }
 
 fun doConvertParent(element: UElement, parent: PsiElement?): UElement? {
@@ -188,7 +188,7 @@ abstract class KotlinAbstractUExpression(givenParent: UElement?)
 
     override val javaPsi: PsiElement? = null
 
-    override val sourcePsi
+    override val sourcePsi: PsiElement?
         get() = psi
 
     override val annotations: List<UAnnotation>

@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.idea.refactoring.pullUp.isAbstractInInterface
 import org.jetbrains.kotlin.idea.refactoring.pullUp.mustBeAbstractInInterface
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
+import javax.swing.JTextField
 
 class KotlinExtractInterfaceDialog(
         originalClass: KtClassOrObject,
@@ -104,25 +105,25 @@ class KotlinExtractInterfaceDialog(
         }
     }
 
-    override fun getDestinationPackageRecentKey() = DESTINATION_PACKAGE_RECENT_KEY
+    override fun getDestinationPackageRecentKey(): String = DESTINATION_PACKAGE_RECENT_KEY
 
-    override fun getClassNameLabelText() = RefactoringBundle.message("interface.name.prompt")!!
+    override fun getClassNameLabelText(): String = RefactoringBundle.message("interface.name.prompt")!!
 
-    override fun getPackageNameLabelText() = RefactoringBundle.message("package.for.new.interface")!!
+    override fun getPackageNameLabelText(): String = RefactoringBundle.message("package.for.new.interface")!!
 
-    override fun getEntityName() = RefactoringBundle.message("extractSuperInterface.interface")!!
+    override fun getEntityName(): String = RefactoringBundle.message("extractSuperInterface.interface")!!
 
-    override fun getTopLabelText() = RefactoringBundle.message("extract.interface.from")!!
+    override fun getTopLabelText(): String = RefactoringBundle.message("extract.interface.from")!!
 
-    override fun getDocCommentPolicySetting() = JavaRefactoringSettings.getInstance().EXTRACT_INTERFACE_JAVADOC
+    override fun getDocCommentPolicySetting(): Int = JavaRefactoringSettings.getInstance().EXTRACT_INTERFACE_JAVADOC
 
     override fun setDocCommentPolicySetting(policy: Int) {
         JavaRefactoringSettings.getInstance().EXTRACT_INTERFACE_JAVADOC = policy
     }
 
-    override fun getExtractedSuperNameNotSpecifiedMessage() = RefactoringBundle.message("no.interface.name.specified")!!
+    override fun getExtractedSuperNameNotSpecifiedMessage(): String = RefactoringBundle.message("no.interface.name.specified")!!
 
-    override fun getHelpId() = HelpID.EXTRACT_INTERFACE
+    override fun getHelpId(): String = HelpID.EXTRACT_INTERFACE
 
-    override fun createExtractedSuperNameField() = super.createExtractedSuperNameField().apply { text = "I${originalClass.name}" }
+    override fun createExtractedSuperNameField(): JTextField = super.createExtractedSuperNameField().apply { text = "I${originalClass.name}" }
 }

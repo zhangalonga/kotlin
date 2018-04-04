@@ -59,10 +59,10 @@ abstract class Visibility protected constructor(
     open val displayName: String
         get() = name
 
-    override final fun toString() = displayName
+    override final fun toString(): String = displayName
 
     open fun normalize(): Visibility = this
 
     // Should be overloaded in Java visibilities
-    open fun effectiveVisibility(descriptor: DeclarationDescriptor, checkPublishedApi: Boolean) = effectiveVisibility(normalize(), descriptor, checkPublishedApi)
+    open fun effectiveVisibility(descriptor: DeclarationDescriptor, checkPublishedApi: Boolean): EffectiveVisibility = effectiveVisibility(normalize(), descriptor, checkPublishedApi)
 }

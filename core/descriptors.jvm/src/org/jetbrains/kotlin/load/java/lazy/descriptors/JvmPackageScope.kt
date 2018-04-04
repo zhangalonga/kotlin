@@ -70,10 +70,10 @@ class JvmPackageScope(
     ): Collection<DeclarationDescriptor> =
             getFromAllScopes(javaScope, kotlinScopes) { it.getContributedDescriptors(kindFilter, nameFilter) }
 
-    override fun getFunctionNames() = kotlinScopes.flatMapTo(mutableSetOf()) { it.getFunctionNames() }.apply {
+    override fun getFunctionNames(): MutableSet<Name> = kotlinScopes.flatMapTo(mutableSetOf()) { it.getFunctionNames() }.apply {
         addAll(javaScope.getFunctionNames())
     }
-    override fun getVariableNames() = kotlinScopes.flatMapTo(mutableSetOf()) { it.getVariableNames() }.apply {
+    override fun getVariableNames(): MutableSet<Name> = kotlinScopes.flatMapTo(mutableSetOf()) { it.getVariableNames() }.apply {
         addAll(javaScope.getVariableNames())
     }
 

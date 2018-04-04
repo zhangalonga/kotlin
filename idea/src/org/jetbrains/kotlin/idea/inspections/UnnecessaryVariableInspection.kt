@@ -38,11 +38,11 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class UnnecessaryVariableInspection : AbstractApplicabilityBasedInspection<KtProperty>(KtProperty::class.java) {
 
-    override fun isApplicable(element: KtProperty) = statusFor(element) != null
+    override fun isApplicable(element: KtProperty): Boolean = statusFor(element) != null
 
-    override fun inspectionTarget(element: KtProperty) = element.nameIdentifier ?: element
+    override fun inspectionTarget(element: KtProperty): PsiElement = element.nameIdentifier ?: element
 
-    override fun inspectionText(element: KtProperty) = when (statusFor(element)) {
+    override fun inspectionText(element: KtProperty): String = when (statusFor(element)) {
         Status.RETURN_ONLY ->
             "Variable used only in following return and should be inlined"
         Status.EXACT_COPY ->
@@ -50,9 +50,9 @@ class UnnecessaryVariableInspection : AbstractApplicabilityBasedInspection<KtPro
         else -> ""
     }
 
-    override val defaultFixText = "Inline variable"
+    override val defaultFixText: String = "Inline variable"
 
-    override val startFixInWriteAction = false
+    override val startFixInWriteAction: Boolean = false
 
     override fun applyTo(element: PsiElement, project: Project, editor: Editor?) {
         val property = element.getParentOfType<KtProperty>(strict = false) ?: return

@@ -57,7 +57,7 @@ class PluginDeclarationProviderFactory(
         }
     }
 
-    override fun packageExists(fqName: FqName) =
+    override fun packageExists(fqName: FqName): Boolean =
         fileBasedDeclarationProviderFactory.packageExists(fqName) || stubBasedPackageExists(fqName)
 
     private fun stubBasedPackageExists(name: FqName): Boolean {

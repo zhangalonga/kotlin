@@ -136,12 +136,12 @@ private constructor(
         val substitutor: TypeSubstitutor?,
         val makeNotNullable: Boolean
 ) {
-    fun isMatch() = substitutor != null && !makeNotNullable
+    fun isMatch(): Boolean = substitutor != null && !makeNotNullable
 
     companion object {
-        val noMatch = ExpectedInfoMatch(null, false)
-        fun match(substitutor: TypeSubstitutor) = ExpectedInfoMatch(substitutor, false)
-        fun ifNotNullMatch(substitutor: TypeSubstitutor) = ExpectedInfoMatch(substitutor, true)
+        val noMatch: ExpectedInfoMatch = ExpectedInfoMatch(null, false)
+        fun match(substitutor: TypeSubstitutor): ExpectedInfoMatch = ExpectedInfoMatch(substitutor, false)
+        fun ifNotNullMatch(substitutor: TypeSubstitutor): ExpectedInfoMatch = ExpectedInfoMatch(substitutor, true)
     }
 }
 
@@ -162,7 +162,7 @@ fun Collection<FuzzyType>.matchExpectedInfo(expectedInfo: ExpectedInfo): Expecte
     return ExpectedInfoMatch.noMatch
 }
 
-fun FuzzyType.matchExpectedInfo(expectedInfo: ExpectedInfo) = listOf(this).matchExpectedInfo(expectedInfo)
+fun FuzzyType.matchExpectedInfo(expectedInfo: ExpectedInfo): ExpectedInfoMatch = listOf(this).matchExpectedInfo(expectedInfo)
 
 fun<TDescriptor: DeclarationDescriptor?> MutableCollection<LookupElement>.addLookupElements(
         descriptor: TDescriptor,
@@ -290,7 +290,7 @@ enum class SmartCompletionItemPriority {
     INHERITOR_INSTANTIATION
 }
 
-val SMART_COMPLETION_ITEM_PRIORITY_KEY = Key<SmartCompletionItemPriority>("SMART_COMPLETION_ITEM_PRIORITY_KEY")
+val SMART_COMPLETION_ITEM_PRIORITY_KEY: Key<SmartCompletionItemPriority> = Key<SmartCompletionItemPriority>("SMART_COMPLETION_ITEM_PRIORITY_KEY")
 
 fun LookupElement.assignSmartCompletionPriority(priority: SmartCompletionItemPriority): LookupElement {
     putUserData(SMART_COMPLETION_ITEM_PRIORITY_KEY, priority)
@@ -334,8 +334,6 @@ fun DeclarationDescriptor.fuzzyTypesForSmartCompletion(
     }
 }
 
-fun Collection<ExpectedInfo>.filterFunctionExpected()
-        = filter { it.fuzzyType != null && it.fuzzyType!!.type.isFunctionType }
+fun Collection<ExpectedInfo>.filterFunctionExpected(): List<ExpectedInfo> = filter { it.fuzzyType != null && it.fuzzyType!!.type.isFunctionType }
 
-fun Collection<ExpectedInfo>.filterCallableExpected()
-        = filter { it.fuzzyType != null && ReflectionTypes.isCallableType(it.fuzzyType!!.type) }
+fun Collection<ExpectedInfo>.filterCallableExpected(): List<ExpectedInfo> = filter { it.fuzzyType != null && ReflectionTypes.isCallableType(it.fuzzyType!!.type) }

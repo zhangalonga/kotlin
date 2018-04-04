@@ -29,13 +29,13 @@ import org.jetbrains.kotlin.ir2cfg.nodes.MergeCfgElement
 
 class FunctionGenerator(val function: IrFunction) {
 
-    val builder = FunctionBuilder(function)
+    val builder: FunctionBuilder = FunctionBuilder(function)
 
-    val exit = MergeCfgElement(function, "Function exit")
+    val exit: MergeCfgElement = MergeCfgElement(function, "Function exit")
 
-    val loopEntries = mutableMapOf<IrLoop, IrStatement>()
+    val loopEntries: MutableMap<IrLoop, IrStatement> = mutableMapOf()
 
-    val loopExits = mutableMapOf<IrLoop, IrStatement>()
+    val loopExits: MutableMap<IrLoop, IrStatement> = mutableMapOf()
 
     fun generate(): ControlFlowGraph {
         val visitor = FunctionVisitor()

@@ -49,7 +49,7 @@ fun selectElement(
         file: KtFile,
         elementKinds: Collection<CodeInsightUtils.ElementKind>,
         callback: (PsiElement?) -> Unit
-) = selectElement(editor, file, true, elementKinds, callback)
+): Unit = selectElement(editor, file, true, elementKinds, callback)
 
 @Throws(IntroduceRefactoringException::class)
 fun selectElement(editor: Editor,

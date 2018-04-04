@@ -31,5 +31,5 @@ open class KtExpressionWithLabel(node: ASTNode) : KtExpressionImpl(node) {
     fun getLabelName(): String? = getTargetLabel()?.getReferencedName()
     fun getLabelNameAsName(): Name? = getTargetLabel()?.getReferencedNameAsName()
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitExpressionWithLabel(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitExpressionWithLabel(this, data)
 }

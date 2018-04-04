@@ -29,9 +29,9 @@ class SamWithReceiverModelImpl(
 ) : SamWithReceiverModel
 
 class SamWithReceiverModelBuilderService : AnnotationBasedPluginModelBuilderService<SamWithReceiverModel>() {
-    override val gradlePluginNames get() = listOf("org.jetbrains.kotlin.plugin.sam.with.receiver", "kotlin-sam-with-receiver")
-    override val extensionName get() = "samWithReceiver"
-    override val modelClass get() = SamWithReceiverModel::class.java
+    override val gradlePluginNames: List<String> get() = listOf("org.jetbrains.kotlin.plugin.sam.with.receiver", "kotlin-sam-with-receiver")
+    override val extensionName: String get() = "samWithReceiver"
+    override val modelClass: Class<SamWithReceiverModel> get() = SamWithReceiverModel::class.java
 
     override fun createModel(annotations: List<String>, presets: List<String>, extension: Any?): SamWithReceiverModelImpl {
         return SamWithReceiverModelImpl(annotations, presets)
@@ -40,9 +40,9 @@ class SamWithReceiverModelBuilderService : AnnotationBasedPluginModelBuilderServ
 
 class SamWithReceiverProjectResolverExtension : AnnotationBasedPluginProjectResolverExtension<SamWithReceiverModel>() {
     companion object {
-        val KEY = Key<SamWithReceiverModel>("SamWithReceiverModel")
+        val KEY: Key<SamWithReceiverModel> = Key<SamWithReceiverModel>("SamWithReceiverModel")
     }
 
-    override val modelClass get() = SamWithReceiverModel::class.java
-    override val userDataKey get() = KEY
+    override val modelClass: Class<SamWithReceiverModel> get() = SamWithReceiverModel::class.java
+    override val userDataKey: Key<SamWithReceiverModel> get() = KEY
 }

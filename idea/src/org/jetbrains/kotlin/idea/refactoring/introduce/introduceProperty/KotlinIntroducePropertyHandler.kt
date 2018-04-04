@@ -45,7 +45,7 @@ class KotlinIntroducePropertyHandler(
         private fun getExtractionTarget(descriptor: ExtractableCodeDescriptor) =
                 propertyTargets.firstOrNull { it.isAvailable(descriptor) }
 
-        override fun validate(descriptor: ExtractableCodeDescriptor) =
+        override fun validate(descriptor: ExtractableCodeDescriptor): ExtractableCodeDescriptorWithConflicts =
                 descriptor.validate(getExtractionTarget(descriptor) ?: ExtractionTarget.FUNCTION)
 
         override fun configureAndRun(

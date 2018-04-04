@@ -152,6 +152,6 @@ open class KDocTag(node: ASTNode) : KDocElementImpl(node) {
     private fun String.calcIndent() = indexOfFirst { !it.isWhitespace() }
 
     companion object {
-        val indentationWhiteSpaces = " ".repeat(4)
+        val indentationWhiteSpaces: String = " ".repeat(4)
     }
 }

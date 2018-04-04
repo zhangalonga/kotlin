@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
 object KotlinExtractSuperclassHandler : KotlinExtractSuperHandlerBase(false) {
-    val REFACTORING_NAME = "Extract Superclass"
+    val REFACTORING_NAME: String = "Extract Superclass"
 
     override fun getErrorMessage(klass: KtClassOrObject): String? {
         if (klass is KtClass) {

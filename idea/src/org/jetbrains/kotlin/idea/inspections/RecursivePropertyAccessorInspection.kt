@@ -41,9 +41,9 @@ class RecursivePropertyAccessorInspection : AbstractKotlinInspection() {
 
     class ReplaceWithFieldFix : LocalQuickFix {
 
-        override fun getName() = "Replace with 'field'"
+        override fun getName(): String = "Replace with 'field'"
 
-        override fun getFamilyName() = name
+        override fun getFamilyName(): String = name
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val expression = descriptor.psiElement as KtExpression

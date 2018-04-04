@@ -83,9 +83,9 @@ class KotlinFacetEditorGeneralTab(
             )
         }
 
-        val useProjectSettingsCheckBox = ThreeStateCheckBox("Use project settings").apply { isThirdStateEnabled = isMultiEditor }
+        val useProjectSettingsCheckBox: ThreeStateCheckBox = ThreeStateCheckBox("Use project settings").apply { isThirdStateEnabled = isMultiEditor }
 
-        val targetPlatformComboBox =
+        val targetPlatformComboBox: JComboBox<TargetPlatformKind<*>> =
                 JComboBox<TargetPlatformKind<*>>(TargetPlatformKind.ALL_PLATFORMS.toTypedArray()).apply {
                     setRenderer(DescriptionListCellRenderer())
                 }
@@ -202,7 +202,7 @@ class KotlinFacetEditorGeneralTab(
         }
     }
 
-    val editor = EditorComponent(editorContext.project, configuration)
+    val editor: EditorComponent = EditorComponent(editorContext.project, configuration)
 
     private var enableValidation = false
 
@@ -311,7 +311,7 @@ class KotlinFacetEditorGeneralTab(
         }
     }
 
-    override fun getDisplayName() = "General"
+    override fun getDisplayName(): String = "General"
 
     override fun createComponent(): JComponent {
         return editor

@@ -45,5 +45,5 @@ open class NotificationMessageCollector(private val project: Project,
     }
 }
 
-fun createConfigureKotlinNotificationCollector(project: Project) =
+fun createConfigureKotlinNotificationCollector(project: Project): NotificationMessageCollector =
         NotificationMessageCollector(project, "Configure Kotlin: info notification", "Configure Kotlin")

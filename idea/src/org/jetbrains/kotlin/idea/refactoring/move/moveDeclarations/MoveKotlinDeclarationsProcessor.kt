@@ -87,7 +87,7 @@ interface Mover : (KtNamedDeclaration, KtElement) -> KtNamedDeclaration {
     }
 
     object Idle : Mover {
-        override fun invoke(originalElement: KtNamedDeclaration, targetContainer: KtElement) = originalElement
+        override fun invoke(originalElement: KtNamedDeclaration, targetContainer: KtElement): KtNamedDeclaration = originalElement
     }
 }
 
@@ -132,10 +132,10 @@ class MoveKotlinDeclarationsProcessor(
         val mover: Mover = Mover.Default) : BaseRefactoringProcessor(descriptor.project) {
     companion object {
         private val REFACTORING_NAME = "Move declarations"
-        val REFACTORING_ID = "move.kotlin.declarations"
+        val REFACTORING_ID: String = "move.kotlin.declarations"
     }
 
-    val project get() = descriptor.project
+    val project: Project get() = descriptor.project
 
     private var nonCodeUsages: Array<NonCodeUsageInfo>? = null
     private val elementsToMove = descriptor.elementsToMove.filter { e -> e.parent != descriptor.moveTarget.getTargetPsiIfExists(e) }
@@ -144,7 +144,7 @@ class MoveKotlinDeclarationsProcessor(
             .mapValues { it.value.keysToMap { it.toLightElements().ifEmpty { listOf(it) } } }
     private val conflicts = MultiMap<PsiElement, String>()
 
-    override fun getRefactoringId() = REFACTORING_ID
+    override fun getRefactoringId(): String = REFACTORING_ID
 
     override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptor {
         val targetContainerFqName = descriptor.moveTarget.targetContainerFqName?.let {
@@ -264,7 +264,7 @@ class MoveKotlinDeclarationsProcessor(
         return showConflicts(conflicts, refUsages.get())
     }
 
-    override fun performRefactoring(usages: Array<out UsageInfo>) = doPerformRefactoring(usages.toList())
+    override fun performRefactoring(usages: Array<out UsageInfo>): Unit = doPerformRefactoring(usages.toList())
 
     internal fun doPerformRefactoring(usages: List<UsageInfo>) {
         fun moveDeclaration(declaration: KtNamedDeclaration, moveTarget: KotlinMoveTarget): KtNamedDeclaration {

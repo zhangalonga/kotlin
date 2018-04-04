@@ -19,12 +19,12 @@ interface FirElement {
     fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitElement(this, data)
 
-    fun accept(visitor: FirVisitorVoid) =
+    fun accept(visitor: FirVisitorVoid): Unit =
         accept(visitor, null)
 
     fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {}
 
-    fun acceptChildren(visitor: FirVisitorVoid) =
+    fun acceptChildren(visitor: FirVisitorVoid): Unit =
         acceptChildren(visitor, null)
 
     fun <E : FirElement, D> transform(visitor: FirTransformer<D>, data: D): CompositeTransformResult<E> =

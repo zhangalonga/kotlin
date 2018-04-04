@@ -51,7 +51,7 @@ fun ConstraintSystemBuilder.addSubtypeConstraintIfCompatible(
     lowerType: UnwrappedType,
     upperType: UnwrappedType,
     position: ConstraintPosition
-) =
+): Boolean =
     runTransaction {
         if (!hasContradiction) addSubtypeConstraint(lowerType, upperType, position)
         !hasContradiction

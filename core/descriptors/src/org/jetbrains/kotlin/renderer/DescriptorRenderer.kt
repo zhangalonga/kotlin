@@ -215,7 +215,7 @@ interface DescriptorRendererOptions {
 }
 
 object ExcludedTypeAnnotations {
-    val internalAnnotationsForResolve = setOf(
+    val internalAnnotationsForResolve: Set<FqName> = setOf(
             FqName("kotlin.internal.NoInfer"),
             FqName("kotlin.internal.Exact")
     )
@@ -223,10 +223,10 @@ object ExcludedTypeAnnotations {
 
 enum class RenderingFormat {
     PLAIN {
-        override fun escape(string: String) = string
+        override fun escape(string: String): String = string
     },
     HTML {
-        override fun escape(string: String) = string.replace("<", "&lt;").replace(">", "&gt;")
+        override fun escape(string: String): String = string.replace("<", "&lt;").replace(">", "&gt;")
     };
 
     abstract fun escape(string: String): String
@@ -259,9 +259,9 @@ enum class DescriptorRendererModifier(val includeByDefault: Boolean) {
 
     companion object {
         @JvmField
-        val DEFAULTS = DescriptorRendererModifier.values().filter { it.includeByDefault }.toSet()
+        val DEFAULTS: Set<DescriptorRendererModifier> = DescriptorRendererModifier.values().filter { it.includeByDefault }.toSet()
 
         @JvmField
-        val ALL = DescriptorRendererModifier.values().toSet()
+        val ALL: Set<DescriptorRendererModifier> = DescriptorRendererModifier.values().toSet()
     }
 }

@@ -64,9 +64,9 @@ class ExtractableSubstringInfo(
 
     val template: KtStringTemplateExpression = startEntry.parent as KtStringTemplateExpression
 
-    val content = with(entries.map { it.text }.joinToString(separator = "")) { substring(prefix.length, length - suffix.length) }
+    val content: String = with(entries.map { it.text }.joinToString(separator = "")) { substring(prefix.length, length - suffix.length) }
 
-    val type = type ?: guessLiteralType(content)
+    val type: KotlinType = type ?: guessLiteralType(content)
 
     val contentRange: TextRange
         get() = TextRange(startEntry.startOffset + prefix.length, endEntry.endOffset - suffix.length)

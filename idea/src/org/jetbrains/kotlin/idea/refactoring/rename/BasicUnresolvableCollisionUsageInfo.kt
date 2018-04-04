@@ -23,5 +23,5 @@ class BasicUnresolvableCollisionUsageInfo(
         element: PsiElement,
         referencedElement: PsiElement,
         private val _description: String) : UnresolvableCollisionUsageInfo(element, referencedElement) {
-    override fun getDescription() = _description
+    override fun getDescription(): String = _description
 }

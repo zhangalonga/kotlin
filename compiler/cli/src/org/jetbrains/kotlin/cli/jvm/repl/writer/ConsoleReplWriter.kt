@@ -17,11 +17,11 @@
 package org.jetbrains.kotlin.cli.jvm.repl.writer
 
 class ConsoleReplWriter : ReplWriter {
-    override fun printlnWelcomeMessage(x: String) = println(x)
-    override fun printlnHelpMessage(x: String) = println(x)
-    override fun outputCompileError(x: String) = println(x)
-    override fun outputCommandResult(x: String) = println(x)
-    override fun outputRuntimeError(x: String) = println(x)
+    override fun printlnWelcomeMessage(x: String): Unit = println(x)
+    override fun printlnHelpMessage(x: String): Unit = println(x)
+    override fun outputCompileError(x: String): Unit = println(x)
+    override fun outputCommandResult(x: String): Unit = println(x)
+    override fun outputRuntimeError(x: String): Unit = println(x)
 
     override fun notifyReadLineStart() {}
     override fun notifyReadLineEnd() {}

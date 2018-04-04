@@ -137,7 +137,7 @@ class SymbolBasedClass(
 
     override fun isFromSourceCodeInScope(scope: SearchScope): Boolean = false
 
-    override fun findInnerClass(name: Name) = innerClasses[name]
+    override fun findInnerClass(name: Name): JavaClass? = innerClasses[name]
 
     private val enclosedElements by lazy { element.enclosedElements }
 

@@ -63,7 +63,7 @@ open class ConstraintSystemBuilderImpl(private val mode: Mode = ConstraintSystem
     internal val errors = ArrayList<ConstraintError>()
     internal val initialConstraints = ArrayList<Constraint>()
 
-    override val typeVariableSubstitutors = LinkedHashMap<CallHandle, TypeSubstitutor>()
+    override val typeVariableSubstitutors: LinkedHashMap<CallHandle, TypeSubstitutor> = LinkedHashMap()
 
     private fun storeSubstitutor(call: CallHandle, substitutor: TypeSubstitutor): TypeSubstitutor {
         if (typeVariableSubstitutors.containsKey(call)) {

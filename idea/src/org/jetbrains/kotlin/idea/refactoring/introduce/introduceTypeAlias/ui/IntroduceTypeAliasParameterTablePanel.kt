@@ -28,7 +28,7 @@ open class IntroduceTypeAliasParameterTablePanel : AbstractParameterTablePanel<T
             name = originalParameter.name
         }
 
-        override fun toParameter() = originalParameter.copy(name)
+        override fun toParameter(): TypeParameter = originalParameter.copy(name)
     }
 
     fun init(parameters: List<TypeParameter>) {
@@ -36,7 +36,7 @@ open class IntroduceTypeAliasParameterTablePanel : AbstractParameterTablePanel<T
         super.init()
     }
 
-    override fun isCheckMarkColumnEditable() = false
+    override fun isCheckMarkColumnEditable(): Boolean = false
 
     val selectedTypeParameterInfos: List<TypeParameterInfo>
         get() = parameterInfos.filter { it.isEnabled }

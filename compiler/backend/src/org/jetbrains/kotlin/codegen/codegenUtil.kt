@@ -209,7 +209,7 @@ fun sortTopLevelClassesAndPrepareContextForSealedClasses(
     return result
 }
 
-fun CallableMemberDescriptor.isDefinitelyNotDefaultImplsMethod() =
+fun CallableMemberDescriptor.isDefinitelyNotDefaultImplsMethod(): Boolean =
     this is JavaCallableMemberDescriptor || this.annotations.hasAnnotation(PLATFORM_DEPENDENT_ANNOTATION_FQ_NAME)
 
 
@@ -274,16 +274,18 @@ private fun CallableDescriptor.isJvmStaticIn(predicate: (DeclarationDescriptor) 
         else -> predicate(containingDeclaration) && hasJvmStaticAnnotation()
     }
 
-fun Collection<VariableDescriptor>.filterOutDescriptorsWithSpecialNames() = filterNot { it.name.isSpecial }
+fun Collection<VariableDescriptor>.filterOutDescriptorsWithSpecialNames(): List<VariableDescriptor> =
+    filterNot { it.name.isSpecial }
 
 class JvmKotlinType(val type: Type, val kotlinType: KotlinType? = null)
 
-fun KotlinType.asmType(typeMapper: KotlinTypeMapper) = typeMapper.mapType(this)
+fun KotlinType.asmType(typeMapper: KotlinTypeMapper): Type = typeMapper.mapType(this)
 
 fun KtExpression?.asmType(typeMapper: KotlinTypeMapper, bindingContext: BindingContext): Type =
     this.kotlinType(bindingContext)?.asmType(typeMapper) ?: Type.VOID_TYPE
 
-fun KtExpression?.kotlinType(bindingContext: BindingContext) = this?.let(bindingContext::getType)
+fun KtExpression?.kotlinType(bindingContext: BindingContext): KotlinType? =
+    this?.let(bindingContext::getType)
 
 fun Collection<Type>.withVariableIndices(): List<Pair<Int, Type>> = mutableListOf<Pair<Int, Type>>().apply {
     var index = 0
@@ -325,7 +327,7 @@ fun MemberDescriptor.isToArrayFromCollection(): Boolean {
     return isGenericToArray() || isNonGenericToArray()
 }
 
-fun FqName.topLevelClassInternalName() = JvmClassName.byClassId(ClassId(parent(), shortName())).internalName
+fun FqName.topLevelClassInternalName(): String = JvmClassName.byClassId(ClassId(parent(), shortName())).internalName
 fun FqName.topLevelClassAsmType(): Type = Type.getObjectType(topLevelClassInternalName())
 
 fun initializeVariablesForDestructuredLambdaParameters(codegen: ExpressionCodegen, valueParameters: List<ValueParameterDescriptor>) {
@@ -355,7 +357,7 @@ fun initializeVariablesForDestructuredLambdaParameters(codegen: ExpressionCodege
     codegen.isShouldMarkLineNumbers = savedIsShouldMarkLineNumbers
 }
 
-fun <D : CallableDescriptor> D.unwrapFrontendVersion() = unwrapInitialDescriptorForSuspendFunction()
+fun <D : CallableDescriptor> D.unwrapFrontendVersion(): D = unwrapInitialDescriptorForSuspendFunction()
 
 inline fun FrameMap.useTmpVar(type: Type, block: (index: Int) -> Unit) {
     val index = enterTemp(type)
@@ -399,17 +401,17 @@ fun ExpressionCodegen.generateCallReceiver(call: ResolvedCall<out CallableDescri
 fun ExpressionCodegen.generateCallSingleArgument(call: ResolvedCall<out CallableDescriptor>): StackValue =
     gen(call.getFirstArgumentExpression()!!)
 
-fun ClassDescriptor.isPossiblyUninitializedSingleton() =
+fun ClassDescriptor.isPossiblyUninitializedSingleton(): Boolean =
     DescriptorUtils.isEnumEntry(this) ||
             DescriptorUtils.isCompanionObject(this) && JvmCodegenUtil.isJvmInterface(this.containingDeclaration)
 
-val CodegenContext<*>.parentContextsWithSelf
+val CodegenContext<*>.parentContextsWithSelf: Sequence<CodegenContext<out DeclarationDescriptor>>
     get() = generateSequence(this) { it.parentContext }
 
-val CodegenContext<*>.parentContexts
+val CodegenContext<*>.parentContexts: Sequence<CodegenContext<out DeclarationDescriptor>>
     get() = parentContext?.parentContextsWithSelf ?: emptySequence()
 
-val CodegenContext<*>.contextStackText
+val CodegenContext<*>.contextStackText: String
     get() = parentContextsWithSelf.joinToString(separator = "\n") { it.toString() }
 
 inline fun FrameMap.evaluateOnce(

@@ -157,7 +157,7 @@ class DifferenceCalculatorForClass(
         private val oldData: ClassProtoData,
         private val newData: ClassProtoData
 ) : DifferenceCalculator() {
-    override val compareObject = ProtoCompareGenerated(oldData.nameResolver, newData.nameResolver)
+    override val compareObject: ProtoCompareGenerated = ProtoCompareGenerated(oldData.nameResolver, newData.nameResolver)
 
     override fun difference(): Difference {
         val (oldProto, oldNameResolver) = oldData
@@ -264,7 +264,7 @@ class DifferenceCalculatorForPackageFacade(
         private val oldData: PackagePartProtoData,
         private val newData: PackagePartProtoData
 ) : DifferenceCalculator() {
-    override val compareObject = ProtoCompareGenerated(oldData.nameResolver, newData.nameResolver)
+    override val compareObject: ProtoCompareGenerated = ProtoCompareGenerated(oldData.nameResolver, newData.nameResolver)
 
     override fun difference(): Difference {
         val oldProto = oldData.proto

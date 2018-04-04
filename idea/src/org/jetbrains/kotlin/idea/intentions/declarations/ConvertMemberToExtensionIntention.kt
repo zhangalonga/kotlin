@@ -65,7 +65,7 @@ class ConvertMemberToExtensionIntention : SelfTargetingRangeIntention<KtCallable
         return (element.nameIdentifier ?: return null).textRange
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     //TODO: local class
 

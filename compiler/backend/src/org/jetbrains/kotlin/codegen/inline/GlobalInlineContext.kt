@@ -16,7 +16,7 @@ class GlobalInlineContext(diagnostics: DiagnosticSink) {
 
     private val typesUsedInInlineFunctions = LinkedList<MutableSet<String>>()
 
-    fun enterIntoInlining(call: ResolvedCall<*>?) =
+    fun enterIntoInlining(call: ResolvedCall<*>?): Boolean =
         inlineCycleReporter.enterIntoInlining(call).also {
             if (it) typesUsedInInlineFunctions.push(hashSetOf())
         }
@@ -27,7 +27,7 @@ class GlobalInlineContext(diagnostics: DiagnosticSink) {
         typesUsedInInlineFunctions.peek()?.addAll(pop)
     }
 
-    fun recordTypeFromInlineFunction(type: String) = typesUsedInInlineFunctions.peek().add(type)
+    fun recordTypeFromInlineFunction(type: String): Boolean = typesUsedInInlineFunctions.peek().add(type)
 
-    fun isTypeFromInlineFunction(type: String) = typesUsedInInlineFunctions.peek().contains(type)
+    fun isTypeFromInlineFunction(type: String): Boolean = typesUsedInInlineFunctions.peek().contains(type)
 }

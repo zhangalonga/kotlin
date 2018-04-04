@@ -16,15 +16,15 @@ import javax.swing.Icon
 abstract class KotlinFacetType<C : KotlinFacetConfiguration> :
     FacetType<KotlinFacet, C>(TYPE_ID, ID, NAME) {
     companion object {
-        const val ID = "kotlin-language"
-        val TYPE_ID = FacetTypeId<KotlinFacet>(ID)
-        const val NAME = "Kotlin"
+        const val ID: String = "kotlin-language"
+        val TYPE_ID: FacetTypeId<KotlinFacet> = FacetTypeId<KotlinFacet>(ID)
+        const val NAME: String = "Kotlin"
 
-        val INSTANCE
+        val INSTANCE: FacetType<KotlinFacet, KotlinFacetConfiguration>
             get() = FacetTypeRegistry.getInstance().findFacetType(TYPE_ID)
     }
 
-    override fun isSuitableModuleType(moduleType: ModuleType<*>) = moduleType is JavaModuleType
+    override fun isSuitableModuleType(moduleType: ModuleType<*>): Boolean = moduleType is JavaModuleType
 
     override fun getIcon(): Icon = KotlinIcons.SMALL_LOGO
 }

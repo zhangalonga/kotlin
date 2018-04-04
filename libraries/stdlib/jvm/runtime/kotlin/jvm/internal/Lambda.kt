@@ -17,7 +17,7 @@
 package kotlin.jvm.internal
 
 public abstract class Lambda(private val arity: Int) : FunctionBase {
-    override fun getArity() = arity
+    override fun getArity(): Int = arity
 
-    override fun toString() = Reflection.renderLambdaToString(this)
+    override fun toString(): String = Reflection.renderLambdaToString(this)
 }

@@ -36,7 +36,7 @@ class KotlinInterfaceMemberDependencyGraph<T : KtNamedDeclaration, M : MemberInf
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun getDependent() = delegateGraph.dependent
+    override fun getDependent(): Set<T> = delegateGraph.dependent
             .mapNotNull { it.unwrapped }
             .filterIsInstanceTo(LinkedHashSet<KtNamedDeclaration>()) as Set<T>
 

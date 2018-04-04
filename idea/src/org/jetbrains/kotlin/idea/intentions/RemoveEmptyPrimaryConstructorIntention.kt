@@ -33,9 +33,9 @@ class RemoveEmptyPrimaryConstructorInspection : IntentionBasedInspection<KtPrima
 class RemoveEmptyPrimaryConstructorIntention :
     SelfTargetingOffsetIndependentIntention<KtPrimaryConstructor>(KtPrimaryConstructor::class.java, "Remove empty primary constructor") {
 
-    override fun applyTo(element: KtPrimaryConstructor, editor: Editor?) = element.delete()
+    override fun applyTo(element: KtPrimaryConstructor, editor: Editor?): Unit = element.delete()
 
-    override fun isApplicableTo(element: KtPrimaryConstructor) = when {
+    override fun isApplicableTo(element: KtPrimaryConstructor): Boolean = when {
         element.valueParameters.isNotEmpty() -> false
         element.annotations.isNotEmpty() -> false
         element.modifierList?.text?.isBlank() == false -> false

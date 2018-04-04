@@ -70,10 +70,10 @@ class SimplePerfCountersWithTotal(val totalRef: PerfCounters) : SimplePerfCounte
 
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ThreadMXBean.threadCpuTime() = if (isCurrentThreadCpuTimeSupported) currentThreadCpuTime else 0L
+inline fun ThreadMXBean.threadCpuTime(): Long = if (isCurrentThreadCpuTimeSupported) currentThreadCpuTime else 0L
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ThreadMXBean.threadUserTime() = if (isCurrentThreadCpuTimeSupported) currentThreadUserTime else 0L
+inline fun ThreadMXBean.threadUserTime(): Long = if (isCurrentThreadCpuTimeSupported) currentThreadUserTime else 0L
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun usedMemory(withGC: Boolean): Long {
@@ -140,8 +140,8 @@ class DummyProfiler : Profiler {
 
 abstract class TotalProfiler : Profiler {
 
-    val total = SimplePerfCounters()
-    val threadMXBean = ManagementFactory.getThreadMXBean()
+    val total: SimplePerfCounters = SimplePerfCounters()
+    val threadMXBean: ThreadMXBean = ManagementFactory.getThreadMXBean()
 
     override fun getCounters(): Map<Any?, PerfCounters> = mapOf()
     override fun getTotalCounters(): PerfCounters = total
@@ -165,7 +165,7 @@ class WallAndThreadAndMemoryTotalProfiler(val withGC: Boolean) : TotalProfiler()
 
 class WallAndThreadByClassProfiler() : TotalProfiler() {
 
-    val counters = hashMapOf<Any?, SimplePerfCountersWithTotal>()
+    val counters: HashMap<Any?, SimplePerfCountersWithTotal> = hashMapOf<Any?, SimplePerfCountersWithTotal>()
 
     override fun getCounters(): Map<Any?, PerfCounters> = counters
 

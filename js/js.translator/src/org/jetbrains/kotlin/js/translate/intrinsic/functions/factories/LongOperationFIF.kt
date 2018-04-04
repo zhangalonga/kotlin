@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.js.translate.intrinsic.functions.factories
 
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.js.backend.ast.JsExpression
+import org.jetbrains.kotlin.js.patterns.DescriptorPredicate
 import org.jetbrains.kotlin.js.patterns.PatternBuilder.pattern
 import org.jetbrains.kotlin.js.translate.context.Namer
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
@@ -29,13 +30,13 @@ import org.jetbrains.kotlin.utils.identity as ID
 // TODO Move to FunctionCallCases
 object LongOperationFIF : FunctionIntrinsicFactory {
 
-    val LONG_EQUALS_ANY = pattern("Long.equals")
-    val LONG_BINARY_OPERATION_LONG = pattern("Long.compareTo|rangeTo|plus|minus|times|div|mod|rem|and|or|xor(Long)")
-    val LONG_BIT_SHIFTS = pattern("Long.shl|shr|ushr(Int)")
-    val LONG_BINARY_OPERATION_INTEGER = pattern("Long.compareTo|rangeTo|plus|minus|times|div|mod|rem(Int|Short|Byte)")
-    val LONG_BINARY_OPERATION_FLOATING_POINT = pattern("Long.compareTo|plus|minus|times|div|mod|rem(Double|Float)")
-    val INTEGER_BINARY_OPERATION_LONG = pattern("Int|Short|Byte.compareTo|rangeTo|plus|minus|times|div|mod|rem(Long)")
-    val FLOATING_POINT_BINARY_OPERATION_LONG = pattern("Double|Float.compareTo|plus|minus|times|div|mod|rem(Long)")
+    val LONG_EQUALS_ANY: DescriptorPredicate = pattern("Long.equals")
+    val LONG_BINARY_OPERATION_LONG: DescriptorPredicate = pattern("Long.compareTo|rangeTo|plus|minus|times|div|mod|rem|and|or|xor(Long)")
+    val LONG_BIT_SHIFTS: DescriptorPredicate = pattern("Long.shl|shr|ushr(Int)")
+    val LONG_BINARY_OPERATION_INTEGER: DescriptorPredicate = pattern("Long.compareTo|rangeTo|plus|minus|times|div|mod|rem(Int|Short|Byte)")
+    val LONG_BINARY_OPERATION_FLOATING_POINT: DescriptorPredicate = pattern("Long.compareTo|plus|minus|times|div|mod|rem(Double|Float)")
+    val INTEGER_BINARY_OPERATION_LONG: DescriptorPredicate = pattern("Int|Short|Byte.compareTo|rangeTo|plus|minus|times|div|mod|rem(Long)")
+    val FLOATING_POINT_BINARY_OPERATION_LONG: DescriptorPredicate = pattern("Double|Float.compareTo|plus|minus|times|div|mod|rem(Long)")
 
     private val longBinaryIntrinsics =
             (

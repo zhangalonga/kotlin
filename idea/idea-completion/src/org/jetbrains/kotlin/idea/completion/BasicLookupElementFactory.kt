@@ -50,7 +50,8 @@ class BasicLookupElementFactory(
 ) {
     companion object {
         // we skip parameter names in functional types in most of cases for shortness
-        val SHORT_NAMES_RENDERER = DescriptorRenderer.SHORT_NAMES_IN_TYPES.withOptions { parameterNamesInFunctionalTypes = false }
+        val SHORT_NAMES_RENDERER: DescriptorRenderer =
+            DescriptorRenderer.SHORT_NAMES_IN_TYPES.withOptions { parameterNamesInFunctionalTypes = false }
     }
 
     fun createLookupElement(

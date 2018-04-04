@@ -58,11 +58,11 @@ class ReplacePutWithAssignmentInspection : AbstractApplicabilityBasedInspection<
                                                                               valueArguments[1]?.getArgumentExpression() ?: return))
     }
 
-    override fun inspectionTarget(element: KtDotQualifiedExpression) = element.callExpression?.calleeExpression ?: element
+    override fun inspectionTarget(element: KtDotQualifiedExpression): KtExpression = element.callExpression?.calleeExpression ?: element
 
     override fun inspectionText(element: KtDotQualifiedExpression): String = "map.put() should be converted to assignment"
 
-    override val defaultFixText = "Convert put to assignment"
+    override val defaultFixText: String = "Convert put to assignment"
 
     companion object {
         private val compatibleNames = setOf("put")

@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.name.FqNameUnsafe
 
 class NotPropertyListPanel(data: List<FqNameUnsafe>) : AddEditRemovePanel<FqNameUnsafe>(MyTableModel(), data) {
 
-    var modified = false
+    var modified: Boolean = false
 
     override fun removeItem(fqName: FqNameUnsafe): Boolean {
         modified = true
@@ -65,9 +65,9 @@ class NotPropertyListPanel(data: List<FqNameUnsafe>) : AddEditRemovePanel<FqName
     }
 
     class MyTableModel : AddEditRemovePanel.TableModel<FqNameUnsafe>() {
-        override fun getField(o: FqNameUnsafe, columnIndex: Int) = o.asString()
-        override fun getColumnName(columnIndex: Int) = "Method"
-        override fun getColumnCount() = 1
+        override fun getField(o: FqNameUnsafe, columnIndex: Int): String = o.asString()
+        override fun getColumnName(columnIndex: Int): String = "Method"
+        override fun getColumnCount(): Int = 1
     }
 }
 

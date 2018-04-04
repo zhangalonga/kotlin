@@ -32,7 +32,7 @@ interface LightClassDataHolder {
     fun findData(findDelegate: (PsiJavaFileStub) -> PsiClass): LightClassData
 
     interface ForClass : LightClassDataHolder {
-        fun findDataForDefaultImpls(classOrObject: KtClassOrObject) = findData {
+        fun findDataForDefaultImpls(classOrObject: KtClassOrObject): LightClassData = findData {
             it.findDelegate(classOrObject).findInnerClassByName(JvmAbi.DEFAULT_IMPLS_CLASS_NAME, false)
             ?: throw IllegalStateException("Couldn't get delegate for $this\n in ${DebugUtil.stubTreeToString(it)}")
         }
@@ -59,9 +59,9 @@ interface LightClassData {
 }
 
 class LightClassDataImpl(override val clsDelegate: PsiClass) : LightClassData {
-    override fun getOwnFields(containingClass: KtLightClass) = KtLightFieldImpl.fromClsFields(clsDelegate, containingClass)
+    override fun getOwnFields(containingClass: KtLightClass): List<KtLightField> = KtLightFieldImpl.fromClsFields(clsDelegate, containingClass)
 
-    override fun getOwnMethods(containingClass: KtLightClass) = KtLightMethodImpl.fromClsMethods(clsDelegate, containingClass)
+    override fun getOwnMethods(containingClass: KtLightClass): List<KtLightMethodImpl> = KtLightMethodImpl.fromClsMethods(clsDelegate, containingClass)
 }
 
 object InvalidLightClassDataHolder : LightClassDataHolder.ForClass {
@@ -71,7 +71,7 @@ object InvalidLightClassDataHolder : LightClassDataHolder.ForClass {
     override val extraDiagnostics: Diagnostics
         get() = shouldNotBeCalled()
 
-    override fun findData(findDelegate: (PsiJavaFileStub) -> PsiClass) = shouldNotBeCalled()
+    override fun findData(findDelegate: (PsiJavaFileStub) -> PsiClass): Nothing = shouldNotBeCalled()
 
     private fun shouldNotBeCalled(): Nothing = throw UnsupportedOperationException("Should not be called")
 }
@@ -80,7 +80,7 @@ class LightClassDataHolderImpl(
         override val javaFileStub: PsiJavaFileStub,
         override val extraDiagnostics: Diagnostics
 ) : LightClassDataHolder.ForClass, LightClassDataHolder.ForFacade, LightClassDataHolder.ForScript {
-    override fun findData(findDelegate: (PsiJavaFileStub) -> PsiClass) = findDelegate(javaFileStub).let(::LightClassDataImpl)
+    override fun findData(findDelegate: (PsiJavaFileStub) -> PsiClass): LightClassDataImpl = findDelegate(javaFileStub).let(::LightClassDataImpl)
 }
 
 fun PsiJavaFileStub.findDelegate(classOrObject: KtClassOrObject): PsiClass {

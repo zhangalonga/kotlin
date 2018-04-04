@@ -17,18 +17,15 @@
 package org.jetbrains.uast.kotlin
 
 import org.jetbrains.kotlin.psi.KtTryExpression
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UIdentifier
-import org.jetbrains.uast.UTryExpression
-import org.jetbrains.uast.UVariable
+import org.jetbrains.uast.*
 
 class KotlinUTryExpression(
         override val psi: KtTryExpression,
         givenParent: UElement?
 ) : KotlinAbstractUExpression(givenParent), UTryExpression, KotlinUElementWithType {
-    override val tryClause by lz { KotlinConverter.convertOrEmpty(psi.tryBlock, this) }
-    override val catchClauses by lz { psi.catchClauses.map { KotlinUCatchClause(it, this) } }
-    override val finallyClause by lz { psi.finallyBlock?.finalExpression?.let { KotlinConverter.convertExpression(it, this) } }
+    override val tryClause: UExpression by lz { KotlinConverter.convertOrEmpty(psi.tryBlock, this) }
+    override val catchClauses: List<KotlinUCatchClause> by lz { psi.catchClauses.map { KotlinUCatchClause(it, this) } }
+    override val finallyClause: UExpression? by lz { psi.finallyBlock?.finalExpression?.let { KotlinConverter.convertExpression(it, this) } }
 
     override val resourceVariables: List<UVariable>
         get() = emptyList()

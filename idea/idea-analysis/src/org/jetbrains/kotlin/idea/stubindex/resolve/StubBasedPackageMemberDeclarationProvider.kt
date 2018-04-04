@@ -72,7 +72,7 @@ class StubBasedPackageMemberDeclarationProvider(
                 }
     }
 
-    override fun getDeclarationNames() = declarationNames_
+    override fun getDeclarationNames(): Set<Name> = declarationNames_
 
     override fun getClassOrObjectDeclarations(name: Name): Collection<KtClassLikeInfo> {
         val result = ArrayList<KtClassLikeInfo>()

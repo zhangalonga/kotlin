@@ -26,16 +26,17 @@ import com.intellij.platform.templates.BuilderBasedTemplate
 import org.jetbrains.kotlin.idea.KotlinIcons
 import org.jetbrains.kotlin.js.resolve.JsPlatform
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
+import javax.swing.Icon
 
 class KotlinTemplatesFactory : ProjectTemplatesFactory() {
     companion object {
-        val EP_NAME = ExtensionPointName.create<ModuleBuilder>("org.jetbrains.kotlin.moduleBuilder")
+        val EP_NAME: ExtensionPointName<ModuleBuilder> = ExtensionPointName.create<ModuleBuilder>("org.jetbrains.kotlin.moduleBuilder")
 
         val KOTLIN_GROUP_NAME: String = "Kotlin"
     }
 
-    override fun getGroups() = arrayOf(KOTLIN_GROUP_NAME)
-    override fun getGroupIcon(group: String) = KotlinIcons.SMALL_LOGO
+    override fun getGroups(): Array<String> = arrayOf(KOTLIN_GROUP_NAME)
+    override fun getGroupIcon(group: String): Icon = KotlinIcons.SMALL_LOGO
 
     override fun createTemplates(group: String?, context: WizardContext?): Array<out ProjectTemplate> {
         val result = mutableListOf<ProjectTemplate>(

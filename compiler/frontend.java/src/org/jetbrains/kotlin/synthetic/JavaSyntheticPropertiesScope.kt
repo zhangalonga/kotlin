@@ -63,7 +63,7 @@ interface SyntheticJavaPropertyDescriptor : PropertyDescriptor {
                     .firstOrNull { originalGetterOrSetter == it.getMethod || originalGetterOrSetter == it.setMethod }
         }
 
-        fun findByGetterOrSetter(getterOrSetter: FunctionDescriptor, syntheticScope: SyntheticScope) =
+        fun findByGetterOrSetter(getterOrSetter: FunctionDescriptor, syntheticScope: SyntheticScope): SyntheticJavaPropertyDescriptor? =
                 findByGetterOrSetter(getterOrSetter,
                                      object : SyntheticScopes {
                                          override val scopes: Collection<SyntheticScope> = listOf(syntheticScope)

@@ -45,7 +45,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.utils.SmartList
 import java.util.*
 
-fun kotlinPluginId(version: String?) = MavenId(KotlinMavenConfigurator.GROUP_ID, KotlinMavenConfigurator.MAVEN_PLUGIN_ID, version)
+fun kotlinPluginId(version: String?): MavenId = MavenId(KotlinMavenConfigurator.GROUP_ID, KotlinMavenConfigurator.MAVEN_PLUGIN_ID, version)
 
 
 class PomFile private constructor(private val xmlFile: XmlFile, val domModel: MavenDomProjectModel) {
@@ -136,7 +136,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         return dependency
     }
 
-    fun addKotlinPlugin(version: String?) = addPlugin(kotlinPluginId(version))
+    fun addKotlinPlugin(version: String?): MavenDomPlugin = addPlugin(kotlinPluginId(version))
 
     fun addPlugin(artifact: MavenId): MavenDomPlugin {
         ensureBuild()
@@ -153,7 +153,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         return plugin
     }
 
-    fun findPlugin(groupArtifact: MavenId) = domModel.build.plugins.plugins.firstOrNull { it.matches(groupArtifact) }
+    fun findPlugin(groupArtifact: MavenId): MavenDomPlugin? = domModel.build.plugins.plugins.firstOrNull { it.matches(groupArtifact) }
 
     fun isPluginAfter(plugin: MavenDomPlugin, referencePlugin: MavenDomPlugin): Boolean {
         require(plugin.parent === referencePlugin.parent) { "Plugins should be siblings" }
@@ -183,12 +183,12 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         return plugin
     }
 
-    fun findKotlinPlugins() = domModel.build.plugins.plugins.filter { it.isKotlinMavenPlugin() }
-    fun findKotlinExecutions(vararg goals: String) = findKotlinExecutions().filter { it.goals.goals.any { it.rawText in goals } }
-    fun findKotlinExecutions() = findKotlinPlugins().flatMap { it.executions.executions }
+    fun findKotlinPlugins(): List<MavenDomPlugin> = domModel.build.plugins.plugins.filter { it.isKotlinMavenPlugin() }
+    fun findKotlinExecutions(vararg goals: String): List<MavenDomPluginExecution> = findKotlinExecutions().filter { it.goals.goals.any { it.rawText in goals } }
+    fun findKotlinExecutions(): List<MavenDomPluginExecution> = findKotlinPlugins().flatMap { it.executions.executions }
 
     private fun findExecutions(plugin: MavenDomPlugin) = plugin.executions.executions
-    fun findExecutions(plugin: MavenDomPlugin, vararg goals: String) =
+    fun findExecutions(plugin: MavenDomPlugin, vararg goals: String): List<MavenDomPluginExecution> =
         findExecutions(plugin).filter { it.goals.goals.any { it.rawText in goals } }
 
     fun addExecution(plugin: MavenDomPlugin, executionId: String, phase: String, goals: List<String>): MavenDomPluginExecution {
@@ -227,7 +227,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         executionSourceDirs(execution, sourceDirs)
     }
 
-    fun isPluginExecutionMissing(plugin: MavenPlugin?, excludedExecutionId: String, goal: String) =
+    fun isPluginExecutionMissing(plugin: MavenPlugin?, excludedExecutionId: String, goal: String): Boolean =
         plugin == null || plugin.executions.none { it.executionId != excludedExecutionId && goal in it.goals }
 
     fun addJavacExecutions(module: Module, kotlinPlugin: MavenDomPlugin) {
@@ -415,7 +415,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         return repository
     }
 
-    fun findDependencies(artifact: MavenId, scope: MavenArtifactScope? = null) =
+    fun findDependencies(artifact: MavenId, scope: MavenArtifactScope? = null): List<MavenDomDependency> =
         domModel.dependencies.findDependencies(artifact, scope)
 
     fun findDependencies(artifacts: List<MavenId>, scope: MavenArtifactScope? = null): List<MavenDomDependency> {
@@ -516,38 +516,38 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
 
     @Suppress("Unused")
     object DefaultPhases {
-        const val None = "none"
-        const val Validate = "validate"
-        const val Initialize = "initialize"
-        const val GenerateSources = "generate-sources"
-        const val ProcessSources = "process-sources"
-        const val GenerateResources = "generate-resources"
-        const val ProcessResources = "process-resources"
-        const val Compile = "compile"
-        const val ProcessClasses = "process-classes"
-        const val GenerateTestSources = "generate-test-sources"
-        const val ProcessTestSources = "process-test-sources"
-        const val GenerateTestResources = "generate-test-resources"
-        const val ProcessTestResources = "process-test-resources"
-        const val TestCompile = "test-compile"
-        const val ProcessTestClasses = "process-test-classes"
-        const val Test = "test"
-        const val PreparePackage = "prepare-package"
-        const val Package = "package"
-        const val PreIntegrationTest = "pre-integration-test"
-        const val IntegrationTest = "integration-test"
-        const val PostIntegrationTest = "post-integration-test"
-        const val Verify = "verify"
-        const val Install = "install"
-        const val Deploy = "deploy"
+        const val None: String = "none"
+        const val Validate: String = "validate"
+        const val Initialize: String = "initialize"
+        const val GenerateSources: String = "generate-sources"
+        const val ProcessSources: String = "process-sources"
+        const val GenerateResources: String = "generate-resources"
+        const val ProcessResources: String = "process-resources"
+        const val Compile: String = "compile"
+        const val ProcessClasses: String = "process-classes"
+        const val GenerateTestSources: String = "generate-test-sources"
+        const val ProcessTestSources: String = "process-test-sources"
+        const val GenerateTestResources: String = "generate-test-resources"
+        const val ProcessTestResources: String = "process-test-resources"
+        const val TestCompile: String = "test-compile"
+        const val ProcessTestClasses: String = "process-test-classes"
+        const val Test: String = "test"
+        const val PreparePackage: String = "prepare-package"
+        const val Package: String = "package"
+        const val PreIntegrationTest: String = "pre-integration-test"
+        const val IntegrationTest: String = "integration-test"
+        const val PostIntegrationTest: String = "post-integration-test"
+        const val Verify: String = "verify"
+        const val Install: String = "install"
+        const val Deploy: String = "deploy"
     }
 
     object KotlinGoals {
-        const val Compile = "compile"
-        const val TestCompile = "test-compile"
-        const val Js = "js"
-        const val TestJs = "test-js"
-        const val MetaData = "metadata"
+        const val Compile: String = "compile"
+        const val TestCompile: String = "test-compile"
+        const val Js: String = "js"
+        const val TestJs: String = "test-js"
+        const val MetaData: String = "metadata"
     }
 
     companion object {
@@ -558,7 +558,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
 
         @Suppress("DeprecatedCallableAddReplaceWith")
         @Deprecated("We shouldn't use phase but additional compiler configuration in most cases")
-        fun getPhase(hasJavaFiles: Boolean, isTest: Boolean) = when {
+        fun getPhase(hasJavaFiles: Boolean, isTest: Boolean): String = when {
             hasJavaFiles -> when {
                 isTest -> DefaultPhases.ProcessTestSources
                 else -> DefaultPhases.ProcessSources
@@ -570,7 +570,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         }
 
         // from maven code convention: https://maven.apache.org/developers/conventions/code.html
-        val recommendedElementsOrder = """
+        val recommendedElementsOrder: LinkedHashSet<String> = """
           <modelVersion/>
           <parent/>
 
@@ -618,7 +618,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
             .filter(String::isNotEmpty)
             .toCollection(LinkedHashSet())
 
-        val recommendedOrderAsList = recommendedElementsOrder.toList()
+        val recommendedOrderAsList: List<String> = recommendedElementsOrder.toList()
     }
 }
 

@@ -31,7 +31,7 @@ class AddServiceToManifest : AbstractRegisterComponentAction("Add service to man
     override fun isApplicableTo(element: KtClass, manifest: Manifest): Boolean =
             element.isSubclassOfService() && !element.isRegisteredService(manifest)
 
-    override fun applyTo(element: KtClass, manifest: Manifest) = runWriteAction {
+    override fun applyTo(element: KtClass, manifest: Manifest): Unit = runWriteAction {
         val psiClass = element.toLightClass() ?: return@runWriteAction
         manifest.application.addService().serviceClass.value = psiClass
     }

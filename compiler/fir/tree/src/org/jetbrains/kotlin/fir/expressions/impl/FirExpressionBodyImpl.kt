@@ -14,7 +14,7 @@ class FirExpressionBodyImpl(
     override val session: FirSession,
     private val expression: FirExpression
 ) : FirBody {
-    override val statements = listOf(expression)
+    override val statements: List<FirExpression> = listOf(expression)
 
     override val psi: PsiElement?
         get() = expression.psi

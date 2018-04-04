@@ -22,12 +22,12 @@ import org.jetbrains.kotlin.idea.caches.project.getModuleInfo
 import org.jetbrains.kotlin.psi.KtElement
 
 class IDEAndroidExtensionsExpressionCodegenExtension : AbstractAndroidExtensionsExpressionCodegenExtension() {
-    override fun isExperimental(element: KtElement?) =
+    override fun isExperimental(element: KtElement?): Boolean =
             element?.getModuleInfo()?.androidExtensionsIsExperimental ?: false
 
-    override fun isEnabled(element: KtElement?) =
+    override fun isEnabled(element: KtElement?): Boolean =
             element?.getModuleInfo()?.androidExtensionsIsEnabled ?: false
 
-    override fun getGlobalCacheImpl(element: KtElement?) =
+    override fun getGlobalCacheImpl(element: KtElement?): CacheImplementation =
             element?.getModuleInfo()?.androidExtensionsGlobalCacheImpl ?: CacheImplementation.DEFAULT
 }

@@ -36,11 +36,11 @@ open class TypeApproximatorConfiguration {
         TO_COMMON_SUPERTYPE
     }
 
-    open val flexible get() = false // simple flexible types (FlexibleTypeImpl)
-    open val dynamic get() = false // DynamicType
-    open val rawType get() = false // RawTypeImpl
-    open val errorType get() = false
-    open val definitelyNotNullType get() = true
+    open val flexible: Boolean get() = false // simple flexible types (FlexibleTypeImpl)
+    open val dynamic: Boolean get() = false // DynamicType
+    open val rawType: Boolean get() = false // RawTypeImpl
+    open val errorType: Boolean get() = false
+    open val definitelyNotNullType: Boolean get() = true
     open val intersection: IntersectionStrategy = TO_COMMON_SUPERTYPE
 
     open val typeVariable: (TypeVariableTypeConstructor) -> Boolean = { false }
@@ -49,31 +49,31 @@ open class TypeApproximatorConfiguration {
     abstract class AllFlexibleSameValue : TypeApproximatorConfiguration() {
         abstract val allFlexible: Boolean
 
-        override val flexible get() = allFlexible
-        override val dynamic get() = allFlexible
-        override val rawType get() = allFlexible
+        override val flexible: Boolean get() = allFlexible
+        override val dynamic: Boolean get() = allFlexible
+        override val rawType: Boolean get() = allFlexible
     }
 
     object LocalDeclaration : AllFlexibleSameValue() {
-        override val allFlexible get() = true
-        override val intersection get() = ALLOWED
-        override val errorType get() = true
+        override val allFlexible: Boolean get() = true
+        override val intersection: IntersectionStrategy get() = ALLOWED
+        override val errorType: Boolean get() = true
     }
 
     object PublicDeclaration : AllFlexibleSameValue() {
-        override val allFlexible get() = true
-        override val errorType get() = true
-        override val definitelyNotNullType get() = false
+        override val allFlexible: Boolean get() = true
+        override val errorType: Boolean get() = true
+        override val definitelyNotNullType: Boolean get() = false
     }
 
     abstract class AbstractCapturedTypesApproximation(val approximatedCapturedStatus: CaptureStatus) :
         TypeApproximatorConfiguration.AllFlexibleSameValue() {
-        override val allFlexible get() = true
-        override val errorType get() = true
+        override val allFlexible: Boolean get() = true
+        override val errorType: Boolean get() = true
 
         // i.e. will be approximated only approximatedCapturedStatus captured types
-        override val capturedType get() = { it: NewCapturedType -> it.captureStatus != approximatedCapturedStatus }
-        override val intersection get() = IntersectionStrategy.ALLOWED
+        override val capturedType: (NewCapturedType) -> Boolean get() = { it: NewCapturedType -> it.captureStatus != approximatedCapturedStatus }
+        override val intersection: IntersectionStrategy get() = IntersectionStrategy.ALLOWED
         override val typeVariable: (TypeVariableTypeConstructor) -> Boolean get() = { true }
     }
 

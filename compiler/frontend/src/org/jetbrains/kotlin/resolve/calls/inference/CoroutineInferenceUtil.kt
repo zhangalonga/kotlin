@@ -62,14 +62,14 @@ class TypeTemplate(
     typeVariable.originalTypeParameter.builtIns.nothingType,
     typeVariable.originalTypeParameter.builtIns.anyType.makeNullableAsSpecified(nullable)
 ) {
-    override fun replaceAnnotations(newAnnotations: Annotations) = this
+    override fun replaceAnnotations(newAnnotations: Annotations): TypeTemplate = this
 
-    override fun makeNullableAsSpecified(newNullability: Boolean) = TypeTemplate(typeVariable, coroutineInferenceData, newNullability)
+    override fun makeNullableAsSpecified(newNullability: Boolean): TypeTemplate = TypeTemplate(typeVariable, coroutineInferenceData, newNullability)
 
     override val delegate: SimpleType
         get() = upperBound
 
-    override fun render(renderer: DescriptorRenderer, options: DescriptorRendererOptions) =
+    override fun render(renderer: DescriptorRenderer, options: DescriptorRendererOptions): String =
         "~${renderer.renderType(typeVariable.type)}"
 }
 
@@ -78,7 +78,7 @@ class CoroutineInferenceData {
     private val typeTemplates = HashMap<TypeVariable, TypeTemplate>()
     private var hereIsBadCall = false
 
-    fun getTypeTemplate(typeVariable: TypeVariable) =
+    fun getTypeTemplate(typeVariable: TypeVariable): TypeTemplate =
         typeTemplates.getOrPut(typeVariable) {
             TypeTemplate(typeVariable, this)
         }
@@ -271,13 +271,13 @@ class CoroutineInferenceSupport(
     }
 }
 
-fun isCoroutineCallWithAdditionalInference(parameterDescriptor: ValueParameterDescriptor, argument: ValueArgument) =
+fun isCoroutineCallWithAdditionalInference(parameterDescriptor: ValueParameterDescriptor, argument: ValueArgument): Boolean =
     parameterDescriptor.hasSuspendFunctionType &&
             argument.getArgumentExpression() is KtLambdaExpression &&
             parameterDescriptor.type.let { it.isBuiltinFunctionalType && it.getReceiverTypeFromFunctionType() != null }
 
 
-fun OverloadResolutionResultsImpl<*>.isResultWithCoroutineInference() = getCoroutineInferenceData() != null
+fun OverloadResolutionResultsImpl<*>.isResultWithCoroutineInference(): Boolean = getCoroutineInferenceData() != null
 
 private fun OverloadResolutionResultsImpl<*>.getCoroutineInferenceData(): CoroutineInferenceData? {
     if (!isSingleResult) return null

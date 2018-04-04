@@ -135,7 +135,7 @@ enum class LibraryJarDescriptor(
         return LibraryUtils.getJarFile(Arrays.asList(*library.getFiles(orderRootType)), jarName)
     }
 
-    fun getPathInPlugin() = getPath(PathUtil.kotlinPathsForIdeaPlugin)
+    fun getPathInPlugin(): File = getPath(PathUtil.kotlinPathsForIdeaPlugin)
 }
 
 fun bundledRuntimeVersion(): String = KotlinCompilerVersion.VERSION
@@ -258,25 +258,25 @@ fun hasJreSpecificRuntime(version: String): Boolean =
             isSnapshot(version) ||
             version == "default_version" /* for tests */
 
-const val MAVEN_STDLIB_ID = PathUtil.KOTLIN_JAVA_STDLIB_NAME
+const val MAVEN_STDLIB_ID: String = PathUtil.KOTLIN_JAVA_STDLIB_NAME
 
-const val MAVEN_STDLIB_ID_JRE7 = PathUtil.KOTLIN_JAVA_RUNTIME_JRE7_NAME
-const val MAVEN_STDLIB_ID_JDK7 = PathUtil.KOTLIN_JAVA_RUNTIME_JDK7_NAME
+const val MAVEN_STDLIB_ID_JRE7: String = PathUtil.KOTLIN_JAVA_RUNTIME_JRE7_NAME
+const val MAVEN_STDLIB_ID_JDK7: String = PathUtil.KOTLIN_JAVA_RUNTIME_JDK7_NAME
 
-const val MAVEN_STDLIB_ID_JRE8 = PathUtil.KOTLIN_JAVA_RUNTIME_JRE8_NAME
-const val MAVEN_STDLIB_ID_JDK8 = PathUtil.KOTLIN_JAVA_RUNTIME_JDK8_NAME
+const val MAVEN_STDLIB_ID_JRE8: String = PathUtil.KOTLIN_JAVA_RUNTIME_JRE8_NAME
+const val MAVEN_STDLIB_ID_JDK8: String = PathUtil.KOTLIN_JAVA_RUNTIME_JDK8_NAME
 
-const val MAVEN_JS_STDLIB_ID = PathUtil.JS_LIB_NAME
-const val MAVEN_JS_TEST_ID = PathUtil.KOTLIN_TEST_JS_NAME
+const val MAVEN_JS_STDLIB_ID: String = PathUtil.JS_LIB_NAME
+const val MAVEN_JS_TEST_ID: String = PathUtil.KOTLIN_TEST_JS_NAME
 
-const val MAVEN_OLD_JS_STDLIB_ID = "kotlin-js-library"
-const val MAVEN_COMMON_STDLIB_ID = "kotlin-stdlib-common" // TODO: KotlinCommonMavenConfigurator
-const val MAVEN_TEST_ID = PathUtil.KOTLIN_TEST_NAME
-const val MAVEN_TEST_JUNIT_ID = "kotlin-test-junit"
-const val MAVEN_COMMON_TEST_ID = "kotlin-test-common"
-const val MAVEN_COMMON_TEST_ANNOTATIONS_ID = "kotlin-test-annotations-common"
+const val MAVEN_OLD_JS_STDLIB_ID: String = "kotlin-js-library"
+const val MAVEN_COMMON_STDLIB_ID: String = "kotlin-stdlib-common" // TODO: KotlinCommonMavenConfigurator
+const val MAVEN_TEST_ID: String = PathUtil.KOTLIN_TEST_NAME
+const val MAVEN_TEST_JUNIT_ID: String = "kotlin-test-junit"
+const val MAVEN_COMMON_TEST_ID: String = "kotlin-test-common"
+const val MAVEN_COMMON_TEST_ANNOTATIONS_ID: String = "kotlin-test-annotations-common"
 
-val LOG = Logger.getInstance("org.jetbrains.kotlin.idea.versions.KotlinRuntimeLibraryUtilKt")
+val LOG: Logger = Logger.getInstance("org.jetbrains.kotlin.idea.versions.KotlinRuntimeLibraryUtilKt")
 
 data class LibInfo(
     val groupId: String,
@@ -306,7 +306,7 @@ private fun deprecatedLib(
     )
 }
 
-val DEPRECATED_LIBRARIES_INFORMATION = listOf(
+val DEPRECATED_LIBRARIES_INFORMATION: List<DeprecatedLibInfo> = listOf(
     deprecatedLib(
         oldGroupId = "org.jetbrains.kotlin",
         oldName = PathUtil.KOTLIN_JAVA_RUNTIME_JRE7_NAME, newName = PathUtil.KOTLIN_JAVA_RUNTIME_JDK7_NAME,

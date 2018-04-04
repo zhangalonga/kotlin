@@ -39,7 +39,7 @@ import java.io.File
 import java.security.MessageDigest
 import java.util.*
 
-val KOTLIN_CACHE_DIRECTORY_NAME = "kotlin"
+val KOTLIN_CACHE_DIRECTORY_NAME: String = "kotlin"
 
 open class IncrementalJvmCache(
         private val targetDataRoot: File,
@@ -75,7 +75,7 @@ open class IncrementalJvmCache(
 
     protected open fun debugLog(message: String) {}
 
-    fun isTrackedFile(file: File) = sourceToClassesMap.contains(file)
+    fun isTrackedFile(file: File): Boolean = sourceToClassesMap.contains(file)
 
     // used in gradle
     @Suppress("unused")

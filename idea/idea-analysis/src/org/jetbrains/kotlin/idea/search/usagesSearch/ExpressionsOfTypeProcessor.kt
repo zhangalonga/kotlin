@@ -81,7 +81,7 @@ class ExpressionsOfTypeProcessor(
 
     companion object {
         @TestOnly
-        var mode = if (ApplicationManager.getApplication().isUnitTestMode) Mode.ALWAYS_SMART else Mode.PLAIN_WHEN_NEEDED
+        var mode: Mode = if (ApplicationManager.getApplication().isUnitTestMode) Mode.ALWAYS_SMART else Mode.PLAIN_WHEN_NEEDED
         @TestOnly
         var testLog: MutableList<String>? = null
 
@@ -89,7 +89,7 @@ class ExpressionsOfTypeProcessor(
             testLog?.add(s())
         }
 
-        val LOG = Logger.getInstance(ExpressionsOfTypeProcessor::class.java)
+        val LOG: Logger = Logger.getInstance(ExpressionsOfTypeProcessor::class.java)
 
         fun logPresentation(element: PsiElement): String? {
             return runReadAction {

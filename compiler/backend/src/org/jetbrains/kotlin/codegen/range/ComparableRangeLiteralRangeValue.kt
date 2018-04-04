@@ -37,15 +37,15 @@ class ComparableRangeLiteralRangeValue(
         highBound = codegen.generateCallSingleArgument(rangeCall)
     )
 
-    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression) =
+    override fun createForLoopGenerator(codegen: ExpressionCodegen, forExpression: KtForExpression): IteratorForLoopGenerator =
         IteratorForLoopGenerator(codegen, forExpression)
 
-    override fun isIntrinsicInCall(resolvedCallForIn: ResolvedCall<out CallableDescriptor>) =
+    override fun isIntrinsicInCall(resolvedCallForIn: ResolvedCall<out CallableDescriptor>): Boolean =
         isClosedRangeContains(resolvedCallForIn.resultingDescriptor)
 
     override fun createIntrinsicInExpressionGenerator(
         codegen: ExpressionCodegen,
         operatorReference: KtSimpleNameExpression,
         resolvedCall: ResolvedCall<out CallableDescriptor>
-    ) = InContinuousRangeOfComparableExpressionGenerator(operatorReference, boundedValue, codegen.frameMap)
+    ): InContinuousRangeOfComparableExpressionGenerator = InContinuousRangeOfComparableExpressionGenerator(operatorReference, boundedValue, codegen.frameMap)
 }

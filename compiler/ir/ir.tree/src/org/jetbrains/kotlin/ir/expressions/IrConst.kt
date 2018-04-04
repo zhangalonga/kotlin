@@ -25,7 +25,7 @@ interface IrConst<T> : IrExpression, IrExpressionWithCopy {
 
 sealed class IrConstKind<T>(val asString: kotlin.String) {
     @Suppress("UNCHECKED_CAST")
-    fun valueOf(aConst: IrConst<*>) =
+    fun valueOf(aConst: IrConst<*>): T =
         (aConst as IrConst<T>).value
 
     object Null : IrConstKind<Nothing?>("Null")
@@ -39,6 +39,6 @@ sealed class IrConstKind<T>(val asString: kotlin.String) {
     object Float : IrConstKind<kotlin.Float>("Float")
     object Double : IrConstKind<kotlin.Double>("Double")
 
-    override fun toString() = asString
+    override fun toString(): kotlin.String = asString
 }
 

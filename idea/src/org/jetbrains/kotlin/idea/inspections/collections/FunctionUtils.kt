@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.kotlin.types.KotlinType
 
-fun KotlinType.isFunctionOfAnyKind() = constructor.declarationDescriptor?.getFunctionalClassKind() != null
+fun KotlinType.isFunctionOfAnyKind(): Boolean = constructor.declarationDescriptor?.getFunctionalClassKind() != null
 
 fun ResolvedCall<*>.hasLastFunctionalParameterWithResult(context: BindingContext, predicate: (KotlinType) -> Boolean): Boolean {
     val lastParameter = resultingDescriptor.valueParameters.lastOrNull() ?: return false

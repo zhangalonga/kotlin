@@ -18,6 +18,8 @@ package org.jetbrains.kotlin.resolve.scopes
 
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.PropertyDescriptor
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.selectMostSpecificInEachOverridableGroup
@@ -25,10 +27,10 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.Printer
 
 class TypeIntersectionScope private constructor(override val workerScope: ChainedMemberScope) : AbstractScopeAdapter() {
-    override fun getContributedFunctions(name: Name, location: LookupLocation) =
+    override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> =
             super.getContributedFunctions(name, location).selectMostSpecificInEachOverridableGroup { this }
 
-    override fun getContributedVariables(name: Name, location: LookupLocation) =
+    override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> =
             super.getContributedVariables(name, location).selectMostSpecificInEachOverridableGroup { this }
 
     override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> {

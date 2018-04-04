@@ -27,7 +27,7 @@ abstract class KotlinUAnnotationBase(
 
     abstract override val javaPsi: PsiAnnotation?
 
-    final override val sourcePsi = psi
+    final override val sourcePsi: KtElement = psi
 
     protected abstract fun annotationUseSiteTarget(): AnnotationUseSiteTarget?
 
@@ -106,14 +106,14 @@ class KotlinUAnnotation(
     givenParent: UElement?
 ) : KotlinUAnnotationBase(annotationEntry, givenParent), UAnnotation {
 
-    override val javaPsi = annotationEntry.toLightAnnotation()
+    override val javaPsi: PsiAnnotation? = annotationEntry.toLightAnnotation()
 
     private val resolvedAnnotation: AnnotationDescriptor? by lz { annotationEntry.analyze()[BindingContext.ANNOTATION, annotationEntry] }
 
     override val annotationClassDescriptor: ClassDescriptor?
         get() = resolvedAnnotation?.annotationClass
 
-    override fun annotationUseSiteTarget() = annotationEntry.useSiteTarget?.getAnnotationUseSiteTarget()
+    override fun annotationUseSiteTarget(): AnnotationUseSiteTarget? = annotationEntry.useSiteTarget?.getAnnotationUseSiteTarget()
 
 }
 

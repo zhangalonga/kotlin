@@ -38,11 +38,11 @@ import java.util.*
 
 class DynamicCallableDescriptors(storageManager: StorageManager, builtIns: KotlinBuiltIns) {
 
-    val dynamicType by storageManager.createLazyValue {
+    val dynamicType: DynamicType by storageManager.createLazyValue {
         createDynamicType(builtIns)
     }
 
-    fun createDynamicDescriptorScope(call: Call, owner: DeclarationDescriptor) = object : MemberScopeImpl() {
+    fun createDynamicDescriptorScope(call: Call, owner: DeclarationDescriptor): MemberScopeImpl = object : MemberScopeImpl() {
         override fun printScopeStructure(p: Printer) {
             p.println(this::class.java.simpleName, ": dynamic candidates for " + call)
         }

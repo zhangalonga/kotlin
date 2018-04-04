@@ -32,7 +32,7 @@ class KtDestructuringDeclarationReference(element: KtDestructuringDeclarationEnt
         return listOfNotNull(context[BindingContext.COMPONENT_RESOLVED_CALL, element]?.candidateDescriptor)
     }
 
-    override fun getRangeInElement() = TextRange(0, element.textLength)
+    override fun getRangeInElement(): TextRange = TextRange(0, element.textLength)
 
     override fun canRename(): Boolean {
         val bindingContext = expression.analyze() //TODO: should it use full body resolve?

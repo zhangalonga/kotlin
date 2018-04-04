@@ -57,7 +57,7 @@ class ConvertReceiverToParameterIntention : SelfTargetingOffsetIndependentIntent
         }
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtTypeReference, editor: Editor?) {
         val function = element.parent as? KtNamedFunction ?: return

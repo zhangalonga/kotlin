@@ -38,9 +38,9 @@ sealed class EnableUnsupportedFeatureFix(
         protected val apiVersionOnly: Boolean
 ) : KotlinQuickFixAction<PsiElement>(element) {
     class InModule(element: PsiElement, feature: LanguageFeature, apiVersionOnly: Boolean) : EnableUnsupportedFeatureFix(element, feature, apiVersionOnly) {
-        override fun getFamilyName() = "Increase module " + if (apiVersionOnly) "API version" else "language version"
+        override fun getFamilyName(): String = "Increase module " + if (apiVersionOnly) "API version" else "language version"
 
-        override fun getText() = if (apiVersionOnly)
+        override fun getText(): String = if (apiVersionOnly)
             "Set module API version to ${feature.sinceApiVersion.versionString}"
         else
             "Set module language version to ${feature.sinceVersion!!.description}"
@@ -70,9 +70,9 @@ sealed class EnableUnsupportedFeatureFix(
     class InProject(element: PsiElement, feature: LanguageFeature, apiVersionOnly: Boolean)
             : EnableUnsupportedFeatureFix(element, feature, apiVersionOnly)
     {
-        override fun getFamilyName() = "Increase project " + if (apiVersionOnly) "API version" else "language version"
+        override fun getFamilyName(): String = "Increase project " + if (apiVersionOnly) "API version" else "language version"
 
-        override fun getText() = if (apiVersionOnly)
+        override fun getText(): String = if (apiVersionOnly)
             "Set project API version to ${feature.sinceApiVersion.versionString}"
         else
             "Set project language version to ${feature.sinceVersion!!.versionString}"

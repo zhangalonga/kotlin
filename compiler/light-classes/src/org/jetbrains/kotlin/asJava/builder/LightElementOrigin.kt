@@ -33,7 +33,7 @@ interface LightElementOrigin {
         override val originKind: JvmDeclarationOriginKind?
             get() = null
 
-        override fun toString() = "NONE"
+        override fun toString(): String = "NONE"
     }
 }
 

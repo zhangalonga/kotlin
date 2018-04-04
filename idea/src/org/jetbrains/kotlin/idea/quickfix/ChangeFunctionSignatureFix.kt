@@ -47,9 +47,9 @@ abstract class ChangeFunctionSignatureFix(
         element: PsiElement,
         protected val functionDescriptor: FunctionDescriptor
 ) : KotlinQuickFixAction<PsiElement>(element) {
-    override fun getFamilyName() = FAMILY_NAME
+    override fun getFamilyName(): String = FAMILY_NAME
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean {
         val declarations = DescriptorToSourceUtilsIde.getAllDeclarations(project, functionDescriptor)
@@ -122,7 +122,7 @@ abstract class ChangeFunctionSignatureFix(
             }
         }
 
-        val FAMILY_NAME = "Change signature of function/constructor"
+        val FAMILY_NAME: String = "Change signature of function/constructor"
 
         fun runRemoveParameter(parameterDescriptor: ValueParameterDescriptor, context: PsiElement) {
             val functionDescriptor = parameterDescriptor.containingDeclaration as FunctionDescriptor

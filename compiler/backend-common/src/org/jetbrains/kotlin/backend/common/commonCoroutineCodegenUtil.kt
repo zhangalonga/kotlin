@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.backend.common
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyGetterDescriptor
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorEquivalenceForOverrides
@@ -28,11 +29,11 @@ import org.jetbrains.kotlin.resolve.calls.checkers.COROUTINE_CONTEXT_FQ_NAME
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 
-val SUSPEND_COROUTINE_OR_RETURN_NAME = Name.identifier("suspendCoroutineOrReturn")
-val INTERCEPTED_NAME = Name.identifier("intercepted")
-val COROUTINE_SUSPENDED_NAME = Name.identifier("COROUTINE_SUSPENDED")
+val SUSPEND_COROUTINE_OR_RETURN_NAME: Name = Name.identifier("suspendCoroutineOrReturn")
+val INTERCEPTED_NAME: Name = Name.identifier("intercepted")
+val COROUTINE_SUSPENDED_NAME: Name = Name.identifier("COROUTINE_SUSPENDED")
 
-val SUSPEND_COROUTINE_UNINTERCEPTED_OR_RETURN_NAME = Name.identifier("suspendCoroutineUninterceptedOrReturn")
+val SUSPEND_COROUTINE_UNINTERCEPTED_OR_RETURN_NAME: Name = Name.identifier("suspendCoroutineUninterceptedOrReturn")
 
 fun FunctionDescriptor.isBuiltInIntercepted(): Boolean {
     if (name != INTERCEPTED_NAME) return false
@@ -53,7 +54,7 @@ fun FunctionDescriptor.isBuiltInSuspendCoroutineOrReturn(): Boolean {
     )
 }
 
-fun FunctionDescriptor.getBuiltInSuspendCoroutineOrReturn() =
+fun FunctionDescriptor.getBuiltInSuspendCoroutineOrReturn(): SimpleFunctionDescriptor? =
     module.getPackage(COROUTINES_INTRINSICS_PACKAGE_FQ_NAME).memberScope
         .getContributedFunctions(SUSPEND_COROUTINE_OR_RETURN_NAME, NoLookupLocation.FROM_BACKEND)
         .singleOrNull()

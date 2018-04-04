@@ -1,1 +1,1 @@
-fun foo() = 10
+fun foo(): Int = 10

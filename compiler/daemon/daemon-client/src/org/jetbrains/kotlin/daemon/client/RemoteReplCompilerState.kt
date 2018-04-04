@@ -45,7 +45,7 @@ class RemoteReplCompilerStateHistory(private val state: RemoteReplCompilerState)
         currentGeneration.incrementAndGet()
     }
 
-    val currentGeneration = AtomicInteger(REPL_CODE_LINE_FIRST_GEN)
+    val currentGeneration: AtomicInteger = AtomicInteger(REPL_CODE_LINE_FIRST_GEN)
 
     override val lock: ReentrantReadWriteLock get() = state.lock
 }

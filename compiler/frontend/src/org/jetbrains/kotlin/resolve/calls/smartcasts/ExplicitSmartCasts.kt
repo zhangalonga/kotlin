@@ -28,19 +28,19 @@ interface ExplicitSmartCasts {
 }
 
 data class SingleSmartCast(val call: Call?, val type: KotlinType) : ExplicitSmartCasts {
-    override fun type(call: Call?) = if (call == this.call) type else null
+    override fun type(call: Call?): KotlinType? = if (call == this.call) type else null
 
     override val defaultType: KotlinType get() = type
 
-    override fun plus(smartCast: SingleSmartCast) =
+    override fun plus(smartCast: SingleSmartCast): ExplicitSmartCasts =
         if (this == smartCast) this
         else MultipleSmartCasts(mapOf(call to type, smartCast.call to smartCast.type))
 }
 
 data class MultipleSmartCasts internal constructor(val map: Map<Call?, KotlinType>) : ExplicitSmartCasts {
-    override fun type(call: Call?) = map[call]
+    override fun type(call: Call?): KotlinType? = map[call]
 
     override val defaultType: KotlinType? get() = null
 
-    override fun plus(smartCast: SingleSmartCast) = MultipleSmartCasts(map + mapOf(smartCast.call to smartCast.type))
+    override fun plus(smartCast: SingleSmartCast): MultipleSmartCasts = MultipleSmartCasts(map + mapOf(smartCast.call to smartCast.type))
 }

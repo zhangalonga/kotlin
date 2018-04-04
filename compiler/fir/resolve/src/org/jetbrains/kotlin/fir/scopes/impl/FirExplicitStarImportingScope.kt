@@ -10,5 +10,5 @@ import org.jetbrains.kotlin.fir.declarations.FirImport
 import org.jetbrains.kotlin.fir.declarations.FirResolvedImport
 
 class FirExplicitStarImportingScope(imports: List<FirImport>, session: FirSession) : FirAbstractStarImportingScope(session) {
-    override val starImports = imports.filterIsInstance<FirResolvedImport>().filter { it.isAllUnder }
+    override val starImports: List<FirResolvedImport> = imports.filterIsInstance<FirResolvedImport>().filter { it.isAllUnder }
 }

@@ -29,12 +29,12 @@ import org.jetbrains.kotlin.types.checker.StrictEqualityTypeChecker
 import org.jetbrains.kotlin.types.typeUtil.*
 import java.util.*
 
-fun CallableDescriptor.fuzzyReturnType() = returnType?.toFuzzyType(typeParameters)
-fun CallableDescriptor.fuzzyExtensionReceiverType() = extensionReceiverParameter?.type?.toFuzzyType(typeParameters)
+fun CallableDescriptor.fuzzyReturnType(): FuzzyType? = returnType?.toFuzzyType(typeParameters)
+fun CallableDescriptor.fuzzyExtensionReceiverType(): FuzzyType? = extensionReceiverParameter?.type?.toFuzzyType(typeParameters)
 
-fun FuzzyType.makeNotNullable() = type.makeNotNullable().toFuzzyType(freeParameters)
-fun FuzzyType.makeNullable() = type.makeNullable().toFuzzyType(freeParameters)
-fun FuzzyType.nullability() = type.nullability()
+fun FuzzyType.makeNotNullable(): FuzzyType = type.makeNotNullable().toFuzzyType(freeParameters)
+fun FuzzyType.makeNullable(): FuzzyType = type.makeNullable().toFuzzyType(freeParameters)
+fun FuzzyType.nullability(): TypeNullability = type.nullability()
 
 fun FuzzyType.isAlmostEverything(): Boolean {
     if (freeParameters.isEmpty()) return false
@@ -63,7 +63,7 @@ fun FuzzyType.presentationType(): KotlinType {
     return substitutor.substitute(type, Variance.INVARIANT)!!
 }
 
-fun KotlinType.toFuzzyType(freeParameters: Collection<TypeParameterDescriptor>) = FuzzyType(this, freeParameters)
+fun KotlinType.toFuzzyType(freeParameters: Collection<TypeParameterDescriptor>): FuzzyType = FuzzyType(this, freeParameters)
 
 class FuzzyType(
         val type: KotlinType,
@@ -93,9 +93,9 @@ class FuzzyType(
         return callableDescriptor.original.typeParameters[index]
     }
 
-    override fun equals(other: Any?) = other is FuzzyType && other.type == type && other.freeParameters == freeParameters
+    override fun equals(other: Any?): Boolean = other is FuzzyType && other.type == type && other.freeParameters == freeParameters
 
-    override fun hashCode() = type.hashCode()
+    override fun hashCode(): Int = type.hashCode()
 
     private fun MutableSet<TypeParameterDescriptor>.addUsedTypeParameters(type: KotlinType) {
         val typeParameter = type.constructor.declarationDescriptor as? TypeParameterDescriptor

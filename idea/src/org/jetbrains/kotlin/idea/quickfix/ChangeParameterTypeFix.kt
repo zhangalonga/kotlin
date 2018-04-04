@@ -60,7 +60,7 @@ class ChangeParameterTypeFix(element: KtParameter, type: KotlinType) : KotlinQui
             "Change parameter '${element.name}' type of function '$containingDeclarationName' to '$typePresentation'"
     }
 
-    override fun getFamilyName() = KotlinBundle.message("change.type.family")
+    override fun getFamilyName(): String = KotlinBundle.message("change.type.family")
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

@@ -31,9 +31,9 @@ class RenameParameterToMatchOverriddenMethodFix(
         parameter: KtParameter,
         private val newName: String
 ) : KotlinQuickFixAction<KtParameter>(parameter) {
-    override fun getFamilyName() = "Rename"
+    override fun getFamilyName(): String = "Rename"
 
-    override fun getText() = "Rename parameter to match overridden method"
+    override fun getText(): String = "Rename parameter to match overridden method"
 
     override fun startInWriteAction(): Boolean = false
 

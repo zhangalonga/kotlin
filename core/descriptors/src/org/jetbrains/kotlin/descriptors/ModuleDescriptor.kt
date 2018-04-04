@@ -45,7 +45,7 @@ interface ModuleDescriptor : DeclarationDescriptor {
     fun <T> getCapability(capability: Capability<T>): T?
 
     class Capability<T>(val name: String) {
-        override fun toString() = name
+        override fun toString(): String = name
     }
 
     val isValid: Boolean

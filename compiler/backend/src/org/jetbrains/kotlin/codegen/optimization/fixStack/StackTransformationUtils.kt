@@ -58,7 +58,7 @@ class SavedStackDescriptor(
     val firstLocalVarIndex: Int
 ) {
     private val savedValuesSize = savedValues.fold(0, { size, value -> size + value.size })
-    val firstUnusedLocalVarIndex = firstLocalVarIndex + savedValuesSize
+    val firstUnusedLocalVarIndex: Int = firstLocalVarIndex + savedValuesSize
 
     override fun toString(): String =
         "@$firstLocalVarIndex: [$savedValues]"
@@ -121,7 +121,7 @@ fun generateStoreInstructions(methodNode: MethodNode, location: AbstractInsnNode
     }
 }
 
-fun getPopInstruction(top: BasicValue) =
+fun getPopInstruction(top: BasicValue): InsnNode =
     InsnNode(
         when (top.size) {
             1 -> Opcodes.POP

@@ -26,8 +26,8 @@ class KtLightClassForInterfaceDefaultImpls(classOrObject: KtClassOrObject)
     : KtLightClassForSourceDeclaration(classOrObject) {
     override fun getQualifiedName(): String? = containingClass?.qualifiedName?.let { it + ".${JvmAbi.DEFAULT_IMPLS_CLASS_NAME}" }
 
-    override fun getName() = JvmAbi.DEFAULT_IMPLS_CLASS_NAME
-    override fun getParent() = containingClass
+    override fun getName(): String = JvmAbi.DEFAULT_IMPLS_CLASS_NAME
+    override fun getParent(): KtLightClassForSourceDeclaration? = containingClass
 
     override fun copy(): PsiElement {
         return KtLightClassForInterfaceDefaultImpls(classOrObject.copy() as KtClassOrObject)
@@ -40,7 +40,7 @@ class KtLightClassForInterfaceDefaultImpls(classOrObject: KtClassOrObject)
     override fun getTypeParameterList(): PsiTypeParameterList? = null
     override fun getTypeParameters(): Array<PsiTypeParameter> = emptyArray()
 
-    override fun computeModifiers() = publicStaticFinal
+    override fun computeModifiers(): Set<String> = publicStaticFinal
 
     override fun isInterface(): Boolean = false
     override fun isDeprecated(): Boolean = false
@@ -54,9 +54,9 @@ class KtLightClassForInterfaceDefaultImpls(classOrObject: KtClassOrObject)
         throw IncorrectOperationException("Impossible to rename DefaultImpls")
     }
 
-    override fun getContainingClass() = KtLightClassForSourceDeclaration.create(classOrObject)
+    override fun getContainingClass(): KtLightClassForSourceDeclaration? = KtLightClassForSourceDeclaration.create(classOrObject)
 
-    override fun getOwnInnerClasses() = emptyList<PsiClass>()
+    override fun getOwnInnerClasses(): List<PsiClass> = emptyList()
 }
 
 private val publicStaticFinal = setOf(PsiModifier.PUBLIC, PsiModifier.STATIC, PsiModifier.FINAL)

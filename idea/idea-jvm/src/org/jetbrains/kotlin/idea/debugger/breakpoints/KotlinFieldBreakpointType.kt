@@ -42,6 +42,7 @@ import org.jetbrains.kotlin.idea.util.application.runWriteAction
 import org.jetbrains.kotlin.psi.KtDeclarationContainer
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
+import javax.swing.Icon
 import javax.swing.JComponent
 
 class KotlinFieldBreakpointType : JavaBreakpointType<KotlinPropertyBreakpointProperties>, XLineBreakpointType<KotlinPropertyBreakpointProperties>(
@@ -55,7 +56,7 @@ class KotlinFieldBreakpointType : JavaBreakpointType<KotlinPropertyBreakpointPro
         return canPutAt(file, line, project, this::class.java)
     }
 
-    override fun getPriority() = 120
+    override fun getPriority(): Int = 120
 
     override fun createBreakpointProperties(file: VirtualFile, line: Int): KotlinPropertyBreakpointProperties? {
         return KotlinPropertyBreakpointProperties()
@@ -132,17 +133,17 @@ class KotlinFieldBreakpointType : JavaBreakpointType<KotlinPropertyBreakpointPro
         Messages.showMessageDialog(project, message, DebuggerBundle.message("add.field.breakpoint.dialog.title"), Messages.getErrorIcon())
     }
 
-    override fun isAddBreakpointButtonVisible() = true
+    override fun isAddBreakpointButtonVisible(): Boolean = true
 
-    override fun getMutedEnabledIcon() = AllIcons.Debugger.Db_muted_field_breakpoint
+    override fun getMutedEnabledIcon(): Icon = AllIcons.Debugger.Db_muted_field_breakpoint
 
-    override fun getDisabledIcon() = AllIcons.Debugger.Db_disabled_field_breakpoint
+    override fun getDisabledIcon(): Icon = AllIcons.Debugger.Db_disabled_field_breakpoint
 
-    override fun getEnabledIcon() = AllIcons.Debugger.Db_field_breakpoint
+    override fun getEnabledIcon(): Icon = AllIcons.Debugger.Db_field_breakpoint
 
-    override fun getMutedDisabledIcon() = AllIcons.Debugger.Db_muted_disabled_field_breakpoint
+    override fun getMutedDisabledIcon(): Icon = AllIcons.Debugger.Db_muted_disabled_field_breakpoint
 
-    override fun canBeHitInOtherPlaces() = true
+    override fun canBeHitInOtherPlaces(): Boolean = true
 
     override fun getShortText(breakpoint: XLineBreakpoint<KotlinPropertyBreakpointProperties>): String? {
         val properties = breakpoint.properties
@@ -168,11 +169,11 @@ class KotlinFieldBreakpointType : JavaBreakpointType<KotlinPropertyBreakpointPro
         }
     }
 
-    override fun getEditorsProvider() = null
+    override fun getEditorsProvider(): Nothing? = null
 
     override fun createCustomRightPropertiesPanel(project: Project): XBreakpointCustomPropertiesPanel<XLineBreakpoint<KotlinPropertyBreakpointProperties>>? {
         return KotlinBreakpointFiltersPanel(project)
     }
 
-    override fun isSuspendThreadSupported() = true
+    override fun isSuspendThreadSupported(): Boolean = true
 }

@@ -33,10 +33,10 @@ class KotlinTopLevelTypeAliasFqNameIndex : StringStubIndexExtension<KtTypeAlias>
             )
 
     companion object {
-        val KEY = KotlinIndexUtil.createIndexKey(KotlinTopLevelTypeAliasFqNameIndex::class.java)
-        val INSTANCE = KotlinTopLevelTypeAliasFqNameIndex()
+        val KEY: StubIndexKey<String, KtTypeAlias> = KotlinIndexUtil.createIndexKey(KotlinTopLevelTypeAliasFqNameIndex::class.java)
+        val INSTANCE: KotlinTopLevelTypeAliasFqNameIndex = KotlinTopLevelTypeAliasFqNameIndex()
 
-        @JvmStatic fun getInstance() = INSTANCE
+        @JvmStatic fun getInstance(): KotlinTopLevelTypeAliasFqNameIndex = INSTANCE
     }
 }
 

@@ -25,7 +25,7 @@ class KotlinWrapperForJavaUsageInfos(
         val javaUsageInfos: Array<UsageInfo>,
         primaryMethod: PsiElement
 ): UsageInfo(primaryMethod) {
-    override fun hashCode() = javaChangeInfo.method.hashCode()
+    override fun hashCode(): Int = javaChangeInfo.method.hashCode()
 
     override fun equals(other: Any?): Boolean {
         return other === this || (other is KotlinWrapperForJavaUsageInfos && javaChangeInfo.method == other.javaChangeInfo.method)

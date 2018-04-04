@@ -48,7 +48,7 @@ class ReplOutputHandler(
     private val outputProcessor = ReplOutputProcessor(runner)
     private val inputBuffer = StringBuilder()
 
-    override fun isSilentlyDestroyOnClose() = true
+    override fun isSilentlyDestroyOnClose(): Boolean = true
 
     override fun notifyTextAvailable(text: String, key: Key<*>) {
         // hide warning about adding test folder to classpath

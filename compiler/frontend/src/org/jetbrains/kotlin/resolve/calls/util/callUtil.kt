@@ -49,7 +49,7 @@ fun <D : CallableDescriptor> ResolvedCall<D>.hasUnmappedParameters(): Boolean {
     return !parameterToArgumentMap.keys.containsAll(resultingDescriptor.valueParameters)
 }
 
-fun <D : CallableDescriptor> ResolvedCall<D>.allArgumentsMapped() =
+fun <D : CallableDescriptor> ResolvedCall<D>.allArgumentsMapped(): Boolean =
     call.valueArguments.all { argument -> getArgumentMapping(argument) is ArgumentMatch }
 
 fun <D : CallableDescriptor> ResolvedCall<D>.hasTypeMismatchErrorOnParameter(parameter: ValueParameterDescriptor): Boolean {

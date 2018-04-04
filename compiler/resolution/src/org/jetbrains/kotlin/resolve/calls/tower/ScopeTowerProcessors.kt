@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValueWithSmartCastI
 class KnownResultProcessor<out C>(
     val result: Collection<C>
 ) : ScopeTowerProcessor<C> {
-    override fun process(data: TowerData) = if (data == TowerData.Empty) listOfNotNull(result.takeIf { it.isNotEmpty() }) else emptyList()
+    override fun process(data: TowerData): List<Collection<C>> = if (data == TowerData.Empty) listOfNotNull(result.takeIf { it.isNotEmpty() }) else emptyList()
 
     override fun recordLookups(skippedData: Collection<TowerData>, name: Name) {}
 }
@@ -243,12 +243,12 @@ fun <C : Candidate> createCallableReferenceProcessor(
 fun <C : Candidate> createVariableProcessor(
     scopeTower: ImplicitScopeTower, name: Name,
     context: CandidateFactory<C>, explicitReceiver: DetailedReceiver?, classValueReceiver: Boolean = true
-) = createSimpleProcessor(scopeTower, context, explicitReceiver, classValueReceiver) { getVariables(name, it) }
+): ScopeTowerProcessor<C> = createSimpleProcessor(scopeTower, context, explicitReceiver, classValueReceiver) { getVariables(name, it) }
 
 fun <C : Candidate> createVariableAndObjectProcessor(
     scopeTower: ImplicitScopeTower, name: Name,
     context: CandidateFactory<C>, explicitReceiver: DetailedReceiver?, classValueReceiver: Boolean = true
-) = PrioritizedCompositeScopeTowerProcessor(
+): PrioritizedCompositeScopeTowerProcessor<C> = PrioritizedCompositeScopeTowerProcessor(
     createVariableProcessor(scopeTower, name, context, explicitReceiver),
     createSimpleProcessor(scopeTower, context, explicitReceiver, classValueReceiver) { getObjects(name, it) }
 )
@@ -256,7 +256,7 @@ fun <C : Candidate> createVariableAndObjectProcessor(
 fun <C : Candidate> createSimpleFunctionProcessor(
     scopeTower: ImplicitScopeTower, name: Name,
     context: CandidateFactory<C>, explicitReceiver: DetailedReceiver?, classValueReceiver: Boolean = true
-) = createSimpleProcessor(scopeTower, context, explicitReceiver, classValueReceiver) { getFunctions(name, it) }
+): ScopeTowerProcessor<C> = createSimpleProcessor(scopeTower, context, explicitReceiver, classValueReceiver) { getFunctions(name, it) }
 
 
 fun <С : Candidate> createFunctionProcessor(

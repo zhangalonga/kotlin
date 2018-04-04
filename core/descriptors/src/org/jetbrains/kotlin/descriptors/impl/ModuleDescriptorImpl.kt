@@ -144,7 +144,7 @@ class ModuleDescriptorImpl @JvmOverloads constructor(
         }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T> getCapability(capability: ModuleDescriptor.Capability<T>) = capabilities[capability] as? T
+    override fun <T> getCapability(capability: ModuleDescriptor.Capability<T>): T? = capabilities[capability] as? T
 }
 
 interface ModuleDependencies {

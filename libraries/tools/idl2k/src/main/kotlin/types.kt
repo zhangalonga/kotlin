@@ -13,26 +13,26 @@ object UnitType : Type() {
     override val nullable: Boolean
         get() = false
 
-    override fun render() = "Unit"
+    override fun render(): String = "Unit"
 }
 object DynamicType : Type() {
     override val nullable: Boolean
         get() = false
 
-    override fun render() = "dynamic"
+    override fun render(): String = "dynamic"
 }
 data class AnyType(override val nullable: Boolean = true) : Type() {
-    override fun render() = "Any".appendNullabilitySuffix(this)
+    override fun render(): String = "Any".appendNullabilitySuffix(this)
 }
 data class SimpleType(val type: String, override val nullable: Boolean) : Type() {
-    override fun render() = type.appendNullabilitySuffix(this)
+    override fun render(): String = type.appendNullabilitySuffix(this)
 }
 data class FunctionType(val parameterTypes : List<Attribute>, val returnType : Type, override val nullable: Boolean) : Type() {
-    override fun render() = if (nullable) "(${renderImpl()})?" else renderImpl()
+    override fun render(): String = if (nullable) "(${renderImpl()})?" else renderImpl()
     private fun renderImpl() = "(${parameterTypes.joinToString(", ") { it.type.render() }}) -> ${returnType.render()}"
 }
 data class PromiseType(val valueType: Type, override val nullable: Boolean) : Type() {
-    override fun render() = "Promise<${valueType.render()}>".appendNullabilitySuffix(this)
+    override fun render(): String = "Promise<${valueType.render()}>".appendNullabilitySuffix(this)
 }
 
 val FunctionType.arity : Int
@@ -40,20 +40,20 @@ val FunctionType.arity : Int
 
 class UnionType(val namespace: String, types: Collection<Type>, override val nullable: Boolean) : Type() {
     val memberTypes: Set<Type> = LinkedHashSet(types.sortedBy { it.toString() })
-    val name = "Union${this.memberTypes.map { it.render() }.joinToString("Or")}"
+    val name: String = "Union${this.memberTypes.map { it.render() }.joinToString("Or")}"
 
-    operator fun contains(type: Type) = type in memberTypes
+    operator fun contains(type: Type): Boolean = type in memberTypes
     override fun equals(other: Any?): Boolean = other is UnionType && memberTypes == other.memberTypes
     override fun hashCode(): Int = memberTypes.hashCode()
     override fun toString(): String = memberTypes.joinToString(", ", "Union<", ">")
 
     override fun render(): String = name.appendNullabilitySuffix(this)
 
-    fun copy(namespace: String = this.namespace, types: Collection<Type> = this.memberTypes, nullable: Boolean = this.nullable) =
+    fun copy(namespace: String = this.namespace, types: Collection<Type> = this.memberTypes, nullable: Boolean = this.nullable): UnionType =
             UnionType(namespace, types, nullable)
 }
 
-fun UnionType.toSingleTypeIfPossible() = if (this.memberTypes.size == 1) this.memberTypes.single().withNullability(nullable) else this
+fun UnionType.toSingleTypeIfPossible(): UnionType = if (this.memberTypes.size == 1) this.memberTypes.single().withNullability(nullable) else this
 
 data class ArrayType(val memberType: Type, val mutable: Boolean, override val nullable: Boolean) : Type() {
     override fun render(): String = "Array<${if (mutable) "" else "out "}${memberType.render()}>".appendNullabilitySuffix(this)

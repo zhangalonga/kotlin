@@ -48,13 +48,13 @@ class CapturedTypeConstructor(
         return listOf(superType)
     }
 
-    override fun isFinal() = true
+    override fun isFinal(): Boolean = true
 
-    override fun isDenotable() = false
+    override fun isDenotable(): Boolean = false
 
-    override fun getDeclarationDescriptor() = null
+    override fun getDeclarationDescriptor(): Nothing? = null
 
-    override fun toString() = "CapturedTypeConstructor($typeProjection)"
+    override fun toString(): String = "CapturedTypeConstructor($typeProjection)"
 
     override fun getBuiltIns(): KotlinBuiltIns = typeProjection.type.constructor.builtIns
 }
@@ -81,9 +81,9 @@ class CapturedType(
     private fun representative(variance: Variance, default: KotlinType) =
         if (typeProjection.projectionKind == variance) typeProjection.type else default
 
-    override fun sameTypeConstructor(type: KotlinType) = constructor === type.constructor
+    override fun sameTypeConstructor(type: KotlinType): Boolean = constructor === type.constructor
 
-    override fun toString() = "Captured($typeProjection)" + if (isMarkedNullable) "?" else ""
+    override fun toString(): String = "Captured($typeProjection)" + if (isMarkedNullable) "?" else ""
 
     override fun makeNullableAsSpecified(newNullability: Boolean): CapturedType {
         if (newNullability == isMarkedNullable) return this

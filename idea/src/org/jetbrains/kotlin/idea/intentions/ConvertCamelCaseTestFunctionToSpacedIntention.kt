@@ -95,7 +95,7 @@ class ConvertCamelCaseTestFunctionToSpacedIntention : SelfTargetingRangeIntentio
         RenameProcessor(element.project, element, newName, false, false).run()
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtNamedFunction, editor: Editor?) {
         val nameIdentifier = element.nameIdentifier ?: return

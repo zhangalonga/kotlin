@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.config.deserializeFacetSettings
 import org.jetbrains.kotlin.config.serializeFacetSettings
 
 class KotlinFacetConfigurationImpl : KotlinFacetConfiguration {
-    override var settings = KotlinFacetSettings()
+    override var settings: KotlinFacetSettings = KotlinFacetSettings()
         private set
 
     @Suppress("OverridingDeprecatedMember")

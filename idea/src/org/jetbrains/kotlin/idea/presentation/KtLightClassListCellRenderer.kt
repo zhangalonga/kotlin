@@ -22,12 +22,12 @@ import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.name.FqName
 
 class KtLightClassListCellRenderer : PsiElementListCellRenderer<KtLightClass>() {
-    override fun getElementText(element: KtLightClass) = ClassPresentationUtil.getNameForClass(element, false)
+    override fun getElementText(element: KtLightClass): String = ClassPresentationUtil.getNameForClass(element, false)
 
     // TODO: correct text for local, anonymous, enum entries ... etc
-    override fun getContainerText(element: KtLightClass, name: String) = element.qualifiedName?.let { qName ->
+    override fun getContainerText(element: KtLightClass, name: String): String = element.qualifiedName?.let { qName ->
         "(" + FqName(qName).parent().asString() + ")"
     } ?: ""
 
-    override fun getIconFlags() = 0
+    override fun getIconFlags(): Int = 0
 }

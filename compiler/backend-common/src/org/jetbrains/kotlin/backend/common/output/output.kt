@@ -43,7 +43,7 @@ class SimpleOutputFile(
     override fun asByteArray(): ByteArray = content.toByteArray()
     override fun asText(): String = content
 
-    override fun toString() = "$relativePath (compiled from $sourceFiles)"
+    override fun toString(): String = "$relativePath (compiled from $sourceFiles)"
 }
 
 class SimpleOutputBinaryFile(
@@ -54,5 +54,5 @@ class SimpleOutputBinaryFile(
     override fun asByteArray(): ByteArray = content
     override fun asText(): String = String(content)
 
-    override fun toString() = "$relativePath (compiled from $sourceFiles)"
+    override fun toString(): String = "$relativePath (compiled from $sourceFiles)"
 }

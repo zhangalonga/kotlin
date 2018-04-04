@@ -22,7 +22,7 @@ class FirFunctionTypeImpl(
     override var receiverType: FirType?,
     override var returnType: FirType
 ) : FirAbstractAnnotatedType(session, psi, isNullable), FirFunctionType {
-    override val valueParameters = mutableListOf<FirValueParameter>()
+    override val valueParameters: MutableList<FirValueParameter> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         receiverType = receiverType?.transformSingle(transformer, data)

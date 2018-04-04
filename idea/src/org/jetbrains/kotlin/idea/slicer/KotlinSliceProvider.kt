@@ -39,16 +39,16 @@ import org.jetbrains.kotlin.types.isNullabilityFlexible
 
 class KotlinSliceProvider : SliceLanguageSupportProvider, SliceUsageTransformer {
     companion object {
-        val LEAF_ELEMENT_EQUALITY = object : SliceLeafEquality() {
+        val LEAF_ELEMENT_EQUALITY: SliceLeafEquality = object : SliceLeafEquality() {
             override fun substituteElement(element: PsiElement) = (element as? KtReference)?.resolve() ?: element
         }
     }
 
     class KotlinGroupByNullnessAction(treeBuilder: SliceTreeBuilder) : GroupByNullnessActionBase(treeBuilder) {
-        override fun isAvailable() = true
+        override fun isAvailable(): Boolean = true
     }
 
-    val leafAnalyzer by lazy { SliceLeafAnalyzer(LEAF_ELEMENT_EQUALITY, this) }
+    val leafAnalyzer: SliceLeafAnalyzer by lazy { SliceLeafAnalyzer(LEAF_ELEMENT_EQUALITY, this) }
     val nullnessAnalyzer: SliceNullnessAnalyzerBase by lazy {
         object : SliceNullnessAnalyzerBase(LEAF_ELEMENT_EQUALITY, this) {
             override fun checkNullness(element: PsiElement?): Nullness {
@@ -68,7 +68,7 @@ class KotlinSliceProvider : SliceLanguageSupportProvider, SliceUsageTransformer 
         }
     }
 
-    override fun createRootUsage(element: PsiElement, params: SliceAnalysisParams) = KotlinSliceUsage(element, params)
+    override fun createRootUsage(element: PsiElement, params: SliceAnalysisParams): KotlinSliceUsage = KotlinSliceUsage(element, params)
 
     override fun transform(usage: SliceUsage): Collection<SliceUsage>? {
         if (usage is KotlinSliceUsage) return null
@@ -99,7 +99,7 @@ class KotlinSliceProvider : SliceLanguageSupportProvider, SliceUsageTransformer 
         return (element as? KtSimpleNameExpression)?.mainReference?.resolve() ?: element
     }
 
-    override fun getRenderer() = KotlinSliceUsageCellRenderer
+    override fun getRenderer(): KotlinSliceUsageCellRenderer = KotlinSliceUsageCellRenderer
 
     override fun startAnalyzeLeafValues(structure: AbstractTreeStructure, finalRunnable: Runnable) {
         leafAnalyzer.startAnalyzeValues(structure, finalRunnable)

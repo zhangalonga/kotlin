@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.parsing.KotlinExpressionParsing
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 
 class KtOperationReferenceExpression(node: ASTNode) : KtSimpleNameExpressionImpl(node) {
-    override fun getReferencedNameElement() = findChildByType<PsiElement?>(KotlinExpressionParsing.ALL_OPERATIONS) ?: this
+    override fun getReferencedNameElement(): PsiElement = findChildByType<PsiElement?>(KotlinExpressionParsing.ALL_OPERATIONS) ?: this
 
     val operationSignTokenType: KtSingleValueToken?
         get() = (firstChild as? TreeElement)?.elementType as? KtSingleValueToken

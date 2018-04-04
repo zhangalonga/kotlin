@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.resolve.bindingContextUtil.getTargetFunction
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class ReturnSaver(val function: KtNamedFunction) {
-    val RETURN_KEY = Key<Unit>("RETURN_KEY")
+    val RETURN_KEY: Key<Unit> = Key<Unit>("RETURN_KEY")
 
     init {
         save()

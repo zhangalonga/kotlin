@@ -43,5 +43,5 @@ class KotlinMemberSelectionPanel(title: String,
         return KotlinMemberSelectionTable(memberInfo, null, abstractColumnHeader)
     }
 
-    override fun getTable() = table
+    override fun getTable(): KotlinMemberSelectionTable = table
 }

@@ -34,5 +34,5 @@ class FieldOverridabilityCondition : ExternalOverridabilityCondition {
         return Result.UNKNOWN
     }
 
-    override fun getContract() = ExternalOverridabilityCondition.Contract.BOTH
+    override fun getContract(): ExternalOverridabilityCondition.Contract = ExternalOverridabilityCondition.Contract.BOTH
 }

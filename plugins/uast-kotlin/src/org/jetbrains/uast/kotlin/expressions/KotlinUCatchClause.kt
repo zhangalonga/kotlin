@@ -17,10 +17,7 @@
 package org.jetbrains.uast.kotlin
 
 import org.jetbrains.kotlin.psi.KtCatchClause
-import org.jetbrains.uast.UCatchClause
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UParameter
-import org.jetbrains.uast.UTypeReferenceExpression
+import org.jetbrains.uast.*
 import org.jetbrains.uast.kotlin.psi.UastKotlinPsiParameter
 
 class KotlinUCatchClause(
@@ -28,17 +25,17 @@ class KotlinUCatchClause(
         givenParent: UElement?
 ) : KotlinAbstractUElement(givenParent), UCatchClause {
 
-    override val javaPsi = null
-    override val sourcePsi = psi
+    override val javaPsi: Nothing? = null
+    override val sourcePsi: KtCatchClause = psi
 
-    override val body by lz { KotlinConverter.convertOrEmpty(psi.catchBody, this) }
+    override val body: UExpression by lz { KotlinConverter.convertOrEmpty(psi.catchBody, this) }
     
-    override val parameters by lz {
+    override val parameters: List<UParameter> by lz {
         val parameter = psi.catchParameter ?: return@lz emptyList<UParameter>()
         listOf(KotlinUParameter(UastKotlinPsiParameter.create(parameter, psi, this, 0), psi, this))
     }
 
-    override val typeReferences by lz {
+    override val typeReferences: List<UTypeReferenceExpression> by lz {
         val parameter = psi.catchParameter ?: return@lz emptyList<UTypeReferenceExpression>()
         val typeReference = parameter.typeReference ?: return@lz emptyList<UTypeReferenceExpression>()
         listOf(LazyKotlinUTypeReferenceExpression(typeReference, this) { typeReference.toPsiType(this, boxed = true) } )

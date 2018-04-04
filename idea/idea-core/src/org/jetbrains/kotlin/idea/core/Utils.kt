@@ -169,7 +169,7 @@ fun FqName.quoteSegmentsIfNeeded(): String {
     return pathSegments().joinToString(".") { it.asString().quoteIfNeeded() }
 }
 
-fun FqName.quoteIfNeeded() = FqName(quoteSegmentsIfNeeded())
+fun FqName.quoteIfNeeded(): FqName = FqName(quoteSegmentsIfNeeded())
 
 fun isEnumCompanionPropertyWithEntryConflict(element: PsiElement, expectedName: String): Boolean {
     if (element !is KtProperty) return false

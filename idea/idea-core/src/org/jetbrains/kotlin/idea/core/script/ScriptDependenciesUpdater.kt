@@ -292,7 +292,7 @@ private object TimeStamps {
 }
 
 @set: TestOnly
-var Application.isScriptDependenciesUpdaterDisabled by NotNullableUserDataProperty(
+var Application.isScriptDependenciesUpdaterDisabled: Boolean by NotNullableUserDataProperty(
     Key.create("SCRIPT_DEPENDENCIES_UPDATER_DISABLED"),
     false
 )

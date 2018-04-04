@@ -34,7 +34,7 @@ class ArgumentsToParametersMapper {
         val diagnostics: List<KotlinCallDiagnostic>
     )
 
-    val EmptyArgumentMapping = ArgumentMapping(emptyMap(), emptyList())
+    val EmptyArgumentMapping: ArgumentMapping = ArgumentMapping(emptyMap(), emptyList())
 
     fun mapArguments(call: KotlinCall, descriptor: CallableDescriptor): ArgumentMapping =
         mapArguments(call.argumentsInParenthesis, call.externalArgument, descriptor)

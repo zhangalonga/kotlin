@@ -51,7 +51,7 @@ open class ConvertLambdaToReferenceIntention(text: String) :
     @Suppress("unused")
     constructor(): this("Convert lambda to reference")
 
-    open fun buildReferenceText(element: KtLambdaExpression) = buildReferenceText(lambdaExpression = element, shortTypes = false)
+    open fun buildReferenceText(element: KtLambdaExpression): String? = buildReferenceText(lambdaExpression = element, shortTypes = false)
 
     private fun KtLambdaArgument.outerCalleeDescriptor(): FunctionDescriptor? {
         val outerCallExpression = parent as? KtCallExpression ?: return null

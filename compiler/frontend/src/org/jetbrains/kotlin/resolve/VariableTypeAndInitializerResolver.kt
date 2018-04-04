@@ -46,7 +46,7 @@ class VariableTypeAndInitializerResolver(
 ) {
     companion object {
         @JvmField
-        val STUB_FOR_PROPERTY_WITHOUT_TYPE = ErrorUtils.createErrorType("No type, no body")
+        val STUB_FOR_PROPERTY_WITHOUT_TYPE: SimpleType = ErrorUtils.createErrorType("No type, no body")
     }
 
     fun resolveType(

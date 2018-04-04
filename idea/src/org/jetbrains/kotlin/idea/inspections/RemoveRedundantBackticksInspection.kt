@@ -65,8 +65,8 @@ class RemoveRedundantBackticksInspection : AbstractKotlinInspection() {
 }
 
 class RemoveRedundantBackticksQuickFix : LocalQuickFix {
-    override fun getName() = "Remove redundant backticks"
-    override fun getFamilyName() = name
+    override fun getName(): String = "Remove redundant backticks"
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val element = descriptor.psiElement

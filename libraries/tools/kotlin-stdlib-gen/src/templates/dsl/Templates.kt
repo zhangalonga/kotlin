@@ -169,7 +169,7 @@ class FamilyPrimitiveMemberDefinition : MemberTemplateDefinition<PrimitiveType?>
         for (f in fs) familyPrimitives[f] = defaultPrimitives(f)
     }
     @Deprecated("Use include()", ReplaceWith("include(*fs)"))
-    fun only(vararg fs: Family) = include(*fs)
+    fun only(vararg fs: Family): Unit = include(*fs)
 
     fun include(fs: Collection<Family>) {
         for (f in fs) familyPrimitives[f] = defaultPrimitives(f)

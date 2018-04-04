@@ -77,7 +77,7 @@ class CreateKotlinSubClassIntention : SelfTargetingRangeIntention<KtClass>(KtCla
                 else /* open class */ -> "Create subclass"
             }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     override fun applyTo(element: KtClass, editor: Editor?) {
         if (editor == null) throw IllegalArgumentException("This intention requires an editor")

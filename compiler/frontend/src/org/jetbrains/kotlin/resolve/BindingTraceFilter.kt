@@ -18,8 +18,8 @@ package org.jetbrains.kotlin.resolve
 
 class BindingTraceFilter(val ignoreDiagnostics: Boolean) {
     companion object {
-        val ACCEPT_ALL = BindingTraceFilter(false)
-        val NO_DIAGNOSTICS = BindingTraceFilter(true)
+        val ACCEPT_ALL: BindingTraceFilter = BindingTraceFilter(false)
+        val NO_DIAGNOSTICS: BindingTraceFilter = BindingTraceFilter(true)
     }
 
     fun includesEverythingIn(otherFilter: BindingTraceFilter): Boolean {

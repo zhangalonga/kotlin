@@ -61,7 +61,7 @@ class KotlinImplicitThisUsage(
         callElement: KtElement,
         val targetDescriptor: DeclarationDescriptor
 ): KotlinImplicitReceiverUsage(callElement) {
-    override fun getNewReceiverText() = explicateReceiverOf(targetDescriptor)
+    override fun getNewReceiverText(): String = explicateReceiverOf(targetDescriptor)
 
     override fun processReplacedElement(element: KtElement) {
         element.addToShorteningWaitSet(Options(removeThisLabels = true, removeThis = true))

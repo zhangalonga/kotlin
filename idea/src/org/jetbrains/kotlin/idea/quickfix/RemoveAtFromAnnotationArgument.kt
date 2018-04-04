@@ -25,9 +25,9 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 
 class RemoveAtFromAnnotationArgument(constructor: KtAnnotationEntry) : KotlinQuickFixAction<KtAnnotationEntry>(constructor) {
 
-    override fun getText() = "Remove @ from annotation argument"
+    override fun getText(): String = "Remove @ from annotation argument"
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

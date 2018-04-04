@@ -118,7 +118,7 @@ class LazyJavaPackageScope(
         override fun hashCode() = name.hashCode()
     }
 
-    override fun getContributedClassifier(name: Name, location: LookupLocation) = findClassifier(name, null)
+    override fun getContributedClassifier(name: Name, location: LookupLocation): ClassDescriptor? = findClassifier(name, null)
 
     private fun findClassifier(name: Name, javaClass: JavaClass?): ClassDescriptor? {
         if (!SpecialNames.isSafeIdentifier(name)) return null
@@ -156,7 +156,7 @@ class LazyJavaPackageScope(
     override fun computeNonDeclaredFunctions(result: MutableCollection<SimpleFunctionDescriptor>, name: Name) {
     }
 
-    override fun computePropertyNames(kindFilter: DescriptorKindFilter, nameFilter: ((Name) -> Boolean)?) = emptySet<Name>()
+    override fun computePropertyNames(kindFilter: DescriptorKindFilter, nameFilter: ((Name) -> Boolean)?): Set<Name> = emptySet<Name>()
 
     // we don't use implementation from super which caches all descriptors and does not use filters
     override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> {

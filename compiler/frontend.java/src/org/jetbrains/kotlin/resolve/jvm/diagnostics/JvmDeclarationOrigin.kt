@@ -45,17 +45,17 @@ class JvmDeclarationOrigin(
 }
 
 @JvmOverloads
-fun OtherOrigin(element: PsiElement?, descriptor: DeclarationDescriptor? = null) =
+fun OtherOrigin(element: PsiElement?, descriptor: DeclarationDescriptor? = null): JvmDeclarationOrigin =
         if (element == null && descriptor == null)
             JvmDeclarationOrigin.NO_ORIGIN
         else
             JvmDeclarationOrigin(OTHER, element, descriptor)
 
 @JvmOverloads
-fun OtherOriginFromPure(element: KtPureElement?, descriptor: DeclarationDescriptor? = null) =
+fun OtherOriginFromPure(element: KtPureElement?, descriptor: DeclarationDescriptor? = null): JvmDeclarationOrigin =
         OtherOrigin(element?.psiOrParent, descriptor)
 
-fun OtherOrigin(descriptor: DeclarationDescriptor) = JvmDeclarationOrigin(OTHER, null, descriptor)
+fun OtherOrigin(descriptor: DeclarationDescriptor): JvmDeclarationOrigin = JvmDeclarationOrigin(OTHER, null, descriptor)
 
 fun Bridge(descriptor: DeclarationDescriptor, element: PsiElement? = DescriptorToSourceUtils.descriptorToDeclaration(descriptor)): JvmDeclarationOrigin =
         JvmDeclarationOrigin(BRIDGE, element, descriptor)
@@ -78,7 +78,7 @@ fun SamDelegation(descriptor: FunctionDescriptor): JvmDeclarationOrigin = JvmDec
 
 fun Synthetic(element: PsiElement?, descriptor: CallableMemberDescriptor): JvmDeclarationOrigin = JvmDeclarationOrigin(SYNTHETIC, element, descriptor)
 
-val CollectionStub = JvmDeclarationOrigin(COLLECTION_STUB, null, null)
+val CollectionStub: JvmDeclarationOrigin = JvmDeclarationOrigin(COLLECTION_STUB, null, null)
 
 fun AugmentedBuiltInApi(descriptor: CallableDescriptor): JvmDeclarationOrigin = JvmDeclarationOrigin(AUGMENTED_BUILTIN_API, null, descriptor)
 

@@ -37,7 +37,7 @@ class DifferentStdlibGradleVersionInspection : GradleBaseInspection() {
         listOf(MAVEN_STDLIB_ID, MAVEN_STDLIB_ID_JRE7, MAVEN_STDLIB_ID_JDK7, MAVEN_STDLIB_ID_JRE8, MAVEN_STDLIB_ID_JDK8)
     )
 
-    override fun buildErrorString(vararg args: Any) =
+    override fun buildErrorString(vararg args: Any): String =
         "Plugin version (${args[0]}) is not the same as library version (${args[1]})"
 
     private abstract class VersionFinder(private val libraryIds: List<String>) : KotlinGradleInspectionVisitor() {

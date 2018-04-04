@@ -21,7 +21,7 @@ import org.apache.tools.ant.types.Reference
 import java.io.File.pathSeparator
 
 class Kotlin2JvmTask : KotlinCompilerBaseTask() {
-    override val compilerFqName = "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
+    override val compilerFqName: String = "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
 
     var includeRuntime: Boolean = true
     var moduleName: String? = null

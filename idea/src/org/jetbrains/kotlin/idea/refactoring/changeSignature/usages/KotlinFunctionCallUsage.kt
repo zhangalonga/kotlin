@@ -276,7 +276,7 @@ class KotlinFunctionCallUsage(
             name = parameter.getInheritedName(callee)
         }
 
-        fun shouldSkip() = parameter.defaultValueForParameter != null && mainValueArgument == null
+        fun shouldSkip(): Boolean = parameter.defaultValueForParameter != null && mainValueArgument == null
     }
 
     private fun getResolvedValueArgument(oldIndex: Int): ResolvedValueArgument? {

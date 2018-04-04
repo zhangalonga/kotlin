@@ -34,16 +34,16 @@ object SourceSectionsConfigurationKeys {
 
 class SourceSectionsCommandLineProcessor : CommandLineProcessor {
     companion object {
-        val SECTIONS_OPTION = CliOption("allowedSection", "<name>", "Allowed section name",
-                                          required = true, allowMultipleOccurrences = true)
+        val SECTIONS_OPTION: CliOption = CliOption("allowedSection", "<name>", "Allowed section name",
+                                                   required = true, allowMultipleOccurrences = true)
 
-        val PLUGIN_ID = "org.jetbrains.kotlin.sourceSections"
+        val PLUGIN_ID: String = "org.jetbrains.kotlin.sourceSections"
     }
 
-    override val pluginId = PLUGIN_ID
-    override val pluginOptions = listOf(SECTIONS_OPTION)
+    override val pluginId: String = PLUGIN_ID
+    override val pluginOptions: List<CliOption> = listOf(SECTIONS_OPTION)
 
-    override fun processOption(option: CliOption, value: String, configuration: CompilerConfiguration) = when (option) {
+    override fun processOption(option: CliOption, value: String, configuration: CompilerConfiguration): Unit = when (option) {
         SECTIONS_OPTION -> {
             val paths = configuration.getList(SourceSectionsConfigurationKeys.SECTIONS_OPTION).toMutableList()
             paths.add(value)

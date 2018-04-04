@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
 abstract class MoveMemberOutOfObjectIntention(text: String) : SelfTargetingRangeIntention<KtNamedDeclaration>(KtNamedDeclaration::class.java, text) {
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     abstract fun getDestination(element: KtNamedDeclaration) : KtElement
 

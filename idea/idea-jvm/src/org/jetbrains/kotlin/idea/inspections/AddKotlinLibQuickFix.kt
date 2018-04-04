@@ -41,28 +41,28 @@ import org.jetbrains.kotlin.psi.KtImportDirective
 class AddReflectionQuickFix(element: KtElement)
         : AddKotlinLibQuickFix(element, listOf(LibraryJarDescriptor.REFLECT_JAR,
                                                LibraryJarDescriptor.REFLECT_SRC_JAR)) {
-    override fun getText() = KotlinBundle.message("add.reflection.to.classpath")
-    override fun getFamilyName() = text
+    override fun getText(): String = KotlinBundle.message("add.reflection.to.classpath")
+    override fun getFamilyName(): String = text
 
-    override fun getLibraryDescriptor(module: Module) = MavenExternalLibraryDescriptor("org.jetbrains.kotlin", "kotlin-reflect",
-                                                                                       getRuntimeLibraryVersion(module) ?: bundledRuntimeVersion())
+    override fun getLibraryDescriptor(module: Module): MavenExternalLibraryDescriptor = MavenExternalLibraryDescriptor("org.jetbrains.kotlin", "kotlin-reflect",
+                                                                                                                       getRuntimeLibraryVersion(module) ?: bundledRuntimeVersion())
 
     companion object : KotlinSingleIntentionActionFactory() {
-        override fun createAction(diagnostic: Diagnostic) = diagnostic.createIntentionForFirstParentOfType(::AddReflectionQuickFix)
+        override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtElement>? = diagnostic.createIntentionForFirstParentOfType(::AddReflectionQuickFix)
     }
 }
 
 class AddTestLibQuickFix(element: KtElement)
         : AddKotlinLibQuickFix(element, listOf(LibraryJarDescriptor.TEST_JAR,
                                                LibraryJarDescriptor.TEST_SRC_JAR)) {
-    override fun getText() = KotlinBundle.message("add.test.to.classpath")
-    override fun getFamilyName() = text
+    override fun getText(): String = KotlinBundle.message("add.test.to.classpath")
+    override fun getFamilyName(): String = text
 
-    override fun getLibraryDescriptor(module: Module) = MavenExternalLibraryDescriptor("org.jetbrains.kotlin", "kotlin-test",
-                                                                                       getRuntimeLibraryVersion(module) ?: bundledRuntimeVersion())
+    override fun getLibraryDescriptor(module: Module): MavenExternalLibraryDescriptor = MavenExternalLibraryDescriptor("org.jetbrains.kotlin", "kotlin-test",
+                                                                                                                       getRuntimeLibraryVersion(module) ?: bundledRuntimeVersion())
 
     companion object : KotlinSingleIntentionActionFactory() {
-        val KOTLIN_TEST_UNRESOLVED = setOf(
+        val KOTLIN_TEST_UNRESOLVED: Set<String> = setOf(
                 "Asserter", "assertFailsWith", "currentStackTrace", "failsWith", "todo", "assertEquals",
                 "assertFails", "assertNot", "assertNotEquals", "assertNotNull", "assertNull", "assertTrue", "expect", "fail", "fails")
 

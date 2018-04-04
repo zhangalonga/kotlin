@@ -208,5 +208,5 @@ class TypeDeserializer(
         return TypeProjectionImpl(projection, type(type))
     }
 
-    override fun toString() = debugName + (if (parent == null) "" else ". Child of ${parent.debugName}")
+    override fun toString(): String = debugName + (if (parent == null) "" else ". Child of ${parent.debugName}")
 }

@@ -35,7 +35,7 @@ class JavaClassFinderImpl : AbstractJavaClassFinder() {
 
     override fun findClass(classId: ClassId): JavaClass? = javaFacade.findClass(classId, javaSearchScope)
 
-    override fun findPackage(fqName: FqName) = javaFacade.findPackage(fqName.asString(), javaSearchScope)?.let { JavaPackageImpl(it, javaSearchScope) }
+    override fun findPackage(fqName: FqName): JavaPackageImpl? = javaFacade.findPackage(fqName.asString(), javaSearchScope)?.let { JavaPackageImpl(it, javaSearchScope) }
 
     override fun knownClassNamesInPackage(packageFqName: FqName): Set<String>? = javaFacade.knownClassNamesInPackage(packageFqName)
 

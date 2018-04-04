@@ -24,8 +24,10 @@ import com.intellij.codeInsight.completion.impl.CamelHumpMatcher
 import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.project.Project
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.StandardPatterns
+import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import org.jetbrains.kotlin.config.LanguageFeature
@@ -40,6 +42,7 @@ import org.jetbrains.kotlin.idea.imports.importableFqName
 import org.jetbrains.kotlin.idea.project.TargetPlatformDetector
 import org.jetbrains.kotlin.idea.project.languageVersionSettings
 import org.jetbrains.kotlin.idea.references.mainReference
+import org.jetbrains.kotlin.idea.resolve.ResolutionFacade
 import org.jetbrains.kotlin.idea.util.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -62,7 +65,7 @@ class CompletionSessionConfiguration(
         val dataClassComponentFunctions: Boolean
 )
 
-fun CompletionSessionConfiguration(parameters: CompletionParameters) = CompletionSessionConfiguration(
+fun CompletionSessionConfiguration(parameters: CompletionParameters): CompletionSessionConfiguration = CompletionSessionConfiguration(
         useBetterPrefixMatcherForNonImportedClasses = parameters.invocationCount < 2,
         nonAccessibleDeclarations = parameters.invocationCount >= 2,
         javaGettersAndSetters = parameters.invocationCount >= 2,
@@ -81,13 +84,13 @@ abstract class CompletionSession(
         CompletionBenchmarkSink.instance.onCompletionStarted(this)
     }
 
-    protected val position = parameters.position
-    protected val file = position.containingFile as KtFile
-    protected val resolutionFacade = file.getResolutionFacade()
-    protected val moduleDescriptor = resolutionFacade.moduleDescriptor
-    protected val project = position.project
-    protected val isJvmModule = TargetPlatformDetector.getPlatform(parameters.originalFile as KtFile) == JvmPlatform
-    protected val isDebuggerContext = file is KtCodeFragment
+    protected val position: PsiElement = parameters.position
+    protected val file: KtFile = position.containingFile as KtFile
+    protected val resolutionFacade: ResolutionFacade = file.getResolutionFacade()
+    protected val moduleDescriptor: ModuleDescriptor = resolutionFacade.moduleDescriptor
+    protected val project: Project = position.project
+    protected val isJvmModule: Boolean = TargetPlatformDetector.getPlatform(parameters.originalFile as KtFile) == JvmPlatform
+    protected val isDebuggerContext: Boolean = file is KtCodeFragment
 
     protected val nameExpression: KtSimpleNameExpression?
     protected val expression: KtExpression?
@@ -110,36 +113,38 @@ abstract class CompletionSession(
         }
     }
 
-    protected val bindingContext = CompletionBindingContextProvider.getInstance(project).getBindingContext(position, resolutionFacade)
-    protected val inDescriptor = position.getResolutionScope(bindingContext, resolutionFacade).ownerDescriptor
+    protected val bindingContext: BindingContext = CompletionBindingContextProvider.getInstance(project).getBindingContext(position, resolutionFacade)
+    protected val inDescriptor: DeclarationDescriptor = position.getResolutionScope(bindingContext, resolutionFacade).ownerDescriptor
 
     private val kotlinIdentifierStartPattern = StandardPatterns.character().javaIdentifierStart().andNot(singleCharPattern('$'))
     private val kotlinIdentifierPartPattern = StandardPatterns.character().javaIdentifierPart().andNot(singleCharPattern('$'))
 
-    protected val prefix = CompletionUtil.findIdentifierPrefix(
+    protected val prefix: String = CompletionUtil.findIdentifierPrefix(
             parameters.position.containingFile,
             parameters.offset,
             kotlinIdentifierPartPattern or singleCharPattern('@'),
             kotlinIdentifierStartPattern)!!
 
-    protected val prefixMatcher = CamelHumpMatcher(prefix)
+    protected val prefixMatcher: CamelHumpMatcher = CamelHumpMatcher(prefix)
 
     protected val descriptorNameFilter: (String) -> Boolean = prefixMatcher.asStringNameFilter()
 
     protected val isVisibleFilter: (DeclarationDescriptor) -> Boolean = { isVisibleDescriptor(it, completeNonAccessible = configuration.nonAccessibleDeclarations) }
     protected val isVisibleFilterCheckAlways: (DeclarationDescriptor) -> Boolean = { isVisibleDescriptor(it, completeNonAccessible = false) }
 
-    protected val referenceVariantsHelper = ReferenceVariantsHelper(bindingContext,
-                                                                    resolutionFacade,
-                                                                    moduleDescriptor,
-                                                                    isVisibleFilter,
-                                                                    NotPropertiesService.getNotProperties(position))
+    protected val referenceVariantsHelper: ReferenceVariantsHelper = ReferenceVariantsHelper(
+        bindingContext,
+        resolutionFacade,
+        moduleDescriptor,
+        isVisibleFilter,
+        NotPropertiesService.getNotProperties(position)
+    )
 
-    protected val callTypeAndReceiver = if (nameExpression == null) CallTypeAndReceiver.UNKNOWN else CallTypeAndReceiver.detect(nameExpression)
-    protected val receiverTypes = nameExpression?.let { detectReceiverTypes(bindingContext, nameExpression, callTypeAndReceiver) }
+    protected val callTypeAndReceiver: CallTypeAndReceiver<out KtElement?, *> = if (nameExpression == null) CallTypeAndReceiver.UNKNOWN else CallTypeAndReceiver.detect(nameExpression)
+    protected val receiverTypes: Collection<ReceiverType>? = nameExpression?.let { detectReceiverTypes(bindingContext, nameExpression, callTypeAndReceiver) }
 
 
-    protected val basicLookupElementFactory = BasicLookupElementFactory(project, InsertHandlerProvider(callTypeAndReceiver.callType) { expectedInfos })
+    protected val basicLookupElementFactory: BasicLookupElementFactory = BasicLookupElementFactory(project, InsertHandlerProvider(callTypeAndReceiver.callType) { expectedInfos })
 
     // LookupElementsCollector instantiation is deferred because virtual call to createSorter uses data from derived classes
     protected val collector: LookupElementsCollector by lazy(LazyThreadSafetyMode.NONE) {
@@ -244,7 +249,7 @@ abstract class CompletionSession(
 
     protected abstract val expectedInfos: Collection<ExpectedInfo>
 
-    protected val importableFqNameClassifier = ImportableFqNameClassifier(file)
+    protected val importableFqNameClassifier: ImportableFqNameClassifier = ImportableFqNameClassifier(file)
 
     protected open fun createSorter(): CompletionSorter {
         var sorter = CompletionSorter.defaultSorter(parameters, prefixMatcher)!!
@@ -300,7 +305,7 @@ abstract class CompletionSession(
         return context
     }
 
-    protected val referenceVariantsCollector = if (nameExpression != null) {
+    protected val referenceVariantsCollector: ReferenceVariantsCollector? = if (nameExpression != null) {
         ReferenceVariantsCollector(referenceVariantsHelper, indicesHelper(true), prefixMatcher,
                                    nameExpression, callTypeAndReceiver, resolutionFacade, bindingContext,
                                    importableFqNameClassifier, configuration)

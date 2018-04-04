@@ -22,17 +22,17 @@ import org.jetbrains.kotlin.serialization.js.KotlinJavascriptSerializationUtil
 
 object KotlinJavaScriptMetaFileType : FileType {
 
-    override fun getName() = "KJSM"
+    override fun getName(): String = "KJSM"
 
-    override fun getDescription() = "Kotlin JavaScript meta file"
+    override fun getDescription(): String = "Kotlin JavaScript meta file"
 
-    override fun getDefaultExtension() = KotlinJavascriptSerializationUtil.CLASS_METADATA_FILE_EXTENSION
+    override fun getDefaultExtension(): String = KotlinJavascriptSerializationUtil.CLASS_METADATA_FILE_EXTENSION
 
-    override fun getIcon() = null
+    override fun getIcon(): Nothing? = null
 
-    override fun isBinary() = true
+    override fun isBinary(): Boolean = true
 
-    override fun isReadOnly() = true
+    override fun isReadOnly(): Boolean = true
 
-    override fun getCharset(file: VirtualFile, content: ByteArray) = null
+    override fun getCharset(file: VirtualFile, content: ByteArray): Nothing? = null
 }

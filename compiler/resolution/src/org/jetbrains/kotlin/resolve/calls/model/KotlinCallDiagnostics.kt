@@ -27,34 +27,34 @@ import org.jetbrains.kotlin.types.UnwrappedType
 abstract class InapplicableArgumentDiagnostic : KotlinCallDiagnostic(INAPPLICABLE) {
     abstract val argument: KotlinCallArgument
 
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgument(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgument(argument, this)
 }
 
 // ArgumentsToParameterMapper
 class TooManyArguments(val argument: KotlinCallArgument, val descriptor: CallableDescriptor) :
     KotlinCallDiagnostic(INAPPLICABLE_ARGUMENTS_MAPPING_ERROR) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgument(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgument(argument, this)
 }
 
 class NonVarargSpread(val argument: KotlinCallArgument) : KotlinCallDiagnostic(INAPPLICABLE) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgumentSpread(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgumentSpread(argument, this)
 }
 
 class MixingNamedAndPositionArguments(override val argument: KotlinCallArgument) : InapplicableArgumentDiagnostic()
 
 class NamedArgumentNotAllowed(val argument: KotlinCallArgument, val descriptor: CallableDescriptor) : KotlinCallDiagnostic(INAPPLICABLE) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgumentName(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgumentName(argument, this)
 }
 
 class NameNotFound(val argument: KotlinCallArgument, val descriptor: CallableDescriptor) : KotlinCallDiagnostic(INAPPLICABLE) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgumentName(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgumentName(argument, this)
 }
 
 class NoValueForParameter(
     val parameterDescriptor: ValueParameterDescriptor,
     val descriptor: CallableDescriptor
 ) : KotlinCallDiagnostic(INAPPLICABLE_ARGUMENTS_MAPPING_ERROR) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCall(this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCall(this)
 }
 
 class ArgumentPassedTwice(
@@ -62,7 +62,7 @@ class ArgumentPassedTwice(
     val parameterDescriptor: ValueParameterDescriptor,
     val firstOccurrence: ResolvedCallArgument
 ) : KotlinCallDiagnostic(INAPPLICABLE) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgumentName(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgumentName(argument, this)
 }
 
 class VarargArgumentOutsideParentheses(
@@ -75,14 +75,14 @@ class NameForAmbiguousParameter(
     val parameterDescriptor: ValueParameterDescriptor,
     val overriddenParameterWithOtherName: ValueParameterDescriptor
 ) : KotlinCallDiagnostic(CONVENTION_ERROR) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgumentName(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgumentName(argument, this)
 }
 
 class NamedArgumentReference(
     val argument: KotlinCallArgument,
     val parameterDescriptor: ValueParameterDescriptor
 ) : KotlinCallDiagnostic(RESOLVED) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgumentName(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgumentName(argument, this)
 }
 
 // TypeArgumentsToParameterMapper
@@ -90,7 +90,7 @@ class WrongCountOfTypeArguments(
     val descriptor: CallableDescriptor,
     val currentCount: Int
 ) : KotlinCallDiagnostic(INAPPLICABLE) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onTypeArguments(this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onTypeArguments(this)
 }
 
 // Callable reference resolution
@@ -107,7 +107,7 @@ class CallableReferencesDefaultArgumentUsed(
     val candidate: CallableDescriptor,
     val defaultsCount: Int
 ) : KotlinCallDiagnostic(IMPOSSIBLE_TO_GENERATE) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgument(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgument(argument, this)
 }
 
 class NotCallableMemberReference(
@@ -134,23 +134,23 @@ class SmartCastDiagnostic(
     val smartCastType: UnwrappedType,
     val kotlinCall: KotlinCall?
 ) : KotlinCallDiagnostic(RESOLVED) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgument(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgument(argument, this)
 }
 
 class UnstableSmartCast(
     val argument: ExpressionKotlinCallArgument,
     val targetType: UnwrappedType
 ) : KotlinCallDiagnostic(MAY_THROW_RUNTIME_ERROR) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallArgument(argument, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallArgument(argument, this)
 }
 
 class UnsafeCallError(val receiver: SimpleKotlinCallArgument) : KotlinCallDiagnostic(MAY_THROW_RUNTIME_ERROR) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCallReceiver(receiver, this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCallReceiver(receiver, this)
 }
 
 // Other
 object InstantiationOfAbstractClass : KotlinCallDiagnostic(RUNTIME_ERROR) {
-    override fun report(reporter: DiagnosticReporter) = reporter.onCall(this)
+    override fun report(reporter: DiagnosticReporter): Unit = reporter.onCall(this)
 }
 
 object AbstractSuperCall : KotlinCallDiagnostic(RUNTIME_ERROR) {

@@ -41,7 +41,7 @@ class ScriptExternalHighlightingPass(
     private val file: KtFile,
     document: Document
 ) : TextEditorHighlightingPass(file.project, document), DumbAware {
-    override fun doCollectInformation(progress: ProgressIndicator) = Unit
+    override fun doCollectInformation(progress: ProgressIndicator): Unit = Unit
 
     override fun doApplyInformationToEditor() {
         val document = document ?: return

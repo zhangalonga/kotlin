@@ -9,10 +9,10 @@ data class MemberVisibility(val member: MemberSignature, val declaration: String
 data class MemberSignature(val name: String, val desc: String)
 
 private fun isPublic(visibility: String?, isPublishedApi: Boolean) = visibility == null || visibility == "public" || visibility == "protected"  || (isPublishedApi && visibility == "internal")
-fun ClassVisibility.isPublic(isPublishedApi: Boolean) = isPublic(visibility, isPublishedApi)
-fun MemberVisibility.isPublic(isPublishedApi: Boolean) = isPublic(visibility, isPublishedApi)
+fun ClassVisibility.isPublic(isPublishedApi: Boolean): Boolean = isPublic(visibility, isPublishedApi)
+fun MemberVisibility.isPublic(isPublishedApi: Boolean): Boolean = isPublic(visibility, isPublishedApi)
 
-fun MemberVisibility.isLateInit() = declaration != null && "lateinit var " in declaration
+fun MemberVisibility.isLateInit(): Boolean = declaration != null && "lateinit var " in declaration
 
 private val varValPrefix = Regex("va[lr]\\s+")
 fun ClassVisibility.findSetterForProperty(property: MemberVisibility): MemberVisibility? {

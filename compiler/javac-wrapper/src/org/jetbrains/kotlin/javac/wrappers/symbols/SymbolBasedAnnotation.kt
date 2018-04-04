@@ -20,6 +20,7 @@ import com.sun.tools.javac.code.Symbol
 import org.jetbrains.kotlin.javac.JavacWrapper
 import org.jetbrains.kotlin.load.java.structure.JavaAnnotation
 import org.jetbrains.kotlin.load.java.structure.JavaAnnotationArgument
+import org.jetbrains.kotlin.load.java.structure.JavaClass
 import org.jetbrains.kotlin.load.java.structure.JavaElement
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
@@ -39,6 +40,6 @@ open class SymbolBasedAnnotation(
     override val classId: ClassId
         get() = (annotationMirror.annotationType.asElement() as TypeElement).computeClassId()!!
 
-    override fun resolve() = with(annotationMirror.annotationType.asElement() as Symbol.ClassSymbol) { javac.findClass(classId) }
+    override fun resolve(): JavaClass? = with(annotationMirror.annotationType.asElement() as Symbol.ClassSymbol) { javac.findClass(classId) }
 
 }

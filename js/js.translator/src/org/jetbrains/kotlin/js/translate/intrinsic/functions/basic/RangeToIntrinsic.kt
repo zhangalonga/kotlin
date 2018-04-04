@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 
 class RangeToIntrinsic(function: FunctionDescriptor) : FunctionIntrinsicWithReceiverComputed() {
-    val rangeTypeDescriptor = function.returnType!!.constructor.declarationDescriptor as ClassDescriptor
+    val rangeTypeDescriptor: ClassDescriptor = function.returnType!!.constructor.declarationDescriptor as ClassDescriptor
 
     override fun apply(receiver: JsExpression?, arguments: List<JsExpression>, context: TranslationContext): JsExpression {
         val packageName = (rangeTypeDescriptor.containingDeclaration as PackageFragmentDescriptor).fqName

@@ -110,7 +110,7 @@ open class KotlinPsiChecker : Annotator, HighlightRangeExtension {
 
         private val UNRESOLVED_KEY = Key<Unit>("KotlinPsiChecker.UNRESOLVED_KEY")
 
-        fun wasUnresolved(element: KtNameReferenceExpression) = element.getUserData(UNRESOLVED_KEY) != null
+        fun wasUnresolved(element: KtNameReferenceExpression): Boolean = element.getUserData(UNRESOLVED_KEY) != null
     }
 }
 

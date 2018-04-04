@@ -45,11 +45,9 @@ class RawTypeImpl(lowerBound: SimpleType, upperBound: SimpleType) : FlexibleType
             return classDescriptor.getMemberScope(RawSubstitution)
         }
 
-    override fun replaceAnnotations(newAnnotations: Annotations)
-            = RawTypeImpl(lowerBound.replaceAnnotations(newAnnotations), upperBound.replaceAnnotations(newAnnotations))
+    override fun replaceAnnotations(newAnnotations: Annotations): RawTypeImpl = RawTypeImpl(lowerBound.replaceAnnotations(newAnnotations), upperBound.replaceAnnotations(newAnnotations))
 
-    override fun makeNullableAsSpecified(newNullability: Boolean)
-            = RawTypeImpl(lowerBound.makeNullableAsSpecified(newNullability), upperBound.makeNullableAsSpecified(newNullability))
+    override fun makeNullableAsSpecified(newNullability: Boolean): RawTypeImpl = RawTypeImpl(lowerBound.makeNullableAsSpecified(newNullability), upperBound.makeNullableAsSpecified(newNullability))
 
     override fun render(renderer: DescriptorRenderer, options: DescriptorRendererOptions): String {
         fun onlyOutDiffers(first: String, second: String) = first == second.removePrefix("out ") || second == "*"

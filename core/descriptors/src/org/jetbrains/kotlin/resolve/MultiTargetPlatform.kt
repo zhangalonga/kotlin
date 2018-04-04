@@ -36,7 +36,7 @@ sealed class MultiTargetPlatform : Comparable<MultiTargetPlatform> {
 
     companion object {
         @JvmField
-        val CAPABILITY = ModuleDescriptor.Capability<MultiTargetPlatform>("MULTI_TARGET_PLATFORM")
+        val CAPABILITY: ModuleDescriptor.Capability<MultiTargetPlatform> = ModuleDescriptor.Capability<MultiTargetPlatform>("MULTI_TARGET_PLATFORM")
     }
 }
 

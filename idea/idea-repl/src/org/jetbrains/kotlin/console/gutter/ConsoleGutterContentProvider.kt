@@ -24,5 +24,5 @@ class ConsoleGutterContentProvider : BasicGutterContentProvider() {
      *  This method overriding is needed to prevent [BasicGutterContentProvider] from adding some strange unicode
      *  symbols of zero width and to ease range highlighting.
      */
-    override fun beforeEvaluate(editor: Editor) = Unit
+    override fun beforeEvaluate(editor: Editor): Unit = Unit
 }

@@ -8,6 +8,6 @@ package org.jetbrains.kotlin.ir.backend.js.utils
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 
-val IrFunctionSymbol.parameterCount get() = descriptor.valueParameters.size
+val IrFunctionSymbol.parameterCount: Int get() = descriptor.valueParameters.size
 
-val IrConstructorSymbol.isPrimary get() = descriptor.isPrimary
+val IrConstructorSymbol.isPrimary: Boolean get() = descriptor.isPrimary

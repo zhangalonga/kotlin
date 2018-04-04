@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.idea.caches.lightClasses.IDELightClassContexts
 import org.jetbrains.kotlin.idea.caches.lightClasses.LazyLightClassDataHolder
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.resolve.lazy.NoDescriptorForDeclarationException
 
@@ -86,8 +87,8 @@ class IDELightClassGenerationSupport(project: Project) : LightClassGenerationSup
         }
     }
 
-    override fun analyze(element: KtElement) = element.analyze(BodyResolveMode.PARTIAL)
+    override fun analyze(element: KtElement): BindingContext = element.analyze(BodyResolveMode.PARTIAL)
 
-    override fun analyzeWithContent(element: KtClassOrObject) = element.analyzeWithContent()
+    override fun analyzeWithContent(element: KtClassOrObject): BindingContext = element.analyzeWithContent()
 }
 

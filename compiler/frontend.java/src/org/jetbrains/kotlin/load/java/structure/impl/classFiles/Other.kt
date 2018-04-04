@@ -32,7 +32,7 @@ class BinaryJavaField(
         override val initializerValue: Any?
 ) : JavaField, MapBasedJavaAnnotationOwner, BinaryJavaModifierListOwner {
     override val annotations: MutableCollection<JavaAnnotation> = ContainerUtil.newSmartList()
-    override val annotationsByFqName by buildLazyValueForMap()
+    override val annotationsByFqName: Map<FqName?, JavaAnnotation> by buildLazyValueForMap()
 
     override val hasConstantNotNullInitializer: Boolean
         get() = initializerValue != null
@@ -43,10 +43,10 @@ class BinaryJavaTypeParameter(
         override val upperBounds: Collection<JavaClassifierType>
 ) : JavaTypeParameter {
     // TODO: support annotations on type parameters
-    override val annotations get() = emptyList<JavaAnnotation>()
-    override fun findAnnotation(fqName: FqName) = null
+    override val annotations: List<JavaAnnotation> get() = emptyList<JavaAnnotation>()
+    override fun findAnnotation(fqName: FqName): Nothing? = null
 
-    override val isDeprecatedInJavaDoc get() = false
+    override val isDeprecatedInJavaDoc: Boolean get() = false
 }
 
 class BinaryJavaValueParameter(
@@ -55,7 +55,7 @@ class BinaryJavaValueParameter(
         override val isVararg: Boolean
 ) : JavaValueParameter, MapBasedJavaAnnotationOwner {
     override val annotations: MutableCollection<JavaAnnotation> = ContainerUtil.newSmartList()
-    override val annotationsByFqName by buildLazyValueForMap()
+    override val annotationsByFqName: Map<FqName?, JavaAnnotation> by buildLazyValueForMap()
 }
 
 fun isNotTopLevelClass(classContent: ByteArray): Boolean {

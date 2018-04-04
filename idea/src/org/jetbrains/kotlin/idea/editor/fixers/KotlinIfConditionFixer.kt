@@ -17,13 +17,14 @@
 package org.jetbrains.kotlin.idea.editor.fixers
 
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
 
 class KotlinIfConditionFixer : MissingConditionFixer<KtIfExpression>() {
-    override val keyword = "if"
-    override fun getElement(element: PsiElement?) = element as? KtIfExpression
-    override fun getCondition(element: KtIfExpression) = element.condition
-    override fun getLeftParenthesis(element: KtIfExpression) = element.leftParenthesis
-    override fun getRightParenthesis(element: KtIfExpression) = element.rightParenthesis
-    override fun getBody(element: KtIfExpression) = element.then
+    override val keyword: String = "if"
+    override fun getElement(element: PsiElement?): KtIfExpression? = element as? KtIfExpression
+    override fun getCondition(element: KtIfExpression): KtExpression? = element.condition
+    override fun getLeftParenthesis(element: KtIfExpression): PsiElement? = element.leftParenthesis
+    override fun getRightParenthesis(element: KtIfExpression): PsiElement? = element.rightParenthesis
+    override fun getBody(element: KtIfExpression): KtExpression? = element.then
 }

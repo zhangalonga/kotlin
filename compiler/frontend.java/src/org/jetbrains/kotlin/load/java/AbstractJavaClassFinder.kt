@@ -49,14 +49,14 @@ abstract class AbstractJavaClassFinder : JavaClassFinder {
 
     inner class FilterOutKotlinSourceFilesScope(baseScope: GlobalSearchScope) : DelegatingGlobalSearchScope(baseScope) {
 
-        override fun contains(file: VirtualFile) = myBaseScope.contains(file) && (file.isDirectory || file.fileType !== KotlinFileType.INSTANCE)
+        override fun contains(file: VirtualFile): Boolean = myBaseScope.contains(file) && (file.isDirectory || file.fileType !== KotlinFileType.INSTANCE)
 
         val base: GlobalSearchScope = myBaseScope
 
         //NOTE: expected by class finder to be not null
         override fun getProject(): Project = this@AbstractJavaClassFinder.project
 
-        override fun toString() = "JCFI: $myBaseScope"
+        override fun toString(): String = "JCFI: $myBaseScope"
 
     }
 }

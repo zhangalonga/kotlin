@@ -51,5 +51,5 @@ enum class Variance(
         }
     }
 
-    override fun toString() = label
+    override fun toString(): String = label
 }

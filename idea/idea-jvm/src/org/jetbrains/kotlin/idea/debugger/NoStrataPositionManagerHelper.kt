@@ -330,6 +330,6 @@ private fun inlinedLinesNumbers(
 
 @Volatile var emulateDexDebugInTests: Boolean = false
 
-fun DebugProcess.isDexDebug() =
+fun DebugProcess.isDexDebug(): Boolean =
         (emulateDexDebugInTests && ApplicationManager.getApplication().isUnitTestMode) ||
         (this.virtualMachineProxy as? VirtualMachineProxyImpl)?.virtualMachine?.name() == "Dalvik" // TODO: check other machine names

@@ -18,4 +18,4 @@ package org.jetbrains.kotlin.noarg
 
 import com.intellij.openapi.util.Key
 
-val NO_ARG_CLASS_KEY = Key<Boolean>("org.jetbrains.kotlin.noarg.NoArgClassKey")
+val NO_ARG_CLASS_KEY: Key<Boolean> = Key<Boolean>("org.jetbrains.kotlin.noarg.NoArgClassKey")

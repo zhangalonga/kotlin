@@ -20,6 +20,6 @@ interface SnippetExecutionInterceptor {
     fun <T> execute(block: () -> T): T
 
     companion object Plain : SnippetExecutionInterceptor {
-        override fun <T> execute(block: () -> T) = block()
+        override fun <T> execute(block: () -> T): T = block()
     }
 }

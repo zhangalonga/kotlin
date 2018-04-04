@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class RemoveToStringInStringTemplateInspection : AbstractKotlinInspection(), CleanupLocalInspectionTool {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): KtVisitorVoid =
             dotQualifiedExpressionVisitor(fun(expression) {
                 if (expression.parent !is KtBlockStringTemplateEntry) return
                 if (expression.receiverExpression is KtSuperExpression) return
@@ -38,8 +38,8 @@ private fun KtDotQualifiedExpression.isToString(): Boolean {
 }
 
 class RemoveToStringFix: LocalQuickFix {
-    override fun getName() = "Remove 'toString()' call"
-    override fun getFamilyName() = name
+    override fun getName(): String = "Remove 'toString()' call"
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val element = descriptor.psiElement.parent as? KtDotQualifiedExpression ?: return

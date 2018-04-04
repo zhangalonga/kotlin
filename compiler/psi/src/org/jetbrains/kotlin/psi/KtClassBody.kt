@@ -31,11 +31,11 @@ class KtClassBody : KtElementImplStub<KotlinPlaceHolderStub<KtClassBody>>, KtDec
 
     constructor(stub: KotlinPlaceHolderStub<KtClassBody>) : super(stub, CLASS_BODY)
 
-    override fun getParent() = parentByStub
+    override fun getParent(): PsiElement = parentByStub
 
-    override fun getDeclarations() = Arrays.asList(*getStubOrPsiChildren(DECLARATION_TYPES, KtDeclaration.ARRAY_FACTORY))
+    override fun getDeclarations(): MutableList<KtDeclaration> = Arrays.asList(*getStubOrPsiChildren(DECLARATION_TYPES, KtDeclaration.ARRAY_FACTORY))
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitClassBody(this, data)
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitClassBody(this, data)
 
     val anonymousInitializers: List<KtAnonymousInitializer>
         get() = findChildrenByType(KtNodeTypes.CLASS_INITIALIZER)

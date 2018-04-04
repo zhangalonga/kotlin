@@ -47,7 +47,7 @@ open class BranchedValue(
     protected open fun patchOpcode(opcode: Int, v: InstructionAdapter): Int = opcode
 
     companion object {
-        val negatedOperations = hashMapOf<Int, Int>()
+        val negatedOperations: HashMap<Int, Int> = hashMapOf()
 
         val TRUE: BranchedValue = object : BranchedValue(StackValue.none()/*not used*/, null, Type.BOOLEAN_TYPE, IFEQ) {
             override fun condJump(jumpLabel: Label, v: InstructionAdapter, jumpIfFalse: Boolean) {

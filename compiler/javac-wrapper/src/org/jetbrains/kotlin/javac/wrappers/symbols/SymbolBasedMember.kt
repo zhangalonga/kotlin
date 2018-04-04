@@ -34,7 +34,7 @@ abstract class SymbolBasedMember<out T : Element>(
     override val annotations: Collection<JavaAnnotation>
         get() = element.annotationMirrors.map { SymbolBasedAnnotation(it, javac) }
 
-    override fun findAnnotation(fqName: FqName) = element.findAnnotation(fqName, javac)
+    override fun findAnnotation(fqName: FqName): SymbolBasedAnnotation? = element.findAnnotation(fqName, javac)
 
     override val visibility: Visibility
         get() = element.getVisibility()

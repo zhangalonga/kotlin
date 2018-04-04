@@ -21,7 +21,7 @@ import templates.SequenceClass.*
 
 object Ordering : TemplateGroupBase() {
 
-    val f_reverse = fn("reverse()") {
+    val f_reverse: FamilyPrimitiveMemberDefinition = fn("reverse()") {
         include(Lists, InvariantArraysOfObjects, ArraysOfPrimitives)
     } builder {
         doc { "Reverses ${f.element.pluralize()} in the ${f.collection} in-place." }
@@ -47,7 +47,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_reversed = fn("reversed()") {
+    val f_reversed: FamilyPrimitiveMemberDefinition = fn("reversed()") {
         include(Iterables, ArraysOfObjects, ArraysOfPrimitives, CharSequences, Strings)
     } builder {
         doc { "Returns a list with elements in reversed order." }
@@ -80,7 +80,7 @@ object Ordering : TemplateGroupBase() {
 
     }
 
-    val f_reversedArray = fn("reversedArray()") {
+    val f_reversedArray: FamilyPrimitiveMemberDefinition = fn("reversedArray()") {
         include(InvariantArraysOfObjects, ArraysOfPrimitives)
     } builder {
         doc { "Returns an array with elements of this array in reversed order." }
@@ -107,7 +107,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sorted = fn("sorted()") {
+    val f_sorted: FamilyPrimitiveMemberDefinition = fn("sorted()") {
         includeDefault()
         exclude(PrimitiveType.Boolean)
     } builder {
@@ -160,7 +160,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortedArray = fn("sortedArray()") {
+    val f_sortedArray: FamilyPrimitiveMemberDefinition = fn("sortedArray()") {
         include(InvariantArraysOfObjects, ArraysOfPrimitives)
         exclude(PrimitiveType.Boolean)
     } builder {
@@ -177,7 +177,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortDescending = fn("sortDescending()") {
+    val f_sortDescending: FamilyPrimitiveMemberDefinition = fn("sortDescending()") {
         include(Lists, ArraysOfObjects, ArraysOfPrimitives)
         exclude(PrimitiveType.Boolean)
     } builder {
@@ -199,7 +199,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortedDescending = fn("sortedDescending()") {
+    val f_sortedDescending: FamilyPrimitiveMemberDefinition = fn("sortedDescending()") {
         includeDefault()
         exclude(PrimitiveType.Boolean)
     } builder {
@@ -231,7 +231,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortedArrayDescending = fn("sortedArrayDescending()") {
+    val f_sortedArrayDescending: FamilyPrimitiveMemberDefinition = fn("sortedArrayDescending()") {
         include(InvariantArraysOfObjects, ArraysOfPrimitives)
         exclude(PrimitiveType.Boolean)
     } builder {
@@ -254,7 +254,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortedWith = fn("sortedWith(comparator: Comparator<in T>)") {
+    val f_sortedWith: FamilyPrimitiveMemberDefinition = fn("sortedWith(comparator: Comparator<in T>)") {
         includeDefault()
     } builder {
         returns("List<T>")
@@ -304,7 +304,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortedArrayWith = fn("sortedArrayWith(comparator: Comparator<in T>)") {
+    val f_sortedArrayWith: FamilyPrimitiveMemberDefinition = fn("sortedArrayWith(comparator: Comparator<in T>)") {
         include(ArraysOfObjects)
     } builder {
         doc {
@@ -319,7 +319,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortBy = fn("sortBy(crossinline selector: (T) -> R?)") {
+    val f_sortBy: FamilyPrimitiveMemberDefinition = fn("sortBy(crossinline selector: (T) -> R?)") {
         include(Lists, ArraysOfObjects)
     } builder {
         inline()
@@ -331,7 +331,7 @@ object Ordering : TemplateGroupBase() {
         body { """if (size > 1) sortWith(compareBy(selector))""" }
     }
 
-    val f_sortedBy = fn("sortedBy(crossinline selector: (T) -> R?)") {
+    val f_sortedBy: FamilyPrimitiveMemberDefinition = fn("sortedBy(crossinline selector: (T) -> R?)") {
         includeDefault()
     } builder {
         inline()
@@ -356,7 +356,7 @@ object Ordering : TemplateGroupBase() {
         }
     }
 
-    val f_sortByDescending = fn("sortByDescending(crossinline selector: (T) -> R?)") {
+    val f_sortByDescending: FamilyPrimitiveMemberDefinition = fn("sortByDescending(crossinline selector: (T) -> R?)") {
         include(Lists, ArraysOfObjects)
     } builder {
         inline()
@@ -369,7 +369,7 @@ object Ordering : TemplateGroupBase() {
             """if (size > 1) sortWith(compareByDescending(selector))""" }
     }
 
-    val f_sortedByDescending = fn("sortedByDescending(crossinline selector: (T) -> R?)") {
+    val f_sortedByDescending: FamilyPrimitiveMemberDefinition = fn("sortedByDescending(crossinline selector: (T) -> R?)") {
         includeDefault()
     } builder {
         inline()

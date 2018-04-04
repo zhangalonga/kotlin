@@ -27,9 +27,9 @@ import org.jetbrains.kotlin.psi.KtFile
 class RemoveAnnotationFix(private val name: String, annotationEntry: KtAnnotationEntry)
         : KotlinQuickFixAction<KtAnnotationEntry>(annotationEntry) {
 
-    override fun getText() = name
+    override fun getText(): String = name
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         element?.delete()

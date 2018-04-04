@@ -17,7 +17,7 @@ interface BuildSystemTypeDetector {
     fun detectBuildSystemType(module: Module): BuildSystemType?
 
     companion object {
-        val EP_NAME = ExtensionPointName.create<BuildSystemTypeDetector>("org.jetbrains.kotlin.buildSystemTypeDetector")
+        val EP_NAME: ExtensionPointName<BuildSystemTypeDetector> = ExtensionPointName.create<BuildSystemTypeDetector>("org.jetbrains.kotlin.buildSystemTypeDetector")
     }
 }
 

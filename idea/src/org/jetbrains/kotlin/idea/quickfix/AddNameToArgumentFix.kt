@@ -64,7 +64,7 @@ class AddNameToArgumentFix(argument: KtValueArgument) : KotlinQuickFixAction<KtV
                ?: "Add name to argument..."
     }
 
-    override fun getFamilyName() = "Add name to argument"
+    override fun getFamilyName(): String = "Add name to argument"
 
     private fun calculatePossibleArgumentNames(): List<Name> {
         val callElement = element!!.getParentOfType<KtCallElement>(true) ?: return emptyList()

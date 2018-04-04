@@ -58,7 +58,7 @@ abstract class KotlinGenerateActionBase : CodeInsightAction(), CodeInsightAction
 
     protected abstract fun isValidForClass(targetClass: KtClassOrObject): Boolean
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
-    override fun getHandler() = this
+    override fun getHandler(): KotlinGenerateActionBase = this
 }

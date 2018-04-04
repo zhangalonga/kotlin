@@ -59,13 +59,13 @@ object KotlinModuleMappingIndex : FileBasedIndexExtension<String, PackageParts>(
         }
     }
 
-    override fun getName() = KEY
+    override fun getName(): ID<String, PackageParts> = KEY
 
-    override fun dependsOnFileContent() = true
+    override fun dependsOnFileContent(): Boolean = true
 
-    override fun getKeyDescriptor() = STRING_KEY_DESCRIPTOR
+    override fun getKeyDescriptor(): KeyDescriptor<String> = STRING_KEY_DESCRIPTOR
 
-    override fun getValueExternalizer() = VALUE_EXTERNALIZER
+    override fun getValueExternalizer(): DataExternalizer<PackageParts> = VALUE_EXTERNALIZER
 
     override fun getInputFilter(): FileBasedIndex.InputFilter =
             FileBasedIndex.InputFilter { file -> file.extension == ModuleMapping.MAPPING_FILE_EXT }

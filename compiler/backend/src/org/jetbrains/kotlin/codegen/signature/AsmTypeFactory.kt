@@ -22,10 +22,10 @@ import org.jetbrains.kotlin.resolve.jvm.AsmTypes
 import org.jetbrains.org.objectweb.asm.Type
 
 object AsmTypeFactory : JvmTypeFactory<Type> {
-    override fun boxType(possiblyPrimitiveType: Type) = AsmUtil.boxType(possiblyPrimitiveType)
-    override fun createFromString(representation: String) = Type.getType(representation)
-    override fun createObjectType(internalName: String) = Type.getObjectType(internalName)
-    override fun toString(type: Type) = type.descriptor
+    override fun boxType(possiblyPrimitiveType: Type): Type = AsmUtil.boxType(possiblyPrimitiveType)
+    override fun createFromString(representation: String): Type = Type.getType(representation)
+    override fun createObjectType(internalName: String): Type = Type.getObjectType(internalName)
+    override fun toString(type: Type): String = type.descriptor
 
     override val javaLangClassType: Type
         get() = AsmTypes.JAVA_CLASS_TYPE

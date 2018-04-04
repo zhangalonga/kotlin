@@ -102,10 +102,10 @@ class KotlinParserDefinition : ParserDefinition {
     companion object {
 
         @JvmField
-        val STD_SCRIPT_SUFFIX = "kts"
+        val STD_SCRIPT_SUFFIX: String = "kts"
 
         @JvmField
-        val STD_SCRIPT_EXT = "." + STD_SCRIPT_SUFFIX
+        val STD_SCRIPT_EXT: String = "." + STD_SCRIPT_SUFFIX
 
         val instance: KotlinParserDefinition
             get() = LanguageParserDefinitions.INSTANCE.forLanguage(KotlinLanguage.INSTANCE) as KotlinParserDefinition

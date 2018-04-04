@@ -26,9 +26,9 @@ import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 
 class RemoveSupertypeFix(superClass: KtSuperTypeListEntry) : KotlinQuickFixAction<KtSuperTypeListEntry>(superClass) {
-    override fun getFamilyName() = "Remove supertype"
+    override fun getFamilyName(): String = "Remove supertype"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

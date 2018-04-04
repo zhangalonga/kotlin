@@ -46,16 +46,16 @@ import org.jetbrains.kotlin.types.typeUtil.supertypes
 import org.jetbrains.kotlin.utils.addToStdlib.cast
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
-val COROUTINE_CONTEXT_1_2_20_FQ_NAME = DescriptorUtils.COROUTINES_INTRINSICS_PACKAGE_FQ_NAME.child(Name.identifier("coroutineContext"))
-val COROUTINE_CONTEXT_FQ_NAME = DescriptorUtils.COROUTINES_PACKAGE_FQ_NAME.child(Name.identifier("coroutineContext"))
+val COROUTINE_CONTEXT_1_2_20_FQ_NAME: FqName = DescriptorUtils.COROUTINES_INTRINSICS_PACKAGE_FQ_NAME.child(Name.identifier("coroutineContext"))
+val COROUTINE_CONTEXT_FQ_NAME: FqName = DescriptorUtils.COROUTINES_PACKAGE_FQ_NAME.child(Name.identifier("coroutineContext"))
 
-fun FqName.isBuiltInCorouineContext() =
+fun FqName.isBuiltInCorouineContext(): Boolean =
     this == COROUTINE_CONTEXT_1_2_20_FQ_NAME || this == COROUTINE_CONTEXT_FQ_NAME
 
-fun FunctionDescriptor.isBuiltInCoroutineContext() =
+fun FunctionDescriptor.isBuiltInCoroutineContext(): Boolean =
     (this as? PropertyGetterDescriptor)?.correspondingProperty?.fqNameSafe?.isBuiltInCorouineContext() == true
 
-fun PropertyDescriptor.isBuiltInCoroutineContext() = this.fqNameSafe.isBuiltInCorouineContext()
+fun PropertyDescriptor.isBuiltInCoroutineContext(): Boolean = this.fqNameSafe.isBuiltInCorouineContext()
 
 object CoroutineSuspendCallChecker : CallChecker {
     private val ALLOWED_SCOPE_KINDS = setOf(LexicalScopeKind.FUNCTION_INNER_SCOPE, LexicalScopeKind.FUNCTION_HEADER_FOR_DESTRUCTURING)

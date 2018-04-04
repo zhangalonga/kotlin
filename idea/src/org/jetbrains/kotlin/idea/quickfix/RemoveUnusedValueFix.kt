@@ -60,9 +60,9 @@ class RemoveUnusedValueFix(expression: KtBinaryExpression) : KotlinQuickFixActio
         return RemoveMode.values()[exitCode]
     }
 
-    override fun getFamilyName() = "Remove redundant assignment"
+    override fun getFamilyName(): String = "Remove redundant assignment"
 
-    override fun getText() = familyName
+    override fun getText(): String = familyName
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

@@ -37,7 +37,7 @@ object AllOpenConfigurationKeys {
 
 class AllOpenCommandLineProcessor : CommandLineProcessor {
     companion object {
-        val SUPPORTED_PRESETS = mapOf("spring" to listOf(
+        val SUPPORTED_PRESETS: Map<String, List<String>> = mapOf("spring" to listOf(
                 "org.springframework.stereotype.Component",
                 "org.springframework.transaction.annotation.Transactional",
                 "org.springframework.scheduling.annotation.Async",
@@ -45,19 +45,19 @@ class AllOpenCommandLineProcessor : CommandLineProcessor {
                 "org.springframework.boot.test.context.SpringBootTest",
                 "org.springframework.validation.annotation.Validated"))
 
-        val ANNOTATION_OPTION = CliOption("annotation", "<fqname>", "Annotation qualified names",
-                                          required = false, allowMultipleOccurrences = true)
+        val ANNOTATION_OPTION: CliOption = CliOption("annotation", "<fqname>", "Annotation qualified names",
+                                                     required = false, allowMultipleOccurrences = true)
 
-        val PRESET_OPTION = CliOption("preset", "<name>", "Preset name (${SUPPORTED_PRESETS.keys.joinToString()})",
-                                      required = false, allowMultipleOccurrences = true)
+        val PRESET_OPTION: CliOption = CliOption("preset", "<name>", "Preset name (${SUPPORTED_PRESETS.keys.joinToString()})",
+                                                 required = false, allowMultipleOccurrences = true)
 
-        val PLUGIN_ID = "org.jetbrains.kotlin.allopen"
+        val PLUGIN_ID: String = "org.jetbrains.kotlin.allopen"
     }
 
-    override val pluginId = PLUGIN_ID
-    override val pluginOptions = listOf(ANNOTATION_OPTION, PRESET_OPTION)
+    override val pluginId: String = PLUGIN_ID
+    override val pluginOptions: List<CliOption> = listOf(ANNOTATION_OPTION, PRESET_OPTION)
 
-    override fun processOption(option: CliOption, value: String, configuration: CompilerConfiguration) = when (option) {
+    override fun processOption(option: CliOption, value: String, configuration: CompilerConfiguration): Unit = when (option) {
         ANNOTATION_OPTION -> configuration.appendList(ANNOTATION, value)
         PRESET_OPTION -> configuration.appendList(PRESET, value)
         else -> throw CliOptionProcessingException("Unknown option: ${option.name}")

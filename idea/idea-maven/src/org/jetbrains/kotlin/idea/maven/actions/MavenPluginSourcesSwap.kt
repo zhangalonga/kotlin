@@ -33,8 +33,8 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
 class MavenPluginSourcesMoveToExecutionIntention : PsiElementBaseIntentionAction() {
-    override fun getFamilyName() = "Move to compile execution"
-    override fun getText() = familyName
+    override fun getFamilyName(): String = "Move to compile execution"
+    override fun getText(): String = familyName
 
     override fun isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean {
         val file = element.containingFile
@@ -65,7 +65,7 @@ class MavenPluginSourcesMoveToExecutionIntention : PsiElementBaseIntentionAction
         return false
     }
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 
     override fun invoke(project: Project, editor: Editor, element: PsiElement) {
         val xmlFile = element.containingFile as? XmlFile ?: return
@@ -95,14 +95,14 @@ class MavenPluginSourcesMoveToExecutionIntention : PsiElementBaseIntentionAction
 }
 
 class MavenPluginSourcesMoveToBuild : PsiElementBaseIntentionAction() {
-    override fun getFamilyName() = "Move to build>sourceDirectory tag"
-    override fun getText() = familyName
+    override fun getFamilyName(): String = "Move to build>sourceDirectory tag"
+    override fun getText(): String = familyName
 
     override fun isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean {
         return tryInvoke(project, element)
     }
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 
     override fun invoke(project: Project, editor: Editor, element: PsiElement) {
         tryInvoke(project, element) { pom, dir, execution, _ ->

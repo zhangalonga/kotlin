@@ -35,7 +35,7 @@ class KotlinSuppressableWarningProblemGroup(
         assert (diagnosticFactory.severity == Severity.WARNING)
     }
 
-    override fun getProblemName() = diagnosticFactory.name
+    override fun getProblemName(): String = diagnosticFactory.name
 
     override fun getSuppressActions(element: PsiElement?): Array<SuppressIntentionAction> {
         if (element == null)

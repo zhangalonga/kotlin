@@ -23,7 +23,7 @@ class ThisReplacingVisitor(private val thisReplacement: JsExpression) : JsVisito
         ctx.replaceMe(thisReplacement)
     }
 
-    override fun visit(x: JsFunction, ctx: JsContext<JsNode>) = false
+    override fun visit(x: JsFunction, ctx: JsContext<JsNode>): Boolean = false
 
-    override fun visit(x: JsObjectLiteral, ctx: JsContext<JsNode>) = false
+    override fun visit(x: JsObjectLiteral, ctx: JsContext<JsNode>): Boolean = false
 }

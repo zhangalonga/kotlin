@@ -227,7 +227,7 @@ sealed class CreateCallableFromCallActionFactory<E : KtExpression>(
                     name: String,
                     receiverType: TypeInfo,
                     possibleContainers: List<KtElement>
-            ) = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
+            ): CallableInfo? = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
                 getAbstractCallableInfo(it, expression)
             }
         }
@@ -239,7 +239,7 @@ sealed class CreateCallableFromCallActionFactory<E : KtExpression>(
                     name: String,
                     receiverType: TypeInfo,
                     possibleContainers: List<KtElement>
-            ) = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
+            ): CallableInfo? = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
                 ByImplicitExtensionReceiver.getCallableWithReceiverInsideExtension(it, expression, analysisResult.bindingContext, receiverType)
             }
         }
@@ -278,7 +278,7 @@ sealed class CreateCallableFromCallActionFactory<E : KtExpression>(
                     name: String,
                     receiverType: TypeInfo,
                     possibleContainers: List<KtElement>
-            ) = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
+            ): CallableInfo? = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
                 getAbstractCallableInfo(it, expression)
             }
         }
@@ -290,7 +290,7 @@ sealed class CreateCallableFromCallActionFactory<E : KtExpression>(
                     name: String,
                     receiverType: TypeInfo,
                     possibleContainers: List<KtElement>
-            ) = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
+            ): CallableInfo? = super.doCreateCallableInfo(expression, analysisResult, name, receiverType, possibleContainers)?.let {
                 getCallableWithReceiverInsideExtension(it, expression, analysisResult.bindingContext, receiverType)
             }
         }
@@ -330,16 +330,20 @@ sealed class CreateCallableFromCallActionFactory<E : KtExpression>(
     }
 
     companion object {
-        val FUNCTIONS = arrayOf(Function.Default,
-                                Function.Abstract,
-                                Function.ByImplicitExtensionReceiver,
-                                Constructor)
-        val INSTANCES = arrayOf(Function.Default,
-                                Function.Abstract,
-                                Function.ByImplicitExtensionReceiver,
-                                Constructor,
-                                Property.Default,
-                                Property.Abstract,
-                                Property.ByImplicitExtensionReceiver)
+        val FUNCTIONS: Array<CreateCallableFromCallActionFactory<KtCallExpression>> = arrayOf(
+            Function.Default,
+            Function.Abstract,
+            Function.ByImplicitExtensionReceiver,
+            Constructor
+        )
+        val INSTANCES: Array<CreateCallableFromCallActionFactory<out KtReferenceExpression>> = arrayOf(
+            Function.Default,
+            Function.Abstract,
+            Function.ByImplicitExtensionReceiver,
+            Constructor,
+            Property.Default,
+            Property.Abstract,
+            Property.ByImplicitExtensionReceiver
+        )
     }
 }

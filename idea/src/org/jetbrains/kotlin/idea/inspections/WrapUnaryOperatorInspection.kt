@@ -12,6 +12,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.KtNodeType
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.idea.intentions.getLeftMostReceiverExpression
 import org.jetbrains.kotlin.idea.intentions.replaceFirstReceiver
@@ -20,7 +21,7 @@ import org.jetbrains.kotlin.psi.*
 
 class WrapUnaryOperatorInspection : AbstractKotlinInspection() {
 
-    val numberTypes = listOf(KtNodeTypes.INTEGER_CONSTANT, KtNodeTypes.FLOAT_CONSTANT)
+    val numberTypes: List<KtNodeType> = listOf(KtNodeTypes.INTEGER_CONSTANT, KtNodeTypes.FLOAT_CONSTANT)
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return prefixExpressionVisitor { expression ->

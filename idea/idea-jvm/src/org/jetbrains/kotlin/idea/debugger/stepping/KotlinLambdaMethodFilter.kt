@@ -59,8 +59,8 @@ class KotlinLambdaMethodFilter(
         }
     }
 
-    override fun getBreakpointPosition() = myFirstStatementPosition
-    override fun getLastStatementLine() = myLastStatementLine
+    override fun getBreakpointPosition(): SourcePosition? = myFirstStatementPosition
+    override fun getLastStatementLine(): Int = myLastStatementLine
 
     override fun locationMatches(process: DebugProcessImpl, location: Location): Boolean {
         val method = location.method()
@@ -72,7 +72,7 @@ class KotlinLambdaMethodFilter(
         return isLambdaName(method.name())
     }
 
-    override fun getCallingExpressionLines() = if (isInline) Range(0, 999) else myCallingExpressionLines
+    override fun getCallingExpressionLines(): Range<Int> = if (isInline) Range(0, 999) else myCallingExpressionLines
 
     private fun isLambdaName(name: String?): Boolean {
         if (isSuspend) {

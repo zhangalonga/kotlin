@@ -27,7 +27,7 @@ class CommandExecutor(private val runner: KotlinConsoleRunner) {
     private val commandHistory = runner.commandHistory
     private val historyUpdater = HistoryUpdater(runner)
 
-    fun executeCommand() = WriteCommandAction.runWriteCommandAction(runner.project) {
+    fun executeCommand(): Unit = WriteCommandAction.runWriteCommandAction(runner.project) {
         val commandText = getTrimmedCommandText()
 
         if (commandText.isEmpty()) {

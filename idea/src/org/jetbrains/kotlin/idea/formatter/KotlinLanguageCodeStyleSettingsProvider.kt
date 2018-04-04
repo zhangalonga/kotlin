@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.idea.core.formatter.KotlinCodeStyleSettings
 import kotlin.reflect.KProperty
 
 class KotlinLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
-    override fun getLanguage() = KotlinLanguage.INSTANCE
+    override fun getLanguage(): KotlinLanguage = KotlinLanguage.INSTANCE
 
     override fun getCodeSample(settingsType: LanguageCodeStyleSettingsProvider.SettingsType): String = when (settingsType) {
         LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS ->

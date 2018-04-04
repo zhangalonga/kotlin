@@ -57,6 +57,6 @@ class KotlinAndroidResourceQuickFixProvider : UnresolvedReferenceQuickFixProvide
         }
     }
 
-    override fun getReferenceClass() = KtSimpleNameReference::class.java
+    override fun getReferenceClass(): Class<KtSimpleNameReference> = KtSimpleNameReference::class.java
 }
 

@@ -26,7 +26,7 @@ open class StatementFilter {
 
     companion object {
         @JvmField
-        val NONE = object : StatementFilter() {
+        val NONE: StatementFilter = object : StatementFilter() {
             override fun toString() = "NONE"
         }
     }
@@ -37,4 +37,4 @@ fun StatementFilter.filterStatements(block: KtBlockExpression): List<KtExpressio
     return block.statements.filter { filter!!(it) }
 }
 
-fun StatementFilter.getLastStatementInABlock(block: KtBlockExpression) = filterStatements(block).lastOrNull()
+fun StatementFilter.getLastStatementInABlock(block: KtBlockExpression): KtExpression? = filterStatements(block).lastOrNull()

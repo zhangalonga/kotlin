@@ -35,9 +35,9 @@ class DeprecatedSymbolUsageFix(
         replaceWith: ReplaceWith
 ) : DeprecatedSymbolUsageFixBase(element, replaceWith), CleanupFix, HighPriorityAction {
 
-    override fun getFamilyName() = "Replace deprecated symbol usage"
+    override fun getFamilyName(): String = "Replace deprecated symbol usage"
 
-    override fun getText() = "Replace with '${replaceWith.pattern}'"
+    override fun getText(): String = "Replace with '${replaceWith.pattern}'"
 
     override fun invoke(replacementStrategy: UsageReplacementStrategy, project: Project, editor: Editor?) {
         val element = element ?: return

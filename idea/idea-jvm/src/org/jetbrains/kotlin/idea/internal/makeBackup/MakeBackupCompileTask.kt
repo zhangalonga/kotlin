@@ -22,9 +22,9 @@ import com.intellij.openapi.compiler.CompileTask
 import com.intellij.openapi.util.Key
 import java.util.*
 
-val random = Random()
+val random: Random = Random()
 
-val HISTORY_LABEL_KEY = Key.create<String>("history label")
+val HISTORY_LABEL_KEY: Key<String> = Key.create<String>("history label")
 
 class MakeBackupCompileTask: CompileTask {
     override fun execute(context: CompileContext?): Boolean {

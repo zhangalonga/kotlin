@@ -27,13 +27,14 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.Type
+import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 
 abstract class AbstractForLoopGenerator(
     protected val codegen: ExpressionCodegen,
     final override val forExpression: KtForExpression
 ) : ForLoopGenerator {
-    protected val bindingContext = codegen.bindingContext
-    protected val v = codegen.v!!
+    protected val bindingContext: BindingContext = codegen.bindingContext
+    protected val v: InstructionAdapter = codegen.v!!
 
     private val loopParameterStartLabel = Label()
     private val bodyEnd = Label()

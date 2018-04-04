@@ -35,7 +35,7 @@ open class KtLightClassForLocalDeclaration(
     override fun copy(): PsiElement = KtLightClassForLocalDeclaration(classOrObject.copy() as KtClassOrObject)
     override fun getQualifiedName(): String? = null
 
-    override fun getParent() = _parent
+    override fun getParent(): PsiElement? = _parent
 
     private val _parent: PsiElement? by lazyPub(this::computeParent)
 

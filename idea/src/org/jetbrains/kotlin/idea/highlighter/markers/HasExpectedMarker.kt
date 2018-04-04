@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.resolve.multiplatform.ExpectedActualResolver
 import org.jetbrains.kotlin.resolve.multiplatform.ExpectedActualResolver.Compatibility.*
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
-fun ModuleDescriptor.hasDeclarationOf(descriptor: MemberDescriptor) = declarationOf(descriptor) != null
+fun ModuleDescriptor.hasDeclarationOf(descriptor: MemberDescriptor): Boolean = declarationOf(descriptor) != null
 
 private fun ModuleDescriptor.declarationOf(descriptor: MemberDescriptor): DeclarationDescriptor? =
     with(ExpectedActualResolver) {

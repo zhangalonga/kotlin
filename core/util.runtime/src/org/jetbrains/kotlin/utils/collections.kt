@@ -63,7 +63,7 @@ fun <T: Any> MutableCollection<T>.addIfNotNull(t: T?) {
     if (t != null) add(t)
 }
 
-suspend fun <T: Any> SequenceBuilder<T>.yieldIfNotNull(t: T?) = if (t != null) yield(t) else Unit
+suspend fun <T: Any> SequenceBuilder<T>.yieldIfNotNull(t: T?): Unit = if (t != null) yield(t) else Unit
 
 fun <K, V> newHashMapWithExpectedSize(expectedSize: Int): HashMap<K, V> =
         HashMap(capacity(expectedSize))

@@ -175,7 +175,7 @@ class ConstructorConsistencyChecker private constructor(
             trace: BindingTrace,
             pseudocode: Pseudocode,
             pseudocodeVariablesData: PseudocodeVariablesData
-        ) = check(constructor.getContainingClassOrObject(), trace, pseudocode, pseudocodeVariablesData)
+        ): Unit = check(constructor.getContainingClassOrObject(), trace, pseudocode, pseudocodeVariablesData)
 
         @JvmStatic
         fun check(

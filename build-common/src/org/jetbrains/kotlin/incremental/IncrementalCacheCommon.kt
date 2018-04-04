@@ -34,8 +34,8 @@ abstract class IncrementalCacheCommon<ClassName>(workingDir: File) : BasicMapsOw
         private val SUBTYPES = "subtypes"
         private val SUPERTYPES = "supertypes"
         private val CLASS_FQ_NAME_TO_SOURCE = "class-fq-name-to-source"
-        @JvmStatic protected val SOURCE_TO_CLASSES = "source-to-classes"
-        @JvmStatic protected val DIRTY_OUTPUT_CLASSES = "dirty-output-classes"
+        @JvmStatic protected val SOURCE_TO_CLASSES: String = "source-to-classes"
+        @JvmStatic protected val DIRTY_OUTPUT_CLASSES: String = "dirty-output-classes"
     }
 
     private val dependents = arrayListOf<IncrementalCacheCommon<ClassName>>()
@@ -50,7 +50,7 @@ abstract class IncrementalCacheCommon<ClassName>(workingDir: File) : BasicMapsOw
 
     private val subtypesMap = registerMap(SubtypesMap(SUBTYPES.storageFile))
     private val supertypesMap = registerMap(SupertypesMap(SUPERTYPES.storageFile))
-    protected val classFqNameToSourceMap = registerMap(ClassFqNameToSourceMap(CLASS_FQ_NAME_TO_SOURCE.storageFile))
+    protected val classFqNameToSourceMap: ClassFqNameToSourceMap = registerMap(ClassFqNameToSourceMap(CLASS_FQ_NAME_TO_SOURCE.storageFile))
     internal abstract val sourceToClassesMap: AbstractSourceToOutputMap<ClassName>
     internal abstract val dirtyOutputClassesMap: AbstractDirtyClassesMap<ClassName>
 
@@ -136,6 +136,6 @@ abstract class IncrementalCacheCommon<ClassName>(workingDir: File) : BasicMapsOw
             storage.remove(fqName.asString())
         }
 
-        override fun dumpValue(value: String) = value
+        override fun dumpValue(value: String): String = value
     }
 }

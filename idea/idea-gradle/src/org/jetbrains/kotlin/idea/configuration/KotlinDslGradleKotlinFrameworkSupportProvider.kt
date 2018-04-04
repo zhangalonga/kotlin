@@ -83,9 +83,9 @@ abstract class KotlinDslGradleKotlinFrameworkSupportProvider(
 class KotlinDslGradleKotlinJavaFrameworkSupportProvider :
     KotlinDslGradleKotlinFrameworkSupportProvider("KOTLIN", "Kotlin (Java)", KotlinIcons.SMALL_LOGO) {
 
-    override fun getPluginDefinition() = "plugin(\"${KotlinGradleModuleConfigurator.KOTLIN}\")"
+    override fun getPluginDefinition(): String = "plugin(\"${KotlinGradleModuleConfigurator.KOTLIN}\")"
 
-    override fun getRuntimeLibrary(rootModel: ModifiableRootModel) =
+    override fun getRuntimeLibrary(rootModel: ModifiableRootModel): String =
         getCompileDependencySnippet(KOTLIN_GROUP_ID, getStdlibArtifactId(rootModel.sdk, bundledRuntimeVersion()))
 
     override fun addSupport(
@@ -110,6 +110,6 @@ class KotlinDslGradleKotlinJSFrameworkSupportProvider :
 
     override fun getPluginDefinition(): String = "plugin(\"${KotlinJsGradleModuleConfigurator.KOTLIN_JS}\")"
 
-    override fun getRuntimeLibrary(rootModel: ModifiableRootModel) =
+    override fun getRuntimeLibrary(rootModel: ModifiableRootModel): String =
         getCompileDependencySnippet(KOTLIN_GROUP_ID, MAVEN_JS_STDLIB_ID.removePrefix("kotlin-"))
 }

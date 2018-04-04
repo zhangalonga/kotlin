@@ -41,7 +41,7 @@ class FirMemberFunctionImpl(
     session, psi, declarationKind, name, visibility, modality,
     platformStatus, isOverride, receiverType, returnType
 ), FirNamedFunction {
-    override val valueParameters = mutableListOf<FirValueParameter>()
+    override val valueParameters: MutableList<FirValueParameter> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         valueParameters.transformInplace(transformer, data)

@@ -25,14 +25,14 @@ import java.io.InputStream
  * of the core protobuf messages (metadata.proto).
  */
 class BuiltInsBinaryVersion(vararg numbers: Int) : BinaryVersion(*numbers) {
-    override fun isCompatible() = this.isCompatibleTo(INSTANCE)
+    override fun isCompatible(): Boolean = this.isCompatibleTo(INSTANCE)
 
     companion object {
         @JvmField
-        val INSTANCE = BuiltInsBinaryVersion(1, 0, 2)
+        val INSTANCE: BuiltInsBinaryVersion = BuiltInsBinaryVersion(1, 0, 2)
 
         @JvmField
-        val INVALID_VERSION = BuiltInsBinaryVersion()
+        val INVALID_VERSION: BuiltInsBinaryVersion = BuiltInsBinaryVersion()
 
         fun readFrom(stream: InputStream): BuiltInsBinaryVersion {
             val dataInput = DataInputStream(stream)

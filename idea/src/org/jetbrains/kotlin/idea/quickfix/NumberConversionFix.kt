@@ -42,12 +42,11 @@ class NumberConversionFix(
     }
     private val typePresentation = IdeDescriptorRenderers.SOURCE_CODE_SHORT_NAMES_IN_TYPES.renderType(type)
 
-    override fun isAvailable(project: Project, editor: Editor?, file: KtFile)
-            = disableIfAvailable?.isAvailable(project, editor, file) != true
+    override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean = disableIfAvailable?.isAvailable(project, editor, file) != true
               && isConversionAvailable
 
-    override fun getFamilyName() = "Insert number conversion"
-    override fun getText() = "Convert expression to '$typePresentation'"
+    override fun getFamilyName(): String = "Insert number conversion"
+    override fun getText(): String = "Convert expression to '$typePresentation'"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

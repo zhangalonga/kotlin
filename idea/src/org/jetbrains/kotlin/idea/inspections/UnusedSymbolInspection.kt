@@ -125,7 +125,7 @@ class UnusedSymbolInspection : AbstractKotlinInspection() {
         }
     }
 
-    override fun runForWholeFile() = true
+    override fun runForWholeFile(): Boolean = true
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): PsiElementVisitor {
         return namedDeclarationVisitor(fun(declaration) {
@@ -370,9 +370,9 @@ class SafeDeleteFix(declaration: KtDeclaration) : LocalQuickFix {
             if (declaration is KtConstructor<*>) "Safe delete constructor"
             else QuickFixBundle.message("safe.delete.text", declaration.name)
 
-    override fun getName() = name
+    override fun getName(): String = name
 
-    override fun getFamilyName() = "Safe delete"
+    override fun getFamilyName(): String = "Safe delete"
 
     override fun startInWriteAction(): Boolean = false
 

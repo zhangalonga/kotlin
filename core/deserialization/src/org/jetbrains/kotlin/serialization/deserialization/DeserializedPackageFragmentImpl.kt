@@ -32,11 +32,11 @@ abstract class DeserializedPackageFragmentImpl(
         protected val proto: ProtoBuf.PackageFragment,
         private val containerSource: DeserializedContainerSource?
 ) : DeserializedPackageFragment(fqName, storageManager, module) {
-    protected val nameResolver = NameResolverImpl(proto.strings, proto.qualifiedNames)
+    protected val nameResolver: NameResolverImpl = NameResolverImpl(proto.strings, proto.qualifiedNames)
 
-    override val classDataFinder = ProtoBasedClassDataFinder(proto, nameResolver) { containerSource ?: SourceElement.NO_SOURCE }
+    override val classDataFinder: ProtoBasedClassDataFinder = ProtoBasedClassDataFinder(proto, nameResolver) { containerSource ?: SourceElement.NO_SOURCE }
 
-    override fun computeMemberScope() =
+    override fun computeMemberScope(): DeserializedPackageMemberScope =
             DeserializedPackageMemberScope(
                     this, proto.`package`, nameResolver, containerSource, components,
                     classNames = {

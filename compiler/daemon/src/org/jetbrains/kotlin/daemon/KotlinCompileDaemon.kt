@@ -34,14 +34,14 @@ import java.util.jar.Manifest
 import java.util.logging.*
 import kotlin.concurrent.schedule
 
-val DAEMON_PERIODIC_CHECK_INTERVAL_MS = 1000L
-val DAEMON_PERIODIC_SELDOM_CHECK_INTERVAL_MS = 60000L
+val DAEMON_PERIODIC_CHECK_INTERVAL_MS: Long = 1000L
+val DAEMON_PERIODIC_SELDOM_CHECK_INTERVAL_MS: Long = 60000L
 
 class LogStream(name: String) : OutputStream() {
 
-    val log by lazy { Logger.getLogger(name) }
+    val log: Logger by lazy { Logger.getLogger(name) }
 
-    val lineBuf = StringBuilder()
+    val lineBuf: StringBuilder = StringBuilder()
 
     override fun write(byte: Int) {
         if (byte.toChar() == '\n') flush()
@@ -74,7 +74,7 @@ object KotlinCompileDaemon {
         LogManager.getLogManager().readConfiguration(cfg.byteInputStream())
     }
 
-    val log by lazy { Logger.getLogger("daemon") }
+    val log: Logger by lazy { Logger.getLogger("daemon") }
 
     private fun loadVersionFromResource(): String? {
         (KotlinCompileDaemon::class.java.classLoader as? URLClassLoader)

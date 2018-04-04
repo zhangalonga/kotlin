@@ -42,11 +42,10 @@ class CastExpressionFix(element: KtExpression, type: KotlinType) : KotlinQuickFi
         && expressionType != type.makeNullable() //covered by AddExclExclCallFix
     }
 
-    override fun getFamilyName() = "Cast expression"
-    override fun getText() = element?.let { "Cast expression '${it.text}' to '$typePresentation'" } ?: ""
+    override fun getFamilyName(): String = "Cast expression"
+    override fun getText(): String = element?.let { "Cast expression '${it.text}' to '$typePresentation'" } ?: ""
 
-    override fun isAvailable(project: Project, editor: Editor?, file: KtFile)
-            = upOrDownCast
+    override fun isAvailable(project: Project, editor: Editor?, file: KtFile): Boolean = upOrDownCast
 
     public override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return
@@ -57,12 +56,12 @@ class CastExpressionFix(element: KtExpression, type: KotlinType) : KotlinQuickFi
     }
 
     abstract class Factory : KotlinSingleIntentionActionFactoryWithDelegate<KtExpression, KotlinType>() {
-        override fun getElementOfInterest(diagnostic: Diagnostic) = diagnostic.psiElement as? KtExpression
-        override fun createFix(originalElement: KtExpression, data: KotlinType) = CastExpressionFix(originalElement, data)
+        override fun getElementOfInterest(diagnostic: Diagnostic): KtExpression? = diagnostic.psiElement as? KtExpression
+        override fun createFix(originalElement: KtExpression, data: KotlinType): CastExpressionFix = CastExpressionFix(originalElement, data)
     }
 
     object SmartCastImpossibleFactory: Factory() {
-        override fun extractFixData(element: KtExpression, diagnostic: Diagnostic) = Errors.SMARTCAST_IMPOSSIBLE.cast(diagnostic).a
+        override fun extractFixData(element: KtExpression, diagnostic: Diagnostic): KotlinType = Errors.SMARTCAST_IMPOSSIBLE.cast(diagnostic).a
     }
 
     object GenericVarianceConversion : Factory() {

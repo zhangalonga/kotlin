@@ -38,9 +38,9 @@ private val REPL_TITLE = "Kotlin REPL"
 class KotlinConsoleKeeper(val project: Project) {
     private val consoleMap: MutableMap<VirtualFile, KotlinConsoleRunner> = ConcurrentHashMap()
 
-    fun getConsoleByVirtualFile(virtualFile: VirtualFile) = consoleMap[virtualFile]
-    fun putVirtualFileToConsole(virtualFile: VirtualFile, console: KotlinConsoleRunner) = consoleMap.put(virtualFile, console)
-    fun removeConsole(virtualFile: VirtualFile) = consoleMap.remove(virtualFile)
+    fun getConsoleByVirtualFile(virtualFile: VirtualFile): KotlinConsoleRunner? = consoleMap[virtualFile]
+    fun putVirtualFileToConsole(virtualFile: VirtualFile, console: KotlinConsoleRunner): KotlinConsoleRunner? = consoleMap.put(virtualFile, console)
+    fun removeConsole(virtualFile: VirtualFile): KotlinConsoleRunner? = consoleMap.remove(virtualFile)
 
     fun run(module: Module, previousCompilationFailed: Boolean = false): KotlinConsoleRunner? {
         val path = module.moduleFilePath
@@ -54,7 +54,7 @@ class KotlinConsoleKeeper(val project: Project) {
     }
 
     companion object {
-        @JvmStatic fun getInstance(project: Project) = ServiceManager.getService(project, KotlinConsoleKeeper::class.java)
+        @JvmStatic fun getInstance(project: Project): KotlinConsoleKeeper = ServiceManager.getService(project, KotlinConsoleKeeper::class.java)
 
         fun createCommandLine(module: Module): GeneralCommandLine {
             val javaParameters = createJavaParametersWithSdk(module)

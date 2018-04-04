@@ -72,13 +72,13 @@ class RenameKotlinPropertyProcessor : RenameKotlinPsiProcessor() {
         return namedUnwrappedElement is KtProperty || (namedUnwrappedElement is KtParameter && namedUnwrappedElement.hasValOrVar())
     }
 
-    override fun isToSearchInComments(psiElement: PsiElement) = JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_FIELD
+    override fun isToSearchInComments(psiElement: PsiElement): Boolean = JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_FIELD
 
     override fun setToSearchInComments(element: PsiElement, enabled: Boolean) {
         JavaRefactoringSettings.getInstance().RENAME_SEARCH_IN_COMMENTS_FOR_FIELD = enabled
     }
 
-    override fun isToSearchForTextOccurrences(element: PsiElement) = JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_FIELD
+    override fun isToSearchForTextOccurrences(element: PsiElement): Boolean = JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_FIELD
 
     override fun setToSearchForTextOccurrences(element: PsiElement, enabled: Boolean) {
         JavaRefactoringSettings.getInstance().RENAME_SEARCH_FOR_TEXT_FOR_FIELD = enabled
@@ -286,9 +286,9 @@ class RenameKotlinPropertyProcessor : RenameKotlinPsiProcessor() {
     }
 
     class PropertyMethodWrapper(private val propertyMethod: PsiMethod) : PsiNamedElement by propertyMethod, NavigationItem by propertyMethod {
-        override fun getName() = propertyMethod.name
-        override fun setName(name: String) = this
-        override fun copy() = this
+        override fun getName(): String = propertyMethod.name
+        override fun setName(name: String): PropertyMethodWrapper = this
+        override fun copy(): PropertyMethodWrapper = this
     }
 
     override fun prepareRenaming(element: PsiElement, newName: String?, allRenames: MutableMap<PsiElement, String>, scope: SearchScope) {

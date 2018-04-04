@@ -25,6 +25,6 @@ class MoveDeclarationsEditorCookie(
         val modificationCount: Long
 ) {
     companion object {
-        val KEY = Key<MoveDeclarationsEditorCookie>("MoveDeclarationsEditorCookie")
+        val KEY: Key<MoveDeclarationsEditorCookie> = Key<MoveDeclarationsEditorCookie>("MoveDeclarationsEditorCookie")
     }
 }

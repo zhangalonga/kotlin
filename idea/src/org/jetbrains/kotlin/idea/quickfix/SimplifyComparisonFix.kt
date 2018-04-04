@@ -30,9 +30,9 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 
 class SimplifyComparisonFix(element: KtExpression, val value: Boolean) : KotlinQuickFixAction<KtExpression>(element) {
-    override fun getFamilyName() = "Simplify $element to '$value'"
+    override fun getFamilyName(): String = "Simplify $element to '$value'"
 
-    override fun getText() = "Simplify comparison"
+    override fun getText(): String = "Simplify comparison"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val element = element ?: return

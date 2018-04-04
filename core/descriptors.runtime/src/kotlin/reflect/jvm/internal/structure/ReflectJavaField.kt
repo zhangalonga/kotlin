@@ -26,6 +26,6 @@ class ReflectJavaField(override val member: Field) : ReflectJavaMember(), JavaFi
     override val type: ReflectJavaType
         get() = ReflectJavaType.create(member.genericType)
 
-    override val initializerValue get() = null
-    override val hasConstantNotNullInitializer get() = false
+    override val initializerValue: Nothing? get() = null
+    override val hasConstantNotNullInitializer: Boolean get() = false
 }

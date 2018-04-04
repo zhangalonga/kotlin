@@ -41,7 +41,7 @@ sealed class ErrorCandidate<out D : DeclarationDescriptor>(val descriptor: D) {
         classifierDescriptor: ClassifierDescriptor,
         val kind: WrongResolutionToClassifier
     ) : ErrorCandidate<ClassifierDescriptor>(classifierDescriptor) {
-        val errorMessage = kind.message(descriptor.name)
+        val errorMessage: String = kind.message(descriptor.name)
     }
 }
 

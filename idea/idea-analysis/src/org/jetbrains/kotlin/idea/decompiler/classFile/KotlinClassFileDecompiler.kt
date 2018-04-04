@@ -40,9 +40,9 @@ import org.jetbrains.kotlin.types.isFlexible
 class KotlinClassFileDecompiler : ClassFileDecompilers.Full() {
     private val stubBuilder = KotlinClsStubBuilder()
 
-    override fun accepts(file: VirtualFile) = IDEKotlinBinaryClassCache.isKotlinJvmCompiledFile(file)
+    override fun accepts(file: VirtualFile): Boolean = IDEKotlinBinaryClassCache.isKotlinJvmCompiledFile(file)
 
-    override fun getStubBuilder() = stubBuilder
+    override fun getStubBuilder(): KotlinClsStubBuilder = stubBuilder
 
     override fun createFileViewProvider(file: VirtualFile, manager: PsiManager, physical: Boolean): KotlinDecompiledFileViewProvider {
         return KotlinDecompiledFileViewProvider(manager, file, physical) factory@{ provider ->

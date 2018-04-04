@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
 
 class CliNoArgDeclarationChecker(val noArgAnnotationFqNames: List<String>) : AbstractNoArgDeclarationChecker() {
-    override fun getAnnotationFqNames(modifierListOwner: KtModifierListOwner?) = noArgAnnotationFqNames
+    override fun getAnnotationFqNames(modifierListOwner: KtModifierListOwner?): List<String> = noArgAnnotationFqNames
 }
 
 abstract class AbstractNoArgDeclarationChecker : DeclarationChecker, AnnotationBasedExtension {

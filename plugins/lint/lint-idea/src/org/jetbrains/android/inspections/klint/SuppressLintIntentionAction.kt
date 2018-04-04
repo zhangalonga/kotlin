@@ -44,15 +44,15 @@ class SuppressLintIntentionAction(val id: String, val element: PsiElement) : Int
 
     private val lintId = getLintId(id)
 
-    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?) = true
+    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean = true
 
     override fun getText(): String = AndroidBundle.message(SUPPRESS_LINT_MESSAGE, lintId)
 
-    override fun getFamilyName() = text
+    override fun getFamilyName(): String = text
 
     override fun getIcon(flags: Int): Icon? = AllIcons.Actions.Cancel
 
-    override fun startInWriteAction() = true
+    override fun startInWriteAction(): Boolean = true
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         if (file !is KtFile) {

@@ -24,9 +24,9 @@ import org.jetbrains.kotlin.psi.KtQualifiedExpression
 
 class RemoveUselessCallFix : LocalQuickFix {
 
-    override fun getName() = "Remove useless call"
+    override fun getName(): String = "Remove useless call"
 
-    override fun getFamilyName() = name
+    override fun getFamilyName(): String = name
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         (descriptor.psiElement as? KtQualifiedExpression)?.let {

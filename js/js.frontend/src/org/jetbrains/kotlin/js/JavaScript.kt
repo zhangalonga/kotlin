@@ -17,10 +17,10 @@
 package org.jetbrains.kotlin.js
 
 object JavaScript {
-    const val FULL_NAME = "JavaScript"
-    const val NAME = "JS"
-    const val LOWER_NAME = "js"
+    const val FULL_NAME: String = "JavaScript"
+    const val NAME: String = "JS"
+    const val LOWER_NAME: String = "js"
 
-    const val EXTENSION = "js"
-    const val DOT_EXTENSION = "." + EXTENSION
+    const val EXTENSION: String = "js"
+    const val DOT_EXTENSION: String = "." + EXTENSION
 }

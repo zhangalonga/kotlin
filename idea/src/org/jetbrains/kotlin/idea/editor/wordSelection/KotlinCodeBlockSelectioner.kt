@@ -35,8 +35,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * Originally from IDEA platform: CodeBlockOrInitializerSelectioner
  */
 class KotlinCodeBlockSelectioner : ExtendWordSelectionHandlerBase() {
-    override fun canSelect(e: PsiElement)
-            = e is KtBlockExpression || e is KtWhenExpression
+    override fun canSelect(e: PsiElement): Boolean = e is KtBlockExpression || e is KtWhenExpression
 
     override fun select(e: PsiElement, editorText: CharSequence, cursorOffset: Int, editor: Editor): List<TextRange>? {
         val result = ArrayList<TextRange>()

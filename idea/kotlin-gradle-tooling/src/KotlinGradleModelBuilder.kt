@@ -27,6 +27,7 @@ import java.io.Serializable
 import java.lang.Exception
 import java.lang.reflect.InvocationTargetException
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 interface ArgsInfo : Serializable {
     val currentArguments: List<String>
@@ -60,16 +61,16 @@ class KotlinGradleModelImpl(
 
 abstract class AbstractKotlinGradleModelBuilder : ModelBuilderService {
     companion object {
-        val kotlinCompileTaskClasses = listOf("org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated",
-                                              "org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile_Decorated",
-                                              "org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon_Decorated")
-        val platformPluginIds = listOf("kotlin-platform-jvm", "kotlin-platform-js", "kotlin-platform-common")
-        val pluginToPlatform = linkedMapOf(
+        val kotlinCompileTaskClasses: List<String> = listOf("org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated",
+                                                            "org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile_Decorated",
+                                                            "org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon_Decorated")
+        val platformPluginIds: List<String> = listOf("kotlin-platform-jvm", "kotlin-platform-js", "kotlin-platform-common")
+        val pluginToPlatform: LinkedHashMap<String, String> = linkedMapOf(
                 "kotlin" to "kotlin-platform-jvm",
                 "kotlin2js" to "kotlin-platform-js"
         )
-        val kotlinPluginIds = listOf("kotlin", "kotlin2js", "kotlin-android")
-        val ABSTRACT_KOTLIN_COMPILE_CLASS = "org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile"
+        val kotlinPluginIds: List<String> = listOf("kotlin", "kotlin2js", "kotlin-android")
+        val ABSTRACT_KOTLIN_COMPILE_CLASS: String = "org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile"
 
         fun Task.getSourceSetName(): String {
             return try {

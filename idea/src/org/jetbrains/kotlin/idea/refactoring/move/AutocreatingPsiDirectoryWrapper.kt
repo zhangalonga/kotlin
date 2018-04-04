@@ -23,17 +23,17 @@ import org.jetbrains.kotlin.idea.core.getPackage
 sealed class AutocreatingPsiDirectoryWrapper {
     class ByPsiDirectory(private val psiDirectory: PsiDirectory) : AutocreatingPsiDirectoryWrapper() {
         override fun getPackageName(): String = psiDirectory.getPackage()?.qualifiedName ?: ""
-        override fun getOrCreateDirectory(source: PsiDirectory) = psiDirectory
+        override fun getOrCreateDirectory(source: PsiDirectory): PsiDirectory = psiDirectory
     }
 
     class ByMoveDestination(private val moveDestination: MoveDestination) : AutocreatingPsiDirectoryWrapper() {
-        override fun getPackageName() = moveDestination.targetPackage.qualifiedName
-        override fun getOrCreateDirectory(source: PsiDirectory) = moveDestination.getTargetDirectory(source)
+        override fun getPackageName(): String = moveDestination.targetPackage.qualifiedName
+        override fun getOrCreateDirectory(source: PsiDirectory): PsiDirectory = moveDestination.getTargetDirectory(source)
     }
 
     abstract fun getPackageName(): String
     abstract fun getOrCreateDirectory(source: PsiDirectory): PsiDirectory
 }
 
-fun MoveDestination.toDirectoryWrapper() = AutocreatingPsiDirectoryWrapper.ByMoveDestination(this)
-fun PsiDirectory.toDirectoryWrapper() = AutocreatingPsiDirectoryWrapper.ByPsiDirectory(this)
+fun MoveDestination.toDirectoryWrapper(): AutocreatingPsiDirectoryWrapper.ByMoveDestination = AutocreatingPsiDirectoryWrapper.ByMoveDestination(this)
+fun PsiDirectory.toDirectoryWrapper(): AutocreatingPsiDirectoryWrapper.ByPsiDirectory = AutocreatingPsiDirectoryWrapper.ByPsiDirectory(this)

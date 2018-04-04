@@ -19,7 +19,7 @@ package org.jetbrains.kotlin.idea.highlighter
 import org.jetbrains.annotations.TestOnly
 
 object NameHighlighter {
-    var namesHighlightingEnabled = true
+    var namesHighlightingEnabled: Boolean = true
         @TestOnly set
 }
 

@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 class SimplifiableCallChainInspection : AbstractKotlinInspection() {
 
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) =
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): KtVisitorVoid =
             qualifiedExpressionVisitor(fun(expression) {
                 val firstExpression = expression.receiverExpression
                 val firstCallExpression = getCallExpression(firstExpression) ?: return
@@ -114,12 +114,12 @@ class SimplifiableCallChainInspection : AbstractKotlinInspection() {
         data class Conversion(val firstFqName: String, val secondFqName: String, val replacement: String) {
             private fun String.convertToShort() = takeLastWhile { it != '.' }
 
-            val firstName = firstFqName.convertToShort()
+            val firstName: String = firstFqName.convertToShort()
 
-            val secondName = secondFqName.convertToShort()
+            val secondName: String = secondFqName.convertToShort()
         }
 
-        fun getCallExpression(firstExpression: KtExpression) =
+        fun getCallExpression(firstExpression: KtExpression): KtCallExpression? =
                 ((firstExpression as? KtQualifiedExpression)?.selectorExpression as? KtCallExpression
                  ?: firstExpression as? KtCallExpression)
 

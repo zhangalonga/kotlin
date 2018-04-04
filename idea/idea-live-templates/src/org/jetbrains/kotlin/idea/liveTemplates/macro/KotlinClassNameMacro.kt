@@ -25,8 +25,8 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
 class KotlinClassNameMacro : KotlinMacro() {
-    override fun getName() = "kotlinClassName"
-    override fun getPresentableName() = "kotlinClassName()"
+    override fun getName(): String = "kotlinClassName"
+    override fun getPresentableName(): String = "kotlinClassName()"
 
     override fun calculateResult(params: Array<Expression>, context: ExpressionContext): Result? {
         val element = context.psiElementAtStartOffset?.parentsWithSelf?.firstOrNull {

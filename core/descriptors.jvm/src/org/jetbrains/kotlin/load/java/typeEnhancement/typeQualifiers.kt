@@ -34,6 +34,6 @@ class JavaTypeQualifiers internal constructor(
         internal val isNullabilityQualifierForWarning: Boolean = false
 ) {
     companion object {
-        val NONE = JavaTypeQualifiers(null, null, false)
+        val NONE: JavaTypeQualifiers = JavaTypeQualifiers(null, null, false)
     }
 }

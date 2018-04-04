@@ -49,7 +49,7 @@ class BuiltInFictitiousFunctionClassFactory(
         }
 
         @JvmStatic
-        fun getFunctionalClassKind(className: String, packageFqName: FqName) =
+        fun getFunctionalClassKind(className: String, packageFqName: FqName): Kind? =
                 parseClassName(className, packageFqName)?.kind
 
         private fun toInt(s: String): Int? {

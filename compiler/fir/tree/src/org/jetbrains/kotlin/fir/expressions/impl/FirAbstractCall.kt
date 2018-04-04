@@ -17,7 +17,7 @@ abstract class FirAbstractCall(
     final override val session: FirSession,
     final override val psi: PsiElement?
 ) : FirCall {
-    final override val arguments = mutableListOf<FirExpression>()
+    final override val arguments: MutableList<FirExpression> = mutableListOf()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         arguments.transformInplace(transformer, data)

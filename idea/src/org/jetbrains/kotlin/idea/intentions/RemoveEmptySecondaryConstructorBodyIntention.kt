@@ -32,7 +32,7 @@ class RemoveEmptySecondaryConstructorBodyInspection : IntentionBasedInspection<K
 
 class RemoveEmptySecondaryConstructorBodyIntention : SelfTargetingOffsetIndependentIntention<KtBlockExpression>(KtBlockExpression::class.java, "Remove empty constructor body") {
 
-    override fun applyTo(element: KtBlockExpression, editor: Editor?) = element.delete()
+    override fun applyTo(element: KtBlockExpression, editor: Editor?): Unit = element.delete()
 
     override fun isApplicableTo(element: KtBlockExpression): Boolean {
         if(element.parent !is KtSecondaryConstructor) return false

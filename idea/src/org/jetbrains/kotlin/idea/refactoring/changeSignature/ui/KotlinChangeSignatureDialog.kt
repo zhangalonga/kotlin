@@ -76,11 +76,11 @@ class KotlinChangeSignatureDialog(
         KotlinMethodDescriptor,
         ParameterTableModelItemBase<KotlinParameterInfo>,
         KotlinCallableParameterTableModel>(project, methodDescriptor, false, context) {
-    override fun getFileType() = KotlinFileType.INSTANCE
+    override fun getFileType(): KotlinFileType = KotlinFileType.INSTANCE
 
-    override fun createParametersInfoModel(descriptor: KotlinMethodDescriptor) = createParametersInfoModel(descriptor, myDefaultValueContext)
+    override fun createParametersInfoModel(descriptor: KotlinMethodDescriptor): KotlinCallableParameterTableModel = createParametersInfoModel(descriptor, myDefaultValueContext)
 
-    override fun createReturnTypeCodeFragment() = createReturnTypeCodeFragment(myProject, myMethod)
+    override fun createReturnTypeCodeFragment(): KtTypeCodeFragment = createReturnTypeCodeFragment(myProject, myMethod)
 
     private val parametersTableModel: KotlinCallableParameterTableModel get() = super.myParametersTableModel
     
@@ -144,7 +144,7 @@ class KotlinChangeSignatureDialog(
 
     private fun getDefaultValuesMaxLength() = getColumnTextMaxLength { it.defaultValueCodeFragment?.text }
 
-    override fun isListTableViewSupported() = true
+    override fun isListTableViewSupported(): Boolean = true
 
     override fun isEmptyRow(row: ParameterTableModelItemBase<KotlinParameterInfo>): Boolean {
         if (!row.parameter.name.isEmpty()) return false
@@ -152,11 +152,11 @@ class KotlinChangeSignatureDialog(
         return true
     }
 
-    override fun createCallerChooser(title: String, treeToReuse: Tree?, callback: Consumer<Set<PsiElement>>) =
+    override fun createCallerChooser(title: String, treeToReuse: Tree?, callback: Consumer<Set<PsiElement>>): KotlinCallerChooser =
             KotlinCallerChooser(myMethod.method, myProject, title, treeToReuse, callback)
 
     // Forbid receiver propagation
-    override fun mayPropagateParameters() =
+    override fun mayPropagateParameters(): Boolean =
             parameters.any { it.isNewParameter && it != parametersTableModel.receiver }
 
     override fun getTableEditor(table: JTable, item: ParameterTableModelItemBase<KotlinParameterInfo>): JBTableRowEditor? {
@@ -321,7 +321,7 @@ class KotlinChangeSignatureDialog(
         return changeInfo.getNewSignature(getMethodDescriptor().originalPrimaryCallable)
     }
 
-    override fun createVisibilityControl() = ComboBoxVisibilityPanel(
+    override fun createVisibilityControl(): ComboBoxVisibilityPanel<Visibility> = ComboBoxVisibilityPanel(
             arrayOf(Visibilities.INTERNAL, Visibilities.PRIVATE, Visibilities.PROTECTED, Visibilities.PUBLIC)
     )
 

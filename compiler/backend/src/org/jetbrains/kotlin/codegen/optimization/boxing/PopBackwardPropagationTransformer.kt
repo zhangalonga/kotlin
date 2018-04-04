@@ -300,17 +300,17 @@ class PopBackwardPropagationTransformer : MethodTransformer() {
 
 }
 
-fun AbstractInsnNode.isPurePush() =
+fun AbstractInsnNode.isPurePush(): Boolean =
     isLoadOperation() ||
             opcode in Opcodes.ACONST_NULL..Opcodes.LDC + 2 ||
             isUnitInstance()
 
-fun AbstractInsnNode.isPop() =
+fun AbstractInsnNode.isPop(): Boolean =
     opcode == Opcodes.POP || opcode == Opcodes.POP2
 
-fun AbstractInsnNode.isUnitInstance() =
+fun AbstractInsnNode.isUnitInstance(): Boolean =
     opcode == Opcodes.GETSTATIC &&
             this is FieldInsnNode && owner == "kotlin/Unit" && name == "INSTANCE"
 
-fun AbstractInsnNode.isPrimitiveTypeConversion() =
+fun AbstractInsnNode.isPrimitiveTypeConversion(): Boolean =
     opcode in Opcodes.I2L..Opcodes.I2S

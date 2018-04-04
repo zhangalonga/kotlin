@@ -43,7 +43,7 @@ open class CreateParameterFromUsageFix<E : KtElement>(
         }
     }
 
-    override fun startInWriteAction() = false
+    override fun startInWriteAction(): Boolean = false
 
     private fun runChangeSignature(project: Project) {
         val config = object : KotlinChangeSignatureConfiguration {

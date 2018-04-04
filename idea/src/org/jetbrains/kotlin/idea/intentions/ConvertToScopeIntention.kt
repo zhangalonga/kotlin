@@ -26,7 +26,7 @@ abstract class ConvertToScopeIntention<TExpression : KtExpression>(
         text: String
 ) : SelfTargetingIntention<TExpression>(elementType, text) {
 
-    protected val BLACKLIST_RECEIVER_NAME = listOf("this", "it")
+    protected val BLACKLIST_RECEIVER_NAME: List<String> = listOf("this", "it")
 
     protected abstract fun createScopeExpression(factory: KtPsiFactory, element: TExpression): KtExpression?
 

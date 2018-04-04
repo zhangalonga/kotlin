@@ -33,12 +33,12 @@ import javax.swing.table.AbstractTableModel
 
 abstract class AbstractParameterTablePanel<Param, UIParam : AbstractParameterTablePanel.AbstractParameterInfo<Param>> : JPanel(BorderLayout()) {
     companion object {
-        val CHECKMARK_COLUMN = 0
-        val PARAMETER_NAME_COLUMN = 1
+        val CHECKMARK_COLUMN: Int = 0
+        val PARAMETER_NAME_COLUMN: Int = 1
     }
 
     abstract class AbstractParameterInfo<out Param>(val originalParameter: Param) {
-        var isEnabled = true
+        var isEnabled: Boolean = true
         lateinit var name: String
 
         abstract fun toParameter(): Param
@@ -52,7 +52,7 @@ abstract class AbstractParameterTablePanel<Param, UIParam : AbstractParameterTab
     protected lateinit var tableModel: TableModelBase
         private set
 
-    protected open fun createTableModel() = TableModelBase()
+    protected open fun createTableModel(): TableModelBase = TableModelBase()
 
     protected open fun createAdditionalColumns() {
 
@@ -150,12 +150,12 @@ abstract class AbstractParameterTablePanel<Param, UIParam : AbstractParameterTab
 
     }
 
-    protected open fun isCheckMarkColumnEditable() = true
+    protected open fun isCheckMarkColumnEditable(): Boolean = true
 
     protected open inner class TableModelBase : AbstractTableModel(), EditableModel {
-        override fun addRow() = throw IllegalAccessError("Not implemented")
+        override fun addRow(): Nothing = throw IllegalAccessError("Not implemented")
 
-        override fun removeRow(index: Int) = throw IllegalAccessError("Not implemented")
+        override fun removeRow(index: Int): Nothing = throw IllegalAccessError("Not implemented")
 
         override fun exchangeRows(oldIndex: Int, newIndex: Int) {
             if (oldIndex < 0 || newIndex < 0) return
@@ -177,9 +177,9 @@ abstract class AbstractParameterTablePanel<Param, UIParam : AbstractParameterTab
             }
         }
 
-        override fun getColumnCount() = 2
+        override fun getColumnCount(): Int = 2
 
-        override fun getRowCount() = parameterInfos.size
+        override fun getRowCount(): Int = parameterInfos.size
 
         override fun getValueAt(rowIndex: Int, columnIndex: Int): Any? {
             return when (columnIndex) {

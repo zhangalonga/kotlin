@@ -25,13 +25,13 @@ interface PlatformDependentDeclarationFilter {
     fun isFunctionAvailable(classDescriptor: ClassDescriptor, functionDescriptor: SimpleFunctionDescriptor): Boolean
 
     object All : PlatformDependentDeclarationFilter {
-        override fun isFunctionAvailable(classDescriptor: ClassDescriptor, functionDescriptor: SimpleFunctionDescriptor) = true
+        override fun isFunctionAvailable(classDescriptor: ClassDescriptor, functionDescriptor: SimpleFunctionDescriptor): Boolean = true
     }
 
     object NoPlatformDependent : PlatformDependentDeclarationFilter {
-        override fun isFunctionAvailable(classDescriptor: ClassDescriptor, functionDescriptor: SimpleFunctionDescriptor) =
+        override fun isFunctionAvailable(classDescriptor: ClassDescriptor, functionDescriptor: SimpleFunctionDescriptor): Boolean =
                 !functionDescriptor.annotations.hasAnnotation(PLATFORM_DEPENDENT_ANNOTATION_FQ_NAME)
     }
 }
 
-val PLATFORM_DEPENDENT_ANNOTATION_FQ_NAME = FqName("kotlin.internal.PlatformDependent")
+val PLATFORM_DEPENDENT_ANNOTATION_FQ_NAME: FqName = FqName("kotlin.internal.PlatformDependent")

@@ -21,6 +21,6 @@ import org.jetbrains.kotlin.load.java.structure.JavaElement
 
 class JavacBasedSourceElementFactory : JavaSourceElementFactory {
 
-    override fun source(javaElement: JavaElement) = JavacBasedSourceElement(javaElement)
+    override fun source(javaElement: JavaElement): JavacBasedSourceElement = JavacBasedSourceElement(javaElement)
 
 }

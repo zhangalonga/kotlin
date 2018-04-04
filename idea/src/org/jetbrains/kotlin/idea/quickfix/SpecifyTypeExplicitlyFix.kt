@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.types.isError
 
 class SpecifyTypeExplicitlyFix : PsiElementBaseIntentionAction() {
-    override fun getFamilyName() = "Specify type explicitly"
+    override fun getFamilyName(): String = "Specify type explicitly"
 
     override fun invoke(project: Project, editor: Editor, element: PsiElement) {
         if (!FileModificationService.getInstance().preparePsiElementForWrite(element)) return

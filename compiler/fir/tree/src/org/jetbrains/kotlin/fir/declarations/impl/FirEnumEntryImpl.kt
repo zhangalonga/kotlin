@@ -35,5 +35,5 @@ class FirEnumEntryImpl(
     isData = false,
     isInline = false
 ), FirEnumEntry {
-    override val arguments = mutableListOf<FirExpression>()
+    override val arguments: MutableList<FirExpression> = mutableListOf()
 }

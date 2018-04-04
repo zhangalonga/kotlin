@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 class AllOpenGradleSubplugin : Plugin<Project> {
     companion object {
-        fun isEnabled(project: Project) = project.plugins.findPlugin(AllOpenGradleSubplugin::class.java) != null
+        fun isEnabled(project: Project): Boolean = project.plugins.findPlugin(AllOpenGradleSubplugin::class.java) != null
 
         fun getAllOpenExtension(project: Project): AllOpenExtension {
             return project.extensions.getByType(AllOpenExtension::class.java)
@@ -65,14 +65,14 @@ class AllOpenGradleSubplugin : Plugin<Project> {
 
 class AllOpenKotlinGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
     companion object {
-        val ALLOPEN_GROUP_NAME = "org.jetbrains.kotlin"
-        val ALLOPEN_ARTIFACT_NAME = "kotlin-allopen"
+        val ALLOPEN_GROUP_NAME: String = "org.jetbrains.kotlin"
+        val ALLOPEN_ARTIFACT_NAME: String = "kotlin-allopen"
 
         private val ANNOTATION_ARG_NAME = "annotation"
         private val PRESET_ARG_NAME = "preset"
     }
 
-    override fun isApplicable(project: Project, task: AbstractCompile) = AllOpenGradleSubplugin.isEnabled(project)
+    override fun isApplicable(project: Project, task: AbstractCompile): Boolean = AllOpenGradleSubplugin.isEnabled(project)
 
     override fun apply(
             project: Project,
@@ -99,7 +99,7 @@ class AllOpenKotlinGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         return options
     }
 
-    override fun getGroupName() = ALLOPEN_GROUP_NAME
-    override fun getArtifactName() = ALLOPEN_ARTIFACT_NAME
-    override fun getCompilerPluginId() = "org.jetbrains.kotlin.allopen"
+    override fun getGroupName(): String = ALLOPEN_GROUP_NAME
+    override fun getArtifactName(): String = ALLOPEN_ARTIFACT_NAME
+    override fun getCompilerPluginId(): String = "org.jetbrains.kotlin.allopen"
 }

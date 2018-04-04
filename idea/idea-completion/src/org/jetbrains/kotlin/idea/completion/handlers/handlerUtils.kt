@@ -96,9 +96,9 @@ fun CharSequence.skipSpaces(index: Int): Int
 fun CharSequence.skipSpacesAndLineBreaks(index: Int): Int
         = (index..length - 1).firstOrNull { val c = this[it]; c != ' ' && c != '\t' && c != '\n' && c != '\r' } ?: this.length
 
-fun CharSequence.isCharAt(offset: Int, c: Char) = offset < length && this[offset] == c
+fun CharSequence.isCharAt(offset: Int, c: Char): Boolean = offset < length && this[offset] == c
 
-fun Document.isTextAt(offset: Int, text: String) = offset + text.length <= textLength && getText(TextRange(offset, offset + text.length)) == text
+fun Document.isTextAt(offset: Int, text: String): Boolean = offset + text.length <= textLength && getText(TextRange(offset, offset + text.length)) == text
 
 fun createKeywordConstructLookupElement(
         project: Project,

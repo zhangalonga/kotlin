@@ -29,9 +29,9 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 
 class RemoveUnusedFunctionParameterFix(parameter: KtParameter) : KotlinQuickFixAction<KtParameter>(parameter) {
-    override fun getFamilyName() = ChangeFunctionSignatureFix.FAMILY_NAME
+    override fun getFamilyName(): String = ChangeFunctionSignatureFix.FAMILY_NAME
 
-    override fun getText() = element?.let { "Remove parameter '${it.name}'" } ?: ""
+    override fun getText(): String = element?.let { "Remove parameter '${it.name}'" } ?: ""
 
     override fun startInWriteAction(): Boolean = false
 

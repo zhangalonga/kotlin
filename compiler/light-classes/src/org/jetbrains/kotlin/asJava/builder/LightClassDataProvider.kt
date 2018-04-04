@@ -115,7 +115,7 @@ sealed class LightClassDataProviderForFileFacade constructor(
             facadeFqName: FqName,
             private val searchScope: GlobalSearchScope
     ) : LightClassDataProviderForFileFacade(project, facadeFqName) {
-        override fun findFiles() = KotlinAsJavaSupport.getInstance(project).findFilesForFacade(facadeFqName, searchScope)
+        override fun findFiles(): Collection<KtFile> = KotlinAsJavaSupport.getInstance(project).findFilesForFacade(facadeFqName, searchScope)
     }
 
     // create delegate by single file
@@ -124,7 +124,7 @@ sealed class LightClassDataProviderForFileFacade constructor(
             facadeFqName: FqName,
             private val file: KtFile
     ) : LightClassDataProviderForFileFacade(project, facadeFqName) {
-        override fun findFiles() = listOf(file)
+        override fun findFiles(): List<KtFile> = listOf(file)
     }
 }
 
@@ -202,10 +202,10 @@ private class ClassFilterForClassOrObject(private val classOrObject: KtClassOrOb
 }
 
 object ClassFilterForFacade : GenerationState.GenerateClassFilter() {
-    override fun shouldAnnotateClass(processingClassOrObject: KtClassOrObject) = shouldGenerateClass(processingClassOrObject)
-    override fun shouldGenerateClass(processingClassOrObject: KtClassOrObject) = KtPsiUtil.isLocal(processingClassOrObject)
-    override fun shouldGeneratePackagePart(ktFile: KtFile) = true
-    override fun shouldGenerateScript(script: KtScript) = false
+    override fun shouldAnnotateClass(processingClassOrObject: KtClassOrObject): Boolean = shouldGenerateClass(processingClassOrObject)
+    override fun shouldGenerateClass(processingClassOrObject: KtClassOrObject): Boolean = KtPsiUtil.isLocal(processingClassOrObject)
+    override fun shouldGeneratePackagePart(ktFile: KtFile): Boolean = true
+    override fun shouldGenerateScript(script: KtScript): Boolean = false
 }
 
 private class ClassFilterForScript(val script: KtScript) : GenerationState.GenerateClassFilter() {

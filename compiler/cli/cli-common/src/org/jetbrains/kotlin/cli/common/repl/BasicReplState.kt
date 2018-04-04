@@ -39,7 +39,7 @@ data class LineId(override val no: Int, override val generation: Int, private va
 
 open class BasicReplStageHistory<T>(override val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()) : IReplStageHistory<T>, ArrayList<ReplHistoryRecord<T>>() {
 
-    val currentGeneration = AtomicInteger(REPL_CODE_LINE_FIRST_GEN)
+    val currentGeneration: AtomicInteger = AtomicInteger(REPL_CODE_LINE_FIRST_GEN)
 
     override fun push(id: ILineId, item: T) {
         lock.write {

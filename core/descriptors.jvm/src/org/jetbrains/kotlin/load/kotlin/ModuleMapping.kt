@@ -36,7 +36,7 @@ class ModuleMapping private constructor(
         return packageFqName2Parts[packageFqName]
     }
 
-    override fun toString() = debugName
+    override fun toString(): String = debugName
 
     companion object {
         @JvmField
@@ -215,13 +215,13 @@ class PackageParts(val packageFqName: String) {
         other.metadataParts.forEach(this::addMetadataPart)
     }
 
-    override fun equals(other: Any?) =
+    override fun equals(other: Any?): Boolean =
             other is PackageParts &&
             other.packageFqName == packageFqName && other.packageParts == packageParts && other.metadataParts == metadataParts
 
-    override fun hashCode() =
+    override fun hashCode(): Int =
             (packageFqName.hashCode() * 31 + packageParts.hashCode()) * 31 + metadataParts.hashCode()
 
-    override fun toString() =
+    override fun toString(): String =
             (parts + metadataParts).toString()
 }
