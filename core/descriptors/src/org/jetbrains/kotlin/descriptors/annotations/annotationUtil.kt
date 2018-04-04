@@ -72,8 +72,7 @@ private val INLINE_ONLY_ANNOTATION_FQ_NAME = FqName("kotlin.internal.InlineOnly"
 fun MemberDescriptor.isInlineOnlyOrReifiable(): Boolean =
         this is CallableMemberDescriptor && (isReifiable() || DescriptorUtils.getDirectMember(this).isReifiable() || isInlineOnly())
 
-fun MemberDescriptor.isEffectivelyInlineOnly(): Boolean =
-        isInlineOnlyOrReifiable() || safeAs<FunctionDescriptor>()?.let { it.isSuspend && it.isInline } == true
+fun MemberDescriptor.isEffectivelyInlineOnly(): Boolean = isInlineOnlyOrReifiable()
 
 fun MemberDescriptor.isInlineOnly(): Boolean {
     if (this !is FunctionDescriptor ||

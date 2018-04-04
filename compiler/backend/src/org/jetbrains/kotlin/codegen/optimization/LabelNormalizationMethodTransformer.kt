@@ -142,8 +142,9 @@ class LabelNormalizationMethodTransformer : MethodTransformer() {
             return frameNode
         }
 
-        private fun getNew(oldLabelNode: LabelNode): LabelNode =
-            newLabelNodes[oldLabelNode.label]!!
+        private fun getNew(oldLabelNode: LabelNode): LabelNode {
+            return newLabelNodes[oldLabelNode.label]!!
+        }
 
         private fun getNewOrOld(oldLabelNode: LabelNode): LabelNode =
             newLabelNodes[oldLabelNode.label] ?: oldLabelNode
