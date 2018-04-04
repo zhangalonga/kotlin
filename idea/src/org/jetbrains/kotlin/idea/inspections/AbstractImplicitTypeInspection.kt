@@ -19,5 +19,6 @@ abstract class AbstractImplicitTypeInspection(
         }
     }
 ) {
+
     override fun inspectionTarget(element: KtCallableDeclaration): PsiElement? = element.nameIdentifier
 }
