@@ -505,7 +505,7 @@ abstract class AbstractAndroidProjectHandler<V>(private val kotlinConfigurationT
         get() =
             kotlinConfigurationTools.kotlinGradleBuildServices.artifactDifferenceRegistryProvider
 
-    protected val logger: Logger? = Logging.getLogger(this.javaClass)
+    protected val logger: Logger = Logging.getLogger(this.javaClass)
 
     abstract fun forEachVariant(project: Project, action: (V) -> Unit): Unit
     abstract fun getTestedVariantData(variantData: V): V?
