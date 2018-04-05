@@ -31,18 +31,17 @@ class FirResolveTestTotalKotlin : AbstractFirResolveWithSessionTestCase() {
 
 
         val javaFiles = File(".").walkTopDown().filter { file ->
-            (!file.isDirectory) && !(file.path.contains("testData") || file.path.contains("resources"))
-                    && (file.extension == "java")
+            !file.isDirectory
+                    && !(file.path.contains("testData") || file.path.contains("resources") || file.path.contains("java9"))
+                    && file.extension == "java"
         }.toList()
 
         val configuration = KotlinTestUtils.newConfiguration(configurationKind, testJdkKind, emptyList(), javaFiles)
-
-        val env = KotlinCoreEnvironment.createForTests(testRootDisposable, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES)
-        return env
+        return KotlinCoreEnvironment.createForTests(testRootDisposable, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES)
     }
 
     override fun createSession(): FirSession {
-        return object : FirSessionBase() {
+        return object : FirSessionBase(FirTestModuleInfo()) {
             init {
                 val firProvider = FirProviderImpl(this)
                 registerComponent(FirProvider::class, firProvider)
