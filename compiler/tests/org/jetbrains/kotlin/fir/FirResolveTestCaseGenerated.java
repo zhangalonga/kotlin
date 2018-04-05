@@ -91,6 +91,12 @@ public class FirResolveTestCaseGenerated extends AbstractFirResolveTestCase {
         doTest(fileName);
     }
 
+    @TestMetadata("treeSet.kt")
+    public void testTreeSet() throws Exception {
+        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/treeSet.kt");
+        doTest(fileName);
+    }
+
     @TestMetadata("TwoDeclarationsInSameFile.kt")
     public void testTwoDeclarationsInSameFile() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/TwoDeclarationsInSameFile.kt");
