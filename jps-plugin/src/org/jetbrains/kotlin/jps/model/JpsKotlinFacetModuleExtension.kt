@@ -26,7 +26,7 @@ class JpsKotlinFacetModuleExtension(settings: KotlinFacetSettings) : JpsElementB
         private set
 
     companion object {
-        val KIND: JpsElementChildRoleBase<JpsKotlinFacetModuleExtension>? = JpsElementChildRoleBase.create<JpsKotlinFacetModuleExtension>("kotlin facet extension")
+        val KIND: JpsElementChildRoleBase<JpsKotlinFacetModuleExtension> = JpsElementChildRoleBase.create<JpsKotlinFacetModuleExtension>("kotlin facet extension")
         // These must be changed in sync with KotlinFacetType.TYPE_ID and KotlinFacetType.NAME
         val FACET_TYPE_ID: String = "kotlin-language"
         val FACET_NAME: String = "Kotlin"

@@ -53,7 +53,7 @@ class UnionType(val namespace: String, types: Collection<Type>, override val nul
             UnionType(namespace, types, nullable)
 }
 
-fun UnionType.toSingleTypeIfPossible(): UnionType = if (this.memberTypes.size == 1) this.memberTypes.single().withNullability(nullable) else this
+fun UnionType.toSingleTypeIfPossible(): Type = if (this.memberTypes.size == 1) this.memberTypes.single().withNullability(nullable) else this
 
 data class ArrayType(val memberType: Type, val mutable: Boolean, override val nullable: Boolean) : Type() {
     override fun render(): String = "Array<${if (mutable) "" else "out "}${memberType.render()}>".appendNullabilitySuffix(this)
