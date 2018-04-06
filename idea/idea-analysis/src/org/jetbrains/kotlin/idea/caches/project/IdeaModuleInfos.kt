@@ -380,7 +380,7 @@ private class SdkScope(project: Project, val sdk: Sdk) :
     override fun toString() = "SdkScope($sdk)"
 }
 
-internal fun IdeaModuleInfo.isLibraryClasses() = this is SdkInfo || this is LibraryInfo
+fun IdeaModuleInfo.isLibraryClasses() = this is SdkInfo || this is LibraryInfo
 
 val OriginCapability = ModuleDescriptor.Capability<ModuleOrigin>("MODULE_ORIGIN")
 

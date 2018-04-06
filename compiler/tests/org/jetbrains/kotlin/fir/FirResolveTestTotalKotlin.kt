@@ -5,12 +5,11 @@
 
 package org.jetbrains.kotlin.fir
 
+import com.intellij.psi.search.ProjectScope
 import com.intellij.testFramework.TestDataPath
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.fir.builder.RawFirBuilder
-import org.jetbrains.kotlin.fir.java.FirJavaModuleBasedSession
-import org.jetbrains.kotlin.fir.java.FirProjectSessionProvider
 import org.jetbrains.kotlin.fir.resolve.FirProvider
 import org.jetbrains.kotlin.fir.resolve.impl.FirProviderImpl
 import org.jetbrains.kotlin.fir.resolve.transformers.FirTotalResolveTransformer
@@ -28,18 +27,23 @@ class FirResolveTestTotalKotlin : AbstractFirResolveWithSessionTestCase() {
         val testJdkKind = TestJdkKind.FULL_JDK
 
 
-        val javaFiles = File(".").walkTopDown().filter { file ->
-            !file.isDirectory
-                    && !(file.path.contains("testData") || file.path.contains("resources") || file.path.contains("java9"))
-                    && file.extension == "java"
+        val javaFiles = File(".").walkTopDown().onEnter {
+            it.name.toLowerCase() !in setOf("testdata", "resources")
+        }.filter {
+            it.isDirectory
+        }.mapNotNull { dir ->
+            if (dir.name in setOf("src", "test", "tests")) {
+                if (dir.walkTopDown().any { it.extension == "java" }) {
+                    return@mapNotNull dir
+                }
+            }
+            null
         }.toList()
+
 
         val configuration = KotlinTestUtils.newConfiguration(configurationKind, testJdkKind, emptyList(), javaFiles)
         return KotlinCoreEnvironment.createForTests(testRootDisposable, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES)
     }
-
-    override fun createSession(): FirSession = FirJavaModuleBasedSession(FirTestModuleInfo(), FirProjectSessionProvider(project))
-
 
     fun testTotalKotlin() {
 
@@ -53,14 +57,13 @@ class FirResolveTestTotalKotlin : AbstractFirResolveWithSessionTestCase() {
                     && (file.extension == "kt")
         }
 
-
         val ktFiles = allFiles.map {
             val text = KotlinTestUtils.doLoadFile(it)
             KotlinTestUtils.createFile(it.path, text, project)
         }
 
-
-        val session = createSession()
+        val scope = ProjectScope.getContentScope(project)
+        val session = createSession(scope)
         val builder = RawFirBuilder(session)
 
         val totalTransformer = FirTotalResolveTransformer()

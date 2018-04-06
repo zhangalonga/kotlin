@@ -11,6 +11,7 @@ dependencies {
 
     compile(project(":compiler:frontend.java"))
     compile(project(":compiler:fir:resolve"))
+    compile(project(":compiler:modules"))
 
     compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
 }

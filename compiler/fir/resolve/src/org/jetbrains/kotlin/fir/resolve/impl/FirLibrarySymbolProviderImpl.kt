@@ -25,11 +25,8 @@ import java.io.InputStream
 
 class FirLibrarySymbolProviderImpl(val session: FirSession) : FirSymbolProvider {
 
-    override val doesLookupInFir: Boolean
-        get() = false
-
     private class BuiltInsPackageFragment(stream: InputStream, val fqName: FqName) {
-        val packageProto = run {
+        val packageProto: ProtoBuf.PackageFragment = run {
 
             val version = BuiltInsBinaryVersion.readFrom(stream)
 
