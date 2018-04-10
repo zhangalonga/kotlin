@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.deserialization.FirTypeDeserializer
 import org.jetbrains.kotlin.fir.resolve.FirSymbolProvider
 import org.jetbrains.kotlin.fir.symbols.ConeSymbol
 import org.jetbrains.kotlin.fir.symbols.LibraryClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FictitiousFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.metadata.ProtoBuf
 import org.jetbrains.kotlin.metadata.deserialization.NameResolverImpl
@@ -100,9 +101,8 @@ class FirLibrarySymbolProviderImpl(val session: FirSession) : FirSymbolProvider 
             val prefix = kind.classNamePrefix
             val arity = className.substring(prefix.length).toIntOrNull() ?: return null
             fictitiousFunctionSymbols.getOrPut(arity) {
-                FirClassSymbol(classId)
+                FictitiousFunctionSymbol(relativeClassName.shortName(), arity)
             }
         }
     }
-
 }
