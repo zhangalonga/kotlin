@@ -50,10 +50,11 @@ import kotlin.reflect.KClass
 import kotlin.system.measureNanoTime
 
 
-class IdeFirDependenciesSymbolProvider(moduleInfo: IdeaModuleInfo, val project: Project, val sessionProvider: FirProjectSessionProvider) :
+class IdeFirDependenciesSymbolProvider(val moduleInfo: IdeaModuleInfo, val project: Project, val sessionProvider: FirProjectSessionProvider) :
     AbstractFirSymbolProvider() {
 
 
+    // TODO: Our special scope here?
     val depScope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope((moduleInfo as ModuleSourceInfo).module)
 
     val javaSymbolProvider = JavaSymbolProvider(project, depScope)
@@ -79,26 +80,19 @@ class IdeFirDependenciesSymbolProvider(moduleInfo: IdeaModuleInfo, val project: 
             val classPsi = s.firstOrNull() ?: return null
 
             val module = classPsi.getModuleInfo()
-            val session = sessionProvider.getSession(module) ?: return null
             if (classPsi.containingKtFile.isCompiled) {
+                // TODO: WTF? Resolving libraries in current session
+                val session = sessionProvider.getSession(moduleInfo) ?: return null
                 return buildKotlinClassOnRequest(classPsi.containingKtFile, classId, session)
             }
 
+            val session = sessionProvider.getSession(module) ?: return null
             session.service<FirProvider>().getSymbolByFqName(classId)
         }
     }
 
     fun tryJava(classId: ClassId): ConeSymbol? {
-
-        val symbol = javaSymbolProvider.getSymbolByFqName(classId)
-        if (symbol == null) {
-            if (classId.shortClassName.asString() == "PsiElement") {
-                return null
-            }
-            return null
-        }
-
-        return symbol
+        return javaSymbolProvider.getSymbolByFqName(classId)
     }
 
     override fun getSymbolByFqName(classId: ClassId): ConeSymbol? {
@@ -110,7 +104,7 @@ class IdeFirDependenciesSymbolProvider(moduleInfo: IdeaModuleInfo, val project: 
         if (PackageIndexUtil.packageExists(fqName, depScope, project)) {
             return fqName
         }
-        return null
+        return javaSymbolProvider.getPackage(fqName)
     }
 }
 
