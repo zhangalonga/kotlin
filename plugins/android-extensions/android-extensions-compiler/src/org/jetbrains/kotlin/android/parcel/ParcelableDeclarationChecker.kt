@@ -174,7 +174,7 @@ class ParcelableDeclarationChecker : DeclarationChecker {
             IncompatibleClassTracker.DoNothing,
             descriptor.module.name.asString(),
             /* isJvm8Target */ false,
-            /* isReleaseCoroutines */ false
+            /* isReleaseCoroutines */ KotlinTypeMapper.RELEASE_COROUTINES_DEFAULT
         )
 
         for (parameter in primaryConstructor?.valueParameters.orEmpty()) {

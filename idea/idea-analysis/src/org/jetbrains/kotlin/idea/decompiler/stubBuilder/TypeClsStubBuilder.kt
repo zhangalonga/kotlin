@@ -189,7 +189,9 @@ class TypeClsStubBuilder(private val c: ClsStubBuilderContext) {
                     assert(
                         fqName == DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME_EXPERIMENTAL
                                 || fqName == DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME_RELEASE
-                    )
+                    ) {
+                        "Last parameter type of suspend function must be Continuation, but it is $fqName"
+                    }
                     suspendParameterType = parameterType
                     continue
                 }

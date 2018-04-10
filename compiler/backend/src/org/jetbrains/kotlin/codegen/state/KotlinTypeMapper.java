@@ -166,6 +166,8 @@ public class KotlinTypeMapper {
         this.isReleaseCoroutines = isReleaseCoroutines;
     }
 
+    public static final boolean RELEASE_COROUTINES_DEFAULT = false;
+
     @NotNull
     public BindingContext getBindingContext() {
         return bindingContext;
