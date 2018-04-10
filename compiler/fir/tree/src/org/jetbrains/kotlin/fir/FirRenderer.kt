@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.symbols.ConeClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.ConeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.*
+import org.jetbrains.kotlin.fir.types.impl.FirImplicitUnitType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationKind
 import org.jetbrains.kotlin.name.SpecialNames
@@ -407,7 +408,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitImplicitType(implicitType: FirImplicitType) {
-        print("<implicit>")
+        print(if (implicitType is FirImplicitUnitType) "kotlin.Unit" else "<implicit>")
     }
 
     override fun visitTypeWithNullability(typeWithNullability: FirTypeWithNullability) {
