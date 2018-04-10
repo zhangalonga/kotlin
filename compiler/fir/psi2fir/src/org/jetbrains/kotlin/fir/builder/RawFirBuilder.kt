@@ -92,8 +92,12 @@ class RawFirBuilder(val session: FirSession) {
         private fun KtTypeReference?.toFirOrErrorType(): FirType =
             convertSafe() ?: FirErrorTypeImpl(session, this, if (this == null) "Incomplete code" else "Conversion failed")
 
-        private fun KtExpression?.toFirBody(): FirBody? =
-            convertSafe<FirExpression>()?.let { it as? FirBody ?: FirExpressionBodyImpl(session, it) }
+        private fun KtDeclarationWithBody.buildFirBody(): FirBody? =
+            when {
+                !hasBody() -> null
+                hasBlockBody() -> FirBlockBodyImpl(session, this)
+                else -> FirExpressionBodyImpl(session, FirExpressionStub(session, null))
+            }
 
         private fun KtExpression?.toFirExpression(): FirExpression =
             convertSafe() ?: FirErrorExpressionImpl(session, this)
@@ -120,7 +124,7 @@ class RawFirBuilder(val session: FirSession) {
                 } else {
                     returnTypeReference.toFirOrUnitType()
                 },
-                bodyExpression.toFirBody()
+                this.buildFirBody()
             )
             extractAnnotationsTo(firAccessor)
             extractValueParametersTo(firAccessor, propertyType)
@@ -387,7 +391,7 @@ class RawFirBuilder(val session: FirSession) {
                 } else {
                     typeReference.toFirOrImplicitType()
                 },
-                function.bodyExpression.toFirBody()
+                function.buildFirBody()
             )
             function.extractAnnotationsTo(firFunction)
             function.extractTypeParametersTo(firFunction)
@@ -403,7 +407,7 @@ class RawFirBuilder(val session: FirSession) {
                 constructor,
                 constructor.visibility,
                 constructor.getDelegationCall().convert(),
-                constructor.bodyExpression.toFirBody()
+                constructor.buildFirBody()
             )
             constructor.extractAnnotationsTo(firConstructor)
             constructor.extractValueParametersTo(firConstructor)
@@ -425,7 +429,7 @@ class RawFirBuilder(val session: FirSession) {
             return FirAnonymousInitializerImpl(
                 session,
                 initializer,
-                initializer.body.toFirBody()
+                FirBlockBodyImpl(session, initializer)
             )
         }
 
