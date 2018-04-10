@@ -144,6 +144,12 @@ public class FirResolveTestCaseGenerated extends AbstractFirResolveTestCase {
             doTest(fileName);
         }
 
+        @TestMetadata("ByteArray.kt")
+        public void testByteArray() throws Exception {
+            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/ByteArray.kt");
+            doTest(fileName);
+        }
+
         @TestMetadata("NestedSuperType.kt")
         public void testNestedSuperType() throws Exception {
             String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/NestedSuperType.kt");
