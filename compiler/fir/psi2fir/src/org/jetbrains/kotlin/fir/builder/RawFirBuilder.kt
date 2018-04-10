@@ -99,8 +99,9 @@ class RawFirBuilder(val session: FirSession) {
                 else -> FirExpressionBodyImpl(session, FirExpressionStub(session, null))
             }
 
-        private fun KtExpression?.toFirExpression(): FirExpression =
+        private fun ValueArgument?.toFirExpression(): FirExpression = with(this as? KtElement) {
             convertSafe() ?: FirErrorExpressionImpl(session, this)
+        }
 
         private fun KtPropertyAccessor?.toFirPropertyAccessor(
             property: KtProperty,
@@ -201,7 +202,7 @@ class RawFirBuilder(val session: FirSession) {
 
         private fun KtCallElement.extractArgumentsTo(container: FirAbstractCall) {
             for (argument in this.valueArguments) {
-                container.arguments += argument.getArgumentExpression().toFirExpression()
+                container.arguments += argument.toFirExpression()
             }
         }
 
