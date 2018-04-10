@@ -31,6 +31,12 @@ public class FirResolveTestCaseWithStdlibGenerated extends AbstractFirResolveTes
         doTest(fileName);
     }
 
+    @TestMetadata("functionX.kt")
+    public void testFunctionX() throws Exception {
+        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/stdlib/functionX.kt");
+        doTest(fileName);
+    }
+
     @TestMetadata("reflectionClass.kt")
     public void testReflectionClass() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/stdlib/reflectionClass.kt");
