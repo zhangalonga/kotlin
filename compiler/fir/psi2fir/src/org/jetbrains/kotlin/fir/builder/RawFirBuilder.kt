@@ -25,14 +25,13 @@ import org.jetbrains.kotlin.fir.types.FirTypeProjection
 import org.jetbrains.kotlin.fir.types.impl.*
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationKind
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.hasActualModifier
 import org.jetbrains.kotlin.psi.psiUtil.hasExpectModifier
-import org.jetbrains.kotlin.psi.psiUtil.modalityModifierType
-import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
 import org.jetbrains.kotlin.types.Variance
 
 class RawFirBuilder(val session: FirSession) {
@@ -44,26 +43,24 @@ class RawFirBuilder(val session: FirSession) {
     }
 
     private val KtModifierListOwner.visibility: Visibility
-        get() {
-            val modifierType = visibilityModifierType()
-            return when (modifierType) {
-                KtTokens.PUBLIC_KEYWORD -> Visibilities.PUBLIC
-                KtTokens.PROTECTED_KEYWORD -> Visibilities.PROTECTED
-                KtTokens.INTERNAL_KEYWORD -> Visibilities.INTERNAL
-                KtTokens.PRIVATE_KEYWORD -> Visibilities.PRIVATE
-                else -> Visibilities.UNKNOWN
+        get() = with(modifierList) {
+            when {
+                this == null -> Visibilities.UNKNOWN
+                hasModifier(PRIVATE_KEYWORD) -> Visibilities.PRIVATE
+                hasModifier(PUBLIC_KEYWORD) -> Visibilities.PUBLIC
+                hasModifier(PROTECTED_KEYWORD) -> Visibilities.PROTECTED
+                else -> if (hasModifier(INTERNAL_KEYWORD)) Visibilities.INTERNAL else Visibilities.UNKNOWN
             }
         }
 
     private val KtDeclaration.modality: Modality?
-        get() {
-            val modifierType = modalityModifierType()
-            return when (modifierType) {
-                KtTokens.FINAL_KEYWORD -> Modality.FINAL
-                KtTokens.SEALED_KEYWORD -> Modality.SEALED
-                KtTokens.ABSTRACT_KEYWORD -> Modality.ABSTRACT
-                KtTokens.OPEN_KEYWORD -> Modality.OPEN
-                else -> null
+        get() = with(modifierList) {
+            when {
+                this == null -> null
+                hasModifier(FINAL_KEYWORD) -> Modality.FINAL
+                hasModifier(SEALED_KEYWORD) -> Modality.SEALED
+                hasModifier(ABSTRACT_KEYWORD) -> Modality.ABSTRACT
+                else -> if (hasModifier(OPEN_KEYWORD)) Modality.OPEN else null
             }
         }
 
