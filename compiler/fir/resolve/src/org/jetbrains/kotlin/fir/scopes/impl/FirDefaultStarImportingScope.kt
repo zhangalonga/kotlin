@@ -12,10 +12,12 @@ import org.jetbrains.kotlin.fir.declarations.impl.FirResolvedPackageStarImport
 class FirDefaultStarImportingScope(session: FirSession, lookupInFir: Boolean = false) :
     FirAbstractStarImportingScope(session, lookupInFir) {
 
-    override val starImports = session.moduleInfo?.platform?.getDefaultImports(true)?.map {
-        FirResolvedPackageStarImport(
-            FirImportImpl(session, null, it.fqName, isAllUnder = true, aliasName = null),
-            it.fqName
-        )
-    } ?: emptyList()
+    override val starImports = session.moduleInfo?.platform?.getDefaultImports(true)
+        ?.filter { it.isAllUnder }
+        ?.map {
+            FirResolvedPackageStarImport(
+                FirImportImpl(session, null, it.fqName, isAllUnder = true, aliasName = null),
+                it.fqName
+            )
+        } ?: emptyList()
 }
