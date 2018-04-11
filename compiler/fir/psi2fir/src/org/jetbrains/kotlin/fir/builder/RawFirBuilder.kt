@@ -446,10 +446,10 @@ class RawFirBuilder(val session: FirSession) {
                 property.receiverTypeReference.convertSafe(),
                 propertyType,
                 property.isVar,
-                property.initializer?.convert(),
+                if (property.hasInitializer()) FirExpressionStub(session, property) else null,
                 property.getter.toFirPropertyAccessor(property, propertyType, isGetter = true),
                 property.setter.toFirPropertyAccessor(property, propertyType, isGetter = false),
-                property.delegateExpression?.convert()
+                if (property.hasDelegate()) property.delegateExpression!!.convert<FirExpression>() else null
             )
             property.extractAnnotationsTo(firProperty)
             property.extractTypeParametersTo(firProperty)
