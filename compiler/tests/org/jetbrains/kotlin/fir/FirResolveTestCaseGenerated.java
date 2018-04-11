@@ -115,6 +115,12 @@ public class FirResolveTestCaseGenerated extends AbstractFirResolveTestCase {
         doTest(fileName);
     }
 
+    @TestMetadata("typeParameterInPropertyReceiver.kt")
+    public void testTypeParameterInPropertyReceiver() throws Exception {
+        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/typeParameterInPropertyReceiver.kt");
+        doTest(fileName);
+    }
+
     @TestMetadata("typeParameterVsNested.kt")
     public void testTypeParameterVsNested() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/typeParameterVsNested.kt");
