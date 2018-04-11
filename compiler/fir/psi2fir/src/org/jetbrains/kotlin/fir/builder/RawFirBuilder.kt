@@ -218,7 +218,7 @@ class RawFirBuilder(val session: FirSession) {
                         val type = superTypeListEntry.typeReference.toFirOrErrorType()
                         container.superTypes += FirDelegatedTypeImpl(
                             type,
-                            superTypeListEntry.delegateExpression.convertSafe()
+                            FirExpressionStub(session, superTypeListEntry)
                         )
                     }
                 }
