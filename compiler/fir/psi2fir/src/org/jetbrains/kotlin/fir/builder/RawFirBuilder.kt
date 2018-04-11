@@ -142,7 +142,7 @@ class RawFirBuilder(val session: FirSession) {
                     defaultType != null -> defaultType
                     else -> null.toFirOrErrorType()
                 },
-                defaultValue?.convert(),
+                if (hasDefaultValue()) FirExpressionStub(session, this) else null,
                 isCrossinline = hasModifier(KtTokens.CROSSINLINE_KEYWORD),
                 isNoinline = hasModifier(KtTokens.NOINLINE_KEYWORD),
                 isVararg = isVarArg
