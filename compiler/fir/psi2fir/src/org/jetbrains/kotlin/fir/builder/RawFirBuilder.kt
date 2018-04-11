@@ -236,7 +236,8 @@ class RawFirBuilder(val session: FirSession) {
                     FirErrorTypeImpl(session, constructorCallee, "Not implemented yet"),
                     isThis = false
                 ).apply {
-                    superTypeCallEntry.extractArgumentsTo(this)
+                    // TODO: arguments are not needed for light classes, but will be needed later
+                    //superTypeCallEntry.extractArgumentsTo(this)
                 }
             }
             val firConstructor = FirPrimaryConstructorImpl(
@@ -419,7 +420,8 @@ class RawFirBuilder(val session: FirSession) {
                 FirErrorTypeImpl(session, call, "Not implemented yet"),
                 call.isCallToThis || call.isImplicit
             )
-            call.extractArgumentsTo(firConstructorCall)
+            // TODO: arguments are not needed for light classes, but will be needed later
+            // call.extractArgumentsTo(firConstructorCall)
             return firConstructorCall
         }
 
