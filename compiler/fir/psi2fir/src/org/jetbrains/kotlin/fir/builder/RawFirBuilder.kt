@@ -166,7 +166,7 @@ class RawFirBuilder(val session: FirSession) {
                 isLateInit = false,
                 receiverType = null,
                 returnType = type,
-                isVar = valOrVarKeyword?.node?.elementType == KtTokens.VAR_KEYWORD,
+                isVar = isMutable,
                 initializer = null,
                 getter = FirDefaultPropertyGetter(session, this, type),
                 setter = FirDefaultPropertySetter(session, this, type),
