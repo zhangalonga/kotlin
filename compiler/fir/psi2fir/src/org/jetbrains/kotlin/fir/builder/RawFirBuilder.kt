@@ -123,7 +123,7 @@ class RawFirBuilder(val session: FirSession) {
                 isGetter,
                 visibility,
                 if (isGetter) {
-                    returnTypeReference.toFirOrImplicitType()
+                    returnTypeReference?.convertSafe() ?: propertyType
                 } else {
                     returnTypeReference.toFirOrUnitType()
                 },
