@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.KotlinType
 
-interface IrProperty : IrDeclaration {
+interface IrProperty : IrDeclaration, IrDeclarationParent {
     override val descriptor: PropertyDescriptor
 
     val name: Name
