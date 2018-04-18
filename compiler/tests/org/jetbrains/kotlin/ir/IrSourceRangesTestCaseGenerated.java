@@ -34,6 +34,12 @@ public class IrSourceRangesTestCaseGenerated extends AbstractIrSourceRangesTestC
         runTest("compiler/testData/ir/sourceRanges/augmentedAssignmentWithExpression.kt");
     }
 
+    @TestMetadata("comments.kt")
+    public void testComments() throws Exception {
+        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/ir/sourceRanges/comments.kt");
+        doTest(fileName);
+    }
+
     @TestMetadata("kt17108.kt")
     public void testKt17108() throws Exception {
         runTest("compiler/testData/ir/sourceRanges/kt17108.kt");

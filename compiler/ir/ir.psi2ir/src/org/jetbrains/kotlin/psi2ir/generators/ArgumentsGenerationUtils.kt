@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpressionWithCopy
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.intermediate.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.DescriptorUtils
@@ -44,7 +44,7 @@ fun StatementGenerator.generateReceiverOrNull(ktDefaultElement: KtElement, recei
     receiver?.let { generateReceiver(ktDefaultElement, receiver) }
 
 fun StatementGenerator.generateReceiver(ktDefaultElement: KtElement, receiver: ReceiverValue): IntermediateValue =
-    generateReceiver(ktDefaultElement.startOffset, ktDefaultElement.endOffset, receiver)
+    generateReceiver(ktDefaultElement.startOffsetSkippingComments, ktDefaultElement.endOffset, receiver)
 
 fun StatementGenerator.generateReceiver(defaultStartOffset: Int, defaultEndOffset: Int, receiver: ReceiverValue): IntermediateValue =
     if (receiver is TransientReceiver)
@@ -69,7 +69,7 @@ fun StatementGenerator.generateReceiver(defaultStartOffset: Int, defaultEndOffse
                 generateExpression(receiver.expression)
             is ClassValueReceiver ->
                 IrGetObjectValueImpl(
-                    receiver.expression.startOffset, receiver.expression.endOffset, receiver.type,
+                    receiver.expression.startOffsetSkippingComments, receiver.expression.endOffset, receiver.type,
                     context.symbolTable.referenceClass(receiver.classQualifier.descriptor as ClassDescriptor)
                 )
             is ExtensionReceiver ->
@@ -125,7 +125,7 @@ private fun StatementGenerator.generateThisOrSuperReceiver(receiver: ReceiverVal
         receiver as? ExpressionReceiver ?: throw AssertionError("'this' or 'super' receiver should be an expression receiver")
     val ktReceiver = expressionReceiver.expression
     return IrGetValueImpl(
-        ktReceiver.startOffset, ktReceiver.endOffset,
+        ktReceiver.startOffsetSkippingComments, ktReceiver.endOffset,
         context.symbolTable.referenceValueParameter(classDescriptor.thisAsReceiverParameter)
     )
 }
@@ -156,7 +156,7 @@ fun StatementGenerator.generateCallReceiver(
                 "Call for member imported from object $calleeDescriptor has non-null dispatch receiver $dispatchReceiver"
             }
             dispatchReceiverValue =
-                    generateReceiverForCalleeImportedFromObject(ktDefaultElement.startOffset, ktDefaultElement.endOffset, calleeDescriptor)
+                    generateReceiverForCalleeImportedFromObject(ktDefaultElement.startOffsetSkippingComments, ktDefaultElement.endOffset, calleeDescriptor)
             extensionReceiverValue = generateReceiverOrNull(ktDefaultElement, extensionReceiver)
         }
         is TypeAliasConstructorDescriptor -> {
@@ -178,7 +178,7 @@ fun StatementGenerator.generateCallReceiver(
             SimpleCallReceiver(dispatchReceiverValue, extensionReceiverValue)
         extensionReceiverValue != null || dispatchReceiverValue != null ->
             SafeCallReceiver(
-                this, ktDefaultElement.startOffset, ktDefaultElement.endOffset,
+                this, ktDefaultElement.startOffsetSkippingComments, ktDefaultElement.endOffset,
                 extensionReceiverValue, dispatchReceiverValue, isAssignmentReceiver
             )
         else ->
@@ -210,7 +210,7 @@ fun StatementGenerator.generateVarargExpression(
     }
 
     val varargStartOffset = varargArgument.arguments.fold(Int.MAX_VALUE) { minStartOffset, argument ->
-        Math.min(minStartOffset, argument.asElement().startOffset)
+        Math.min(minStartOffset, argument.asElement().startOffsetSkippingComments)
     }
     val varargEndOffset = varargArgument.arguments.fold(Int.MIN_VALUE) { maxEndOffset, argument ->
         Math.max(maxEndOffset, argument.asElement().endOffset)
@@ -227,7 +227,7 @@ fun StatementGenerator.generateVarargExpression(
         val irVarargElement =
             if (argument.getSpreadElement() != null)
                 IrSpreadElementImpl(
-                    ktArgumentExpression.startOffset, ktArgumentExpression.endOffset,
+                    ktArgumentExpression.startOffsetSkippingComments, ktArgumentExpression.endOffset,
                     generateExpression(ktArgumentExpression)
                 )
             else
@@ -325,7 +325,7 @@ fun StatementGenerator.pregenerateExtensionInvokeCall(resolvedCall: ResolvedCall
     call.callReceiver =
             if (resolvedCall.call.isSafeCall())
                 SafeExtensionInvokeCallReceiver(
-                    this, ktCallElement.startOffset, ktCallElement.endOffset,
+                    this, ktCallElement.startOffsetSkippingComments, ktCallElement.endOffset,
                     call, functionReceiverValue, extensionInvokeReceiverValue
                 )
             else

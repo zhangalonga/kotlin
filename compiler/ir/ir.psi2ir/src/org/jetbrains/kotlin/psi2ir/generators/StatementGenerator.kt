@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.deparenthesize
 import org.jetbrains.kotlin.psi2ir.intermediate.IntermediateValue
 import org.jetbrains.kotlin.psi2ir.intermediate.createTemporaryVariableInBlock
@@ -84,7 +84,7 @@ class StatementGenerator(
         }
 
         return context.symbolTable.declareVariable(
-            property.startOffset, property.endOffset, IrDeclarationOrigin.DEFINED,
+            property.startOffsetSkippingComments, property.endOffset, IrDeclarationOrigin.DEFINED,
             variableDescriptor, property.initializer?.genExpr()
         )
     }
@@ -100,7 +100,7 @@ class StatementGenerator(
 
     override fun visitDestructuringDeclaration(multiDeclaration: KtDestructuringDeclaration, data: Nothing?): IrStatement {
         val irBlock = IrCompositeImpl(
-            multiDeclaration.startOffset, multiDeclaration.endOffset,
+            multiDeclaration.startOffsetSkippingComments, multiDeclaration.endOffset,
             context.builtIns.unitType, IrStatementOrigin.DESTRUCTURING_DECLARATION
         )
         val ktInitializer = multiDeclaration.initializer!!
@@ -129,11 +129,11 @@ class StatementGenerator(
             if (componentVariable.name.isSpecial) continue
 
             val irComponentCall = callGenerator.generateCall(
-                ktEntry.startOffset, ktEntry.endOffset, componentSubstitutedCall,
+                ktEntry.startOffsetSkippingComments, ktEntry.endOffset, componentSubstitutedCall,
                 IrStatementOrigin.COMPONENT_N.withIndex(index + 1)
             )
             val irComponentVar = context.symbolTable.declareVariable(
-                ktEntry.startOffset, ktEntry.endOffset, IrDeclarationOrigin.DEFINED,
+                ktEntry.startOffsetSkippingComments, ktEntry.endOffset, IrDeclarationOrigin.DEFINED,
                 componentVariable, irComponentCall
             )
             irBlock.statements.add(irComponentVar)
@@ -145,7 +145,7 @@ class StatementGenerator(
         if (isBlockBody) throw AssertionError("Use IrBlockBody and corresponding body generator to generate blocks as function bodies")
 
         val returnType = getInferredTypeWithImplicitCasts(expression) ?: context.builtIns.unitType
-        val irBlock = IrBlockImpl(expression.startOffset, expression.endOffset, returnType)
+        val irBlock = IrBlockImpl(expression.startOffsetSkippingComments, expression.endOffset, returnType)
 
         expression.statements.forEach {
             irBlock.statements.add(it.genStmt())
@@ -157,11 +157,11 @@ class StatementGenerator(
     override fun visitReturnExpression(expression: KtReturnExpression, data: Nothing?): IrStatement {
         val returnTarget = getReturnExpressionTarget(expression)
         val irReturnedExpression = expression.returnedExpression?.genExpr() ?: IrGetObjectValueImpl(
-            expression.startOffset, expression.endOffset, context.builtIns.unitType,
+            expression.startOffsetSkippingComments, expression.endOffset, context.builtIns.unitType,
             context.symbolTable.referenceClass(context.builtIns.unit)
         )
         return IrReturnImpl(
-            expression.startOffset, expression.endOffset, context.builtIns.nothingType,
+            expression.startOffsetSkippingComments, expression.endOffset, context.builtIns.nothingType,
             context.symbolTable.referenceFunction(returnTarget), irReturnedExpression
         )
     }
@@ -191,7 +191,7 @@ class StatementGenerator(
 
     override fun visitThrowExpression(expression: KtThrowExpression, data: Nothing?): IrStatement {
         return IrThrowImpl(
-            expression.startOffset,
+            expression.startOffsetSkippingComments,
             expression.endOffset,
             context.builtIns.nothingType,
             expression.thrownExpression!!.genExpr()
@@ -207,7 +207,7 @@ class StatementGenerator(
 
     fun generateConstantExpression(expression: KtExpression, constant: CompileTimeConstant<*>): IrExpression =
         ConstantValueGenerator(context).generateConstantValueAsExpression(
-            expression.startOffset,
+            expression.startOffsetSkippingComments,
             expression.endOffset,
             constant.toConstantValue(getInferredTypeWithImplicitCastsOrFail(expression))
         )
@@ -221,20 +221,20 @@ class StatementGenerator(
                 if (irArg is IrConst<*> && irArg.kind == IrConstKind.String)
                     irArg
                 else
-                    IrStringConcatenationImpl(expression.startOffset, expression.endOffset, resultType, listOf(irArg))
+                    IrStringConcatenationImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, listOf(irArg))
             }
             0 ->
-                IrConstImpl.string(expression.startOffset, expression.endOffset, resultType, "")
+                IrConstImpl.string(expression.startOffsetSkippingComments, expression.endOffset, resultType, "")
             else ->
-                IrStringConcatenationImpl(expression.startOffset, expression.endOffset, resultType, entries.map { it.genExpr() })
+                IrStringConcatenationImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, entries.map { it.genExpr() })
         }
     }
 
     override fun visitLiteralStringTemplateEntry(entry: KtLiteralStringTemplateEntry, data: Nothing?): IrStatement =
-        IrConstImpl.string(entry.startOffset, entry.endOffset, context.builtIns.stringType, entry.text)
+        IrConstImpl.string(entry.startOffsetSkippingComments, entry.endOffset, context.builtIns.stringType, entry.text)
 
     override fun visitEscapeStringTemplateEntry(entry: KtEscapeStringTemplateEntry, data: Nothing?): IrStatement =
-        IrConstImpl.string(entry.startOffset, entry.endOffset, context.builtIns.stringType, entry.unescapedValue)
+        IrConstImpl.string(entry.startOffsetSkippingComments, entry.endOffset, context.builtIns.stringType, entry.unescapedValue)
 
     override fun visitStringTemplateEntryWithExpression(entry: KtStringTemplateEntryWithExpression, data: Nothing?): IrStatement =
         entry.expression!!.genExpr()
@@ -267,7 +267,7 @@ class StatementGenerator(
         resolvedCall: ResolvedCall<*>?
     ): IrExpression =
         CallGenerator(this).generateValueReference(
-            expression.startOffset, expression.endOffset,
+            expression.startOffsetSkippingComments, expression.endOffset,
             descriptor, resolvedCall, null
         )
 
@@ -279,14 +279,14 @@ class StatementGenerator(
             return CallGenerator(this).generateCall(expression, functionCall, IrStatementOrigin.INVOKE)
         }
 
-        return CallGenerator(this).generateCall(expression.startOffset, expression.endOffset, pregenerateCall(resolvedCall))
+        return CallGenerator(this).generateCall(expression.startOffsetSkippingComments, expression.endOffset, pregenerateCall(resolvedCall))
     }
 
     override fun visitArrayAccessExpression(expression: KtArrayAccessExpression, data: Nothing?): IrStatement {
         val indexedGetCall = getOrFail(BindingContext.INDEXED_LVALUE_GET, expression)
 
         return CallGenerator(this).generateCall(
-            expression.startOffset, expression.endOffset,
+            expression.startOffsetSkippingComments, expression.endOffset,
             pregenerateCall(indexedGetCall), IrStatementOrigin.GET_ARRAY_ELEMENT
         )
     }
@@ -302,13 +302,13 @@ class StatementGenerator(
         return when (referenceTarget) {
             is ClassDescriptor ->
                 IrGetValueImpl(
-                    expression.startOffset, expression.endOffset,
+                    expression.startOffsetSkippingComments, expression.endOffset,
                     context.symbolTable.referenceValueParameter(referenceTarget.thisAsReceiverParameter)
                 )
             is CallableDescriptor -> {
                 val extensionReceiver = referenceTarget.extensionReceiverParameter ?: TODO("No extension receiver: $referenceTarget")
                 IrGetValueImpl(
-                    expression.startOffset, expression.endOffset,
+                    expression.startOffsetSkippingComments, expression.endOffset,
                     context.symbolTable.referenceValueParameter(extensionReceiver)
                 )
             }
@@ -370,7 +370,7 @@ class StatementGenerator(
 
     override fun visitTypeAlias(typeAlias: KtTypeAlias, data: Nothing?): IrStatement =
         IrTypeAliasImpl(
-            typeAlias.startOffset, typeAlias.endOffset, IrDeclarationOrigin.DEFINED,
+            typeAlias.startOffsetSkippingComments, typeAlias.endOffset, IrDeclarationOrigin.DEFINED,
             getOrFail(BindingContext.TYPE_ALIAS, typeAlias)
         )
 

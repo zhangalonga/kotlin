@@ -38,7 +38,7 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyDelegate
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.intermediate.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
@@ -55,7 +55,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         val kPropertyType = getKPropertyTypeForDelegatedProperty(propertyDescriptor)
 
         val irProperty = IrPropertyImpl(
-            ktProperty.startOffset, ktProperty.endOffset, IrDeclarationOrigin.DEFINED, true,
+            ktProperty.startOffsetSkippingComments, ktProperty.endOffset, IrDeclarationOrigin.DEFINED, true,
             propertyDescriptor
         ).apply {
             backingField = generateDelegateFieldForProperty(propertyDescriptor, kPropertyType, ktDelegate)
@@ -95,7 +95,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         generateBody: (IrFunction) -> IrBody
     ): IrFunction =
         context.symbolTable.declareSimpleFunctionWithOverrides(
-            ktDelegate.startOffset, ktDelegate.endOffset,
+            ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset,
             IrDeclarationOrigin.DELEGATED_PROPERTY_ACCESSOR,
             accessorDescriptor
         ).buildWithScope { irAccessor ->
@@ -123,7 +123,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         val delegateDescriptor = createPropertyDelegateDescriptor(propertyDescriptor, delegateType, kPropertyType)
 
         return context.symbolTable.declareField(
-            ktDelegate.startOffset, ktDelegate.endOffset, IrDeclarationOrigin.DELEGATE,
+            ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset, IrDeclarationOrigin.DELEGATE,
             delegateDescriptor
         ).also { irDelegate ->
             irDelegate.initializer = generateInitializerBodyForPropertyDelegate(
@@ -150,7 +150,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         provideDelegateCall.setExplicitReceiverValue(OnceExpressionValue(irDelegateInitializer.expression))
         provideDelegateCall.irValueArgumentsByIndex[1] = createCallableReference(ktDelegate, kPropertyType, property, scopeOwner)
         val irProvideDelegate =
-            CallGenerator(statementGenerator).generateCall(ktDelegate.startOffset, ktDelegate.endOffset, provideDelegateCall)
+            CallGenerator(statementGenerator).generateCall(ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset, provideDelegateCall)
         return IrExpressionBodyImpl(irProvideDelegate)
     }
 
@@ -161,7 +161,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
     ): IntermediateValue {
         val thisValue = createThisValueForDelegate(thisClass, ktDelegate)
         return BackingFieldLValue(
-            ktDelegate.startOffset, ktDelegate.endOffset,
+            ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset,
             irDelegateField.descriptor.type,
             irDelegateField,
             thisValue,
@@ -173,7 +173,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         thisClass?.let {
             generateExpressionValue(it.thisAsReceiverParameter.type) {
                 IrGetValueImpl(
-                    ktDelegate.startOffset, ktDelegate.endOffset,
+                    ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset,
                     context.symbolTable.referenceValueParameter(thisClass.thisAsReceiverParameter)
                 )
             }
@@ -186,7 +186,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         statementGenerator: StatementGenerator
     ): IrCallableReference =
         ReflectionReferencesGenerator(statementGenerator).generateCallableReference(
-            ktElement.startOffset, ktElement.endOffset, type,
+            ktElement.startOffsetSkippingComments, ktElement.endOffset, type,
             referencedDescriptor,
             null, IrStatementOrigin.PROPERTY_REFERENCE_FOR_DELEGATE
         )
@@ -210,7 +210,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         scopeOwner: IrSymbol
     ): IrLocalDelegatedPropertyReference =
         ReflectionReferencesGenerator(createBodyGenerator(scopeOwner).createStatementGenerator()).generateLocalDelegatedPropertyReference(
-            ktElement.startOffset, ktElement.endOffset,
+            ktElement.startOffsetSkippingComments, ktElement.endOffset,
             type, variableDescriptor, irDelegateSymbol,
             IrStatementOrigin.PROPERTY_REFERENCE_FOR_DELEGATE
         )
@@ -224,7 +224,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         val kPropertyType = getKPropertyTypeForLocalDelegatedProperty(variableDescriptor)
 
         val irLocalDelegatedProperty = IrLocalDelegatedPropertyImpl(
-            ktProperty.startOffset, ktProperty.endOffset, IrDeclarationOrigin.DEFINED,
+            ktProperty.startOffsetSkippingComments, ktProperty.endOffset, IrDeclarationOrigin.DEFINED,
             variableDescriptor
         ).apply {
             delegate = generateDelegateVariableForLocalDelegatedProperty(ktDelegate, variableDescriptor, kPropertyType, scopeOwnerSymbol)
@@ -274,7 +274,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         val delegateDescriptor = createLocalPropertyDelegatedDescriptor(variableDescriptor, delegateType, kPropertyType)
 
         return context.symbolTable.declareVariable(
-            ktDelegate.startOffset, ktDelegate.endOffset, IrDeclarationOrigin.DELEGATE,
+            ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset, IrDeclarationOrigin.DELEGATE,
             delegateDescriptor
         ).also { irVariable ->
             irVariable.initializer = generateInitializerForLocalDelegatedPropertyDelegate(
@@ -317,11 +317,11 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
                     createLocalDelegatedPropertyReference(ktDelegate, kPropertyType, variableDescriptor, delegateSymbol, scopeOwner)
         }
 
-        return CallGenerator(statementGenerator).generateCall(ktDelegate.startOffset, ktDelegate.endOffset, provideDelegateCall)
+        return CallGenerator(statementGenerator).generateCall(ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset, provideDelegateCall)
     }
 
     private fun createVariableValueForDelegate(irDelegate: IrVariableSymbol, ktDelegate: KtPropertyDelegate) =
-        VariableLValue(ktDelegate.startOffset, ktDelegate.endOffset, irDelegate)
+        VariableLValue(ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset, irDelegate)
 
     private inline fun createLocalPropertyAccessor(
         getterDescriptor: VariableAccessorDescriptor,
@@ -329,7 +329,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
         generateBody: (IrFunction) -> IrBody
     ) =
         context.symbolTable.declareSimpleFunctionWithOverrides(
-            ktDelegate.startOffset, ktDelegate.endOffset,
+            ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset,
             IrDeclarationOrigin.DELEGATED_PROPERTY_ACCESSOR,
             getterDescriptor
         ).buildWithScope { irAccessor ->
@@ -371,7 +371,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
                 conventionMethodCall.irValueArgumentsByIndex[1] = irPropertyReference
                 +irReturn(
                     CallGenerator(statementGenerator).generateCall(
-                        ktDelegate.startOffset,
+                        ktDelegate.startOffsetSkippingComments,
                         ktDelegate.endOffset,
                         conventionMethodCall
                     )
@@ -393,7 +393,7 @@ class DelegatedPropertyGenerator(declarationGenerator: DeclarationGenerator) : D
             conventionMethodCall.setExplicitReceiverValue(delegateReceiverValue)
             conventionMethodCall.irValueArgumentsByIndex[1] = irPropertyReference
             conventionMethodCall.irValueArgumentsByIndex[2] = irGet(irSetter.valueParameters[0].symbol)
-            +irReturn(CallGenerator(statementGenerator).generateCall(ktDelegate.startOffset, ktDelegate.endOffset, conventionMethodCall))
+            +irReturn(CallGenerator(statementGenerator).generateCall(ktDelegate.startOffsetSkippingComments, ktDelegate.endOffset, conventionMethodCall))
         }
     }
 }

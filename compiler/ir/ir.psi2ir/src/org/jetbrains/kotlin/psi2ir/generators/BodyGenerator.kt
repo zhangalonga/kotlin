@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.intermediate.VariableLValue
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
@@ -43,7 +43,7 @@ class BodyGenerator(
     fun generateFunctionBody(ktBody: KtExpression): IrBody {
         val statementGenerator = createStatementGenerator()
 
-        val irBlockBody = IrBlockBodyImpl(ktBody.startOffset, ktBody.endOffset)
+        val irBlockBody = IrBlockBodyImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset)
         if (ktBody is KtBlockExpression) {
             statementGenerator.generateStatements(ktBody.statements, irBlockBody)
         } else {
@@ -60,13 +60,13 @@ class BodyGenerator(
         val statementGenerator = createStatementGenerator()
 
         val ktBody = ktFun.bodyExpression!!
-        val irBlockBody = IrBlockBodyImpl(ktBody.startOffset, ktBody.endOffset)
+        val irBlockBody = IrBlockBodyImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset)
 
         for (ktParameter in ktFun.valueParameters) {
             val ktDestructuringDeclaration = ktParameter.destructuringDeclaration ?: continue
             val valueParameter = getOrFail(BindingContext.VALUE_PARAMETER, ktParameter)
             val parameterValue = VariableLValue(
-                ktDestructuringDeclaration.startOffset, ktDestructuringDeclaration.endOffset,
+                ktDestructuringDeclaration.startOffsetSkippingComments, ktDestructuringDeclaration.endOffset,
                 context.symbolTable.referenceValue(valueParameter),
                 IrStatementOrigin.DESTRUCTURING_DECLARATION
             )
@@ -83,9 +83,9 @@ class BodyGenerator(
         } else {
             irBlockBody.statements.add(
                 generateReturnExpression(
-                    ktBody.startOffset, ktBody.endOffset,
+                    ktBody.startOffsetSkippingComments, ktBody.endOffset,
                     IrGetObjectValueImpl(
-                        ktBody.startOffset, ktBody.endOffset, context.builtIns.unitType,
+                        ktBody.startOffsetSkippingComments, ktBody.endOffset, context.builtIns.unitType,
                         context.symbolTable.referenceClass(context.builtIns.unit)
                     )
                 )
@@ -123,7 +123,7 @@ class BodyGenerator(
 
 
     fun generateSecondaryConstructorBody(ktConstructor: KtSecondaryConstructor): IrBody {
-        val irBlockBody = IrBlockBodyImpl(ktConstructor.startOffset, ktConstructor.endOffset)
+        val irBlockBody = IrBlockBodyImpl(ktConstructor.startOffsetSkippingComments, ktConstructor.endOffset)
 
         generateDelegatingConstructorCall(irBlockBody, ktConstructor)
 
@@ -153,7 +153,7 @@ class BodyGenerator(
 
         val delegatingConstructorCall = statementGenerator.pregenerateCall(delegatingConstructorResolvedCall)
         val irDelegatingConstructorCall = CallGenerator(statementGenerator).generateDelegatingConstructorCall(
-            ktDelegatingConstructorCall.startOffset, ktDelegatingConstructorCall.endOffset,
+            ktDelegatingConstructorCall.startOffsetSkippingComments, ktDelegatingConstructorCall.endOffset,
             delegatingConstructorCall
         )
         irBlockBody.statements.add(irDelegatingConstructorCall)
@@ -169,14 +169,14 @@ class BodyGenerator(
         loopTable[expression]
 
     fun generatePrimaryConstructorBody(ktClassOrObject: KtClassOrObject): IrBody {
-        val irBlockBody = IrBlockBodyImpl(ktClassOrObject.startOffset, ktClassOrObject.endOffset)
+        val irBlockBody = IrBlockBodyImpl(ktClassOrObject.startOffsetSkippingComments, ktClassOrObject.endOffset)
 
         generateSuperConstructorCall(irBlockBody, ktClassOrObject)
 
         val classDescriptor = (scopeOwner as ClassConstructorDescriptor).containingDeclaration
         irBlockBody.statements.add(
             IrInstanceInitializerCallImpl(
-                ktClassOrObject.startOffset, ktClassOrObject.endOffset,
+                ktClassOrObject.startOffsetSkippingComments, ktClassOrObject.endOffset,
                 context.symbolTable.referenceClass(classDescriptor)
             )
         )
@@ -185,14 +185,14 @@ class BodyGenerator(
     }
 
     fun generateSecondaryConstructorBodyWithNestedInitializers(ktConstructor: KtSecondaryConstructor): IrBody {
-        val irBlockBody = IrBlockBodyImpl(ktConstructor.startOffset, ktConstructor.endOffset)
+        val irBlockBody = IrBlockBodyImpl(ktConstructor.startOffsetSkippingComments, ktConstructor.endOffset)
 
         generateDelegatingConstructorCall(irBlockBody, ktConstructor)
 
         val classDescriptor = getOrFail(BindingContext.CONSTRUCTOR, ktConstructor).containingDeclaration as ClassDescriptor
         irBlockBody.statements.add(
             IrInstanceInitializerCallImpl(
-                ktConstructor.startOffset, ktConstructor.endOffset,
+                ktConstructor.startOffsetSkippingComments, ktConstructor.endOffset,
                 context.symbolTable.referenceClass(classDescriptor)
             )
         )
@@ -224,7 +224,7 @@ class BodyGenerator(
                         if (ktSuperTypeListEntry is KtSuperTypeCallEntry) {
                             val superConstructorCall = statementGenerator.pregenerateCall(getResolvedCall(ktSuperTypeListEntry)!!)
                             val irSuperConstructorCall = CallGenerator(statementGenerator).generateDelegatingConstructorCall(
-                                ktSuperTypeListEntry.startOffset, ktSuperTypeListEntry.endOffset, superConstructorCall
+                                ktSuperTypeListEntry.startOffsetSkippingComments, ktSuperTypeListEntry.endOffset, superConstructorCall
                             )
                             irBlockBody.statements.add(irSuperConstructorCall)
                             return
@@ -247,7 +247,7 @@ class BodyGenerator(
         val anyConstructor = context.builtIns.any.constructors.single()
         irBlockBody.statements.add(
             IrDelegatingConstructorCallImpl(
-                ktElement.startOffset, ktElement.endOffset,
+                ktElement.startOffsetSkippingComments, ktElement.endOffset,
                 context.symbolTable.referenceConstructor(anyConstructor),
                 anyConstructor,
                 null
@@ -263,7 +263,7 @@ class BodyGenerator(
         val enumConstructor = context.builtIns.enum.constructors.single()
         irBlockBody.statements.add(
             IrEnumConstructorCallImpl(
-                ktElement.startOffset, ktElement.endOffset,
+                ktElement.startOffsetSkippingComments, ktElement.endOffset,
                 context.symbolTable.referenceConstructor(enumConstructor),
                 mapOf(enumConstructor.typeParameters.single() to classDescriptor.defaultType)
             )
@@ -278,7 +278,7 @@ class BodyGenerator(
         if (ktEnumEntry.declarations.isNotEmpty()) {
             val enumEntryConstructor = enumEntryDescriptor.unsubstitutedPrimaryConstructor!!
             return IrEnumConstructorCallImpl(
-                ktEnumEntry.startOffset, ktEnumEntry.endOffset,
+                ktEnumEntry.startOffsetSkippingComments, ktEnumEntry.endOffset,
                 context.symbolTable.referenceConstructor(enumEntryConstructor),
                 null // enums can't be generic (so far)
             )
@@ -309,7 +309,7 @@ class BodyGenerator(
         ktEnumEntry: KtEnumEntry
     ) =
         CallGenerator(this).generateEnumConstructorSuperCall(
-            ktEnumEntry.startOffset, ktEnumEntry.endOffset,
+            ktEnumEntry.startOffsetSkippingComments, ktEnumEntry.endOffset,
             pregenerateCall(constructorCall)
         )
 

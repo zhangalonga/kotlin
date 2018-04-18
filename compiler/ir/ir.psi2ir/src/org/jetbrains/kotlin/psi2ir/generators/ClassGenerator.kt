@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtDelegatedSuperTypeEntry
 import org.jetbrains.kotlin.psi.KtEnumEntry
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.types.KotlinType
@@ -41,7 +41,7 @@ import java.lang.AssertionError
 class ClassGenerator(declarationGenerator: DeclarationGenerator) : DeclarationGeneratorExtension(declarationGenerator) {
     fun generateClass(ktClassOrObject: KtClassOrObject): IrClass {
         val descriptor = getOrFail(BindingContext.CLASS, ktClassOrObject)
-        val startOffset = ktClassOrObject.startOffset
+        val startOffset = ktClassOrObject.startOffsetSkippingComments
         val endOffset = ktClassOrObject.endOffset
 
         return context.symbolTable.declareClass(
@@ -124,7 +124,7 @@ class ClassGenerator(declarationGenerator: DeclarationGenerator) : DeclarationGe
                 ?: throw AssertionError("Unexpected supertype constructor for delegation: $superTypeConstructorDescriptor")
         val delegateDescriptor = IrImplementingDelegateDescriptorImpl(irClass.descriptor, delegateType, superType)
         val irDelegateField = context.symbolTable.declareField(
-            ktDelegateExpression.startOffset, ktDelegateExpression.endOffset,
+            ktDelegateExpression.startOffsetSkippingComments, ktDelegateExpression.endOffset,
             IrDeclarationOrigin.DELEGATE,
             delegateDescriptor,
             createBodyGenerator(irClass.symbol).generateExpressionBody(ktDelegateExpression)
@@ -324,7 +324,7 @@ class ClassGenerator(declarationGenerator: DeclarationGenerator) : DeclarationGe
     fun generateEnumEntry(ktEnumEntry: KtEnumEntry): IrEnumEntry {
         val enumEntryDescriptor = getOrFail(BindingContext.CLASS, ktEnumEntry)
         return context.symbolTable.declareEnumEntry(
-            ktEnumEntry.startOffset,
+            ktEnumEntry.startOffsetSkippingComments,
             ktEnumEntry.endOffset,
             IrDeclarationOrigin.DEFINED,
             enumEntryDescriptor

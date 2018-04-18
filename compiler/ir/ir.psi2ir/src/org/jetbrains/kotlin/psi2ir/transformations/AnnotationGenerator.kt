@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.ir.util.SymbolTable
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.generators.ConstantValueGenerator
 import org.jetbrains.kotlin.psi2ir.generators.GeneratorContext
 import org.jetbrains.kotlin.resolve.DescriptorUtils
@@ -93,8 +93,8 @@ class AnnotationGenerator(
         val primaryConstructorSymbol = symbolTable.referenceConstructor(primaryConstructorDescriptor)
 
         val psi = annotationDescriptor.source.safeAs<PsiSourceElement>()?.psi
-        val startOffset = psi?.startOffset ?: UNDEFINED_OFFSET
-        val endOffset = psi?.startOffset ?: UNDEFINED_OFFSET
+        val startOffset = psi?.startOffsetSkippingComments ?: UNDEFINED_OFFSET
+        val endOffset = psi?.startOffsetSkippingComments ?: UNDEFINED_OFFSET
 
         val irCall = IrCallImpl(
             startOffset, endOffset, annotationType,
