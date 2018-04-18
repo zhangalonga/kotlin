@@ -337,10 +337,21 @@ private fun findFirstLeafWhollyInRange(file: PsiFile, range: TextRange): PsiElem
 }
 
 val PsiElement.textRangeWithoutComments: TextRange
+    get() = if (!startsWithComment()) textRange else TextRange(startOffsetSkippingComments, endOffset)
+
+val PsiElement.startOffsetSkippingComments: Int
     get() {
-        val firstNonCommentChild = children.firstOrNull { it !is PsiWhiteSpace && it !is PsiComment } ?: return textRange
-        return TextRange(firstNonCommentChild.startOffset, endOffset)
+        return if (!startsWithComment())
+            startOffset // fastpath
+        else
+            generateSequence(firstChild) { it.nextSibling }
+                .firstOrNull { it !is PsiWhiteSpace && it !is PsiComment }
+                ?.startOffset
+                    ?: startOffset
     }
+
+fun PsiElement.startsWithComment(): Boolean = firstChild is PsiComment
+
 
 // ---------------------------------- Debug/logging ----------------------------------------------------------------------------------------
 
