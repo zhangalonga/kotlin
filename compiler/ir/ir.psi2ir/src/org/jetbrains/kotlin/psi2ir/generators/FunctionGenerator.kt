@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.util.declareSimpleFunctionWithOverrides
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.endOffsetOrUndefined
 import org.jetbrains.kotlin.psi2ir.isConstructorDelegatingToSuper
 import org.jetbrains.kotlin.psi2ir.startOffsetOrUndefined
@@ -74,7 +74,7 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
         generateBody: BodyGenerator.() -> IrBody?
     ): IrSimpleFunction =
         context.symbolTable.declareSimpleFunctionWithOverrides(
-            ktFunction.startOffset, ktFunction.endOffset, origin, descriptor
+            ktFunction.startOffsetSkippingComments, ktFunction.endOffset, origin, descriptor
         ).buildWithScope { irFunction ->
             generateFunctionParameterDeclarations(irFunction, ktFunction, ktReceiver)
             irFunction.body = createBodyGenerator(irFunction.symbol).generateBody()
@@ -95,7 +95,7 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
         ktAccessor: KtPropertyAccessor?
     ): IrSimpleFunction =
         context.symbolTable.declareSimpleFunctionWithOverrides(
-            ktAccessor?.startOffset ?: ktProperty.startOffset,
+            ktAccessor?.startOffsetSkippingComments ?: ktProperty.startOffsetSkippingComments,
             ktAccessor?.endOffset ?: ktProperty.endOffset,
             if (ktAccessor != null) IrDeclarationOrigin.DEFINED else IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR,
             descriptor
@@ -142,16 +142,16 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
     ): IrBlockBody {
         val property = getter.correspondingProperty
 
-        val irBody = IrBlockBodyImpl(ktProperty.startOffset, ktProperty.endOffset)
+        val irBody = IrBlockBodyImpl(ktProperty.startOffsetSkippingComments, ktProperty.endOffset)
 
         val receiver = generateReceiverExpressionForDefaultPropertyAccessor(ktProperty, property)
 
         irBody.statements.add(
             IrReturnImpl(
-                ktProperty.startOffset, ktProperty.endOffset, context.builtIns.nothingType,
+                ktProperty.startOffsetSkippingComments, ktProperty.endOffset, context.builtIns.nothingType,
                 irAccessor.symbol,
                 IrGetFieldImpl(
-                    ktProperty.startOffset, ktProperty.endOffset,
+                    ktProperty.startOffsetSkippingComments, ktProperty.endOffset,
                     context.symbolTable.referenceField(property),
                     receiver
                 )
@@ -167,17 +167,17 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
     ): IrBlockBody {
         val property = setter.correspondingProperty
 
-        val irBody = IrBlockBodyImpl(ktProperty.startOffset, ktProperty.endOffset)
+        val irBody = IrBlockBodyImpl(ktProperty.startOffsetSkippingComments, ktProperty.endOffset)
 
         val receiver = generateReceiverExpressionForDefaultPropertyAccessor(ktProperty, property)
 
         val setterParameter = irAccessor.valueParameters.single().symbol
         irBody.statements.add(
             IrSetFieldImpl(
-                ktProperty.startOffset, ktProperty.endOffset,
+                ktProperty.startOffsetSkippingComments, ktProperty.endOffset,
                 context.symbolTable.referenceField(property),
                 receiver,
-                IrGetValueImpl(ktProperty.startOffset, ktProperty.endOffset, setterParameter)
+                IrGetValueImpl(ktProperty.startOffsetSkippingComments, ktProperty.endOffset, setterParameter)
             )
         )
         return irBody
@@ -188,7 +188,7 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
         return when (containingDeclaration) {
             is ClassDescriptor ->
                 IrGetValueImpl(
-                    ktProperty.startOffset, ktProperty.endOffset,
+                    ktProperty.startOffsetSkippingComments, ktProperty.endOffset,
                     context.symbolTable.referenceValue(containingDeclaration.thisAsReceiverParameter)
                 )
             else -> null
@@ -228,7 +228,7 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
         generateBody: BodyGenerator.() -> IrBody?
     ): IrConstructor =
         context.symbolTable.declareConstructor(
-            ktConstructorElement.startOffset, ktConstructorElement.endOffset, IrDeclarationOrigin.DEFINED, constructorDescriptor
+            ktConstructorElement.startOffsetSkippingComments, ktConstructorElement.endOffset, IrDeclarationOrigin.DEFINED, constructorDescriptor
         ).buildWithScope { irConstructor ->
             generateValueParameterDeclarations(irConstructor, ktParametersElement, null)
             irConstructor.body = createBodyGenerator(irConstructor.symbol).generateBody()

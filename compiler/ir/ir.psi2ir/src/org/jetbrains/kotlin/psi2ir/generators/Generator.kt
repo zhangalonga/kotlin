@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrErrorExpressionImpl
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.endOffsetOrUndefined
 import org.jetbrains.kotlin.psi2ir.startOffsetOrUndefined
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
@@ -63,7 +63,7 @@ fun Generator.getResolvedCall(key: KtElement): ResolvedCall<out CallableDescript
 
 fun Generator.createDummyExpression(ktExpression: KtExpression, description: String): IrErrorExpressionImpl =
     IrErrorExpressionImpl(
-        ktExpression.startOffset,
+        ktExpression.startOffsetSkippingComments,
         ktExpression.endOffset,
         getInferredTypeWithImplicitCastsOrFail(ktExpression),
         description
