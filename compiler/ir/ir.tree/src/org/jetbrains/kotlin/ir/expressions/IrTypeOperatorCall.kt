@@ -37,3 +37,10 @@ interface IrTypeOperatorCall : IrExpression {
     val typeOperandClassifier: IrClassifierSymbol
 }
 
+val IrTypeOperator.isImplicit: Boolean
+    get() = when (this) {
+        IrTypeOperator.IMPLICIT_CAST, IrTypeOperator.IMPLICIT_NOTNULL,
+        IrTypeOperator.IMPLICIT_COERCION_TO_UNIT, IrTypeOperator.IMPLICIT_INTEGER_COERCION -> true
+
+        else -> false
+    }
