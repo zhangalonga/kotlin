@@ -258,6 +258,11 @@ public class BytecodeListingTestGenerated extends AbstractBytecodeListingTest {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/bytecodeListing/inline"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
         }
 
+        @TestMetadata("innerObject.kt")
+        public void testInnerObject() throws Exception {
+            runTest("compiler/testData/codegen/bytecodeListing/inline/innerObject.kt");
+        }
+
         @TestMetadata("simpleNamed.kt")
         public void testSimpleNamed() throws Exception {
             runTest("compiler/testData/codegen/bytecodeListing/inline/simpleNamed.kt");

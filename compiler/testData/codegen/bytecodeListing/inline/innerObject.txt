@@ -1,0 +1,39 @@
+@kotlin.Metadata
+public interface I {
+    public abstract @org.jetbrains.annotations.Nullable method doSomething(@org.jetbrains.annotations.Nullable p0: java.lang.Object): java.lang.Object
+}
+
+@kotlin.Metadata
+public final class InnerObjectKt$test$$forInline$o$1 {
+    inner class InnerObjectKt$test$o$1
+    public method <init>(): void
+    public @org.jetbrains.annotations.Nullable method doSomething(@org.jetbrains.annotations.Nullable p0: java.lang.Object): java.lang.Object
+}
+
+@kotlin.Metadata
+public final class InnerObjectKt$test$1 {
+    field L$0: java.lang.Object
+    synthetic field data: java.lang.Object
+    synthetic field exception: java.lang.Throwable
+    inner class InnerObjectKt$test$1
+    public method <init>(p0: kotlin.coroutines.experimental.Continuation): void
+    public final @org.jetbrains.annotations.Nullable method doResume(@org.jetbrains.annotations.Nullable p0: java.lang.Object, @org.jetbrains.annotations.Nullable p1: java.lang.Throwable): java.lang.Object
+    synthetic final method getLabel(): int
+    synthetic final method setLabel(p0: int): void
+}
+
+@kotlin.Metadata
+public final class InnerObjectKt$test$o$1 {
+    inner class InnerObjectKt$test$o$1
+    public method <init>(): void
+    public @org.jetbrains.annotations.Nullable method doSomething(@org.jetbrains.annotations.Nullable p0: java.lang.Object): java.lang.Object
+}
+
+@kotlin.Metadata
+public final class InnerObjectKt {
+    inner class InnerObjectKt$test$1
+    inner class InnerObjectKt$test$o$1
+    public final static @org.jetbrains.annotations.Nullable method dummy(@org.jetbrains.annotations.Nullable p0: java.lang.Object): java.lang.Object
+    private final static @org.jetbrains.annotations.Nullable method test$$forInline(@org.jetbrains.annotations.Nullable p0: java.lang.Object): java.lang.Object
+    public final static @org.jetbrains.annotations.Nullable method test(@org.jetbrains.annotations.Nullable p0: java.lang.Object): java.lang.Object
+}

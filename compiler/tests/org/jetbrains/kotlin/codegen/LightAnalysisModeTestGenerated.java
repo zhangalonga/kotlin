@@ -6884,15 +6884,22 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
                 doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines");
             }
 
-            @TestMetadata("inlineMultiModuleWithController.kt")
-            public void testInlineMultiModuleWithController_1_2() throws Exception {
-                String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/box/coroutines/multiModule/inlineMultiModuleWithController.kt");
+            @TestMetadata("inlineMultiModuleOverride.kt")
+            public void testInlineMultiModuleOverride_1_2() throws Exception {
+                String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/box/coroutines/multiModule/inlineMultiModuleOverride.kt");
                 doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines.experimental");
             }
 
             @TestMetadata("inlineMultiModuleOverride.kt")
-            public void testInlineMultiModuleOverride() throws Exception {
-                runTest("compiler/testData/codegen/box/coroutines/multiModule/inlineMultiModuleOverride.kt");
+            public void testInlineMultiModuleOverride_1_3() throws Exception {
+                String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/box/coroutines/multiModule/inlineMultiModuleOverride.kt");
+                doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines");
+            }
+
+            @TestMetadata("inlineMultiModuleWithController.kt")
+            public void testInlineMultiModuleWithController_1_2() throws Exception {
+                String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/box/coroutines/multiModule/inlineMultiModuleWithController.kt");
+                doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines.experimental");
             }
 
             @TestMetadata("inlineMultiModuleWithController.kt")

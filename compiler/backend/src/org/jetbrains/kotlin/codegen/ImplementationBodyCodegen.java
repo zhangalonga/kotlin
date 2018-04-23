@@ -90,6 +90,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
     private SuperClassInfo superClassInfo;
     private final Type classAsmType;
     private final boolean isLocal;
+    private final String nameForInline;
 
     private List<PropertyAndDefaultValue> companionObjectPropertiesToCopy;
 
@@ -103,12 +104,25 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
             @NotNull ClassBuilder v,
             @NotNull GenerationState state,
             @Nullable MemberCodegen<?> parentCodegen,
-            boolean isLocal
+            boolean isLocal,
+            @Nullable String nameForInline
     ) {
         super(aClass, context, v, state, parentCodegen);
         this.classAsmType = getObjectType(typeMapper.classInternalName(descriptor));
         this.isLocal = isLocal;
         delegationFieldsInfo = getDelegationFieldsInfo(myClass.getSuperTypeListEntries());
+        this.nameForInline = nameForInline;
+    }
+
+    public ImplementationBodyCodegen(
+            @NotNull KtPureClassOrObject aClass,
+            @NotNull ClassContext context,
+            @NotNull ClassBuilder v,
+            @NotNull GenerationState state,
+            @Nullable MemberCodegen<?> parentCodegen,
+            boolean isLocal
+    ) {
+        this(aClass, context, v, state, parentCodegen, isLocal, null);
     }
 
     @Override
@@ -317,7 +331,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
 
     @NotNull
     private JvmClassSignature signature() {
-        return signature(descriptor, classAsmType, superClassInfo, typeMapper);
+        return signature(descriptor, classAsmType, superClassInfo, typeMapper, nameForInline);
     }
 
     @NotNull
@@ -325,7 +339,8 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
             @NotNull ClassDescriptor descriptor,
             @NotNull Type classAsmType,
             @NotNull SuperClassInfo superClassInfo,
-            @NotNull KotlinTypeMapper typeMapper
+            @NotNull KotlinTypeMapper typeMapper,
+            @Nullable String nameForInline
     ) {
         JvmSignatureWriter sw = new BothSignatureWriter(BothSignatureWriter.Mode.CLASS);
 
@@ -377,7 +392,8 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
 
         superInterfaces.addAll(kotlinMarkerInterfaces);
 
-        return new JvmClassSignature(classAsmType.getInternalName(), superClassInfo.getType().getInternalName(),
+        return new JvmClassSignature(nameForInline != null ? nameForInline : classAsmType.getInternalName(),
+                                     superClassInfo.getType().getInternalName(),
                                      new ArrayList<>(superInterfaces), sw.makeJavaGenericSignature());
     }
 

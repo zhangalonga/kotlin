@@ -40,7 +40,6 @@ import org.jetbrains.kotlin.codegen.when.SwitchCodegenProvider;
 import org.jetbrains.kotlin.config.ApiVersion;
 import org.jetbrains.kotlin.config.LanguageFeature;
 import org.jetbrains.kotlin.descriptors.*;
-import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.SyntheticFieldDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor;
@@ -216,7 +215,17 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
         ClassDescriptor classDescriptor = bindingContext.get(CLASS, objectDeclaration);
         assert classDescriptor != null;
 
-        Type asmType = asmTypeForAnonymousClass(bindingContext, objectDeclaration);
+        Type asmType;
+        if (context.getFunctionDescriptor().getName().asString().endsWith("$$forInline")) {
+            DeclarationDescriptor descriptor =
+                    bindingContext.get(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, classDescriptor);
+            assert descriptor instanceof ClassDescriptor : "No companion class descriptor found for " + classDescriptor;
+            classDescriptor = (ClassDescriptor) descriptor;
+            asmType = bindingContext.get(ASM_TYPE, classDescriptor);
+            assert asmType != null : "AsmType for " + classDescriptor + " not found";
+        } else {
+            asmType = asmTypeForAnonymousClass(bindingContext, objectDeclaration);
+        }
         ClassBuilder classBuilder = state.getFactory().newVisitor(
                 JvmDeclarationOriginKt.OtherOrigin(objectDeclaration, classDescriptor),
                 asmType,
@@ -227,7 +236,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
 
         MemberCodegen literalCodegen = new ImplementationBodyCodegen(
                 objectDeclaration, objectContext, classBuilder, state, getParentCodegen(),
-                /* isLocal = */ true);
+                /* isLocal = */ true, /* nameForInline = */ asmType.getInternalName());
         literalCodegen.generate();
 
         addReifiedParametersFromSignature(literalCodegen, classDescriptor);
@@ -2289,7 +2298,18 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
 
         assert enclosingSuspendFunctionJvmView != null : "No JVM view function found for " + enclosingSuspendFunction;
 
-        return getContinuationParameterFromEnclosingSuspendFunctionDescriptor(enclosingSuspendFunctionJvmView);
+        StackValue continuationParameter = getContinuationParameterFromEnclosingSuspendFunctionDescriptor(enclosingSuspendFunctionJvmView);
+        if (continuationParameter == null) {
+            DeclarationDescriptor inlineOnlySuspendFunctionJvmView =
+                    bindingContext.get(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, enclosingSuspendFunctionJvmView);
+            if (inlineOnlySuspendFunctionJvmView != null) {
+                assert inlineOnlySuspendFunctionJvmView instanceof FunctionDescriptor
+                        : "Companion of " + enclosingSuspendFunction + " is not a function, but " + inlineOnlySuspendFunctionJvmView;
+                continuationParameter =
+                        getContinuationParameterFromEnclosingSuspendFunctionDescriptor((FunctionDescriptor) inlineOnlySuspendFunctionJvmView);
+            }
+        }
+        return continuationParameter;
     }
 
     @Nullable

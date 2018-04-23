@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.backend.common.COROUTINE_SUSPENDED_NAME
 import org.jetbrains.kotlin.backend.common.isBuiltInIntercepted
 import org.jetbrains.kotlin.backend.common.isBuiltInSuspendCoroutineOrReturn
 import org.jetbrains.kotlin.backend.common.isBuiltInSuspendCoroutineUninterceptedOrReturn
+import org.jetbrains.kotlin.backend.common.lower.SimpleMemberScope
 import org.jetbrains.kotlin.builtins.isBuiltinFunctionalType
 import org.jetbrains.kotlin.codegen.ExpressionCodegen
 import org.jetbrains.kotlin.codegen.StackValue
@@ -23,7 +24,9 @@ import org.jetbrains.kotlin.coroutines.isSuspendLambda
 import org.jetbrains.kotlin.config.*
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
+import org.jetbrains.kotlin.descriptors.annotations.isEffectivelyInlineOnly
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
+import org.jetbrains.kotlin.descriptors.impl.ClassDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.Name
@@ -38,6 +41,7 @@ import org.jetbrains.kotlin.resolve.calls.tower.NewResolvedCallImpl
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.jvm.AsmTypes
+import org.jetbrains.kotlin.storage.LockBasedStorageManager
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.KotlinTypeFactory
 import org.jetbrains.kotlin.types.TypeConstructorSubstitution
@@ -444,6 +448,64 @@ fun FunctionDescriptor.getOriginalSuspendFunctionView(bindingContext: BindingCon
 
 fun FunctionDescriptor.getOriginalSuspendFunctionView(bindingContext: BindingContext, state: GenerationState) =
     getOriginalSuspendFunctionView(bindingContext, state.languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines))
+
+fun FunctionDescriptor.getOrCreateInlineOnlySuspendFunction(bindingContext: BindingContext): FunctionDescriptor? {
+    if (!isInlineSuspend()) return null
+    bindingContext.get(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, this)?.let { return it as FunctionDescriptor }
+
+    return createCustomCopy {
+        setName(Name.identifier("${name.identifier}\$\$forInline"))
+    }
+}
+
+fun ClassDescriptor.getOrCreateClassDescriptorForInnerObjectInInlineOnlySuspendFunction(
+    bindingContext: BindingContext,
+    bindingTrace: BindingTrace
+): ClassDescriptor? {
+    if (!isLocalInInlineSuspend()) return null
+    val functionDescriptor = containingDeclaration as? FunctionDescriptor ?: return null
+    assert(functionDescriptor.isInlineSuspend()) { "$containingDeclaration is not inline suspend function" }
+
+    if (functionDescriptor.name.identifier.endsWith("\$\$forInline")) return this
+    bindingContext.get(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, this)?.let { return it as ClassDescriptor }
+
+    val inlineOnlyFunctionDescriptor = functionDescriptor.getOrCreateInlineOnlySuspendFunction(
+        bindingContext
+    ) ?: error("Could not find inline only companion of inline suspend function")
+    val res = ClassDescriptorImpl(
+        inlineOnlyFunctionDescriptor,
+        name,
+        modality,
+        kind,
+        typeConstructor.supertypes,
+        source,
+        isExternal,
+        LockBasedStorageManager.NO_LOCKS
+    )
+
+    val members = unsubstitutedMemberScope.getContributedDescriptors().map {
+        val new = it.copyUpdatingContainingDeclaration(res)
+        bindingTrace.record(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, it, new)
+        new
+    }
+
+    res.initialize(SimpleMemberScope(members), constructors.toMutableSet(), unsubstitutedPrimaryConstructor)
+
+    bindingTrace.record(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, this, res)
+
+    return res
+}
+
+private fun DeclarationDescriptor.copyUpdatingContainingDeclaration(res: ClassDescriptor): DeclarationDescriptor {
+    assert(this is CallableMemberDescriptor) { "Unexpected $javaClass: expecting CallableMemberDescriptor" }
+    this as CallableMemberDescriptor
+    return copy(res, modality, visibility, kind, false)
+}
+
+fun FunctionDescriptor.isInlineSuspend() = isInline && isSuspend && !isEffectivelyInlineOnly()
+
+fun ClassDescriptor.isLocalInInlineSuspend() = (containingDeclaration as? FunctionDescriptor)?.isInlineSuspend() == true
+        && visibility == Visibilities.LOCAL
 
 fun InstructionAdapter.loadCoroutineSuspendedMarker(languageVersionSettings: LanguageVersionSettings) {
     invokestatic(

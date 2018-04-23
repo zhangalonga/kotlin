@@ -435,7 +435,16 @@ public abstract class StackValue {
             @NotNull InstructionAdapter v
     ) {
         if (coerceInlineClasses(fromType, fromKotlinType, toType, toKotlinType, v)) return;
+        if (coerceForInline(fromType, toType)) return;
         coerce(fromType, toType, v);
+    }
+
+    private static boolean coerceForInline(Type fromType, Type toType) {
+        if (fromType.getSort() != Type.OBJECT || toType.getSort() != Type.OBJECT) return false;
+        if (fromType.getInternalName().contains("$$forInline")) {
+            return fromType.getInternalName().replace("$$forInline", "").equals(toType.getInternalName());
+        }
+        return false;
     }
 
     private static boolean coerceInlineClasses(

@@ -129,7 +129,7 @@ public class FunctionCodegen {
             if (functionDescriptor.isSuspend()) {
                 if (AnnotationUtilKt.isEffectivelyInlineOnly(functionDescriptor)) {
                     strategy = new FunctionGenerationStrategy.FunctionDefault(state, function);
-                } else if (!functionDescriptor.isInline()) {
+                } else {
                     strategy = new SuspendFunctionGenerationStrategy(
                             state,
                             CoroutineCodegenUtilKt.<FunctionDescriptor>unwrapInitialDescriptorForSuspendFunction(functionDescriptor),
@@ -137,21 +137,21 @@ public class FunctionCodegen {
                             v.getThisName(),
                             state.getConstructorCallNormalizationMode()
                     );
-                } else {
-                    strategy = new SuspendInlineFunctionGenerationStrategy(
-                            state,
-                            CoroutineCodegenUtilKt.<FunctionDescriptor>unwrapInitialDescriptorForSuspendFunction(functionDescriptor),
-                            function,
-                            v.getThisName(),
-                            state.getConstructorCallNormalizationMode(),
-                            this
-                    );
                 }
             } else {
                 strategy = new FunctionGenerationStrategy.FunctionDefault(state, function);
             }
 
             generateMethod(JvmDeclarationOriginKt.OtherOrigin(function, functionDescriptor), functionDescriptor, strategy);
+            DeclarationDescriptor inlineOnlySuspendFunction =
+                    bindingContext.get(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, functionDescriptor);
+            if (inlineOnlySuspendFunction != null) {
+                assert inlineOnlySuspendFunction instanceof FunctionDescriptor
+                        : "Companion of " + functionDescriptor + " is not a function, but " + inlineOnlySuspendFunction;
+                generateMethod(JvmDeclarationOriginKt.OtherOrigin(
+                        function, inlineOnlySuspendFunction), (FunctionDescriptor) inlineOnlySuspendFunction,
+                               new FunctionGenerationStrategy.FunctionDefault(state, function));
+            }
         }
 
         generateDefaultIfNeeded(owner.intoFunction(functionDescriptor, true), functionDescriptor, owner.getContextKind(),

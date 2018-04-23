@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.config.LanguageFeature;
 import org.jetbrains.kotlin.config.LanguageVersionSettings;
 import org.jetbrains.kotlin.coroutines.CoroutineUtilKt;
 import org.jetbrains.kotlin.descriptors.*;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUtilKt;
 import org.jetbrains.kotlin.descriptors.annotations.Annotations;
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor;
@@ -271,6 +272,17 @@ class CodegenAnnotatingVisitor extends KtVisitorVoid {
             return;
         }
 
+        if (CoroutineCodegenUtilKt.isLocalInInlineSuspend(classDescriptor) &&
+            peekFromStack(functionsStack).getName().asString().endsWith("$$forInline")) {
+            ClassDescriptor synthetic = CoroutineCodegenUtilKt
+                    .getOrCreateClassDescriptorForInnerObjectInInlineOnlySuspendFunction(classDescriptor, bindingContext, bindingTrace
+                    );
+
+            assert (synthetic != null) : "Could not create companion for inner object in inline suspend function";
+
+            classDescriptor = synthetic;
+        }
+
         String name = inventAnonymousClassName();
         recordClosure(classDescriptor, name);
 
@@ -503,6 +515,12 @@ class CodegenAnnotatingVisitor extends KtVisitorVoid {
         // working around a problem with shallow analysis
         if (functionDescriptor == null) return;
 
+        if (peekFromStack(nameStack) != null && peekFromStack(nameStack).contains("$$forInline")) {
+            DeclarationDescriptor duplicate = bindingContext.get(CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION, functionDescriptor);
+            assert (duplicate instanceof FunctionDescriptor) : "No duplicate found for " + duplicate;
+            functionDescriptor = (FunctionDescriptor) duplicate;
+        }
+
         checkRuntimeAsserionsOnDeclarationBody(function, functionDescriptor);
 
         String nameForClassOrPackageMember = getNameForClassOrPackageMember(functionDescriptor);
@@ -553,6 +571,45 @@ class CodegenAnnotatingVisitor extends KtVisitorVoid {
                 nameStack.pop();
             }
 
+            if (functionDescriptor.isInline() && !AnnotationUtilKt.isEffectivelyInlineOnly(functionDescriptor)) {
+                FunctionDescriptor inlineOnlySuspendFunction = CoroutineCodegenUtilKt.getOrCreateInlineOnlySuspendFunction(
+                        functionDescriptor, bindingContext
+                );
+
+                assert (inlineOnlySuspendFunction != null) : "Could not create inline-only companion for inline suspend function";
+
+                bindingTrace.record(
+                        CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION,
+                        functionDescriptor,
+                        inlineOnlySuspendFunction
+                );
+
+                FunctionDescriptor inlineOnlyJvmSuspendFunctionView =
+                        CoroutineCodegenUtilKt.getOrCreateJvmSuspendFunctionView(
+                                (SimpleFunctionDescriptor) inlineOnlySuspendFunction,
+                                languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)
+                        );
+
+                bindingTrace.record(
+                        CodegenBinding.SUSPEND_FUNCTION_TO_JVM_VIEW,
+                        inlineOnlySuspendFunction,
+                        inlineOnlyJvmSuspendFunctionView
+                );
+
+                bindingTrace.record(
+                        CodegenBinding.DUPLICATE_FOR_INLINE_ONLY_SUSPEND_FUNCTION,
+                        jvmSuspendFunctionView,
+                        inlineOnlyJvmSuspendFunctionView
+                );
+
+                nameForClassOrPackageMember = getNameForClassOrPackageMemberForSyntheticDescriptor(functionDescriptor, inlineOnlySuspendFunction);
+                nameStack.push(nameForClassOrPackageMember);
+                functionsStack.push(inlineOnlySuspendFunction);
+                super.visitNamedFunction(function);
+                functionsStack.pop();
+                nameStack.pop();
+            }
+
             return;
         }
 
@@ -599,16 +656,24 @@ class CodegenAnnotatingVisitor extends KtVisitorVoid {
 
     @Nullable
     private String getNameForClassOrPackageMember(@NotNull DeclarationDescriptor descriptor) {
-        DeclarationDescriptor containingDeclaration = descriptor.getContainingDeclaration();
+        return getNameForClassOrPackageMemberForSyntheticDescriptor(descriptor, descriptor);
+    }
+
+    @Nullable
+    private String getNameForClassOrPackageMemberForSyntheticDescriptor(
+            @NotNull DeclarationDescriptor original,
+            @NotNull DeclarationDescriptor synthetic
+    ) {
+        DeclarationDescriptor containingDeclaration = synthetic.getContainingDeclaration();
 
         String peek = peekFromStack(nameStack);
-        String name = safeIdentifier(descriptor.getName()).asString();
+        String name = safeIdentifier(synthetic.getName()).asString();
         if (containingDeclaration instanceof ClassDescriptor) {
             return peek + '$' + name;
         }
         else if (containingDeclaration instanceof PackageFragmentDescriptor) {
-            KtFile containingFile = DescriptorToSourceUtils.getContainingFile(descriptor);
-            assert containingFile != null : "File not found for " + descriptor;
+            KtFile containingFile = DescriptorToSourceUtils.getContainingFile(original);
+            assert containingFile != null : "File not found for " + original;
             return JvmFileClassUtil.getFileClassInternalName(containingFile) + '$' + name;
         }
 

@@ -63,7 +63,7 @@ class ClassCodegen private constructor(
 
     fun generate() {
         val superClassInfo = SuperClassInfo.getSuperClassInfo(descriptor, typeMapper)
-        val signature = ImplementationBodyCodegen.signature(descriptor, type, superClassInfo, typeMapper)
+        val signature = ImplementationBodyCodegen.signature(descriptor, type, superClassInfo, typeMapper, null)
 
         visitor.defineClass(
                 psiElement,
