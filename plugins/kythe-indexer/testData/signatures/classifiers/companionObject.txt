@@ -1,0 +1,24 @@
+CLASS CLASS name:Test1 modality:FINAL visibility:public flags:
+CLASS:.Test1
+    CONSTRUCTOR visibility:public <> () returnType:Test1 flags:
+    CTOR:.Test1.Test1();.Test1
+
+    CLASS COMPANION name:Companion modality:FINAL visibility:public flags:companion
+    COMP:.Test1.Companion
+        CONSTRUCTOR visibility:private <> () returnType:Test1.Companion flags:
+        CTOR:.Test1.Companion.Companion();.Test1.Companion
+
+
+
+CLASS CLASS name:Test2 modality:FINAL visibility:public flags:
+CLASS:.Test2
+    CONSTRUCTOR visibility:public <> () returnType:Test2 flags:
+    CTOR:.Test2.Test2();.Test2
+
+    CLASS COMPANION name:Named modality:FINAL visibility:public flags:companion
+    COMP:.Test2.Named
+        CONSTRUCTOR visibility:private <> () returnType:Test2.Named flags:
+        CTOR:.Test2.Named.Named();.Test2.Named
+
+
+

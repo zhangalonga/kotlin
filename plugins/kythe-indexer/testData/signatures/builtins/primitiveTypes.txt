@@ -1,0 +1,51 @@
+CLASS INTERFACE name:A modality:ABSTRACT visibility:public flags:
+INTERFACE:.A
+    PROPERTY name:i type:kotlin.Int visibility:public modality:ABSTRACT flags:val
+    PROP:.A.i;kotlin.Int
+
+    PROPERTY name:ni type:kotlin.Int? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.ni;kotlin.Int?
+
+    PROPERTY name:l type:kotlin.Long visibility:public modality:ABSTRACT flags:val
+    PROP:.A.l;kotlin.Long
+
+    PROPERTY name:nl type:kotlin.Long? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.nl;kotlin.Long?
+
+    PROPERTY name:sh type:kotlin.Short visibility:public modality:ABSTRACT flags:val
+    PROP:.A.sh;kotlin.Short
+
+    PROPERTY name:nsh type:kotlin.Short? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.nsh;kotlin.Short?
+
+    PROPERTY name:bt type:kotlin.Byte visibility:public modality:ABSTRACT flags:val
+    PROP:.A.bt;kotlin.Byte
+
+    PROPERTY name:nbt type:kotlin.Byte? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.nbt;kotlin.Byte?
+
+    PROPERTY name:d type:kotlin.Double visibility:public modality:ABSTRACT flags:val
+    PROP:.A.d;kotlin.Double
+
+    PROPERTY name:nd type:kotlin.Double? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.nd;kotlin.Double?
+
+    PROPERTY name:f type:kotlin.Float visibility:public modality:ABSTRACT flags:val
+    PROP:.A.f;kotlin.Float
+
+    PROPERTY name:nf type:kotlin.Float? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.nf;kotlin.Float?
+
+    PROPERTY name:s type:kotlin.String visibility:public modality:ABSTRACT flags:val
+    PROP:.A.s;kotlin.String
+
+    PROPERTY name:ns type:kotlin.String? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.ns;kotlin.String?
+
+    PROPERTY name:b type:kotlin.Boolean visibility:public modality:ABSTRACT flags:val
+    PROP:.A.b;kotlin.Boolean
+
+    PROPERTY name:bl type:kotlin.Boolean? visibility:public modality:ABSTRACT flags:val
+    PROP:.A.bl;kotlin.Boolean?
+
+

@@ -1,0 +1,24 @@
+CLASS CLASS name:Outer modality:FINAL visibility:public flags:
+CLASS:.Outer
+    CONSTRUCTOR visibility:public <> () returnType:Outer flags:
+    CTOR:.Outer.Outer();.Outer
+
+    FUN name:outer visibility:public modality:FINAL <> ($this:Outer) returnType:Unit flags:
+    FUN:.Outer.outer();kotlin.Unit
+        VALUE_PARAMETER name:<this> type:Outer flags:
+        VPARAM:.Outer.outer()#<this>;.Outer
+
+        CLASS CLASS name:LocalClass modality:FINAL visibility:local flags:
+        CLASS:.Outer.outer().LocalClass
+            CONSTRUCTOR visibility:public <> () returnType:Outer.outer.LocalClass flags:
+            CTOR:.Outer.outer().LocalClass.LocalClass();.Outer.outer().LocalClass
+
+            FUN name:foo visibility:public modality:FINAL <> ($this:Outer.outer.LocalClass) returnType:Unit flags:
+            FUN:.Outer.outer().LocalClass.foo();kotlin.Unit
+                VALUE_PARAMETER name:<this> type:Outer.outer.LocalClass flags:
+                VPARAM:.Outer.outer().LocalClass.foo()#<this>;.Outer.outer().LocalClass
+
+
+
+
+
