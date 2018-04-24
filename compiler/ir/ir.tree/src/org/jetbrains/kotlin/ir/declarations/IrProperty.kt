@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.KotlinType
 
-interface IrProperty : IrDeclaration, IrDeclarationParent {
+interface IrProperty : IrDeclaration, IrDeclarationParent, IrTypeParametersContainer {
     override val descriptor: PropertyDescriptor
 
     val name: Name
@@ -34,7 +34,7 @@ interface IrProperty : IrDeclaration, IrDeclarationParent {
     val isLateinit: Boolean
     val isDelegated: Boolean
 
-    val typeParameters: MutableList<IrTypeParameter>
+    override val typeParameters: MutableList<IrTypeParameter>
 
     var backingField: IrField?
     var getter: IrFunction?
