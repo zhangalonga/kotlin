@@ -92,7 +92,7 @@ FILE fqName:<root> fileName:/values.kt
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='Z'
-    CLASS OBJECT name:Companion modality:FINAL visibility:public flags:companion
+    CLASS COMPANION name:Companion modality:FINAL visibility:public flags:companion
       $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Z.Companion flags:
       superClasses:
         CLASS IR_EXTERNAL_DECLARATION_STUB CLASS name:Any modality:OPEN visibility:public flags:

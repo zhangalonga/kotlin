@@ -30,7 +30,12 @@ interface IrClass : IrSymbolDeclaration<IrClassSymbol>, IrDeclarationContainer, 
     override val descriptor: ClassDescriptor
 
     val name: Name
+
+    @Deprecated("Use irClassKind instead")
     val kind: ClassKind
+
+    val irClassKind: IrClassKind
+
     val visibility: Visibility
     val modality: Modality
     val isCompanion: Boolean
@@ -42,6 +47,27 @@ interface IrClass : IrSymbolDeclaration<IrClassSymbol>, IrDeclarationContainer, 
     val superClasses: MutableList<IrClassSymbol>
 
     var thisReceiver: IrValueParameter?
+}
+
+enum class IrClassKind {
+    CLASS,
+    INTERFACE,
+    COMPANION,
+    OBJECT,
+    ENUM_CLASS,
+    ENUM_ENTRY,
+    ANNOTATION_CLASS,
+}
+
+fun ClassKind.toIrClassKind(isCompanion: Boolean): IrClassKind {
+    return when (this) {
+        ClassKind.CLASS -> IrClassKind.CLASS
+        ClassKind.INTERFACE -> IrClassKind.INTERFACE
+        ClassKind.ENUM_CLASS -> IrClassKind.ENUM_CLASS
+        ClassKind.ENUM_ENTRY -> IrClassKind.ENUM_ENTRY
+        ClassKind.ANNOTATION_CLASS -> IrClassKind.ANNOTATION_CLASS
+        ClassKind.OBJECT -> if (isCompanion) IrClassKind.COMPANION else IrClassKind.OBJECT
+    }
 }
 
 fun IrClass.addMember(member: IrDeclaration) {

@@ -128,7 +128,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
     override fun visitClass(declaration: IrClass, data: Nothing?): String =
         declaration.run {
             "CLASS ${renderOriginIfNonTrivial()}" +
-                    "$kind name:$name modality:$modality visibility:$visibility " +
+                    "$irClassKind name:$name modality:$modality visibility:$visibility " +
                     "flags:${renderClassFlags()}"
         }
 
