@@ -36,6 +36,7 @@ class IrClassImpl(
     override val symbol: IrClassSymbol,
     override val name: Name,
     override val kind: ClassKind,
+    override val irClassKind: IrClassKind,
     override val visibility: Visibility,
     override val modality: Modality,
     override val isCompanion: Boolean,
@@ -47,6 +48,7 @@ class IrClassImpl(
             this(
                 startOffset, endOffset, origin, symbol,
                 symbol.descriptor.name, symbol.descriptor.kind,
+                symbol.descriptor.kind.toIrClassKind(symbol.descriptor.isCompanionObject),
                 symbol.descriptor.visibility, symbol.descriptor.modality,
                 symbol.descriptor.isCompanionObject, symbol.descriptor.isData
             )
