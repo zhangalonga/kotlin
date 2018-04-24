@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
 import org.jetbrains.kotlin.idea.util.psi.patternMatching.*
 import org.jetbrains.kotlin.idea.util.psi.patternMatching.UnificationResult.StronglyMatched
 import org.jetbrains.kotlin.idea.util.psi.patternMatching.UnificationResult.WeaklyMatched
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.KtPsiFactory.CallableBuilder
 import org.jetbrains.kotlin.psi.codeFragmentUtil.DEBUG_TYPE_REFERENCE_STRING
@@ -66,7 +67,13 @@ private fun buildSignature(config: ExtractionGeneratorConfiguration, renderer: D
     }
     return CallableBuilder(builderTarget).apply {
         val visibility = config.descriptor.visibility
-        val extraModifiers = config.descriptor.modifiers.map { it.value }
+
+        fun TypeParameter.isReified() = originalDeclaration.hasModifier(KtTokens.REIFIED_KEYWORD)
+        val shouldBeInline = config.descriptor.typeParameters.any { it.isReified() }
+
+        val extraModifiers = config.descriptor.modifiers.map { it.value } +
+                listOfNotNull(if (shouldBeInline) KtTokens.INLINE_KEYWORD.value else null)
+
         val modifiers = if (visibility.isNotEmpty()) listOf(visibility) + extraModifiers else extraModifiers
         modifier(modifiers.joinToString(separator = " "))
 
@@ -74,7 +81,18 @@ private fun buildSignature(config: ExtractionGeneratorConfiguration, renderer: D
                 config.descriptor.typeParameters.map {
                     val typeParameter = it.originalDeclaration
                     val bound = typeParameter.extendsBound
-                    typeParameter.name + (bound?.let { " : " + it.text } ?: "")
+
+                    buildString {
+                        if (it.isReified()) {
+                            append(KtTokens.REIFIED_KEYWORD.value)
+                            append(' ')
+                        }
+                        append(typeParameter.name)
+                        if (bound != null) {
+                            append(" : ")
+                            append(bound.text)
+                        }
+                    }
                 }
         )
 
