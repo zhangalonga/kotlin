@@ -104,7 +104,7 @@ FILE fqName:<root> fileName:/classesWithAnnotations.kt
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='Host'
-    CLASS OBJECT name:TestCompanion modality:FINAL visibility:public flags:companion
+    CLASS COMPANION name:TestCompanion modality:FINAL visibility:public flags:companion
       annotations:
         CALL 'constructor TestAnn(String)' type=TestAnn origin=null
           x: CONST String type=kotlin.String value=companion
