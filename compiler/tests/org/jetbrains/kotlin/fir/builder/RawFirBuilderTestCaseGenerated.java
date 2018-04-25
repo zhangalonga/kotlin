@@ -21,6 +21,10 @@ import java.util.regex.Pattern;
 @TestDataPath("$PROJECT_ROOT")
 @RunWith(JUnit3RunnerWithInners.class)
 public class RawFirBuilderTestCaseGenerated extends AbstractRawFirBuilderTestCase {
+    private void runTest(String testDataFilePath) throws Exception {
+        KotlinTestUtils.runTest(this::doRawFirTest, TargetBackend.ANY, testDataFilePath);
+    }
+
     public void testAllFilesPresentInRawBuilder() throws Exception {
         KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/fir/rawBuilder"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
     }
@@ -29,44 +33,42 @@ public class RawFirBuilderTestCaseGenerated extends AbstractRawFirBuilderTestCas
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Declarations extends AbstractRawFirBuilderTestCase {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doRawFirTest, TargetBackend.ANY, testDataFilePath);
+        }
+
         public void testAllFilesPresentInDeclarations() throws Exception {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/fir/rawBuilder/declarations"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
         }
 
         @TestMetadata("complexTypes.kt")
         public void testComplexTypes() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/rawBuilder/declarations/complexTypes.kt");
-            doRawFirTest(fileName);
+            runTest("compiler/testData/fir/rawBuilder/declarations/complexTypes.kt");
         }
 
         @TestMetadata("enums.kt")
         public void testEnums() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/rawBuilder/declarations/enums.kt");
-            doRawFirTest(fileName);
+            runTest("compiler/testData/fir/rawBuilder/declarations/enums.kt");
         }
 
         @TestMetadata("noPrimaryConstructor.kt")
         public void testNoPrimaryConstructor() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/rawBuilder/declarations/noPrimaryConstructor.kt");
-            doRawFirTest(fileName);
+            runTest("compiler/testData/fir/rawBuilder/declarations/noPrimaryConstructor.kt");
         }
 
         @TestMetadata("simpleClass.kt")
         public void testSimpleClass() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/rawBuilder/declarations/simpleClass.kt");
-            doRawFirTest(fileName);
+            runTest("compiler/testData/fir/rawBuilder/declarations/simpleClass.kt");
         }
 
         @TestMetadata("simpleFun.kt")
         public void testSimpleFun() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/rawBuilder/declarations/simpleFun.kt");
-            doRawFirTest(fileName);
+            runTest("compiler/testData/fir/rawBuilder/declarations/simpleFun.kt");
         }
 
         @TestMetadata("typeParameters.kt")
         public void testTypeParameters() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/rawBuilder/declarations/typeParameters.kt");
-            doRawFirTest(fileName);
+            runTest("compiler/testData/fir/rawBuilder/declarations/typeParameters.kt");
         }
     }
 }

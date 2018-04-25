@@ -21,25 +21,26 @@ import java.util.regex.Pattern;
 @TestDataPath("$PROJECT_ROOT")
 @RunWith(JUnit3RunnerWithInners.class)
 public class FirResolveTestCaseWithStdlibGenerated extends AbstractFirResolveTestCaseWithStdlib {
+    private void runTest(String testDataFilePath) throws Exception {
+        KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+    }
+
     public void testAllFilesPresentInStdlib() throws Exception {
         KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/fir/resolve/stdlib"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, true);
     }
 
     @TestMetadata("concurrent.kt")
     public void testConcurrent() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/stdlib/concurrent.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/stdlib/concurrent.kt");
     }
 
     @TestMetadata("functionX.kt")
     public void testFunctionX() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/stdlib/functionX.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/stdlib/functionX.kt");
     }
 
     @TestMetadata("reflectionClass.kt")
     public void testReflectionClass() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/stdlib/reflectionClass.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/stdlib/reflectionClass.kt");
     }
 }

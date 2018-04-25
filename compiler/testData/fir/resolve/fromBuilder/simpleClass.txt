@@ -22,8 +22,12 @@ FILE: simpleClass.kt
             public set(value: R|kotlin/Boolean|): R|kotlin/Unit| {
             }
 
-        public final property fau(var): R|kotlin/Double|
+        public final lateinit property fau(var): R|kotlin/Double|
             public get(): R|kotlin/Double|
             public set(value: R|kotlin/Double|): R|kotlin/Unit|
+
+    }
+    public final inline class InlineClass {
+        public constructor(): super<R|kotlin/Any|>()
 
     }

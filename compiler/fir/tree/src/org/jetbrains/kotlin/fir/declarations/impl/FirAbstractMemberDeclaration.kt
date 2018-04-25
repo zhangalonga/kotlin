@@ -11,27 +11,39 @@ import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirMemberDeclaration
-import org.jetbrains.kotlin.fir.declarations.FirMemberPlatformStatus
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.transformInplace
 import org.jetbrains.kotlin.fir.transformSingle
 import org.jetbrains.kotlin.fir.visitors.FirTransformer
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationKind
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtModifierListOwner
 
 abstract class FirAbstractMemberDeclaration(
     session: FirSession,
     psi: PsiElement?,
     declarationKind: IrDeclarationKind,
     name: Name,
-    final override val visibility: Visibility,
-    override val modality: Modality?,
-    override val platformStatus: FirMemberPlatformStatus
+    visibility: Visibility,
+    modality: Modality?,
+    isExpect: Boolean,
+    isActual: Boolean
 ) : FirAbstractNamedAnnotatedDeclaration(session, psi, declarationKind, name), FirMemberDeclaration {
     final override val typeParameters = mutableListOf<FirTypeParameter>()
 
+    final override var status = FirDeclarationStatusImpl(
+        session,
+        (psi as? KtModifierListOwner)?.modifierList ?: psi,
+        visibility,
+        modality
+    ).apply {
+        this.isExpect = isExpect
+        this.isActual = isActual
+    }
+
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         typeParameters.transformInplace(transformer, data)
+        status = status.transformSingle(transformer, data)
 
         return super<FirAbstractNamedAnnotatedDeclaration>.transformChildren(transformer, data)
     }

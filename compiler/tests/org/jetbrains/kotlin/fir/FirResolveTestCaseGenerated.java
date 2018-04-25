@@ -21,124 +21,152 @@ import java.util.regex.Pattern;
 @TestDataPath("$PROJECT_ROOT")
 @RunWith(JUnit3RunnerWithInners.class)
 public class FirResolveTestCaseGenerated extends AbstractFirResolveTestCase {
+    private void runTest(String testDataFilePath) throws Exception {
+        KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+    }
+
     public void testAllFilesPresentInResolve() throws Exception {
         KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/fir/resolve"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, true, "stdlib");
     }
 
     @TestMetadata("companion.kt")
     public void testCompanion() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/companion.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/companion.kt");
     }
 
     @TestMetadata("derivedClass.kt")
     public void testDerivedClass() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/derivedClass.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/derivedClass.kt");
     }
 
     @TestMetadata("enum.kt")
     public void testEnum() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/enum.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/enum.kt");
     }
 
     @TestMetadata("F.kt")
     public void testF() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/F.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/F.kt");
     }
 
     @TestMetadata("ft.kt")
     public void testFt() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/ft.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/ft.kt");
     }
 
     @TestMetadata("functionTypes.kt")
     public void testFunctionTypes() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/functionTypes.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/functionTypes.kt");
     }
 
     @TestMetadata("genericFunctions.kt")
     public void testGenericFunctions() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/genericFunctions.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/genericFunctions.kt");
     }
 
     @TestMetadata("nestedClass.kt")
     public void testNestedClass() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/nestedClass.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/nestedClass.kt");
     }
 
     @TestMetadata("NestedOfAliasedType.kt")
     public void testNestedOfAliasedType() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/NestedOfAliasedType.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/NestedOfAliasedType.kt");
     }
 
     @TestMetadata("NestedSuperType.kt")
     public void testNestedSuperType() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/NestedSuperType.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/NestedSuperType.kt");
     }
 
     @TestMetadata("simpleClass.kt")
     public void testSimpleClass() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/simpleClass.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/simpleClass.kt");
     }
 
     @TestMetadata("simpleTypeAlias.kt")
     public void testSimpleTypeAlias() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/simpleTypeAlias.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/simpleTypeAlias.kt");
     }
 
     @TestMetadata("treeSet.kt")
     public void testTreeSet() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/treeSet.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/treeSet.kt");
     }
 
     @TestMetadata("TwoDeclarationsInSameFile.kt")
     public void testTwoDeclarationsInSameFile() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/TwoDeclarationsInSameFile.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/TwoDeclarationsInSameFile.kt");
     }
 
     @TestMetadata("typeAliasWithGeneric.kt")
     public void testTypeAliasWithGeneric() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/typeAliasWithGeneric.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/typeAliasWithGeneric.kt");
     }
 
     @TestMetadata("typeParameterInPropertyReceiver.kt")
     public void testTypeParameterInPropertyReceiver() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/typeParameterInPropertyReceiver.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/typeParameterInPropertyReceiver.kt");
     }
 
     @TestMetadata("typeParameterVsNested.kt")
     public void testTypeParameterVsNested() throws Exception {
-        String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/typeParameterVsNested.kt");
-        doTest(fileName);
+        runTest("compiler/testData/fir/resolve/typeParameterVsNested.kt");
     }
 
     @TestMetadata("compiler/testData/fir/resolve/builtins")
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Builtins extends AbstractFirResolveTestCase {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        }
+
         public void testAllFilesPresentInBuiltins() throws Exception {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/fir/resolve/builtins"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, true);
         }
 
         @TestMetadata("lists.kt")
         public void testLists() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/builtins/lists.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/builtins/lists.kt");
+        }
+    }
+
+    @TestMetadata("compiler/testData/fir/resolve/fromBuilder")
+    @TestDataPath("$PROJECT_ROOT")
+    @RunWith(JUnit3RunnerWithInners.class)
+    public static class FromBuilder extends AbstractFirResolveTestCase {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        }
+
+        public void testAllFilesPresentInFromBuilder() throws Exception {
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/fir/resolve/fromBuilder"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, true);
+        }
+
+        @TestMetadata("complexTypes.kt")
+        public void testComplexTypes() throws Exception {
+            runTest("compiler/testData/fir/resolve/fromBuilder/complexTypes.kt");
+        }
+
+        @TestMetadata("enums.kt")
+        public void testEnums() throws Exception {
+            runTest("compiler/testData/fir/resolve/fromBuilder/enums.kt");
+        }
+
+        @TestMetadata("noPrimaryConstructor.kt")
+        public void testNoPrimaryConstructor() throws Exception {
+            runTest("compiler/testData/fir/resolve/fromBuilder/noPrimaryConstructor.kt");
+        }
+
+        @TestMetadata("simpleClass.kt")
+        public void testSimpleClass() throws Exception {
+            runTest("compiler/testData/fir/resolve/fromBuilder/simpleClass.kt");
+        }
+
+        @TestMetadata("typeParameters.kt")
+        public void testTypeParameters() throws Exception {
+            runTest("compiler/testData/fir/resolve/fromBuilder/typeParameters.kt");
         }
     }
 
@@ -146,68 +174,62 @@ public class FirResolveTestCaseGenerated extends AbstractFirResolveTestCase {
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Multifile extends AbstractFirResolveTestCase {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        }
+
         public void testAllFilesPresentInMultifile() throws Exception {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/fir/resolve/multifile"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, true);
         }
 
         @TestMetadata("Annotations.kt")
         public void testAnnotations() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/Annotations.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/Annotations.kt");
         }
 
         @TestMetadata("ByteArray.kt")
         public void testByteArray() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/ByteArray.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/ByteArray.kt");
         }
 
         @TestMetadata("NestedSuperType.kt")
         public void testNestedSuperType() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/NestedSuperType.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/NestedSuperType.kt");
         }
 
         @TestMetadata("sealedStarImport.kt")
         public void testSealedStarImport() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/sealedStarImport.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/sealedStarImport.kt");
         }
 
         @TestMetadata("simpleAliasedImport.kt")
         public void testSimpleAliasedImport() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/simpleAliasedImport.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/simpleAliasedImport.kt");
         }
 
         @TestMetadata("simpleImport.kt")
         public void testSimpleImport() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/simpleImport.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/simpleImport.kt");
         }
 
         @TestMetadata("simpleImportNested.kt")
         public void testSimpleImportNested() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/simpleImportNested.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/simpleImportNested.kt");
         }
 
         @TestMetadata("simpleImportOuter.kt")
         public void testSimpleImportOuter() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/simpleImportOuter.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/simpleImportOuter.kt");
         }
 
         @TestMetadata("simpleStarImport.kt")
         public void testSimpleStarImport() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/simpleStarImport.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/simpleStarImport.kt");
         }
 
         @TestMetadata("TypeAliasExpansion.kt")
         public void testTypeAliasExpansion() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/fir/resolve/multifile/TypeAliasExpansion.kt");
-            doTest(fileName);
+            runTest("compiler/testData/fir/resolve/multifile/TypeAliasExpansion.kt");
         }
     }
 }
