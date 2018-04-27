@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.idea.actions.internal
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
@@ -37,7 +38,7 @@ class ShowFirAction : AnAction() {
 
     override fun update(e: AnActionEvent) {
         val file = e.getData(CommonDataKeys.PSI_FILE)
-        e.presentation.isVisible = KotlinInternalMode.enabled
+        e.presentation.isVisible = ApplicationManager.getApplication().isInternal
         e.presentation.isEnabled = e.project != null && file?.fileType == KotlinFileType.INSTANCE
     }
 
