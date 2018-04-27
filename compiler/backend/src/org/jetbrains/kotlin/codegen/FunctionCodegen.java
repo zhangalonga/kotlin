@@ -384,7 +384,7 @@ public class FunctionCodegen {
                     new Label(),
                     contextKind,
                     typeMapper,
-                    new ArrayList<>(),
+                    Collections.emptyList(),
                     0);
 
             mv.visitEnd();
@@ -699,7 +699,7 @@ public class FunctionCodegen {
             @NotNull Label methodEnd,
             @NotNull OwnerKind ownerKind,
             @NotNull KotlinTypeMapper typeMapper,
-            @NotNull Collection<ValueParameterDescriptor> destructuredParametersForSuspendLambda,
+            @NotNull List<ValueParameterDescriptor> destructuredParametersForSuspendLambda,
             int shiftForDestructuringVariables
     ) {
         if (functionDescriptor.isSuspend()) {
@@ -744,7 +744,8 @@ public class FunctionCodegen {
             KotlinTypeMapper typeMapper
     ) {
         generateLocalVariablesForParameters(
-                mv, jvmMethodSignature, thisType, methodBegin, methodEnd, valueParameters, new ArrayList<>(), isStatic, typeMapper, 0);
+                mv, jvmMethodSignature, thisType, methodBegin, methodEnd, valueParameters, Collections.emptyList(), isStatic, typeMapper,
+                0);
     }
 
     private static void generateLocalVariablesForParameters(
@@ -754,7 +755,7 @@ public class FunctionCodegen {
             @NotNull Label methodBegin,
             @NotNull Label methodEnd,
             Collection<ValueParameterDescriptor> valueParameters,
-            @NotNull Collection<ValueParameterDescriptor> destructuredParametersForSuspendLambda,
+            @NotNull List<ValueParameterDescriptor> destructuredParametersForSuspendLambda,
             boolean isStatic,
             KotlinTypeMapper typeMapper,
             int shiftForDestructuringVariables
@@ -833,7 +834,7 @@ public class FunctionCodegen {
             @NotNull Label methodEnd,
             KotlinTypeMapper typeMapper,
             int shift,
-            Collection<ValueParameterDescriptor> destructuredParametersForSuspendLambda
+            List<ValueParameterDescriptor> destructuredParametersForSuspendLambda
     ) {
         for (ValueParameterDescriptor parameter : destructuredParametersForSuspendLambda) {
             List<VariableDescriptor> destructuringVariables = ValueParameterDescriptorImpl.getDestructuringVariablesOrNull(parameter);

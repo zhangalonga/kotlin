@@ -1,5 +1,3 @@
-// TREAT_AS_ONE_FILE
-
 data class A<T, F>(val x: T, val y: F)
 
 suspend fun <X, Y> foo(a: A<X, Y>, block: suspend (A<X, Y>) -> String) = block(a)

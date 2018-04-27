@@ -1,5 +1,3 @@
-// TREAT_AS_ONE_FILE
-
 data class Data(val x: String, val y: Int)
 
 suspend fun test() {

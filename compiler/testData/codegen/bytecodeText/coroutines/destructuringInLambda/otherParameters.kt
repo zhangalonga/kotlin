@@ -1,5 +1,3 @@
-// TREAT_AS_ONE_FILE
-
 data class A(val x: String, val y: String)
 
 suspend fun foo(a: A, block: suspend (Int, A, String) -> String): String = block(1, a, "#")
