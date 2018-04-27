@@ -1065,39 +1065,9 @@ public class BytecodeTextTestGenerated extends AbstractBytecodeTextTest {
                 KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
             }
 
-            @TestMetadata("dataClass.kt")
-            public void testDataClass() throws Exception {
-                runTest("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda/dataClass.kt");
-            }
-
-            @TestMetadata("extensionComponents.kt")
-            public void testExtensionComponents() throws Exception {
-                runTest("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda/extensionComponents.kt");
-            }
-
-            @TestMetadata("generic.kt")
-            public void testGeneric() throws Exception {
-                runTest("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda/generic.kt");
-            }
-
-            @TestMetadata("inline.kt")
-            public void testInline() throws Exception {
-                runTest("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda/inline.kt");
-            }
-
             @TestMetadata("inlineSeparateFiles.kt")
             public void testInlineSeparateFiles() throws Exception {
                 runTest("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda/inlineSeparateFiles.kt");
-            }
-
-            @TestMetadata("otherParameters.kt")
-            public void testOtherParameters() throws Exception {
-                runTest("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda/otherParameters.kt");
-            }
-
-            @TestMetadata("underscoreNames.kt")
-            public void testUnderscoreNames() throws Exception {
-                runTest("compiler/testData/codegen/bytecodeText/coroutines/destructuringInLambda/underscoreNames.kt");
             }
         }
 
