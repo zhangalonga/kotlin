@@ -700,6 +700,34 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
         }
     }
 
+    @TestMetadata("compiler/testData/codegen/box/assert")
+    @TestDataPath("$PROJECT_ROOT")
+    @RunWith(JUnit3RunnerWithInners.class)
+    public static class Assert extends AbstractLightAnalysisModeTest {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
+        }
+
+        public void testAllFilesPresentInAssert() throws Exception {
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/box/assert"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.JVM, true);
+        }
+
+        @TestMetadata("alwaysDisable.kt")
+        public void testAlwaysDisable() throws Exception {
+            runTest("compiler/testData/codegen/box/assert/alwaysDisable.kt");
+        }
+
+        @TestMetadata("alwaysEnable.kt")
+        public void testAlwaysEnable() throws Exception {
+            runTest("compiler/testData/codegen/box/assert/alwaysEnable.kt");
+        }
+
+        @TestMetadata("lazyAssert.kt")
+        public void testLazyAssert() throws Exception {
+            runTest("compiler/testData/codegen/box/assert/lazyAssert.kt");
+        }
+    }
+
     @TestMetadata("compiler/testData/codegen/box/binaryOp")
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)

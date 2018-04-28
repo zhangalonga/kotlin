@@ -30,9 +30,20 @@ public inline fun assert(value: Boolean) {
 @kotlin.internal.InlineOnly
 public inline fun assert(value: Boolean, lazyMessage: () -> Any) {
     if (_Assertions.ENABLED) {
-        if (!value) {
-            val message = lazyMessage()
-            throw AssertionError(message)
-        }
+        @Suppress("NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+        assertInner(value, lazyMessage)
     }
+}
+
+@kotlin.internal.InlineOnly
+internal inline fun assertInner(value: Boolean, lazyMessage: () -> Any) {
+    if (!value) {
+        val message = lazyMessage()
+        throw AssertionError(message)
+    }
+}
+
+@kotlin.internal.InlineOnly
+internal inline fun assertInner(value: Boolean) {
+    assertInner(value) { "Assertion failed" }
 }

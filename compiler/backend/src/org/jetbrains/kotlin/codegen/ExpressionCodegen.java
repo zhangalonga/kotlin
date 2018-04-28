@@ -38,9 +38,9 @@ import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper;
 import org.jetbrains.kotlin.codegen.when.SwitchCodegen;
 import org.jetbrains.kotlin.codegen.when.SwitchCodegenProvider;
 import org.jetbrains.kotlin.config.ApiVersion;
+import org.jetbrains.kotlin.config.JVMAssertionsMode;
 import org.jetbrains.kotlin.config.LanguageFeature;
 import org.jetbrains.kotlin.descriptors.*;
-import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.SyntheticFieldDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor;
@@ -2353,6 +2353,11 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
             @NotNull CallGenerator callGenerator,
             @NotNull ArgumentGenerator argumentGenerator
     ) {
+        if (AssertCodegenUtil.isAssertCall(resolvedCall) && !state.getAssertionsMode().equals(JVMAssertionsMode.LEGACY)) {
+            AssertCodegenUtil.generateAssert(state.getAssertionsMode(), resolvedCall, this, parentCodegen);
+            return;
+        }
+
         boolean isSuspendNoInlineCall =
                 CoroutineCodegenUtilKt.isSuspendNoInlineCall(resolvedCall, this, state.getLanguageVersionSettings());
         boolean isConstructor = resolvedCall.getResultingDescriptor() instanceof ConstructorDescriptor;

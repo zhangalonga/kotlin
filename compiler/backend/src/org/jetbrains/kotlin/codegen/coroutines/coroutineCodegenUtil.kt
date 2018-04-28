@@ -250,7 +250,7 @@ typealias FunctionDescriptorCopyBuilderToFunctionDescriptorCopyBuilder =
         FunctionDescriptor.CopyBuilder<out FunctionDescriptor>.(FunctionDescriptor)
         -> FunctionDescriptor.CopyBuilder<out FunctionDescriptor>
 
-fun <D : FunctionDescriptor> D.createCustomCopy(
+public fun <D : FunctionDescriptor> D.createCustomCopy(
     copySettings: FunctionDescriptorCopyBuilderToFunctionDescriptorCopyBuilder
 ): D {
 

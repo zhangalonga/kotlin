@@ -17,10 +17,7 @@
 package org.jetbrains.kotlin.cli.common.arguments
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.config.AnalysisFlag
-import org.jetbrains.kotlin.config.JVMConstructorCallNormalizationMode
-import org.jetbrains.kotlin.config.JvmTarget
-import org.jetbrains.kotlin.config.LanguageFeature
+import org.jetbrains.kotlin.config.*
 
 class K2JVMCompilerArguments : CommonCompilerArguments() {
     companion object {
@@ -123,6 +120,13 @@ class K2JVMCompilerArguments : CommonCompilerArguments() {
         description = "Normalize constructor calls (disable: don't normalize; enable: normalize), default is disable"
     )
     var constructorCallNormalizationMode: String? by FreezableVar(JVMConstructorCallNormalizationMode.DEFAULT.description)
+
+    @Argument(
+        value = "-Xassertions", valueDescription = "{always-enable|always-disable|jvm|legacy}",
+        description = "Assert calls behaviour (always-enable: enable, ignore -ea; always-disable: disable, ignore -ea;" +
+                " jvm: enable depends on -ea; legacy: eager, depends on -ea on kotlin package), default is always-enable"
+    )
+    var assertionsMode: String? by FreezableVar(JVMAssertionsMode.DEFAULT.description)
 
     @Argument(value = "-Xreport-perf", description = "Report detailed performance statistics")
     var reportPerf: Boolean by FreezableVar(false)
