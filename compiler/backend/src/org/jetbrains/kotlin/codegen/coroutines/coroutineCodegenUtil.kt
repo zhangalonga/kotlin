@@ -55,6 +55,7 @@ const val SUSPEND_FUNCTION_CREATE_METHOD_NAME = "create"
 const val DO_RESUME_METHOD_NAME = "doResume"
 const val DATA_FIELD_NAME = "data"
 const val EXCEPTION_FIELD_NAME = "exception"
+val COROUTINE_IMPL_TYPE_NAME = "kotlin/coroutines/jvm/internal/CoroutineImpl"
 
 fun LanguageVersionSettings.coroutinesJvmInternalPackageFqName() =
     coroutinesPackageFqName().child(Name.identifier("jvm")).child(Name.identifier("internal"))

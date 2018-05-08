@@ -26,6 +26,34 @@ public abstract class CoroutineImpl(
     @JvmField
     protected var label: Int = if (completion != null) 0 else -1
 
+    @JvmField
+    var objects: Array<Any?>
+    @JvmField
+    var objectsTop: Int = 0
+    @JvmField
+    protected var longs: LongArray = longArrayOf(0, 0, 0, 0, 0)
+    @JvmField
+    protected var longsTop: Int = 0
+
+    init {
+        val comp = completion
+        if (comp is CoroutineImpl) {
+            objects = comp.objects
+            objectsTop = comp.objectsTop
+        } else {
+            objects = arrayOfNulls(0)
+            objectsTop = 0
+        }
+    }
+
+    fun reallocObjects(n: Int) {
+        if (objectsTop + n >= objects.size) {
+            val newObjects = arrayOfNulls<Any?>((objectsTop + n) * 2)
+            System.arraycopy(objects, 0, newObjects, 0, objects.size)
+            objects = newObjects
+        }
+    }
+
     private val _context: CoroutineContext? = completion?.context
 
     override val context: CoroutineContext

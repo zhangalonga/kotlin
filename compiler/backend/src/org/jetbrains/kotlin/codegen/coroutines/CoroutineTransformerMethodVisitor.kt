@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.codegen.optimization.common.*
 import org.jetbrains.kotlin.codegen.optimization.fixStack.FixStackMethodTransformer
 import org.jetbrains.kotlin.codegen.optimization.fixStack.top
 import org.jetbrains.kotlin.codegen.optimization.transformer.MethodTransformer
+import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.resolve.jvm.AsmTypes
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
@@ -65,7 +66,7 @@ class CoroutineTransformerMethodVisitor(
 
         FixStackMethodTransformer().transform(containingClassInternalName, methodNode)
         RedundantLocalsEliminationMethodTransformer(languageVersionSettings).transform(containingClassInternalName, methodNode)
-        updateMaxStack(methodNode)
+        updateMaxStackAndMaxLocals(methodNode)
 
         val suspensionPoints = collectSuspensionPoints(methodNode)
 
@@ -94,7 +95,7 @@ class CoroutineTransformerMethodVisitor(
         }
 
         // Actual max stack might be increased during the previous phases
-        updateMaxStack(methodNode)
+        updateMaxStackAndMaxLocals(methodNode)
 
         // Remove unreachable suspension points
         // If we don't do this, then relevant frames will not be analyzed, that is unexpected from point of view of next steps (e.g. variable spilling)
@@ -192,7 +193,7 @@ class CoroutineTransformerMethodVisitor(
                 COROUTINE_LABEL_FIELD_NAME, Type.INT_TYPE.descriptor
             )
 
-    private fun updateMaxStack(methodNode: MethodNode) {
+    private fun updateMaxStackAndMaxLocals(methodNode: MethodNode) {
         methodNode.instructions.resetLabels()
         methodNode.accept(
             MaxStackFrameSizeAndLocalsCalculator(
@@ -200,6 +201,7 @@ class CoroutineTransformerMethodVisitor(
                 object : MethodVisitor(Opcodes.ASM5) {
                     override fun visitMaxs(maxStack: Int, maxLocals: Int) {
                         methodNode.maxStack = maxStack
+                        methodNode.maxLocals = maxLocals
                     }
                 }
             )
@@ -355,6 +357,20 @@ class CoroutineTransformerMethodVisitor(
         val maxVarsCountByType = mutableMapOf<Type, Int>()
         val livenessFrames = analyzeLiveness(methodNode)
 
+        if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+            if (suspensionPoints.isNotEmpty()) {
+                postponedActions.add {
+                    with(instructions) {
+                        insertBefore(suspensionPoints.first().suspensionCallBegin, withInstructionAdapter {
+                            load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                            iconst(methodNode.maxLocals - 3)
+                            invokevirtual(COROUTINE_IMPL_TYPE_NAME, "reallocObjects", "(I)V", false)
+                        })
+                    }
+                }
+            }
+        }
+
         for (suspension in suspensionPoints) {
             val suspensionCallBegin = suspension.suspensionCallBegin
 
@@ -395,6 +411,21 @@ class CoroutineTransformerMethodVisitor(
                                 (value != StrictBasicValue.UNINITIALIZED_VALUE && livenessFrame.isAlive(index))
                     }
 
+            if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                postponedActions.add {
+                    with(instructions) {
+                        insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                            increaseObjectsTop(variablesToSpill.size)
+                        })
+                        insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                            decreaseObjectsTop(variablesToSpill.size)
+                        })
+                    }
+                }
+            }
+
+            var offset = variablesToSpill.size
+
             for ((index, basicValue) in variablesToSpill) {
                 if (basicValue === StrictBasicValue.NULL_VALUE) {
                     postponedActions.add {
@@ -413,28 +444,51 @@ class CoroutineTransformerMethodVisitor(
 
                 val indexBySort = varsCountByType[normalizedType]?.plus(1) ?: 0
                 varsCountByType[normalizedType] = indexBySort
+                val realOffset = offset
 
-                val fieldName = normalizedType.fieldNameForVar(indexBySort)
+                if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                    postponedActions.add {
+                        with(instructions) {
+                            // store variable before suspension call
+                            insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                putObjectsAndIndexOnStack(realOffset)
+                                load(index, type)
+                                StackValue.coerce(type, AsmTypes.OBJECT_TYPE, this)
+                                astore(AsmTypes.OBJECT_TYPE)
+                            })
+                            // restore variable after suspension call
+                            insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                putObjectsAndIndexOnStack(realOffset)
+                                aload(AsmTypes.OBJECT_TYPE)
+                                StackValue.coerce(AsmTypes.OBJECT_TYPE, type, this)
+                                store(index, type)
+                            })
+                        }
+                    }
+                } else {
+                    val fieldName = normalizedType.fieldNameForVar(indexBySort)
 
-                postponedActions.add {
-                    with(instructions) {
-                        // store variable before suspension call
-                        insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
-                            load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                            load(index, type)
-                            StackValue.coerce(type, normalizedType, this)
-                            putfield(classBuilderForCoroutineState.thisName, fieldName, normalizedType.descriptor)
-                        })
+                    postponedActions.add {
+                        with(instructions) {
+                            // store variable before suspension call
+                            insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                load(index, type)
+                                StackValue.coerce(type, normalizedType, this)
+                                putfield(classBuilderForCoroutineState.thisName, fieldName, normalizedType.descriptor)
+                            })
 
-                        // restore variable after suspension call
-                        insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
-                            load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                            getfield(classBuilderForCoroutineState.thisName, fieldName, normalizedType.descriptor)
-                            StackValue.coerce(normalizedType, type, this)
-                            store(index, type)
-                        })
+                            // restore variable after suspension call
+                            insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                getfield(classBuilderForCoroutineState.thisName, fieldName, normalizedType.descriptor)
+                                StackValue.coerce(normalizedType, type, this)
+                                store(index, type)
+                            })
+                        }
                     }
                 }
+                offset--
             }
 
             varsCountByType.forEach {
@@ -442,17 +496,52 @@ class CoroutineTransformerMethodVisitor(
             }
         }
 
-        postponedActions.forEach(Function0<Unit>::invoke)
-
-        maxVarsCountByType.forEach { entry ->
-            val (type, maxIndex) = entry
-            for (index in 0..maxIndex) {
-                classBuilderForCoroutineState.newField(
-                    JvmDeclarationOrigin.NO_ORIGIN, AsmUtil.NO_FLAG_PACKAGE_PRIVATE,
-                    type.fieldNameForVar(index), type.descriptor, null, null
-                )
+        if (!languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+            maxVarsCountByType.forEach { entry ->
+                val (type, maxIndex) = entry
+                for (index in 0..maxIndex) {
+                    classBuilderForCoroutineState.newField(
+                        JvmDeclarationOrigin.NO_ORIGIN, AsmUtil.NO_FLAG_PACKAGE_PRIVATE,
+                        type.fieldNameForVar(index), type.descriptor, null, null
+                    )
+                }
             }
         }
+
+        postponedActions.forEach(Function0<Unit>::invoke)
+    }
+
+    private fun InstructionAdapter.putObjectsAndIndexOnStack(offset: Int) {
+        putObjectsOnStack()
+        putObjectsTopOnStack()
+        iconst(offset)
+        sub(Type.INT_TYPE)
+    }
+
+    private fun InstructionAdapter.putObjectsOnStack() {
+        load(continuationIndex, AsmTypes.OBJECT_TYPE)
+        getfield(classBuilderForCoroutineState.thisName, "objects", "[Ljava/lang/Object;")
+    }
+
+    private fun InstructionAdapter.increaseObjectsTop(num: Int) {
+        load(continuationIndex, AsmTypes.OBJECT_TYPE)
+        putObjectsTopOnStack()
+        iconst(num)
+        add(Type.INT_TYPE)
+        putfield(COROUTINE_IMPL_TYPE_NAME, "objectsTop", "I")
+    }
+
+    private fun InstructionAdapter.decreaseObjectsTop(num: Int) {
+        load(continuationIndex, AsmTypes.OBJECT_TYPE)
+        putObjectsTopOnStack()
+        iconst(num)
+        sub(Type.INT_TYPE)
+        putfield(COROUTINE_IMPL_TYPE_NAME, "objectsTop", "I")
+    }
+
+    private fun InstructionAdapter.putObjectsTopOnStack() {
+        load(continuationIndex, AsmTypes.OBJECT_TYPE)
+        getfield(COROUTINE_IMPL_TYPE_NAME, "objectsTop", "I")
     }
 
     /**
