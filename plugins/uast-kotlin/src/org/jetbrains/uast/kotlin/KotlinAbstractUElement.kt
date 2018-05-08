@@ -32,7 +32,7 @@ import org.jetbrains.uast.kotlin.expressions.KotlinUElvisExpression
 import org.jetbrains.uast.kotlin.internal.KotlinUElementWithComments
 import org.jetbrains.uast.kotlin.psi.UastKotlinPsiVariable
 
-abstract class KotlinAbstractUElement(private val givenParent: UElement?) : KotlinUElementWithComments, UElement,
+abstract class KotlinAbstractUElement(private val givenParent: UElement?) : KotlinUElementWithComments,
     JvmDeclarationUElementPlaceholder {
 
     final override val uastParent: UElement? by lz {
