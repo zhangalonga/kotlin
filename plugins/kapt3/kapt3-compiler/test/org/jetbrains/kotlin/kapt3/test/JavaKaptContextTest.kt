@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.kapt3.test
 import com.intellij.openapi.command.impl.DummyProject
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
+import org.jetbrains.kotlin.kapt3.AptMode
 import org.jetbrains.kotlin.kapt3.KaptContext
 import org.jetbrains.kotlin.kapt3.diagnostic.KaptError
 import org.jetbrains.kotlin.kapt3.doAnnotationProcessing
