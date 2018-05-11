@@ -1,0 +1,71 @@
+@kotlin.Metadata
+public abstract class B {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}
+
+@kotlin.Metadata
+public abstract class By {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}
+
+@kotlin.Metadata
+public abstract class C {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}
+
+@kotlin.Metadata
+public abstract class D {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}
+
+@kotlin.Metadata
+public abstract class F {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}
+
+@kotlin.Metadata
+public abstract class I {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}
+
+@kotlin.Metadata
+public abstract class L {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}
+
+@kotlin.Metadata
+public abstract class S {
+    public method <init>(): void
+    public final @org.jetbrains.annotations.Nullable method lifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    public final @org.jetbrains.annotations.Nullable method notLifted(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+    protected abstract method ready(): boolean
+    protected abstract @org.jetbrains.annotations.Nullable method slow(@org.jetbrains.annotations.NotNull p0: COROUTINES_PACKAGE.Continuation): java.lang.Object
+}

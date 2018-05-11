@@ -191,29 +191,29 @@ class RedundantLocalsEliminationMethodTransformer(private val languageVersionSet
         return res
     }
 
-    // Find all meaningful successors of insn
-    private fun findImmediateSuccessors(
-        insn: AbstractInsnNode,
-        cfg: ControlFlowGraph,
-        methodNode: MethodNode
-    ): Collection<AbstractInsnNode> {
-        val visited = hashSetOf<AbstractInsnNode>()
-
-        fun dfs(current: AbstractInsnNode): Collection<AbstractInsnNode> {
-            if (!visited.add(current)) return emptySet()
-
-            return cfg.getSuccessorsIndices(current).flatMap {
-                val succ = methodNode.instructions[it]
-                if (!succ.isMeaningful || succ is JumpInsnNode || succ.opcode == Opcodes.NOP) dfs(succ)
-                else setOf(succ)
-            }
-        }
-
-        return dfs(insn)
-    }
-
     private fun AbstractInsnNode.localIndex(): Int {
         assert(this is VarInsnNode)
         return (this as VarInsnNode).`var`
     }
+}
+
+// Find all meaningful successors of insn
+internal fun findImmediateSuccessors(
+    insn: AbstractInsnNode,
+    cfg: ControlFlowGraph,
+    methodNode: MethodNode
+): Collection<AbstractInsnNode> {
+    val visited = hashSetOf<AbstractInsnNode>()
+
+    fun dfs(current: AbstractInsnNode): Collection<AbstractInsnNode> {
+        if (!visited.add(current)) return emptySet()
+
+        return cfg.getSuccessorsIndices(current).flatMap {
+            val succ = methodNode.instructions[it]
+            if (!succ.isMeaningful || succ is JumpInsnNode || succ.opcode == Opcodes.NOP) dfs(succ)
+            else setOf(succ)
+        }
+    }
+
+    return dfs(insn).toSet()
 }
