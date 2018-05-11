@@ -29,15 +29,21 @@ public abstract class CoroutineImpl(
 
     private var objects: Array<Any?>
     private var objectsTop: IntArray
+    private var ints: IntArray
+    private var intsTop: IntArray
 
     init {
         val comp = completion
         if (comp is CoroutineImpl) {
             objects = comp.objects
             objectsTop = comp.objectsTop
+            ints = comp.ints
+            intsTop = comp.intsTop
         } else {
             objects = arrayOfNulls(5)
             objectsTop = intArrayOf(0)
+            ints = intArrayOf(0, 0, 0, 0, 0)
+            intsTop = intArrayOf(0)
         }
     }
 
@@ -50,6 +56,17 @@ public abstract class CoroutineImpl(
 
     fun popObject(): Any? {
         return objects[--objectsTop[0]]
+    }
+
+    fun pushInt(i: Int) {
+        if (intsTop[0] >= ints.size) {
+            ints = Arrays.copyOf(ints, intsTop[0] * 2)
+        }
+        ints[intsTop[0]++] = i
+    }
+
+    fun popInt(): Int {
+        return ints[--intsTop[0]]
     }
 
     private val _context: CoroutineContext? = completion?.context

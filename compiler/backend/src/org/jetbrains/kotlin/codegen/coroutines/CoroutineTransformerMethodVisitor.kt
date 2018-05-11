@@ -417,22 +417,41 @@ class CoroutineTransformerMethodVisitor(
                 varsCountByType[normalizedType] = indexBySort
 
                 if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
-                    postponedActions.add {
-                        with(instructions) {
-                            // store variable before suspension call
-                            insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
-                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                                load(index, type)
-                                StackValue.coerce(type, AsmTypes.OBJECT_TYPE, this)
-                                invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObject", "(Ljava/lang/Object;)V", false)
-                            })
-                            // restore variable after suspension call
-                            insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
-                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                                invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popObject", "()Ljava/lang/Object;", false)
-                                StackValue.coerce(AsmTypes.OBJECT_TYPE, type, this)
-                                store(index, type)
-                            })
+                    if (type == Type.INT_TYPE) {
+                        postponedActions.add {
+                            with(instructions) {
+                                // store variable before suspension call
+                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    load(index, type)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInt", "(I)V", false)
+                                })
+                                // restore variable after suspension call
+                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popInt", "()I", false)
+                                    store(index, type)
+                                })
+                            }
+                        }
+                    } else {
+                        postponedActions.add {
+                            with(instructions) {
+                                // store variable before suspension call
+                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    load(index, type)
+                                    StackValue.coerce(type, AsmTypes.OBJECT_TYPE, this)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObject", "(Ljava/lang/Object;)V", false)
+                                })
+                                // restore variable after suspension call
+                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popObject", "()Ljava/lang/Object;", false)
+                                    StackValue.coerce(AsmTypes.OBJECT_TYPE, type, this)
+                                    store(index, type)
+                                })
+                            }
                         }
                     }
                 } else {
