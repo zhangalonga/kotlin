@@ -29,13 +29,13 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.types.TypeSubstitutor
 import org.jetbrains.kotlin.util.findCallableMemberBySignature
 
-internal fun moveCallableMemberToClass(
-        member: KtCallableDeclaration,
-        memberDescriptor: CallableMemberDescriptor,
-        targetClass: KtClassOrObject,
-        targetClassDescriptor: ClassDescriptor,
-        substitutor: TypeSubstitutor,
-        makeAbstract: Boolean
+fun moveCallableMemberToClass(
+    member: KtCallableDeclaration,
+    memberDescriptor: CallableMemberDescriptor,
+    targetClass: KtClassOrObject,
+    targetClassDescriptor: ClassDescriptor,
+    substitutor: TypeSubstitutor,
+    makeAbstract: Boolean
 ): KtCallableDeclaration {
     val targetMemberDescriptor = memberDescriptor.substitute(substitutor)?.let {
         targetClassDescriptor.findCallableMemberBySignature(it as CallableMemberDescriptor)
@@ -44,11 +44,9 @@ internal fun moveCallableMemberToClass(
     return targetMember?.apply {
         if (memberDescriptor.modality != Modality.ABSTRACT && makeAbstract) {
             addModifier(KtTokens.OVERRIDE_KEYWORD)
-        }
-        else if (memberDescriptor.overriddenDescriptors.isEmpty()) {
+        } else if (memberDescriptor.overriddenDescriptors.isEmpty()) {
             removeModifier(KtTokens.OVERRIDE_KEYWORD)
-        }
-        else {
+        } else {
             addModifier(KtTokens.OVERRIDE_KEYWORD)
         }
     } ?: addMemberToTarget(member, targetClass).apply {

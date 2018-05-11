@@ -76,7 +76,7 @@ internal fun KtNamedDeclaration.resolveToDescriptorWrapperAware(resolutionFacade
     return resolutionFacade?.resolveToDescriptor(this) ?: unsafeResolveToDescriptor()
 }
 
-internal fun PsiMember.toKtDeclarationWrapperAware(): KtNamedDeclaration? {
+fun PsiMember.toKtDeclarationWrapperAware(): KtNamedDeclaration? {
     if (this is PsiClass && this !is KtLightClass) return KtPsiClassWrapper(this)
     return namedUnwrappedElement as? KtNamedDeclaration
 }

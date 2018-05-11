@@ -170,7 +170,7 @@ private fun checkSuperCalls(
     )
 }
 
-internal fun checkExternalUsages(
+fun checkExternalUsages(
         conflicts: MultiMap<PsiElement, String>,
         member: PsiElement,
         targetClassDescriptor: ClassDescriptor,

@@ -68,7 +68,7 @@ import org.jetbrains.kotlin.utils.SmartList
 import org.jetbrains.kotlin.utils.addIfNotNull
 import java.util.*
 
-internal fun ResolvedCall<*>.noReceivers() = dispatchReceiver == null && extensionReceiver == null
+fun ResolvedCall<*>.noReceivers() = dispatchReceiver == null && extensionReceiver == null
 
 internal fun PsiNamedElement.renderDescription(): String {
     val type = UsageViewUtil.getType(this)

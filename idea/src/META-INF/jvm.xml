@@ -114,6 +114,11 @@
 
         <projectService serviceInterface="org.jetbrains.uast.kotlin.KotlinUastBindingContextProviderService"
                         serviceImplementation="org.jetbrains.uast.kotlin.internal.IdeaKotlinUastBindingContextProviderService"/>
+
+        <copyPastePostProcessor implementation="org.jetbrains.kotlin.idea.conversion.copy.ConvertJavaCopyPasteProcessor"/>
+        <copyPastePostProcessor implementation="org.jetbrains.kotlin.idea.conversion.copy.ConvertTextJavaCopyPasteProcessor"/>
+
+        <lang.refactoringSupport language="kotlin" implementationClass="org.jetbrains.kotlin.idea.refactoring.KotlinRefactoringSupportProvider"/>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.uast">
@@ -121,6 +126,8 @@
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <quickFixContributor implementation="org.jetbrains.kotlin.idea.quickfix.KotlinJvmQuickFixRegistrar"/>
+
         <diagnosticSuppressor implementation="org.jetbrains.kotlin.idea.debugger.DiagnosticSuppressorForDebugger"/>
 
         <storageComponentContainerContributor implementation="org.jetbrains.kotlin.samWithReceiver.ide.IdeSamWithReceiverComponentContributor"/>

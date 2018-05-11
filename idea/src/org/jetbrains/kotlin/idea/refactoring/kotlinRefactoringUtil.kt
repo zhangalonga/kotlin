@@ -67,7 +67,6 @@ import org.jetbrains.kotlin.idea.caches.resolve.util.getJavaMemberDescriptor
 import org.jetbrains.kotlin.idea.codeInsight.DescriptorToSourceUtilsIde
 import org.jetbrains.kotlin.idea.core.*
 import org.jetbrains.kotlin.idea.core.util.showYesNoCancelDialog
-import org.jetbrains.kotlin.idea.j2k.IdeaJavaToKotlinServices
 import org.jetbrains.kotlin.idea.project.languageVersionSettings
 import org.jetbrains.kotlin.idea.refactoring.changeSignature.KotlinValVar
 import org.jetbrains.kotlin.idea.refactoring.changeSignature.toValVar
@@ -77,8 +76,6 @@ import org.jetbrains.kotlin.idea.util.ProjectRootsUtil
 import org.jetbrains.kotlin.idea.util.actualsForExpected
 import org.jetbrains.kotlin.idea.util.liftToExpected
 import org.jetbrains.kotlin.idea.util.string.collapseSpaces
-import org.jetbrains.kotlin.j2k.ConverterSettings
-import org.jetbrains.kotlin.j2k.JavaToKotlinConverter
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.FqNameUnsafe
@@ -633,25 +630,6 @@ fun createJavaClass(klass: KtClass, targetClass: PsiClass?, forcePlainClass: Boo
     return javaClass
 }
 
-fun PsiElement.j2kText(): String? {
-    if (language != JavaLanguage.INSTANCE) return null
-
-    val j2kConverter = JavaToKotlinConverter(project,
-                                             ConverterSettings.Companion.defaultSettings,
-                                             IdeaJavaToKotlinServices)
-    return j2kConverter.elementsToKotlin(listOf(this)).results.single()?.text ?: return null //TODO: insert imports
-}
-
-fun PsiExpression.j2k(): KtExpression? {
-    val text = j2kText() ?: return null
-    return KtPsiFactory(project).createExpression(text)
-}
-
-fun PsiMember.j2k(): KtNamedDeclaration? {
-    val text = j2kText() ?: return null
-    return KtPsiFactory(project).createDeclaration(text)
-}
-
 fun (() -> Any).runRefactoringWithPostprocessing(
         project: Project,
         targetRefactoringId: String,
@@ -987,7 +965,7 @@ internal fun KtDeclaration.withExpectedActuals(): List<KtDeclaration> {
     return listOf(expect) + actuals
 }
 
-internal fun KtDeclaration.resolveToExpectedDescriptorIfPossible(): DeclarationDescriptor {
+fun KtDeclaration.resolveToExpectedDescriptorIfPossible(): DeclarationDescriptor {
     val descriptor = unsafeResolveToDescriptor()
     return descriptor.liftToExpected() ?: descriptor
 }
