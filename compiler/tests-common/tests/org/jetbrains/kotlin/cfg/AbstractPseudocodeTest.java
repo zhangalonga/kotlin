@@ -42,6 +42,7 @@ import org.jetbrains.kotlin.test.KotlinTestWithEnvironmentManagement;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +56,7 @@ public abstract class AbstractPseudocodeTest extends KotlinTestWithEnvironmentMa
         doTestWithEnvironment(fileName, createEnvironmentWithMockJdk(ConfigurationKind.JDK_ONLY));
     }
 
-    private void doTestWithEnvironment(String fileName, KotlinCoreEnvironment environment) throws Exception {
+    private void  doTestWithEnvironment(String fileName, KotlinCoreEnvironment environment) throws Exception {
         File file = new File(fileName);
 
         CompilerTestLanguageVersionSettingsKt.setupLanguageVersionSettingsForCompilerTests(FileUtil.loadFile(file, true), environment);
@@ -140,6 +141,11 @@ public abstract class AbstractPseudocodeTest extends KotlinTestWithEnvironmentMa
         }
 
         File expectedInstructionsFile = KotlinTestUtils.replaceExtension(file, getDataFileExtension());
+        try (PrintWriter pw = new PrintWriter("C:\\Users\\809279\\Desktop\\workdir\\res.kt")) {
+            pw.write(instructionDump.toString());
+        }
+        catch (Exception ignored) {
+        }
         KotlinTestUtils.assertEqualsToFile(expectedInstructionsFile, instructionDump.toString());
     }
 

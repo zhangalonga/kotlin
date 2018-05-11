@@ -43,8 +43,11 @@ public abstract class AbstractDataFlowTest extends AbstractPseudocodeTest {
                 pseudocodeVariablesData.getVariableInitializers();
         Map<Instruction, Edges<ReadOnlyControlFlowInfo<VariableUseState>>> useStatusData =
                 pseudocodeVariablesData.getVariableUseStatusData();
+        Map<Instruction, Edges<ReadOnlyConstValueControlFlowInfo>> variableValues =
+                pseudocodeVariablesData.getVariableValues();
         String initPrefix = "    INIT:";
         String usePrefix = "    USE:";
+        String valuePrefix = "    VAL:";
         int initializersColumnWidth = countDataColumnWidth(initPrefix, pseudocode.getInstructionsIncludingDeadCode(), variableInitializers,
                                                            pseudocodeVariablesData);
 
@@ -63,6 +66,13 @@ public abstract class AbstractDataFlowTest extends AbstractPseudocodeTest {
             if (useStatusEdges != null && !useStatusEdges.equals(nextUseStatusEdges)) {
                 result.append(dumpEdgesData(usePrefix, useStatusEdges, pseudocodeVariablesData));
             }
+
+            Edges<ReadOnlyConstValueControlFlowInfo> valueEdges = variableValues.get(instruction);
+            Edges<ReadOnlyConstValueControlFlowInfo> nextValueEdges = variableValues.get(next);
+            if (valueEdges != null && !valueEdges.equals(nextValueEdges)) {
+                result.append(dumpEdgesData(valuePrefix, valueEdges, pseudocodeVariablesData));
+            }
+
             return result.toString();
         });
     }

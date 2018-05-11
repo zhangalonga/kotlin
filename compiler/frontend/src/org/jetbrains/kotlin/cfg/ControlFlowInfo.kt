@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.cfg
 import javaslang.Tuple2
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
 
+
 typealias ImmutableMap<K, V> = javaslang.collection.Map<K, V>
 typealias ImmutableHashMap<K, V> = javaslang.collection.HashMap<K, V>
 
@@ -32,7 +33,7 @@ internal constructor(
 
     /**
      * This overload exists just for sake of optimizations: in some cases we've just retrieved the old value,
-     * so we don't need to scan through the peristent hashmap again
+     * so we don't need to scan through the persistent hashmap again
      */
     fun put(key: VariableDescriptor, value: D, oldValue: D?): S {
         @Suppress("UNCHECKED_CAST")
@@ -64,6 +65,15 @@ interface ReadOnlyControlFlowInfo<D : Any> {
 
 interface ReadOnlyInitControlFlowInfo : ReadOnlyControlFlowInfo<VariableControlFlowState> {
     fun checkDefiniteInitializationInWhen(merge: ReadOnlyInitControlFlowInfo): Boolean
+}
+
+interface ReadOnlyConstValueControlFlowInfo : ReadOnlyControlFlowInfo<VariableDataFlowState> {
+}
+
+class ConstValueControlFlowInfo(map: ImmutableMap<VariableDescriptor, VariableDataFlowState> = ImmutableHashMap.empty()) :
+        ControlFlowInfo<ConstValueControlFlowInfo, VariableDataFlowState>(map), ReadOnlyConstValueControlFlowInfo {
+    override fun copy(newMap: ImmutableMap<VariableDescriptor, VariableDataFlowState>): ConstValueControlFlowInfo =
+            ConstValueControlFlowInfo(newMap)
 }
 
 typealias ReadOnlyUseControlFlowInfo = ReadOnlyControlFlowInfo<VariableUseState>
@@ -113,8 +123,68 @@ enum class InitState(private val s: String) {
     override fun toString() = s
 }
 
-class VariableControlFlowState private constructor(val initState: InitState, val isDeclared: Boolean) {
 
+// = PrimitiveTypes + String
+
+enum class PropagatedTypes {
+    BYTE,
+    SHORT,
+    INT,
+    LONG,
+    FLOAT,
+    DOUBLE,
+
+    CHAR,
+    BOOLEAN,
+
+    STRING
+
+}
+
+interface ValueState {
+    fun merge(other: ValueState): ValueState {
+        if (this is VariableWithUnknownValue
+            && other is VariableWithUnknownValue) return VariableWithUnknownValue
+        if (this is VariableWithUnknownValue
+            && other is VariableWithConstValue) return  VariableWithConstValue(other.constValue, other.varType)
+        if (this is VariableWithConstValue
+            && other is VariableWithUnknownValue) return VariableWithConstValue(this.constValue, this.varType)
+        if (this is VariableWithConstValue
+            && other is VariableWithConstValue
+            && this.constValue == other.constValue)
+            return VariableWithConstValue(this.constValue, this.varType)
+        return VariableWithNotAConstValue
+    }
+}
+
+data class VariableWithConstValue(val constValue: String, val varType: PropagatedTypes/*KotlinType*/): ValueState
+
+//       UNKNOWN
+//       /| | | \
+//      1 2 3 4 "cat"
+//      \ | | | /
+//     NOT_A_CONST
+object VariableWithNotAConstValue: ValueState
+object VariableWithUnknownValue: ValueState
+
+
+class VariableDataFlowState private constructor(val valueState: ValueState) {
+    companion object {
+        fun create(valueState: ValueState): VariableDataFlowState =
+                VariableDataFlowState(valueState)
+    }
+
+    override fun toString(): String {
+        return when(this.valueState) {
+            is VariableWithConstValue -> "C: <${valueState.constValue}, ${valueState.varType}>"
+            is VariableWithUnknownValue -> "C?"
+            is VariableWithNotAConstValue -> "N_C"
+            else -> "STATE?!"
+        }
+    }
+}
+
+class VariableControlFlowState private constructor(val initState: InitState, val isDeclared: Boolean) {
     fun definitelyInitialized(): Boolean = initState == InitState.INITIALIZED
 
     fun mayBeInitialized(): Boolean = initState != InitState.NOT_INITIALIZED
