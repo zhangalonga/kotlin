@@ -357,20 +357,6 @@ class CoroutineTransformerMethodVisitor(
         val maxVarsCountByType = mutableMapOf<Type, Int>()
         val livenessFrames = analyzeLiveness(methodNode)
 
-        if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
-            if (suspensionPoints.isNotEmpty()) {
-                postponedActions.add {
-                    with(instructions) {
-                        insertBefore(suspensionPoints.first().suspensionCallBegin, withInstructionAdapter {
-                            load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                            iconst(methodNode.maxLocals - 3)
-                            invokevirtual(COROUTINE_IMPL_TYPE_NAME, "reallocObjects", "(I)V", false)
-                        })
-                    }
-                }
-            }
-        }
-
         for (suspension in suspensionPoints) {
             val suspensionCallBegin = suspension.suspensionCallBegin
 
@@ -411,21 +397,6 @@ class CoroutineTransformerMethodVisitor(
                                 (value != StrictBasicValue.UNINITIALIZED_VALUE && livenessFrame.isAlive(index))
                     }
 
-            if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
-                postponedActions.add {
-                    with(instructions) {
-                        insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
-                            increaseObjectsTop(variablesToSpill.size)
-                        })
-                        insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
-                            decreaseObjectsTop(variablesToSpill.size)
-                        })
-                    }
-                }
-            }
-
-            var offset = variablesToSpill.size
-
             for ((index, basicValue) in variablesToSpill) {
                 if (basicValue === StrictBasicValue.NULL_VALUE) {
                     postponedActions.add {
@@ -444,22 +415,21 @@ class CoroutineTransformerMethodVisitor(
 
                 val indexBySort = varsCountByType[normalizedType]?.plus(1) ?: 0
                 varsCountByType[normalizedType] = indexBySort
-                val realOffset = offset
 
                 if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
                     postponedActions.add {
                         with(instructions) {
                             // store variable before suspension call
                             insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
-                                putObjectsAndIndexOnStack(realOffset)
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
                                 load(index, type)
                                 StackValue.coerce(type, AsmTypes.OBJECT_TYPE, this)
-                                astore(AsmTypes.OBJECT_TYPE)
+                                invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObject", "(Ljava/lang/Object;)V", false)
                             })
                             // restore variable after suspension call
                             insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
-                                putObjectsAndIndexOnStack(realOffset)
-                                aload(AsmTypes.OBJECT_TYPE)
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popObject", "()Ljava/lang/Object;", false)
                                 StackValue.coerce(AsmTypes.OBJECT_TYPE, type, this)
                                 store(index, type)
                             })
@@ -488,7 +458,6 @@ class CoroutineTransformerMethodVisitor(
                         }
                     }
                 }
-                offset--
             }
 
             varsCountByType.forEach {
@@ -509,39 +478,6 @@ class CoroutineTransformerMethodVisitor(
         }
 
         postponedActions.forEach(Function0<Unit>::invoke)
-    }
-
-    private fun InstructionAdapter.putObjectsAndIndexOnStack(offset: Int) {
-        putObjectsOnStack()
-        putObjectsTopOnStack()
-        iconst(offset)
-        sub(Type.INT_TYPE)
-    }
-
-    private fun InstructionAdapter.putObjectsOnStack() {
-        load(continuationIndex, AsmTypes.OBJECT_TYPE)
-        getfield(classBuilderForCoroutineState.thisName, "objects", "[Ljava/lang/Object;")
-    }
-
-    private fun InstructionAdapter.increaseObjectsTop(num: Int) {
-        load(continuationIndex, AsmTypes.OBJECT_TYPE)
-        putObjectsTopOnStack()
-        iconst(num)
-        add(Type.INT_TYPE)
-        putfield(COROUTINE_IMPL_TYPE_NAME, "objectsTop", "I")
-    }
-
-    private fun InstructionAdapter.decreaseObjectsTop(num: Int) {
-        load(continuationIndex, AsmTypes.OBJECT_TYPE)
-        putObjectsTopOnStack()
-        iconst(num)
-        sub(Type.INT_TYPE)
-        putfield(COROUTINE_IMPL_TYPE_NAME, "objectsTop", "I")
-    }
-
-    private fun InstructionAdapter.putObjectsTopOnStack() {
-        load(continuationIndex, AsmTypes.OBJECT_TYPE)
-        getfield(COROUTINE_IMPL_TYPE_NAME, "objectsTop", "I")
     }
 
     /**
@@ -580,8 +516,15 @@ class CoroutineTransformerMethodVisitor(
 
             insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
                 dup()
+                if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                    store(dataIndex, AsmTypes.OBJECT_TYPE)
+                }
                 load(suspendMarkerVarIndex, AsmTypes.OBJECT_TYPE)
-                ifacmpne(continuationLabelAfterLoadedResult.label)
+                if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                    ifacmpne(continuationLabel.label)
+                } else {
+                    ifacmpne(continuationLabelAfterLoadedResult.label)
+                }
 
                 // Exit
                 val returnLabel = LabelNode()
@@ -611,12 +554,14 @@ class CoroutineTransformerMethodVisitor(
                 // Load continuation argument just like suspending function returns it
                 load(dataIndex, AsmTypes.OBJECT_TYPE)
 
-                visitLabel(continuationLabelAfterLoadedResult.label)
+                if (!languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                    visitLabel(continuationLabelAfterLoadedResult.label)
 
-                // Extend next instruction linenumber. Can't use line number of suspension point here because both non-suspended execution
-                // and re-entering after suspension passes this label.
-                val afterSuspensionPointLineNumber = nextLineNumberNode?.line ?: suspendElementLineNumber
-                visitLineNumber(afterSuspensionPointLineNumber, continuationLabelAfterLoadedResult.label)
+                    // Extend next instruction linenumber. Can't use line number of suspension point here because both non-suspended execution
+                    // and re-entering after suspension passes this label.
+                    val afterSuspensionPointLineNumber = nextLineNumberNode?.line ?: suspendElementLineNumber
+                    visitLineNumber(afterSuspensionPointLineNumber, continuationLabelAfterLoadedResult.label)
+                }
             })
 
             if (nextLineNumberNode != null) {
