@@ -58,6 +58,10 @@ public abstract class CoroutineImpl(
         return objects[--objectsTop[0]]
     }
 
+    fun dropObjects(i: Int) {
+        objectsTop[0] -= i
+    }
+
     fun pushInt(i: Int) {
         if (intsTop[0] >= ints.size) {
             ints = Arrays.copyOf(ints, intsTop[0] * 2)
@@ -67,6 +71,10 @@ public abstract class CoroutineImpl(
 
     fun popInt(): Int {
         return ints[--intsTop[0]]
+    }
+
+    fun dropInts(i: Int) {
+        intsTop[0] -= i
     }
 
     private val _context: CoroutineContext? = completion?.context

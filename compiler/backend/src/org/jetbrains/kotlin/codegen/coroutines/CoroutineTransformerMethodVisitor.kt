@@ -103,12 +103,20 @@ class CoroutineTransformerMethodVisitor(
 
         UninitializedStoresProcessor(methodNode, shouldPreserveClassInitialization).run()
 
-        spillVariables(suspensionPoints, methodNode)
+        val toDrop = spillVariables(suspensionPoints, methodNode)
 
         val suspendMarkerVarIndex = methodNode.maxLocals++
 
         val suspensionPointLabels = suspensionPoints.withIndex().map {
-            transformCallAndReturnContinuationLabel(it.index + 1, it.value, methodNode, suspendMarkerVarIndex)
+            updateMaxStackAndMaxLocals(methodNode)
+            transformCallAndReturnContinuationLabel(
+                it.index + 1,
+                it.value,
+                methodNode,
+                suspendMarkerVarIndex,
+                toDrop[it.value]!!.first,
+                toDrop[it.value]!!.second
+            )
         }
 
         methodNode.instructions.apply {
@@ -148,6 +156,7 @@ class CoroutineTransformerMethodVisitor(
 
         dropSuspensionMarkers(methodNode, suspensionPoints)
         methodNode.removeEmptyCatchBlocks()
+        updateMaxStackAndMaxLocals(methodNode)
     }
 
     private fun removeFakeContinuationConstructorCall(methodNode: MethodNode) {
@@ -347,7 +356,7 @@ class CoroutineTransformerMethodVisitor(
         }
     }
 
-    private fun spillVariables(suspensionPoints: List<SuspensionPoint>, methodNode: MethodNode) {
+    private fun spillVariables(suspensionPoints: List<SuspensionPoint>, methodNode: MethodNode): Map<SuspensionPoint, Pair<Int, Int>> {
         val instructions = methodNode.instructions
         val frames = performRefinedTypeAnalysis(methodNode, containingClassInternalName)
         fun AbstractInsnNode.index() = instructions.indexOf(this)
@@ -356,6 +365,7 @@ class CoroutineTransformerMethodVisitor(
         val postponedActions = mutableListOf<() -> Unit>()
         val maxVarsCountByType = mutableMapOf<Type, Int>()
         val livenessFrames = analyzeLiveness(methodNode)
+        val toDrop = hashMapOf<SuspensionPoint, Pair<Int, Int>>()
 
         for (suspension in suspensionPoints) {
             val suspensionCallBegin = suspension.suspensionCallBegin
@@ -396,6 +406,10 @@ class CoroutineTransformerMethodVisitor(
                         (index == 0 && needDispatchReceiver && isForNamedFunction) ||
                                 (value != StrictBasicValue.UNINITIALIZED_VALUE && livenessFrame.isAlive(index))
                     }
+
+            val integersToDrop = variablesToSpill.map { it.second }.count { it.type == Type.INT_TYPE }
+            val objectsToDrop = variablesToSpill.size - integersToDrop
+            toDrop[suspension] = integersToDrop to objectsToDrop
 
             for ((index, basicValue) in variablesToSpill) {
                 if (basicValue === StrictBasicValue.NULL_VALUE) {
@@ -497,6 +511,7 @@ class CoroutineTransformerMethodVisitor(
         }
 
         postponedActions.forEach(Function0<Unit>::invoke)
+        return toDrop
     }
 
     /**
@@ -516,10 +531,13 @@ class CoroutineTransformerMethodVisitor(
         id: Int,
         suspension: SuspensionPoint,
         methodNode: MethodNode,
-        suspendMarkerVarIndex: Int
+        suspendMarkerVarIndex: Int,
+        integersToDrop: Int,
+        objectsToDrop: Int
     ): LabelNode {
         val continuationLabel = LabelNode()
         val continuationLabelAfterLoadedResult = LabelNode()
+        val dropStacksLabel = LabelNode()
         val suspendElementLineNumber = lineNumber
         val nextLineNumberNode = suspension.suspensionCallEnd.findNextOrNull { it is LineNumberNode } as? LineNumberNode
         with(methodNode.instructions) {
@@ -535,12 +553,10 @@ class CoroutineTransformerMethodVisitor(
 
             insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
                 dup()
-                if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
-                    store(dataIndex, AsmTypes.OBJECT_TYPE)
-                }
+
                 load(suspendMarkerVarIndex, AsmTypes.OBJECT_TYPE)
                 if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
-                    ifacmpne(continuationLabel.label)
+                    ifacmpne(dropStacksLabel.label)
                 } else {
                     ifacmpne(continuationLabelAfterLoadedResult.label)
                 }
@@ -552,6 +568,23 @@ class CoroutineTransformerMethodVisitor(
                 visitLineNumber(suspendElementLineNumber, returnLabel.label)
                 load(suspendMarkerVarIndex, AsmTypes.OBJECT_TYPE)
                 areturn(AsmTypes.OBJECT_TYPE)
+
+                if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                    mark(dropStacksLabel.label)
+
+                    if (integersToDrop != 0) {
+                        load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                        iconst(integersToDrop)
+                        invokevirtual(COROUTINE_IMPL_TYPE_NAME, "dropInts", "(I)V", false)
+                    }
+                    if (objectsToDrop != 0) {
+                        load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                        iconst(objectsToDrop)
+                        invokevirtual(COROUTINE_IMPL_TYPE_NAME, "dropObjects", "(I)V", false)
+                    }
+                    goTo(continuationLabelAfterLoadedResult.label)
+                }
+
                 // Mark place for continuation
                 visitLabel(continuationLabel.label)
             })
@@ -573,14 +606,12 @@ class CoroutineTransformerMethodVisitor(
                 // Load continuation argument just like suspending function returns it
                 load(dataIndex, AsmTypes.OBJECT_TYPE)
 
-                if (!languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
-                    visitLabel(continuationLabelAfterLoadedResult.label)
+                visitLabel(continuationLabelAfterLoadedResult.label)
 
-                    // Extend next instruction linenumber. Can't use line number of suspension point here because both non-suspended execution
-                    // and re-entering after suspension passes this label.
-                    val afterSuspensionPointLineNumber = nextLineNumberNode?.line ?: suspendElementLineNumber
-                    visitLineNumber(afterSuspensionPointLineNumber, continuationLabelAfterLoadedResult.label)
-                }
+                // Extend next instruction linenumber. Can't use line number of suspension point here because both non-suspended execution
+                // and re-entering after suspension passes this label.
+                val afterSuspensionPointLineNumber = nextLineNumberNode?.line ?: suspendElementLineNumber
+                visitLineNumber(afterSuspensionPointLineNumber, continuationLabelAfterLoadedResult.label)
             })
 
             if (nextLineNumberNode != null) {
