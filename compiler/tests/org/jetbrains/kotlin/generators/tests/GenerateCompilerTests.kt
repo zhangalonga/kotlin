@@ -17,10 +17,7 @@
 package org.jetbrains.kotlin.generators.tests
 
 import org.jetbrains.kotlin.asJava.AbstractCompilerLightClassTest
-import org.jetbrains.kotlin.cfg.AbstractControlFlowTest
-import org.jetbrains.kotlin.cfg.AbstractDataFlowTest
-import org.jetbrains.kotlin.cfg.AbstractDiagnosticsWithModifiedMockJdkTest
-import org.jetbrains.kotlin.cfg.AbstractPseudoValueTest
+import org.jetbrains.kotlin.cfg.*
 import org.jetbrains.kotlin.checkers.*
 import org.jetbrains.kotlin.checkers.javac.*
 import org.jetbrains.kotlin.cli.AbstractCliTest
@@ -312,6 +309,10 @@ fun main(args: Array<String>) {
         testClass<AbstractDataFlowTest> {
             model("cfg-variables")
             model("cfgVariablesWithStdLib", testMethod = "doTestWithStdLib")
+        }
+
+        testClass<AbstractConstantPropogationTest> {
+            model("cfg-constant-propagation")
         }
 
         testClass<AbstractPseudoValueTest> {

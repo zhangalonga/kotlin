@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 JetBrains s.r.o.
+ * Copyright 2010-2018 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractDataFlowTest extends AbstractPseudocodeTest {
+
+
+public class AbstractConstantPropogationTest extends AbstractDataFlowTest {
 
     @Override
     public void dumpInstructions(
@@ -39,30 +41,21 @@ public abstract class AbstractDataFlowTest extends AbstractPseudocodeTest {
             @NotNull BindingContext bindingContext
     ) {
         PseudocodeVariablesData pseudocodeVariablesData = new PseudocodeVariablesData(pseudocode.getRootPseudocode(), bindingContext);
-        Map<Instruction, Edges<ReadOnlyInitControlFlowInfo>> variableInitializers =
-                pseudocodeVariablesData.getVariableInitializers();
-        Map<Instruction, Edges<ReadOnlyControlFlowInfo<VariableUseState>>> useStatusData =
-                pseudocodeVariablesData.getVariableUseStatusData();
-        String initPrefix = "    INIT:";
-        String usePrefix = "    USE:";
-        int initializersColumnWidth = countDataColumnWidth(initPrefix, pseudocode.getInstructionsIncludingDeadCode(), variableInitializers,
+        Map<Instruction, Edges<ReadOnlyConstValueControlFlowInfo>> variableValues =
+                pseudocodeVariablesData.getVariableValues();
+        String valuePrefix = "    VAL:";
+        int initializersColumnWidth = countDataColumnWidth(valuePrefix, pseudocode.getInstructionsIncludingDeadCode(), variableValues,
                                                            pseudocodeVariablesData);
 
         dumpInstructions(pseudocode, out, (instruction, next, prev) -> {
             StringBuilder result = new StringBuilder();
-            Edges<ReadOnlyInitControlFlowInfo> initializersEdges = variableInitializers.get(instruction);
-            Edges<ReadOnlyInitControlFlowInfo> previousInitializersEdges = variableInitializers.get(prev);
-            String initializersData = "";
-            if (initializersEdges != null && !initializersEdges.equals(previousInitializersEdges)) {
-                initializersData = dumpEdgesData(initPrefix, initializersEdges, pseudocodeVariablesData);
+            Edges<ReadOnlyConstValueControlFlowInfo> valueEdges = variableValues.get(instruction);
+            Edges<ReadOnlyConstValueControlFlowInfo> nextValueEdges = variableValues.get(next);
+            String valuesData = "";
+            if (valueEdges != null && !valueEdges.equals(nextValueEdges)) {
+                valuesData = dumpEdgesData(valuePrefix, valueEdges, pseudocodeVariablesData);
             }
-            result.append(String.format("%1$-" + initializersColumnWidth + "s", initializersData));
-
-            Edges<ReadOnlyControlFlowInfo<VariableUseState>> useStatusEdges = useStatusData.get(instruction);
-            Edges<ReadOnlyControlFlowInfo<VariableUseState>> nextUseStatusEdges = useStatusData.get(next);
-            if (useStatusEdges != null && !useStatusEdges.equals(nextUseStatusEdges)) {
-                result.append(dumpEdgesData(usePrefix, useStatusEdges, pseudocodeVariablesData));
-            }
+            result.append(String.format("%1$-" + initializersColumnWidth + "s", valuesData));
             return result.toString();
         });
     }
@@ -70,12 +63,12 @@ public abstract class AbstractDataFlowTest extends AbstractPseudocodeTest {
     private static int countDataColumnWidth(
             @NotNull String prefix,
             @NotNull List<Instruction> instructions,
-            @NotNull Map<Instruction, Edges<ReadOnlyInitControlFlowInfo>> data,
+            @NotNull Map<Instruction, Edges<ReadOnlyConstValueControlFlowInfo>> data,
             @NotNull PseudocodeVariablesData variablesData
     ) {
         int maxWidth = 0;
         for (Instruction instruction : instructions) {
-            Edges<ReadOnlyInitControlFlowInfo> edges = data.get(instruction);
+            Edges<ReadOnlyConstValueControlFlowInfo> edges = data.get(instruction);
             if (edges == null) continue;
             int length = dumpEdgesData(prefix, edges, variablesData).length();
             if (maxWidth < length) {

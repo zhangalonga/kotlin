@@ -1,0 +1,26 @@
+== bar ==
+fun bar() {
+    val b: Int
+    b = 3
+
+    val a = 4
+    var c
+}
+---------------------
+L0:
+  1 <START>
+  2 mark({ val b: Int b = 3 val a = 4 var c })    VAL: in: {} out: {}
+    v(val b: Int)                                 VAL: in: {} out: {b=C?}
+    r(3) -> <v0>                                  VAL: in: {b=C?} out: {b=C?}
+    w(b|<v0>)                                     VAL: in: {b=C?} out: {b=C: <3, INT>}
+    v(val a = 4)
+    r(4) -> <v1>                                  VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
+    w(a|<v1>)                                     VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
+    v(var c)                                      VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>, c=C?}
+L1:
+  1 <END>
+error:
+    <ERROR>
+sink:
+    <SINK>                                        VAL: in: {} out: {}
+=====================

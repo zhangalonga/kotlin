@@ -627,14 +627,17 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
             when (instruction) {
                 is WriteValueInstruction -> {
                     val variableDescriptor = extractValWithTrivialInitializer(instruction)
+                    val previousInstruction = instruction.previousInstructions.last()
                     if (variableDescriptor != null
                         && instruction.isTrivialInitializer()
+                        && previousInstruction is ReadValueInstruction
                         && (KotlinBuiltIns.isPrimitiveType(variableDescriptor.type)
                            || KotlinBuiltIns.isString(variableDescriptor.type))) {
-                        val previousInstruction = instruction.previousInstructions.last() as ReadValueInstruction
+                        println("HERE")
                         descriptorToConstStateMap =
                                 descriptorToConstStateMap.put(variableDescriptor,
                                                               createConstValueState(previousInstruction)?.valueState as VariableWithConstValue)
+                        println(descriptorToConstStateMap.size())
                     }
                 }
             }
@@ -719,6 +722,7 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
             PropagatedTypes.LONG -> VariableWithConstValue(
                     (this.constValue.toLong() * other.constValue.toLong()).toString(),
                     PropagatedTypes.LONG)
+
             else -> VariableWithUnknownValue
         }
     }
@@ -784,9 +788,11 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
         if (instruction is ReadValueInstruction) {
             val varDescriptor = PseudocodeUtil.extractVariableDescriptorIfAny(instruction, bindingContext)
             if (varDescriptor != null) {
-                val valueState = enterInstructionData[varDescriptor].get().valueState
-                if (valueState is VariableWithConstValue) {
-                    pseudoValueToValue.put(instruction.outputValue, valueState)
+                if (enterInstructionData.containsKey(varDescriptor)) {
+                    val valueState = enterInstructionData[varDescriptor]?.get()?.valueState
+                    if (valueState is VariableWithConstValue) {
+                        pseudoValueToValue.put(instruction.outputValue, valueState)
+                    }
                 }
             } else {
                 createConstValueState(instruction)?.let {
