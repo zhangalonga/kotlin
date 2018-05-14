@@ -17,7 +17,7 @@
 package org.jetbrains.kotlin.kapt3.test
 
 import com.intellij.openapi.util.SystemInfoRt
-import org.jetbrains.kotlin.kapt3.util.isJava9OrLater
+import org.jetbrains.kotlin.kapt3.base.util.isJava9OrLater
 import org.jetbrains.kotlin.test.KotlinTestUtils
 import java.io.File
 import java.net.URL
