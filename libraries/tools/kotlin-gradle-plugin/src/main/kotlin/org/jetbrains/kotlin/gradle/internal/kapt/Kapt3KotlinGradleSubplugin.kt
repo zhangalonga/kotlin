@@ -24,6 +24,7 @@ import java.io.File
 import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin.Companion.getKaptGeneratedSourcesDir
 import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin.Companion.getKaptGeneratedClassesDir
 import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin.Companion.getKaptGeneratedKotlinSourcesDir
+import org.jetbrains.kotlin.gradle.tasks.isWorkerAPISupported
 import java.io.ByteArrayOutputStream
 import java.io.ObjectOutputStream
 import java.util.*
@@ -66,6 +67,9 @@ abstract class KaptVariantData<T>(val variantData: T) {
 class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
     companion object {
         private val VERBOSE_OPTION_NAME = "kapt.verbose"
+        private val USE_WORKER_API = "kapt.use.worker.api"
+
+        private val KAPT_KOTLIN_GENERATED = "kapt.kotlin.generated"
 
         val MAIN_KAPT_CONFIGURATION_NAME = "kapt"
 
@@ -82,6 +86,10 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
 
         fun Project.findKaptConfiguration(sourceSetName: String): Configuration? {
             return project.configurations.findByName(getKaptConfigurationName(sourceSetName))
+        }
+
+        fun Project.isToggledOn(propertyName: String): Boolean {
+            return hasProperty(propertyName) && property(propertyName) == "true"
         }
 
         fun findMainKaptConfiguration(project: Project) = project.findKaptConfiguration(MAIN_KAPT_CONFIGURATION_NAME)
@@ -170,7 +178,7 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         )
 
         val kaptGenerateStubsTask = context.createKaptGenerateStubsTask()
-        val kaptTask = context.createKaptKotlinTask()
+        val kaptTask = context.createKaptKotlinTask(useWorkerApi = project.isToggledOn(USE_WORKER_API) && isWorkerAPISupported())
 
         kaptGenerateStubsTask.source(*kaptConfigurations.toTypedArray())
 
@@ -228,18 +236,12 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
             pluginOptions += SubpluginOption("processors", annotationProcessors)
         }
 
-        val androidPlugin = kaptVariantData?.let {
-            project.extensions.findByName("android") as? BaseExtension
-        }
 
-        val androidOptions = kaptVariantData?.annotationProcessorOptions ?: emptyMap()
 
         kotlinSourcesOutputDir.mkdirs()
 
-        val apOptions =
-                (kaptExtension.getAdditionalArguments(project, kaptVariantData?.variantData, androidPlugin) + androidOptions)
-                        .map { SubpluginOption(it.key, it.value) } +
-                FilesSubpluginOption("kapt.kotlin.generated", listOf(kotlinSourcesOutputDir))
+        val apOptions = getAPOptions()
+            .map { SubpluginOption(it.key, it.value) } + FilesSubpluginOption(KAPT_KOTLIN_GENERATED, listOf(kotlinSourcesOutputDir))
 
         pluginOptions += CompositeSubpluginOption("apoptions", encodeList(apOptions.associate { it.key to it.value }), apOptions)
 
@@ -248,6 +250,16 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         addMiscOptions(pluginOptions)
 
         return pluginOptions
+    }
+
+    private fun Kapt3SubpluginContext.getAPOptions(): Map<String, String> {
+        val androidPlugin = kaptVariantData?.let {
+            project.extensions.findByName("android") as? BaseExtension
+        }
+
+        val androidOptions = kaptVariantData?.annotationProcessorOptions ?: emptyMap()
+
+        return kaptExtension.getAdditionalArguments(project, kaptVariantData?.variantData, androidPlugin) + androidOptions
     }
 
     private fun Kapt3SubpluginContext.buildAndAddOptionsTo(task: Task, container: CompilerPluginOptions, aptMode: String) {
@@ -291,21 +303,22 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         pluginOptions += SubpluginOption("mapDiagnosticLocations", "${kaptExtension.mapDiagnosticLocations}")
         pluginOptions += FilesSubpluginOption("stubs", listOf(getKaptStubsDir()))
 
-        if (project.hasProperty(VERBOSE_OPTION_NAME) && project.property(VERBOSE_OPTION_NAME) == "true") {
+        if (project.isToggledOn(VERBOSE_OPTION_NAME)) {
             pluginOptions += SubpluginOption("verbose", "true")
         }
     }
 
-    private fun Kapt3SubpluginContext.createKaptKotlinTask(): KaptTask {
-        val kaptTask = project.tasks.create(
-                getKaptTaskName("kapt"),
-                KaptTask::class.java)
+    private fun Kapt3SubpluginContext.createKaptKotlinTask(useWorkerApi: Boolean): KaptTask {
+        val taskClass = if (useWorkerApi) KaptWithoutKotlincTask::class.java else KaptWithKotlincTask::class.java
+        val kaptTask = project.tasks.create(getKaptTaskName("kapt"), taskClass)
 
         kaptTask.useBuildCache = kaptExtension.useBuildCache
 
         kaptTask.kotlinCompileTask = kotlinCompile
 
-        kaptClasspathArtifacts.forEach { kaptTask.pluginOptions.addClasspathEntry(it) }
+        if (kaptTask is KaptWithKotlincTask) {
+            kaptClasspathArtifacts.forEach { kaptTask.pluginOptions.addClasspathEntry(it) }
+        }
 
         kaptTask.stubsDir = getKaptStubsDir()
         kaptTask.destinationDir = sourcesOutputDir
@@ -322,14 +335,28 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
 
         if (kaptVariantData != null) {
             kaptVariantData.registerGeneratedJavaSource(project, kaptTask, javaCompile)
-        }
-        else {
+        } else {
             registerGeneratedJavaSource(kaptTask, javaCompile)
         }
 
         kaptTask.kaptClasspathConfigurations = kaptClasspathConfigurations
 
-        buildAndAddOptionsTo(kaptTask, kaptTask.pluginOptions, aptMode = "apt")
+        if (kaptTask is KaptWithKotlincTask) {
+            buildAndAddOptionsTo(kaptTask, kaptTask.pluginOptions, aptMode = "apt")
+        }
+
+        if (kaptTask is KaptWithoutKotlincTask) {
+            kaptTask.annotationProcessingJars = this.kaptClasspathArtifacts
+            kaptTask.projectDir = project.projectDir
+
+            kaptTask.options = KaptOptionsForWorker(
+                project.isToggledOn(VERBOSE_OPTION_NAME),
+                kaptExtension.mapDiagnosticLocations,
+                kaptExtension.processors.split(',').filter { it.isNotEmpty() },
+                getAPOptions() + Pair(KAPT_KOTLIN_GENERATED, kaptTask.kotlinSourcesDestinationDir.absolutePath),
+                kaptExtension.getJavacOptions()
+            )
+        }
 
         return kaptTask
     }
