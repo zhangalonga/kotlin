@@ -26,13 +26,15 @@ import com.sun.tools.javac.util.Context
 import com.sun.tools.javac.util.Name
 import com.sun.tools.javac.util.Names
 import org.jetbrains.kotlin.codegen.AsmUtil
-import org.jetbrains.kotlin.kapt3.KaptContext
+import org.jetbrains.kotlin.kapt3.KaptContextForStubGeneration
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.org.objectweb.asm.Type
 import org.jetbrains.org.objectweb.asm.Type.*
 import org.jetbrains.org.objectweb.asm.tree.ClassNode
 
-class KaptTreeMaker(context: Context, private val kaptContext: KaptContext<*>) : TreeMaker(context) {
+class KaptTreeMaker(context: Context, kaptContext: KaptContextForStubGeneration) : TreeMaker(context), Disposable {
+    private var kaptContext = DisposableReference(kaptContext)
+
     val nameTable: Name.Table = Names.instance(context).table
 
     fun Type(type: Type): JCTree.JCExpression {
@@ -162,7 +164,7 @@ class KaptTreeMaker(context: Context, private val kaptContext: KaptContext<*>) :
     fun name(name: String): Name = nameTable.fromString(name)
 
     companion object {
-        internal fun preRegister(context: Context, kaptContext: KaptContext<*>) {
+        internal fun preRegister(context: Context, kaptContext: KaptContextForStubGeneration) {
             context.put(treeMakerKey, Context.Factory<TreeMaker> { KaptTreeMaker(it, kaptContext) })
         }
     }
