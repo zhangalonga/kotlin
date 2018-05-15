@@ -407,9 +407,119 @@ class CoroutineTransformerMethodVisitor(
                                 (value != StrictBasicValue.UNINITIALIZED_VALUE && livenessFrame.isAlive(index))
                     }
 
-            val integersToDrop = variablesToSpill.map { it.second }.count { it.type == Type.INT_TYPE }
-            val objectsToDrop = variablesToSpill.size - integersToDrop
+            var currentIntegers = variablesToSpill.filter { it.second.type == Type.INT_TYPE }
+            val integersToDrop = currentIntegers.size
+            if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                while (currentIntegers.size >= 3) {
+                    val (int0, int1, int2) = Triple(currentIntegers[0].first, currentIntegers[1].first, currentIntegers[2].first)
+                    postponedActions.add {
+                        with(instructions) {
+                            insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                load(int0, Type.INT_TYPE)
+                                load(int1, Type.INT_TYPE)
+                                load(int2, Type.INT_TYPE)
+                                invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInts", "(III)V", false)
+                            })
+                        }
+                    }
+                    currentIntegers = currentIntegers.subList(3, currentIntegers.size)
+                }
+                when (currentIntegers.size) {
+                    2 -> {
+                        val (int0, int1) = Pair(currentIntegers[0].first, currentIntegers[1].first)
+                        postponedActions.add {
+                            with(instructions) {
+                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    load(int0, Type.INT_TYPE)
+                                    load(int1, Type.INT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInts", "(II)V", false)
+                                })
+                            }
+                        }
+                    }
+                    1 -> {
+                        val int0 = currentIntegers[0].first
+                        postponedActions.add {
+                            with(instructions) {
+                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    load(int0, Type.INT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInts", "(I)V", false)
+                                })
+                            }
+                        }
+                    }
+                    0 -> {
+                    }
+                    else -> error("currentIntegers.size must be less than 3, but is ${currentIntegers.size}")
+                }
+            }
+            var currentObjects = variablesToSpill.filter { it.second.type != Type.INT_TYPE && it.second !== StrictBasicValue.NULL_VALUE }
+            val objectsToDrop = currentObjects.size
             toDrop[suspension] = integersToDrop to objectsToDrop
+            if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                while (currentObjects.size >= 3) {
+                    val (obj0, val0) = currentObjects[0]
+                    val (obj1, val1) = currentObjects[1]
+                    val (obj2, val2) = currentObjects[2]
+                    postponedActions.add {
+                        with(instructions) {
+                            insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                load(obj0, val0.type)
+                                StackValue.coerce(val0.type, AsmTypes.OBJECT_TYPE, this)
+                                load(obj1, val1.type)
+                                StackValue.coerce(val1.type, AsmTypes.OBJECT_TYPE, this)
+                                load(obj2, val2.type)
+                                StackValue.coerce(val2.type, AsmTypes.OBJECT_TYPE, this)
+                                invokevirtual(
+                                    COROUTINE_IMPL_TYPE_NAME,
+                                    "pushObjects",
+                                    "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
+                                    false
+                                )
+                            })
+                        }
+                    }
+                    currentObjects = currentObjects.subList(3, currentObjects.size)
+                }
+                when (currentObjects.size) {
+                    2 -> {
+                        val (obj0, val0) = currentObjects[0]
+                        val (obj1, val1) = currentObjects[1]
+                        postponedActions.add {
+                            with(instructions) {
+                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    load(obj0, val0.type)
+                                    StackValue.coerce(val0.type, AsmTypes.OBJECT_TYPE, this)
+                                    load(obj1, val1.type)
+                                    StackValue.coerce(val1.type, AsmTypes.OBJECT_TYPE, this)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObjects", "(Ljava/lang/Object;Ljava/lang/Object;)V", false)
+                                })
+                            }
+                        }
+                    }
+                    1 -> {
+                        val (obj0, val0) = currentObjects[0]
+                        postponedActions.add {
+                            with(instructions) {
+                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    load(obj0, val0.type)
+                                    StackValue.coerce(val0.type, AsmTypes.OBJECT_TYPE, this)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObjects", "(Ljava/lang/Object;)V", false)
+                                })
+                            }
+                        }
+                    }
+                    0 -> {
+                    }
+                    else -> error("currentObjects.size must be less than 3, but is ${currentObjects.size}")
+                }
+            }
 
             for ((index, basicValue) in variablesToSpill) {
                 if (basicValue === StrictBasicValue.NULL_VALUE) {
@@ -434,12 +544,6 @@ class CoroutineTransformerMethodVisitor(
                     if (type == Type.INT_TYPE) {
                         postponedActions.add {
                             with(instructions) {
-                                // store variable before suspension call
-                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
-                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                                    load(index, type)
-                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInt", "(I)V", false)
-                                })
                                 // restore variable after suspension call
                                 insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
                                     load(continuationIndex, AsmTypes.OBJECT_TYPE)
@@ -451,13 +555,6 @@ class CoroutineTransformerMethodVisitor(
                     } else {
                         postponedActions.add {
                             with(instructions) {
-                                // store variable before suspension call
-                                insertBefore(suspension.suspensionCallBegin, withInstructionAdapter {
-                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                                    load(index, type)
-                                    StackValue.coerce(type, AsmTypes.OBJECT_TYPE, this)
-                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObject", "(Ljava/lang/Object;)V", false)
-                                })
                                 // restore variable after suspension call
                                 insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
                                     load(continuationIndex, AsmTypes.OBJECT_TYPE)
@@ -848,7 +945,7 @@ private fun findSafelyReachableReturns(methodNode: MethodNode, sourceFrames: Arr
     val controlFlowGraph = ControlFlowGraph.build(methodNode)
 
     val insns = methodNode.instructions
-    val reachableReturnsIndices = Array<Set<Int>?>(insns.size()) init@ { index ->
+    val reachableReturnsIndices = Array<Set<Int>?>(insns.size()) init@{ index ->
         val insn = insns[index]
 
         if (insn.opcode == Opcodes.ARETURN) {
@@ -857,7 +954,8 @@ private fun findSafelyReachableReturns(methodNode: MethodNode, sourceFrames: Arr
         }
 
         if (!insn.isMeaningful || insn.opcode in SAFE_OPCODES || insn.isInvisibleInDebugVarInsn(methodNode) ||
-            isInlineMarker(insn)) {
+            isInlineMarker(insn)
+        ) {
             setOf()
         } else null
     }

@@ -47,13 +47,37 @@ public abstract class CoroutineImpl(
         }
     }
 
-    fun pushObject(o: Any?) {
-        if (objectsTop[0] >= objects.size) {
-            objects = Arrays.copyOf(objects, objectsTop[0] * 2)
-        }
-        objects[objectsTop[0]++] = o
+    fun pushObjects(o: Any?) {
+        val top = objectsTop[0]
+        reallocObjectsIfNeeded(top + 1)
+        objects[top] = o
+        objectsTop[0] = top + 1
     }
 
+    fun pushObjects(a: Any?, b: Any?) {
+        val top = objectsTop[0]
+        reallocObjectsIfNeeded(top + 2)
+        objects[top] = a
+        objects[top + 1] = b
+        objectsTop[0] = top + 2
+    }
+
+    fun pushObjects(a: Any?, b: Any?, c: Any?) {
+        val top = objectsTop[0]
+        reallocObjectsIfNeeded(top + 3)
+        objects[top] = a
+        objects[top + 1] = b
+        objects[top + 2] = c
+        objectsTop[0] = top + 3
+    }
+
+    private fun reallocObjectsIfNeeded(i: Int) {
+        if (i >= objects.size) {
+            objects = Arrays.copyOf(objects, i * 2)
+        }
+    }
+
+    // TODO: add multiple methods: escape analysis will take care of allocations
     fun popObject(): Any? {
         return objects[--objectsTop[0]]
     }
@@ -62,11 +86,34 @@ public abstract class CoroutineImpl(
         objectsTop[0] -= i
     }
 
-    fun pushInt(i: Int) {
-        if (intsTop[0] >= ints.size) {
-            ints = Arrays.copyOf(ints, intsTop[0] * 2)
+    fun pushInts(i: Int) {
+        val top = intsTop[0]
+        reallocIntsIfNeeded(top + 1)
+        ints[top] = i
+        intsTop[0] = top + 1
+    }
+
+    fun pushInts(a: Int, b: Int) {
+        val top = intsTop[0]
+        reallocIntsIfNeeded(top + 2)
+        ints[top] = a
+        ints[top + 1] = b
+        intsTop[0] = top + 2
+    }
+
+    fun pushInts(a: Int, b: Int, c: Int) {
+        val top = intsTop[0]
+        reallocIntsIfNeeded(top + 3)
+        ints[top] = a
+        ints[top + 1] = b
+        ints[top + 2] = c
+        intsTop[0] = top + 3
+    }
+
+    private fun reallocIntsIfNeeded(i: Int) {
+        if (i >= ints.size) {
+            ints = Arrays.copyOf(ints, i * 2)
         }
-        ints[intsTop[0]++] = i
     }
 
     fun popInt(): Int {
