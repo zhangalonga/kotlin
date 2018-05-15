@@ -36,14 +36,6 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.source.PsiSourceElement
 import org.jetbrains.kotlin.types.KotlinType
 
-<<<<<<< HEAD
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
-=======
-import org.jetbrains.kotlin.resolve.calls.components.isVararg
->>>>>>> 0c0e0b7... ~change
-import org.jetbrains.kotlin.resolve.source.PsiSourceElement
-import org.jetbrains.kotlin.types.KotlinType
-
 /**
  * Binds the arguments explicitly represented in the IR to the parameters of the accessed function.
  * The arguments are to be evaluated in the same order as they appear in the resulting list.
