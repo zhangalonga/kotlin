@@ -103,9 +103,9 @@ class CoroutineTransformerMethodVisitor(
 
         UninitializedStoresProcessor(methodNode, shouldPreserveClassInitialization).run()
 
-        val toDrop = spillVariables(suspensionPoints, methodNode)
-
         val suspendMarkerVarIndex = methodNode.maxLocals++
+
+        val toDrop = spillVariables(suspensionPoints, methodNode, suspendMarkerVarIndex)
 
         val suspensionPointLabels = suspensionPoints.withIndex().map {
             updateMaxStackAndMaxLocals(methodNode)
@@ -356,7 +356,11 @@ class CoroutineTransformerMethodVisitor(
         }
     }
 
-    private fun spillVariables(suspensionPoints: List<SuspensionPoint>, methodNode: MethodNode): Map<SuspensionPoint, Pair<Int, Int>> {
+    private fun spillVariables(
+        suspensionPoints: List<SuspensionPoint>,
+        methodNode: MethodNode,
+        suspendMarkerVarIndex: Int
+    ): Map<SuspensionPoint, Pair<Int, Int>> {
         val instructions = methodNode.instructions
         val frames = performRefinedTypeAnalysis(methodNode, containingClassInternalName)
         fun AbstractInsnNode.index() = instructions.indexOf(this)
@@ -366,6 +370,7 @@ class CoroutineTransformerMethodVisitor(
         val maxVarsCountByType = mutableMapOf<Type, Int>()
         val livenessFrames = analyzeLiveness(methodNode)
         val toDrop = hashMapOf<SuspensionPoint, Pair<Int, Int>>()
+        val tmpIndex = suspendMarkerVarIndex + 1
 
         for (suspension in suspensionPoints) {
             val suspensionCallBegin = suspension.suspensionCallBegin
@@ -421,6 +426,20 @@ class CoroutineTransformerMethodVisitor(
                                 load(int2, Type.INT_TYPE)
                                 invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInts", "(III)V", false)
                             })
+                            insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popInts3", "()L${intTripleType.internalName};", false)
+                                store(tmpIndex, intTripleType)
+                                load(tmpIndex, intTripleType)
+                                invokevirtual(intTripleType.internalName, "getFirst", "()I", false)
+                                store(int0, Type.INT_TYPE)
+                                load(tmpIndex, intTripleType)
+                                invokevirtual(intTripleType.internalName, "getSecond", "()I", false)
+                                store(int1, Type.INT_TYPE)
+                                load(tmpIndex, intTripleType)
+                                invokevirtual(intTripleType.internalName, "getThird", "()I", false)
+                                store(int2, Type.INT_TYPE)
+                            })
                         }
                     }
                     currentIntegers = currentIntegers.subList(3, currentIntegers.size)
@@ -436,6 +455,17 @@ class CoroutineTransformerMethodVisitor(
                                     load(int1, Type.INT_TYPE)
                                     invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInts", "(II)V", false)
                                 })
+                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popInts2", "()L${intPairType.internalName};", false)
+                                    store(tmpIndex, intPairType)
+                                    load(tmpIndex, intPairType)
+                                    invokevirtual(intPairType.internalName, "getFirst", "()I", false)
+                                    store(int0, Type.INT_TYPE)
+                                    load(tmpIndex, intPairType)
+                                    invokevirtual(intPairType.internalName, "getSecond", "()I", false)
+                                    store(int1, Type.INT_TYPE)
+                                })
                             }
                         }
                     }
@@ -447,6 +477,11 @@ class CoroutineTransformerMethodVisitor(
                                     load(continuationIndex, AsmTypes.OBJECT_TYPE)
                                     load(int0, Type.INT_TYPE)
                                     invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushInts", "(I)V", false)
+                                })
+                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popInts1", "()I", false)
+                                    store(int0, Type.INT_TYPE)
                                 })
                             }
                         }
@@ -481,6 +516,23 @@ class CoroutineTransformerMethodVisitor(
                                     false
                                 )
                             })
+                            insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popObjects3", "()L${tripleType.internalName};", false)
+                                store(tmpIndex, tripleType)
+                                load(tmpIndex, tripleType)
+                                invokevirtual(tripleType.internalName, "getFirst", "()Ljava/lang/Object;", false)
+                                StackValue.coerce(AsmTypes.OBJECT_TYPE, val0.type, this)
+                                store(obj0, val0.type)
+                                load(tmpIndex, tripleType)
+                                invokevirtual(tripleType.internalName, "getSecond", "()Ljava/lang/Object;", false)
+                                StackValue.coerce(AsmTypes.OBJECT_TYPE, val1.type, this)
+                                store(obj1, val1.type)
+                                load(tmpIndex, tripleType)
+                                invokevirtual(tripleType.internalName, "getThird", "()Ljava/lang/Object;", false)
+                                StackValue.coerce(AsmTypes.OBJECT_TYPE, val2.type, this)
+                                store(obj2, val2.type)
+                            })
                         }
                     }
                     currentObjects = currentObjects.subList(3, currentObjects.size)
@@ -499,6 +551,19 @@ class CoroutineTransformerMethodVisitor(
                                     StackValue.coerce(val1.type, AsmTypes.OBJECT_TYPE, this)
                                     invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObjects", "(Ljava/lang/Object;Ljava/lang/Object;)V", false)
                                 })
+                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popObjects2", "()L${pairType.internalName};", false)
+                                    store(tmpIndex, pairType)
+                                    load(tmpIndex, pairType)
+                                    invokevirtual(pairType.internalName, "getFirst", "()Ljava/lang/Object;", false)
+                                    StackValue.coerce(AsmTypes.OBJECT_TYPE, val0.type, this)
+                                    store(obj0, val0.type)
+                                    load(tmpIndex, pairType)
+                                    invokevirtual(pairType.internalName, "getSecond", "()Ljava/lang/Object;", false)
+                                    StackValue.coerce(AsmTypes.OBJECT_TYPE, val1.type, this)
+                                    store(obj1, val1.type)
+                                })
                             }
                         }
                     }
@@ -511,6 +576,12 @@ class CoroutineTransformerMethodVisitor(
                                     load(obj0, val0.type)
                                     StackValue.coerce(val0.type, AsmTypes.OBJECT_TYPE, this)
                                     invokevirtual(COROUTINE_IMPL_TYPE_NAME, "pushObjects", "(Ljava/lang/Object;)V", false)
+                                })
+                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
+                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
+                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popObjects1", "()Ljava/lang/Object;", false)
+                                    StackValue.coerce(AsmTypes.OBJECT_TYPE, val0.type, this)
+                                    store(obj0, val0.type)
                                 })
                             }
                         }
@@ -534,38 +605,12 @@ class CoroutineTransformerMethodVisitor(
                     continue
                 }
 
-                val type = basicValue.type
-                val normalizedType = type.normalize()
+                if (!languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
+                    val type = basicValue.type
+                    val normalizedType = type.normalize()
 
-                val indexBySort = varsCountByType[normalizedType]?.plus(1) ?: 0
-                varsCountByType[normalizedType] = indexBySort
-
-                if (languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)) {
-                    if (type == Type.INT_TYPE) {
-                        postponedActions.add {
-                            with(instructions) {
-                                // restore variable after suspension call
-                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
-                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popInt", "()I", false)
-                                    store(index, type)
-                                })
-                            }
-                        }
-                    } else {
-                        postponedActions.add {
-                            with(instructions) {
-                                // restore variable after suspension call
-                                insert(suspension.tryCatchBlockEndLabelAfterSuspensionCall, withInstructionAdapter {
-                                    load(continuationIndex, AsmTypes.OBJECT_TYPE)
-                                    invokevirtual(COROUTINE_IMPL_TYPE_NAME, "popObject", "()Ljava/lang/Object;", false)
-                                    StackValue.coerce(AsmTypes.OBJECT_TYPE, type, this)
-                                    store(index, type)
-                                })
-                            }
-                        }
-                    }
-                } else {
+                    val indexBySort = varsCountByType[normalizedType]?.plus(1) ?: 0
+                    varsCountByType[normalizedType] = indexBySort
                     val fieldName = normalizedType.fieldNameForVar(indexBySort)
 
                     postponedActions.add {
@@ -769,6 +814,13 @@ class CoroutineTransformerMethodVisitor(
         suspensionPoint.tryCatchBlocksContinuationLabel = secondLabel
 
         return
+    }
+
+    companion object {
+        val intTripleType: Type = Type.getObjectType("kotlin/coroutines/jvm/internal/IntTriple")
+        val intPairType: Type = Type.getObjectType("kotlin/coroutines/jvm/internal/IntPair")
+        val tripleType: Type = Type.getObjectType("kotlin/Triple")
+        val pairType: Type = Type.getObjectType("kotlin/Pair")
     }
 }
 

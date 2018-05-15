@@ -77,9 +77,22 @@ public abstract class CoroutineImpl(
         }
     }
 
-    // TODO: add multiple methods: escape analysis will take care of allocations
-    fun popObject(): Any? {
-        return objects[--objectsTop[0]]
+    fun popObjects3(): Triple<Any?, Any?, Any?> {
+        val top = objectsTop[0] - 1
+        objectsTop[0] = top - 2
+        return Triple(objects[top - 2], objects[top - 1], objects[top])
+    }
+
+    fun popObjects2(): Pair<Any?, Any?> {
+        val top = objectsTop[0] - 1
+        objectsTop[0] = top - 1
+        return Pair(objects[top - 1], objects[top])
+    }
+
+    fun popObjects1(): Any? {
+        val top = objectsTop[0] - 1
+        objectsTop[0] = top
+        return objects[top]
     }
 
     fun dropObjects(i: Int) {
@@ -116,8 +129,22 @@ public abstract class CoroutineImpl(
         }
     }
 
-    fun popInt(): Int {
-        return ints[--intsTop[0]]
+    fun popInts3(): IntTriple {
+        val top = intsTop[0] - 1
+        intsTop[0] = top - 2
+        return IntTriple(ints[top - 2], ints[top - 1], ints[top])
+    }
+
+    fun popInts2(): IntPair {
+        val top = intsTop[0] - 1
+        intsTop[0] = top - 1
+        return IntPair(ints[top - 1], ints[top])
+    }
+
+    fun popInts1(): Int {
+        val top = intsTop[0] - 1
+        intsTop[0] = top
+        return ints[top]
     }
 
     fun dropInts(i: Int) {
@@ -131,10 +158,11 @@ public abstract class CoroutineImpl(
 
     private var _facade: Continuation<Any?>? = null
 
-    val facade: Continuation<Any?> get() {
-        if (_facade == null) _facade = interceptContinuationIfNeeded(_context!!, this)
-        return _facade!!
-    }
+    val facade: Continuation<Any?>
+        get() {
+            if (_facade == null) _facade = interceptContinuationIfNeeded(_context!!, this)
+            return _facade!!
+        }
 
     override fun resume(value: Any?) {
         processBareContinuationResume(completion!!) {
@@ -158,3 +186,6 @@ public abstract class CoroutineImpl(
         throw IllegalStateException("create(Any?;Continuation) has not been overridden")
     }
 }
+
+class IntPair(val first: Int, val second: Int)
+class IntTriple(val first: Int, val second: Int, val third: Int)
