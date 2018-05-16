@@ -21,14 +21,17 @@ import java.rmi.RemoteException
 
 interface IncrementalCompilerServicesFacade : CompilerServicesFacadeBase {
     // AnnotationFileUpdater
+    @Deprecated("Used in kapt1 that is no longer exist")
     @Throws(RemoteException::class)
-    fun hasAnnotationsFileUpdater(): Boolean
+    fun hasAnnotationsFileUpdater(): Boolean = false
 
+    @Deprecated("Used in kapt1 that is no longer exist")
     @Throws(RemoteException::class)
-    fun updateAnnotations(outdatedClassesJvmNames: Iterable<String>)
+    fun updateAnnotations(outdatedClassesJvmNames: Iterable<String>) {}
 
+    @Deprecated("Used in kapt1 that is no longer exist")
     @Throws(RemoteException::class)
-    fun revert()
+    fun revert() {}
 
     // ChangesRegistry
     @Throws(RemoteException::class)

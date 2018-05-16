@@ -40,7 +40,6 @@ import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.cli.metadata.K2MetadataCompiler
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.daemon.common.*
-import org.jetbrains.kotlin.daemon.incremental.RemoteAnnotationsFileUpdater
 import org.jetbrains.kotlin.daemon.incremental.RemoteArtifactChangesProvider
 import org.jetbrains.kotlin.daemon.incremental.RemoteChangesRegistry
 import org.jetbrains.kotlin.daemon.report.CompileServicesFacadeMessageCollector
@@ -486,7 +485,6 @@ class CompileServiceImpl(
             daemonMessageReporter: DaemonMessageReporter
     ): ExitCode {
         val reporter = RemoteICReporter(servicesFacade, compilationResults, incrementalCompilationOptions)
-        val annotationFileUpdater = if (servicesFacade.hasAnnotationsFileUpdater()) RemoteAnnotationsFileUpdater(servicesFacade) else null
 
         val moduleFile = k2jvmArgs.buildFile?.let(::File)
         assert(moduleFile?.exists() ?: false) { "Module does not exist ${k2jvmArgs.buildFile}" }
@@ -528,7 +526,7 @@ class CompileServiceImpl(
                                           enabled = true)
 
         val compiler = IncrementalJvmCompilerRunner(workingDir, javaSourceRoots, versions,
-                                                    reporter, annotationFileUpdater,
+                                                    reporter,
                                                     artifactChanges, changesRegistry,
                                                     buildHistoryFile = incrementalCompilationOptions.resultDifferenceFile,
                                                     friendBuildHistoryFile = incrementalCompilationOptions.friendDifferenceFile,

@@ -41,13 +41,10 @@ class Android25ProjectHandler(kotlinConfigurationTools: KotlinConfigurationTools
                                  androidExt: BaseExtension,
                                  variantData: BaseVariant,
                                  javaTask: AbstractCompile,
-                                 kotlinTask: KotlinCompile,
-                                 kotlinAfterJavaTask: KotlinCompile?) {
+                                 kotlinTask: KotlinCompile) {
 
         val preJavaKotlinOutputFiles = mutableListOf<File>().apply {
-            if (kotlinAfterJavaTask == null) {
-                add(kotlinTask.destinationDir)
-            }
+            add(kotlinTask.destinationDir)
             if (Kapt3GradleSubplugin.isEnabled(project)) {
                 // Add Kapt3 output as well, since there's no SyncOutputTask with the new API
                 val kaptClasssesDir = Kapt3GradleSubplugin.getKaptGeneratedClassesDir(project, getVariantName(variantData))
@@ -62,18 +59,6 @@ class Android25ProjectHandler(kotlinConfigurationTools: KotlinConfigurationTools
         kotlinTask.mapClasspath {
             val kotlinClasspath = variantData.getCompileClasspath(preJavaClasspathKey)
             kotlinClasspath + project.files(AndroidGradleWrapper.getRuntimeJars(androidPlugin, androidExt))
-        }
-
-        // Use kapt1 annotations file for up-to-date check since annotation processing is done with javac
-        kotlinTask.kaptOptions.annotationsFile?.let { javaTask.inputs.file(it) }
-
-        if (kotlinAfterJavaTask != null) {
-            val kotlinAfterJavaOutput = project.files(kotlinAfterJavaTask.destinationDir).builtBy(kotlinAfterJavaTask)
-            variantData.registerPostJavacGeneratedBytecode(kotlinAfterJavaOutput)
-
-            // Then we don't need the kotlinTask output in artifacts, but we need to use it for Java compilation.
-            // Add it to Java classpath -- note the `from` used to avoid accident classpath resolution.
-            javaTask.classpath = project.files(kotlinTask.destinationDir).from(javaTask.classpath)
         }
 
         // Find the classpath entries that comes from the tested variant and register it as the friend path, lazily
@@ -109,8 +94,7 @@ class Android25ProjectHandler(kotlinConfigurationTools: KotlinConfigurationTools
     override fun configureMultiProjectIc(project: Project,
                                          variantData: BaseVariant,
                                          javaTask: AbstractCompile,
-                                         kotlinTask: KotlinCompile,
-                                         kotlinAfterJavaTask: KotlinCompile?) {
+                                         kotlinTask: KotlinCompile) {
         //todo: No easy solution because of the absence of the output information in library modules
         // Though it is affordable not to implement this for the first previews, because the impact is tolerable
         // to some degree -- the dependent projects will rebuild non-incrementally when a library project changes

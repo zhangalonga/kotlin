@@ -1,3 +1,8 @@
+/*
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
+ */
+
 package org.jetbrains.kotlin.compilerRunner
 
 import org.gradle.api.Project
@@ -55,18 +60,6 @@ internal class GradleIncrementalCompilerServicesFacadeImpl(
         port: Int = SOCKET_ANY_FREE_PORT
 ) : GradleCompilerServicesFacadeImpl(project, environment.messageCollector, port),
     IncrementalCompilerServicesFacade {
-
-    override fun hasAnnotationsFileUpdater(): Boolean =
-            environment.kaptAnnotationsFileUpdater != null
-
-    override fun updateAnnotations(outdatedClassesJvmNames: Iterable<String>) {
-        val jvmNames = outdatedClassesJvmNames.map { JvmClassName.byInternalName(it) }
-        environment.kaptAnnotationsFileUpdater!!.updateAnnotations(jvmNames)
-    }
-
-    override fun revert() {
-        environment.kaptAnnotationsFileUpdater!!.revert()
-    }
 
     override fun getChanges(artifact: File, sinceTS: Long): Iterable<SimpleDirtyData>? {
         val artifactChanges = environment.artifactDifferenceRegistryProvider?.withRegistry(environment.reporter) { registry ->
