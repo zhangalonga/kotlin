@@ -21,6 +21,12 @@ open class PillExtension {
         abstract val includes: Set<Variant>
     }
 
+    enum class DependencyScope {
+        COMPILE, PROVIDED, RUNTIME, TEST
+    }
+
+    open var additionalDependencyScopes: Map<String, DependencyScope> = emptyMap()
+
     open var variant: Variant = Variant.DEFAULT
 
     open var importAsLibrary: Boolean = false

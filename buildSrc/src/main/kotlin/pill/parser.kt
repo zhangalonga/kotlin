@@ -13,6 +13,7 @@ import org.gradle.api.internal.HasConvention
 import org.jetbrains.kotlin.pill.POrderRoot.*
 import org.jetbrains.kotlin.pill.PSourceRoot.*
 import org.jetbrains.kotlin.pill.PillExtension.*
+import org.jetbrains.kotlin.pill.PillExtension.DependencyScope
 import java.io.File
 import java.util.LinkedList
 
@@ -75,12 +76,10 @@ data class PSourceRootKotlinOptions(
 
 data class POrderRoot(
     val dependency: PDependency,
-    val scope: Scope,
+    val scope: DependencyScope,
     val isExported: Boolean = false,
     val isProductionOnTestDependency: Boolean = false
-) {
-    enum class Scope { COMPILE, TEST, RUNTIME, PROVIDED }
-}
+)
 
 sealed class PDependency {
     data class Module(val name: String) : PDependency()
@@ -126,16 +125,16 @@ fun parse(project: Project, libraries: List<PLibrary>, context: ParserContext): 
     ('idea' module has 'intellij-core' as transitive dependency, and we really need to get rid of it.)
  */
 private val CONFIGURATION_MAPPING = mapOf(
-    listOf("runtime") to Scope.RUNTIME,
-    listOf("compile") to Scope.COMPILE,
-    listOf("compileOnly") to Scope.PROVIDED
+    listOf("runtime") to DependencyScope.RUNTIME,
+    listOf("compile") to DependencyScope.COMPILE,
+    listOf("compileOnly") to DependencyScope.PROVIDED
 )
 
 private val TEST_CONFIGURATION_MAPPING = mapOf(
-    listOf("runtime", "testRuntime") to Scope.RUNTIME,
-    listOf("compile", "testCompile") to Scope.COMPILE,
-    listOf("compileOnly", "testCompileOnly") to Scope.PROVIDED,
-    listOf("jpsTest") to Scope.TEST
+    listOf("runtime", "testRuntime") to DependencyScope.RUNTIME,
+    listOf("compile", "testCompile") to DependencyScope.COMPILE,
+    listOf("compileOnly", "testCompileOnly") to DependencyScope.PROVIDED,
+    listOf("jpsTest") to DependencyScope.TEST
 )
 
 private fun ParserContext.parseModules(project: Project, excludedProjects: List<Project>): List<PModule> {
@@ -170,7 +169,7 @@ private fun ParserContext.parseModules(project: Project, excludedProjects: List<
         var dependencies = parseDependencies(project, mainRoot.forTests)
         if (productionContentRoots.isNotEmpty() && mainRoot.forTests) {
             val productionModuleDependency = PDependency.Module(project.name + ".src")
-            dependencies += POrderRoot(productionModuleDependency, Scope.COMPILE, true)
+            dependencies += POrderRoot(productionModuleDependency, DependencyScope.COMPILE, true)
         }
 
         val module = PModule(
@@ -321,6 +320,8 @@ private fun Any.invokeInternal(name: String, instance: Any = this): Any? {
 private fun ParserContext.parseDependencies(project: Project, forTests: Boolean): List<POrderRoot> {
     val configurationMapping = if (forTests) TEST_CONFIGURATION_MAPPING else CONFIGURATION_MAPPING
 
+    val additionalDependencyScopes = project.extensions.getByType(PillExtension::class.java).additionalDependencyScopes
+
     with(project.configurations) {
         val mainRoots = mutableListOf<POrderRoot>()
         val deferredRoots = mutableListOf<POrderRoot>()
@@ -329,7 +330,9 @@ private fun ParserContext.parseDependencies(project: Project, forTests: Boolean)
             val configurations = mutableListOf<CollectedConfiguration>()
 
             for ((configurationNames, scope) in configurationMapping) {
-                for (configurationName in configurationNames) {
+                val additionalNames = additionalDependencyScopes.filterValues { it == scope }.keys
+                if (additionalNames.isNotEmpty()) println(configurationNames + additionalNames)
+                for (configurationName in configurationNames + additionalNames) {
                     val configuration = findByName(configurationName)?.also { it.resolve() } ?: continue
 
                     val extraDependencies = resolveExtraDependencies(configuration)
@@ -372,7 +375,7 @@ private fun ParserContext.parseDependencies(project: Project, forTests: Boolean)
                 }
             }
 
-            mainRoots += if (dependency.configuration == "runtimeElements" && scope != Scope.TEST) {
+            mainRoots += if (dependency.configuration == "runtimeElements" && scope != DependencyScope.TEST) {
                 POrderRoot(PDependency.Module(dependency.moduleName + ".src"), scope)
             } else if (dependency.configuration == "tests-jar" || dependency.configuration == "jpsTest") {
                 POrderRoot(
@@ -407,7 +410,7 @@ private fun isGradleApiDependency(files: Iterable<File>): Boolean {
 
 private fun removeDuplicates(roots: List<POrderRoot>): List<POrderRoot> {
     val dependenciesByScope = roots.groupBy { it.scope }.mapValues { it.value.mapTo(mutableSetOf()) { it.dependency } }
-    fun dependenciesFor(scope: Scope) = dependenciesByScope[scope] ?: emptySet<PDependency>()
+    fun dependenciesFor(scope: DependencyScope) = dependenciesByScope[scope] ?: emptySet<PDependency>()
 
     val result = mutableSetOf<POrderRoot>()
     for (root in roots.distinct()) {
@@ -418,17 +421,17 @@ private fun removeDuplicates(roots: List<POrderRoot>): List<POrderRoot> {
             continue
         }
 
-        if ((scope == Scope.PROVIDED || scope == Scope.RUNTIME) && dependency in dependenciesFor(Scope.COMPILE)) {
+        if ((scope == DependencyScope.PROVIDED || scope == DependencyScope.RUNTIME) && dependency in dependenciesFor(DependencyScope.COMPILE)) {
             continue
         }
 
-        if (scope == Scope.PROVIDED && dependency in dependenciesFor(Scope.RUNTIME)) {
-            result += POrderRoot(dependency, Scope.COMPILE)
+        if (scope == DependencyScope.PROVIDED && dependency in dependenciesFor(DependencyScope.RUNTIME)) {
+            result += POrderRoot(dependency, DependencyScope.COMPILE)
             continue
         }
 
-        if (scope == Scope.RUNTIME && dependency in dependenciesFor(Scope.PROVIDED)) {
-            result += POrderRoot(dependency, Scope.COMPILE)
+        if (scope == DependencyScope.RUNTIME && dependency in dependenciesFor(DependencyScope.PROVIDED)) {
+            result += POrderRoot(dependency, DependencyScope.COMPILE)
             continue
         }
 
@@ -440,19 +443,19 @@ private fun removeDuplicates(roots: List<POrderRoot>): List<POrderRoot> {
 
 data class CollectedConfiguration(
     val configuration: ResolvedConfiguration,
-    val scope: Scope,
+    val scope: DependencyScope,
     val extraDependencies: List<File> = emptyList())
 
-sealed class DependencyInfo(val scope: Scope) {
-    class ResolvedDependencyInfo(scope: Scope, val dependency: ResolvedDependency) : DependencyInfo(scope)
-    class CustomDependencyInfo(scope: Scope, val files: List<File>) : DependencyInfo(scope)
+sealed class DependencyInfo(val scope: DependencyScope) {
+    class ResolvedDependencyInfo(scope: DependencyScope, val dependency: ResolvedDependency) : DependencyInfo(scope)
+    class CustomDependencyInfo(scope: DependencyScope, val files: List<File>) : DependencyInfo(scope)
 }
 
 fun List<CollectedConfiguration>.collectDependencies(): List<DependencyInfo> {
     val dependencies = mutableListOf<DependencyInfo>()
 
     val unprocessed = LinkedList<DependencyInfo>()
-    val existing = mutableSetOf<Pair<Scope, ResolvedDependency>>()
+    val existing = mutableSetOf<Pair<DependencyScope, ResolvedDependency>>()
 
     for ((configuration, scope, extraDependencies) in this) {
         for (dependency in configuration.firstLevelModuleDependencies) {

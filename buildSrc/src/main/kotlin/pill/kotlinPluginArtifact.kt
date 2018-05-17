@@ -153,7 +153,7 @@ fun generateKotlinPluginArtifactFile(rootProject: Project): PFile {
                         .findByName(EmbeddedComponents.CONFIGURATION_NAME)?.resolvedConfiguration
 
                     if (embeddedComponents != null) {
-                        val configuration = CollectedConfiguration(embeddedComponents, Scope.COMPILE)
+                        val configuration = CollectedConfiguration(embeddedComponents, PillExtension.DependencyScope.COMPILE)
                         for (dependencyInfo in listOf(configuration).collectDependencies()) {
                             val dependency = (dependencyInfo as? DependencyInfo.ResolvedDependencyInfo)?.dependency ?: continue
 

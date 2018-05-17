@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.pill.PillExtension.DependencyScope
+
 apply plugin: 'java'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'kotlin'
@@ -29,6 +31,7 @@ configurations {
 
 pill {
     variant = "FULL"
+    additionalDependencyScopes = ["agp25CompileOnly": DependencyScope.PROVIDED]
 }
 
 dependencies {
