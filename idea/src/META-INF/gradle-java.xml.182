@@ -53,6 +53,7 @@
 
         <projectTaskRunner implementation="org.jetbrains.kotlin.idea.run.MultiplatformGradleProjectTaskRunner" order="first,before gradle"/>
         <orderEnumerationHandlerFactory implementation="org.jetbrains.kotlin.idea.run.MultiplatformGradleOrderEnumeratorHandler$FactoryImpl" order="first"/>
+        <orderEnumerationHandlerFactory implementation="org.jetbrains.kotlin.android.AndroidGradleOrderEnumerationHandler" order="last"/>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
