@@ -88,8 +88,12 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
             return project.configurations.findByName(getKaptConfigurationName(sourceSetName))
         }
 
-        fun Project.isToggledOn(propertyName: String): Boolean {
-            return hasProperty(propertyName) && property(propertyName) == "true"
+        fun Project.isKaptVerbose(): Boolean {
+            return hasProperty(VERBOSE_OPTION_NAME) && property(VERBOSE_OPTION_NAME) == "true"
+        }
+
+        fun Project.isUseWorkerApi(): Boolean {
+            return isWorkerAPISupported() && hasProperty(USE_WORKER_API) && property(USE_WORKER_API) == "true"
         }
 
         fun findMainKaptConfiguration(project: Project) = project.findKaptConfiguration(MAIN_KAPT_CONFIGURATION_NAME)
@@ -178,7 +182,7 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         )
 
         val kaptGenerateStubsTask = context.createKaptGenerateStubsTask()
-        val kaptTask = context.createKaptKotlinTask(useWorkerApi = project.isToggledOn(USE_WORKER_API) && isWorkerAPISupported())
+        val kaptTask = context.createKaptKotlinTask(useWorkerApi = project.isUseWorkerApi())
 
         kaptGenerateStubsTask.source(*kaptConfigurations.toTypedArray())
 
@@ -303,7 +307,7 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         pluginOptions += SubpluginOption("mapDiagnosticLocations", "${kaptExtension.mapDiagnosticLocations}")
         pluginOptions += FilesSubpluginOption("stubs", listOf(getKaptStubsDir()))
 
-        if (project.isToggledOn(VERBOSE_OPTION_NAME)) {
+        if (project.isKaptVerbose()) {
             pluginOptions += SubpluginOption("verbose", "true")
         }
     }
@@ -346,16 +350,16 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
         }
 
         if (kaptTask is KaptWithoutKotlincTask) {
-            kaptTask.annotationProcessingJars = this.kaptClasspathArtifacts
-            kaptTask.projectDir = project.projectDir
+            with (kaptTask) {
+                annotationProcessingJars = this@createKaptKotlinTask.kaptClasspathArtifacts
+                projectDir = project.projectDir
 
-            kaptTask.options = KaptOptionsForWorker(
-                project.isToggledOn(VERBOSE_OPTION_NAME),
-                kaptExtension.mapDiagnosticLocations,
-                kaptExtension.processors.split(',').filter { it.isNotEmpty() },
-                getAPOptions() + Pair(KAPT_KOTLIN_GENERATED, kaptTask.kotlinSourcesDestinationDir.absolutePath),
-                kaptExtension.getJavacOptions()
-            )
+                isVerbose = project.isKaptVerbose()
+                mapDiagnosticLocations = kaptExtension.mapDiagnosticLocations
+                annotationProcessorFqNames = kaptExtension.processors.split(',').filter { it.isNotEmpty() }
+                processorOptions = getAPOptions() + Pair(KAPT_KOTLIN_GENERATED, kaptTask.kotlinSourcesDestinationDir.absolutePath)
+                javacOptions = kaptExtension.getJavacOptions()
+            }
         }
 
         return kaptTask

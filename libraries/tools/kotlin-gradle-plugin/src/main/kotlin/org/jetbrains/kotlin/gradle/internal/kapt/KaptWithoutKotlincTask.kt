@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.gradle.tasks.findKotlinStdlibClasspath
 import org.jetbrains.kotlin.gradle.tasks.findToolsJar
 import java.io.File
 import java.io.Serializable
-import java.lang.ref.SoftReference
 import java.net.URLClassLoader
 import javax.inject.Inject
 
@@ -27,7 +26,19 @@ open class KaptWithoutKotlincTask @Inject constructor(private val workerExecutor
     lateinit var projectDir: File
 
     @get:Input
-    lateinit var options: KaptOptionsForWorker
+    var isVerbose: Boolean = false
+
+    @get:Input
+    var mapDiagnosticLocations: Boolean = false
+
+    @get:Input
+    lateinit var annotationProcessorFqNames: List<String>
+
+    @get:Input
+    lateinit var processorOptions: Map<String, String>
+
+    @get:Input
+    lateinit var javacOptions: Map<String, String>
 
     @TaskAction
     fun compile() {
@@ -43,6 +54,14 @@ open class KaptWithoutKotlincTask @Inject constructor(private val workerExecutor
             destinationDir,
             classesDir,
             stubsDir
+        )
+
+        val options = KaptOptionsForWorker(
+            isVerbose,
+            mapDiagnosticLocations,
+            annotationProcessorFqNames,
+            processorOptions,
+            javacOptions
         )
 
         val kaptClasspath = annotationProcessingJars + findKotlinStdlibClasspath(project)
@@ -125,7 +144,7 @@ private class KaptExecution @Inject constructor(
     }
 }
 
-data class KaptOptionsForWorker(
+private data class KaptOptionsForWorker(
     val isVerbose: Boolean,
     val mapDiagnosticLocations: Boolean,
     val annotationProcessorFqNames: List<String>,
