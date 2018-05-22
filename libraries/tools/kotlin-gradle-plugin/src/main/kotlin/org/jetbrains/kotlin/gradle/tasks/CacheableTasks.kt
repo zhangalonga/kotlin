@@ -24,7 +24,7 @@ internal fun isBuildCacheSupported(): Boolean =
     gradleVersion >= GradleVersion.version("4.3")
 
 internal fun isWorkerAPISupported(): Boolean =
-    gradleVersion >= GradleVersion.version("4.0")
+    gradleVersion >= GradleVersion.version("4.3")
 
 internal fun isBuildCacheEnabledForKotlin(): Boolean =
         isBuildCacheSupported() &&
