@@ -173,8 +173,6 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
             javaSourceSet.name
         }
 
-        createAptConfigurationIfNeeded(project, sourceSetName)
-
         val kaptExtension = project.extensions.getByType(KaptExtension::class.java)
 
         val nonEmptyKaptConfigurations = kaptConfigurations.filter { configuration ->
@@ -199,23 +197,6 @@ class Kapt3KotlinGradleSubplugin : KotlinGradleSubplugin<KotlinCompile> {
 
         /** Plugin options are applied to kapt*Compile inside [createKaptKotlinTask] */
         return emptyList()
-    }
-
-    private fun createAptConfigurationIfNeeded(project: Project, sourceSetName: String): Configuration {
-        val configurationName = Kapt3KotlinGradleSubplugin.getKaptConfigurationName(sourceSetName)
-
-        project.configurations.findByName(configurationName)?.let { return it }
-        val aptConfiguration = project.configurations.create(configurationName)
-
-        if (aptConfiguration.name != Kapt3KotlinGradleSubplugin.MAIN_KAPT_CONFIGURATION_NAME) {
-            // The main configuration can be created after the current one. We should handle this case
-            val mainConfiguration = findMainKaptConfiguration(project)
-                    ?: createAptConfigurationIfNeeded(project, SourceSet.MAIN_SOURCE_SET_NAME)
-
-            aptConfiguration.extendsFrom(mainConfiguration)
-        }
-
-        return aptConfiguration
     }
 
     override fun getSubpluginKotlinTasks(project: Project, kotlinCompile: KotlinCompile): List<AbstractCompile> {

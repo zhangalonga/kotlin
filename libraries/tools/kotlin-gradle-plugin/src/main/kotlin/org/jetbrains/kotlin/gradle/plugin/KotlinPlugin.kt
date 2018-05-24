@@ -143,6 +143,7 @@ internal class Kotlin2JvmSourceSetProcessor(
             tasksProvider.createKotlinJVMTask(project, taskName, sourceSet.name)
 
     override fun doTargetSpecificProcessing() {
+        createAptConfigurationIfNeeded(project, sourceSet.name)
         kotlinSourceSet.kotlin.source(sourceSet.java)
 
         project.afterEvaluate { project ->
@@ -503,6 +504,7 @@ abstract class AbstractAndroidProjectHandler<V>(private val kotlinConfigurationT
             val kotlinSourceSet = kotlinConfigurationTools.kotlinSourceSetProvider.create(sourceSet.name)
             kotlinSourceSet.kotlin.srcDir(project.file(project.file("src/${sourceSet.name}/kotlin")))
             sourceSet.addConvention(KOTLIN_DSL_NAME, kotlinSourceSet)
+            createAptConfigurationIfNeeded(project, sourceSet.name)
         }
 
         val kotlinOptions = KotlinJvmOptionsImpl()
@@ -671,6 +673,24 @@ private fun removeAnnotationProcessingPluginClasspathEntry(kotlinCompile: Kotlin
             kotlinCompile.pluginOptions.removeClasspathEntry(it)
         }
 }
+
+private fun createAptConfigurationIfNeeded(project: Project, sourceSetName: String): Configuration {
+    val configurationName = Kapt3KotlinGradleSubplugin.getKaptConfigurationName(sourceSetName)
+
+    project.configurations.findByName(configurationName)?.let { return it }
+    val aptConfiguration = project.configurations.create(configurationName)
+
+    if (aptConfiguration.name != Kapt3KotlinGradleSubplugin.MAIN_KAPT_CONFIGURATION_NAME) {
+        // The main configuration can be created after the current one. We should handle this case
+        val mainConfiguration = Kapt3KotlinGradleSubplugin.findMainKaptConfiguration(project)
+                ?: createAptConfigurationIfNeeded(project, SourceSet.MAIN_SOURCE_SET_NAME)
+
+        aptConfiguration.extendsFrom(mainConfiguration)
+    }
+
+    return aptConfiguration
+}
+
 
 private fun loadSubplugins(project: Project): SubpluginEnvironment {
     try {
