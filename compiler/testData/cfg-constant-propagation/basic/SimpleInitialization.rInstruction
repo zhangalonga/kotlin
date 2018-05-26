@@ -15,12 +15,12 @@ L0:
     w(b|<v0>)                                     VAL: in: {b=C?} out: {b=C: <3, INT>}
     v(val a = 4)
     r(4) -> <v1>                                  VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
-    w(a|<v1>)                                     VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
-    v(var c)                                      VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>, c=C?}
+    w(a|<v1>)                                     VAL: in: {b=C: <3, INT>} out: {a=C: <4, INT>, b=C: <3, INT>}
+    v(var c)                                      VAL: in: {a=C: <4, INT>, b=C: <3, INT>} out: {a=C: <4, INT>, b=C: <3, INT>, c=C?}
 L1:
   1 <END>
 error:
     <ERROR>
 sink:
-    <SINK>                                        VAL: in: {} out: {}
+    <SINK>                                        VAL: in: {a=C: <4, INT>} out: {a=C: <4, INT>}
 =====================

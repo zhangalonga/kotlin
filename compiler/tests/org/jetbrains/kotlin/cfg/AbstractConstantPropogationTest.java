@@ -99,7 +99,7 @@ public class AbstractConstantPropogationTest extends AbstractDataFlowTest {
             VariableDescriptor variable = entry._1;
             S state = entry._2;
 
-            if (variablesData.isVariableWithTrivialInitializer(variable)) continue;
+            //if (variablesData.isVariableWithTrivialInitializer(variable)) continue;
 
             result.add(variable.getName() + "=" + state);
         }

@@ -1,0 +1,42 @@
+== operations ==
+fun operations() {
+    var a = 1
+    var b = 2
+
+    var c = a + b
+    var d = c - 1
+    --d
+}
+---------------------
+L0:
+  1 <START>
+  2 mark({ var a = 1 var b = 2 var c = a + b var d = c - 1 --d })    VAL: in: {} out: {}
+    v(var a = 1)                                                     VAL: in: {} out: {a=C?}
+    r(1) -> <v0>                                                     VAL: in: {a=C?} out: {a=C?}
+    w(a|<v0>)                                                        VAL: in: {a=C?} out: {a=C: <1, INT>}
+    v(var b = 2)                                                     VAL: in: {a=C: <1, INT>} out: {a=C: <1, INT>, b=C?}
+    r(2) -> <v1>                                                     VAL: in: {a=C: <1, INT>, b=C?} out: {a=C: <1, INT>, b=C?}
+    w(b|<v1>)                                                        VAL: in: {a=C: <1, INT>, b=C?} out: {a=C: <1, INT>, b=C: <2, INT>}
+    v(var c = a + b)                                                 VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?}
+    r(a) -> <v2>
+    r(b) -> <v3>
+    mark(a + b)
+    call(a + b, plus|<v2>, <v3>) -> <v4>                             VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?}
+    w(c|<v4>)                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?}
+    v(var d = c - 1)                                                 VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
+    r(c) -> <v5>
+    r(1) -> <v6>
+    mark(c - 1)
+    call(c - 1, minus|<v5>, <v6>) -> <v7>                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
+    w(d|<v7>)                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
+    r(d) -> <v8>
+    mark(--d)
+    call(--d, dec|<v8>) -> <v9>                                      VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
+    w(d|<v9>)                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
+L1:
+  1 <END>
+error:
+    <ERROR>
+sink:
+    <SINK>                                                           VAL: in: {} out: {}
+=====================

@@ -1,0 +1,26 @@
+== foo ==
+fun foo(x: Boolean) {
+    val b: Int
+    val c = 1
+    b = c
+}
+---------------------
+L0:
+  1 <START>
+    v(x: Boolean)
+    magic[FAKE_INITIALIZER](x: Boolean) -> <v0>
+    w(x|<v0>)
+  2 mark({ val b: Int val c = 1 b = c })           VAL: in: {} out: {}
+    v(val b: Int)                                  VAL: in: {} out: {b=C?}
+    v(val c = 1)
+    r(1) -> <v1>                                   VAL: in: {b=C?} out: {b=C?}
+    w(c|<v1>)                                      VAL: in: {b=C?} out: {b=C?, c=C: <1, INT>}
+    r(c) -> <v2>                                   VAL: in: {b=C?, c=C: <1, INT>} out: {b=C?, c=C: <1, INT>}
+    w(b|<v2>)                                      VAL: in: {b=C?, c=C: <1, INT>} out: {b=C: <1, INT>, c=C: <1, INT>}
+L1:
+  1 <END>
+error:
+    <ERROR>
+sink:
+    <SINK>                                         VAL: in: {c=C: <1, INT>} out: {c=C: <1, INT>}
+=====================

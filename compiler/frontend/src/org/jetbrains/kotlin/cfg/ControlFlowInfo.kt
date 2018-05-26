@@ -137,36 +137,29 @@ enum class PropagatedTypes {
     CHAR,
     BOOLEAN,
 
-    STRING
-
+    STRING;
 }
 
-interface ValueState {
+sealed class ValueState {
     fun merge(other: ValueState): ValueState {
-        if (this is VariableWithUnknownValue
-            && other is VariableWithUnknownValue) return VariableWithUnknownValue
-        if (this is VariableWithUnknownValue
-            && other is VariableWithConstValue) return  VariableWithConstValue(other.constValue, other.varType)
-        if (this is VariableWithConstValue
-            && other is VariableWithUnknownValue) return VariableWithConstValue(this.constValue, this.varType)
         if (this is VariableWithConstValue
             && other is VariableWithConstValue
-            && this.constValue == other.constValue)
-            return VariableWithConstValue(this.constValue, this.varType)
+            && this == other)
+            return this
         return VariableWithNotAConstValue
     }
 }
 
-data class VariableWithConstValue(val constValue: String, val varType: PropagatedTypes/*KotlinType*/): ValueState
 
-//       UNKNOWN
-//       /| | | \
-//      1 2 3 4 "cat"
-//      \ | | | /
-//     NOT_A_CONST
-object VariableWithNotAConstValue: ValueState
-object VariableWithUnknownValue: ValueState
+class VariableWithConstValue(val variable: PropagatedVariable) : ValueState() {
+    override fun toString(): String {
+        val value = variable.pValue
+        val type = variable.pType
+        return "C: <$value, $type>"
+    }
+}
 
+object VariableWithNotAConstValue : ValueState()
 
 class VariableDataFlowState private constructor(val valueState: ValueState) {
     companion object {
@@ -175,11 +168,9 @@ class VariableDataFlowState private constructor(val valueState: ValueState) {
     }
 
     override fun toString(): String {
-        return when(this.valueState) {
-            is VariableWithConstValue -> "C: <${valueState.constValue}, ${valueState.varType}>"
-            is VariableWithUnknownValue -> "C?"
+        return when (this.valueState) {
+            is VariableWithConstValue -> valueState.toString()
             is VariableWithNotAConstValue -> "N_C"
-            else -> "STATE?!"
         }
     }
 }
@@ -206,12 +197,12 @@ class VariableControlFlowState private constructor(val initState: InitState, val
         private val VS_NF = VariableControlFlowState(InitState.NOT_INITIALIZED, false)
 
         fun create(initState: InitState, isDeclared: Boolean): VariableControlFlowState =
-            when (initState) {
-                InitState.INITIALIZED -> if (isDeclared) VS_IT else VS_IF
-                InitState.INITIALIZED_EXHAUSTIVELY -> if (isDeclared) VS_ET else VS_EF
-                InitState.UNKNOWN -> if (isDeclared) VS_UT else VS_UF
-                InitState.NOT_INITIALIZED -> if (isDeclared) VS_NT else VS_NF
-            }
+                when (initState) {
+                    InitState.INITIALIZED -> if (isDeclared) VS_IT else VS_IF
+                    InitState.INITIALIZED_EXHAUSTIVELY -> if (isDeclared) VS_ET else VS_EF
+                    InitState.UNKNOWN -> if (isDeclared) VS_UT else VS_UF
+                    InitState.NOT_INITIALIZED -> if (isDeclared) VS_NT else VS_NF
+                }
 
         fun createInitializedExhaustively(isDeclared: Boolean): VariableControlFlowState =
             create(InitState.INITIALIZED_EXHAUSTIVELY, isDeclared)

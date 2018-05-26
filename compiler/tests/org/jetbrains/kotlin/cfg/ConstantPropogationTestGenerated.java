@@ -44,6 +44,12 @@ public class ConstantPropogationTestGenerated extends AbstractConstantPropogatio
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-constant-propagation/basic"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
         }
 
+        @TestMetadata("BasicOperations.kt")
+        public void testBasicOperations() throws Exception {
+            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/BasicOperations.kt");
+            doTest(fileName);
+        }
+
         @TestMetadata("Branching.kt")
         public void testBranching() throws Exception {
             String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/Branching.kt");
@@ -53,6 +59,18 @@ public class ConstantPropogationTestGenerated extends AbstractConstantPropogatio
         @TestMetadata("SimpleInitialization.kt")
         public void testSimpleInitialization() throws Exception {
             String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/SimpleInitialization.kt");
+            doTest(fileName);
+        }
+
+        @TestMetadata("TrivialVals.kt")
+        public void testTrivialVals() throws Exception {
+            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/TrivialVals.kt");
+            doTest(fileName);
+        }
+
+        @TestMetadata("TrivialVals_1.kt")
+        public void testTrivialVals_1() throws Exception {
+            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/TrivialVals_1.kt");
             doTest(fileName);
         }
     }
