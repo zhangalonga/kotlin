@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.kapt3.javac
 
+import com.intellij.openapi.Disposable
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.search.GlobalSearchScope
@@ -71,6 +72,8 @@ class KaptTreeMaker(context: Context, kaptContext: KaptContextForStubGeneration)
         val nameWithDots = internalName.replace('/', '.')
         // This is a top-level class
         if ('$' !in nameWithDots) return nameWithDots
+
+        val kaptContext = this.kaptContext.get()
 
         // Maybe it's in our sources?
         val classFromSources = kaptContext.compiledClasses.firstOrNull { it.name == internalName }
@@ -163,9 +166,22 @@ class KaptTreeMaker(context: Context, kaptContext: KaptContextForStubGeneration)
 
     fun name(name: String): Name = nameTable.fromString(name)
 
+    override fun dispose() {
+        kaptContext.dispose()
+    }
+
     companion object {
         internal fun preRegister(context: Context, kaptContext: KaptContextForStubGeneration) {
             context.put(treeMakerKey, Context.Factory<TreeMaker> { KaptTreeMaker(it, kaptContext) })
         }
+    }
+}
+
+private class DisposableReference<T : Any>(obj: T) : Disposable {
+    private var obj: T? = obj
+    fun get() = obj!!
+
+    override fun dispose() {
+        obj = null
     }
 }

@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.kapt3.base.javac
 
-import com.intellij.openapi.project.Project
 import com.sun.tools.javac.tree.JCTree
 import com.sun.tools.javac.util.*
 import com.sun.tools.javac.util.JCDiagnostic.DiagnosticType
