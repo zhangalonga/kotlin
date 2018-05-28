@@ -333,6 +333,7 @@ public class TranslationContext {
                 JsExpression imported = TranslationUtils.getIntrinsicFqn(intrinsicName);
 
                 JsName name = JsScope.declareTemporaryName(NameSuggestion.sanitizeName(intrinsicName));
+                staticContext.maybeSetLocalAliasForIntrinsic(intrinsicName, name);
                 MetadataProperties.setImported(name, true);
                 inlineFunctionContext.getImportBlock().getStatements().add(JsAstUtils.newVar(name, imported));
                 return name;

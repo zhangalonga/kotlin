@@ -879,6 +879,17 @@ public final class StaticContext {
         return pureFqn(resultName, null);
     }
 
+    public void maybeSetLocalAliasForIntrinsic(@NotNull String name, @NotNull JsName result) {
+        if (isStdlib) {
+            DeclarationDescriptor descriptor = findDescriptorForIntrinsic(name);
+            if (descriptor != null) {
+                if (getCurrentModule() == DescriptorUtilsKt.getModule(descriptor)) {
+                    MetadataProperties.setLocalAlias(result, getInnerNameForDescriptor(descriptor));
+                }
+            }
+        }
+    }
+
     @Nullable
     private DeclarationDescriptor findDescriptorForIntrinsic(@NotNull String name) {
         PackageViewDescriptor rootPackage = currentModule.getPackage(FqName.ROOT);
