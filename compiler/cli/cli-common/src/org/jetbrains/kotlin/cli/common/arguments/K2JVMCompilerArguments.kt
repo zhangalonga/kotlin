@@ -231,9 +231,9 @@ class K2JVMCompilerArguments : CommonCompilerArguments() {
     var outputImports: String? by FreezableVar(null)
 
     @Argument(
-        value = "-Xjvm-default-mode",
+        value = "-Xjvm-default",
         valueDescription = "{disable|enable|compatibility}",
-        description = "Allow to use '@JvmDefault' for JVM default method support"
+        description = "Allow to use '@JvmDefault' for JVM default method support.  'compatibility' mode generates default methods in interfaces and also generates DefaultImpls stubs (delegating to interface methods) to keep binary compatibility with precompiled binaries. This option is useful if you migrating preexisting Kotlin api to '@JvmDefault'. 'enable' options do not support binary compatibility."
     )
     var jvmDefaultMode: String by FreezableVar(JvmDefaultMode.DEFAULT.description)
 
