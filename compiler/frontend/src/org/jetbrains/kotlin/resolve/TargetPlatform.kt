@@ -33,7 +33,7 @@ abstract class TargetPlatform(val platformName: String) {
 
     object Common : TargetPlatform("Default") {
         private val defaultImports =
-            LockBasedStorageManager().createMemoizedFunction<Boolean, List<ImportPath>> { includeKotlinComparisons ->
+            LockBasedStorageManager("TargetPlatform.Common").createMemoizedFunction<Boolean, List<ImportPath>> { includeKotlinComparisons ->
                 ArrayList<ImportPath>().apply {
                     listOf(
                         "kotlin.*",

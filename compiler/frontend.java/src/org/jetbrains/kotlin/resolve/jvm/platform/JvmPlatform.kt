@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.storage.LockBasedStorageManager
 import java.util.*
 
 object JvmPlatform : TargetPlatform("JVM") {
-    private val defaultImports = LockBasedStorageManager().let { storageManager ->
+    private val defaultImports = LockBasedStorageManager("JvmPlatform").let { storageManager ->
         storageManager.createMemoizedFunction<Boolean, List<ImportPath>> { includeKotlinComparisons ->
             ArrayList<ImportPath>().apply {
                 addAll(Common.getDefaultImports(includeKotlinComparisons))
