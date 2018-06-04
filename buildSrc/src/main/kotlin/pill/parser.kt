@@ -370,7 +370,10 @@ private fun ParserContext.parseDependencies(project: Project, forTests: Boolean)
                     val mappedDependency = mapper.mapping(dependency)
 
                     if (mappedDependency != null) {
-                        mainRoots += POrderRoot(mappedDependency.main, scope)
+                        val mainDependency = mappedDependency.main
+                        if (mainDependency != null) {
+                            mainRoots += POrderRoot(mainDependency, scope)
+                        }
 
                         for (deferredDep in mappedDependency.deferred) {
                             deferredRoots += POrderRoot(deferredDep, scope)
