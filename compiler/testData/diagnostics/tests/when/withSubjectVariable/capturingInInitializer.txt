@@ -1,0 +1,5 @@
+package
+
+public fun getBoolean(): kotlin.Boolean
+public fun `safe capture var in initializer`(): kotlin.Unit
+public fun `unsafe capture var in initializer`(): kotlin.Unit

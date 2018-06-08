@@ -1,0 +1,3 @@
+package
+
+public fun `capture when subject`(/*0*/ y: kotlin.Any?): kotlin.Unit
