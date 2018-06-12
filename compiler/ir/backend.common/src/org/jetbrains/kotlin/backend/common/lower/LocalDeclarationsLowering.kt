@@ -526,7 +526,7 @@ class LocalDeclarationsLowering(
             localFunctionContext.transformedDeclaration = with(localFunctionContext.declaration) {
                 IrFunctionImpl(startOffset, endOffset, origin, newDescriptor)
             }.apply {
-                parent = localFunctionContext.declaration.parent
+                parent = memberDeclaration.parent
                 createParameterDeclarations()
                 recordTransformedValueParameters(localFunctionContext)
                 transformedDeclarations[oldDescriptor] = this.symbol
