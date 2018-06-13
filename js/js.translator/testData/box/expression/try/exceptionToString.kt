@@ -25,7 +25,7 @@ fun box(): String {
     check(Exception("bbb"), "Exception: bbb")
     check(Exception(Exception("ccc")), "Exception: Exception: ccc")
     check(AssertionError(), "AssertionError: null")
-    check(AssertionError(null), "AssertionError: null")
+    check(AssertionError(null as String?), "AssertionError: null")
     check(AssertionError("bbb"), "AssertionError: bbb")
     check(AssertionError(Exception("ccc")), "AssertionError: Exception: ccc")
     check(MyException(), "MyException: null")
