@@ -30,3 +30,4 @@ fun IrType.isNullableAny(): Boolean = isBuiltInClassType(KotlinBuiltIns::isAny, 
 
 fun IrType.isString(): Boolean = isClassType(KotlinBuiltIns.FQ_NAMES.string, hasQuestionMark = false)
 fun IrType.isArray(): Boolean = isClassType(KotlinBuiltIns.FQ_NAMES.array, hasQuestionMark = false)
+fun IrType.isPrimitiveType(): Boolean = isBuiltInClassType(KotlinBuiltIns::isPrimitiveClass, hasQuestionMark = false)
