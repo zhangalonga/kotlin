@@ -46,12 +46,16 @@ import java.util.*
 sealed class K2JsSetup {
     object DoNothing : K2JsSetup()
 
-    class Invalid(val exitCode: ExitCode = ExitCode.COMPILATION_ERROR) : K2JsSetup()
+    class Invalid(
+        val exitCode: ExitCode = ExitCode.COMPILATION_ERROR,
+        val message: String? = null
+    ) : K2JsSetup()
 
-    class Valid(
+    data class Valid(
+        val rootDisposable: Disposable,
         val configuration: CompilerConfiguration,
         val messageCollector: MessageCollector,
-        val sourcesFiles: List<KtFile>,
+        var sourcesFiles: List<KtFile>,
         val config: JsConfig,
         val reporter: JsConfig.Reporter,
         val mainCallParameters: MainCallParameters,
@@ -166,6 +170,7 @@ fun K2JsSetup(
     val mainCallParameters: MainCallParameters = createMainCallParameters(arguments.main)
 
     return K2JsSetup.Valid(
+        rootDisposable,
         configuration,
         messageCollector,
         sourcesFiles,
@@ -235,16 +240,20 @@ private fun configureLibraries(
     val libraries = SmartList<String>()
     if (!arguments.noStdlib) {
         val stdlibJar = CLICompiler.getLibraryFromHome(
-            paths, { obj: KotlinPaths -> obj.jsStdLibJarPath }, PathUtil.JS_LIB_JAR_NAME, messageCollector, "'-no-stdlib'"
+            paths,
+            { obj: KotlinPaths -> obj.jsStdLibJarPath },
+            PathUtil.JS_LIB_JAR_NAME,
+            messageCollector,
+            "'-no-stdlib'"
         )
-        if (stdlibJar != null) {
-            libraries.add(stdlibJar.absolutePath)
-        }
+
+        if (stdlibJar != null) libraries.add(stdlibJar.absolutePath)
     }
 
-    if (arguments.libraries != null) {
-        libraries.addAll(arguments.libraries!!.split(File.pathSeparator.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().filterNot { obj: String -> obj.isEmpty() })
-    }
+    arguments.libraries
+        ?.split(File.pathSeparator.toRegex())
+        ?.filterTo(libraries) { it.isNotEmpty() }
+
     return libraries
 }
 
@@ -366,6 +375,11 @@ fun setupK2JsPlatformSpecificArgumentsAndServices(
         moduleKind = ModuleKind.PLAIN
     }
     configuration.put(JSConfigurationKeys.MODULE_KIND, moduleKind)
+
+    val setupConsumer = services[K2JsSetupConsumer::class.java]
+    if (setupConsumer != null) {
+        configuration.put(JSConfigurationKeys.SETUP_CONSUMER, setupConsumer)
+    }
 
     val incrementalDataProvider = services[IncrementalDataProvider::class.java]
     if (incrementalDataProvider != null) {

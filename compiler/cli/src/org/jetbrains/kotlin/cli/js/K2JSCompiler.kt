@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.utils.KotlinPaths
 
 class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
@@ -40,7 +41,12 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
         paths: KotlinPaths?
     ): ExitCode {
         val setup = K2JsSetup(arguments, configuration, rootDisposable, paths)
-        return when (setup) {
+
+        val setupConsumer = configuration[JSConfigurationKeys.SETUP_CONSUMER]
+        return if (setupConsumer != null) {
+            (setupConsumer as K2JsSetupConsumer).consume(setup)
+            ExitCode.OK
+        } else when (setup) {
             is K2JsSetup.DoNothing -> ExitCode.OK
             is K2JsSetup.Invalid -> setup.exitCode
             is K2JsSetup.Valid -> setup.doExecute()

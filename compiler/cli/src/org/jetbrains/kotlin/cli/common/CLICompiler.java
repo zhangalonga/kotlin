@@ -121,7 +121,7 @@ public abstract class CLICompiler<A extends CommonCompilerArguments> extends CLI
                 }
             }
             finally {
-                Disposer.dispose(rootDisposable);
+                //Disposer.dispose(rootDisposable);
             }
         }
         catch (AnalysisResult.CompilationErrorException e) {

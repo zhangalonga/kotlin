@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="FUSProjectUsageTrigger">
+    <session id="-1136527347">
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="173" value="1" />
+          <entry key="181" value="4" />
+          <entry key="class" value="26" />
+          <entry key="gradle" value="1" />
+          <entry key="java" value="243" />
+          <entry key="js" value="8" />
+          <entry key="kt" value="429" />
+          <entry key="kts" value="6" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="CLASS" value="26" />
+          <entry key="Groovy" value="1" />
+          <entry key="JAVA" value="243" />
+          <entry key="JavaScript" value="8" />
+          <entry key="Kotlin" value="435" />
+          <entry key="PLAIN_TEXT" value="5" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="dummy" value="19" />
+          <entry key="gradle" value="8" />
+          <entry key="java" value="334" />
+          <entry key="kt" value="3187" />
+          <entry key="kts" value="1" />
+          <entry key="txt" value="74" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Groovy" value="8" />
+          <entry key="JAVA" value="334" />
+          <entry key="Kotlin" value="3188" />
+          <entry key="PLAIN_TEXT" value="93" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+</project>
