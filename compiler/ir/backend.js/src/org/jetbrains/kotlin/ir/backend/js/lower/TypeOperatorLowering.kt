@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.ir.expressions.IrTypeOperatorCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrCompositeImpl
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.isDynamic
 import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlin.types.typeUtil.*
 
@@ -122,7 +123,7 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
 
             private fun lowerImplicitCast(expression: IrTypeOperatorCall) = expression.run {
                 assert(operator == IrTypeOperator.IMPLICIT_CAST)
-                IrCompositeImpl(startOffset, endOffset, typeOperand, null, listOf(argument))
+                argument
             }
 
             // Note: native `instanceOf` is not used which is important because of null-behaviour
@@ -193,6 +194,7 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
             private fun generateTypeCheckNonNull(argument: IrExpression, toType: KotlinType): IrExpression {
                 assert(!toType.isMarkedNullable)
                 return when {
+                    toType.isDynamic() -> litTrue // any possible type is dynamic
                     KotlinBuiltIns.isAny(toType) -> generateIsObjectCheck(argument)
                     isTypeOfCheckingType(toType) -> generateTypeOfCheck(argument, toType)
                     toType.isChar() -> generateCheckForChar(argument)

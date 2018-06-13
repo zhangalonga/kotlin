@@ -621,6 +621,40 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
             return DecomposedResult(jump, JsIrBuilder.buildCall(unreachableFunction))
         }
 
+        override fun visitTry(aTry: IrTry, data: VisitData): VisitResult {
+            val unitType = context.builtIns.unitType
+            val tryResult = aTry.tryResult.accept(expressionVisitor, data)
+            val catchResults = aTry.catches.map { Pair(it, it.result.accept(expressionVisitor, data)) }
+            val finallyResult = aTry.finallyExpression?.accept(statementVisitor, data)
+
+            finallyResult?.run { assert(status == VisitStatus.KEPT) }
+
+            val resultSymbol = makeTempVar(aTry.type)
+            val resultDeclaration = JsIrBuilder.buildVar(resultSymbol)
+
+            val newTryValue = tryResult.runIfChangedOrDefault(aTry.tryResult) { resultValue }
+            val trySetResult = JsIrBuilder.buildSetVariable(resultSymbol, newTryValue) as IrStatement
+
+            val tryBlock = IrBlockImpl(aTry.tryResult.startOffset, aTry.tryResult.endOffset, unitType).apply {
+                statements += tryResult.runIfChangedOrDefault(listOf(trySetResult)) { statements + trySetResult }
+            }
+
+            val catchBlocks = catchResults.map { (original, result) ->
+                val newCatchResult = result.runIfChangedOrDefault(original.result) { resultValue }
+                val catchSetResult = JsIrBuilder.buildSetVariable(resultSymbol, newCatchResult) as IrStatement
+                val catchBlock = IrBlockImpl(original.result.startOffset, original.result.endOffset, unitType)
+                catchBlock.statements += result.runIfChangedOrDefault(listOf(catchSetResult)) { statements + catchSetResult }
+                IrCatchImpl(original.startOffset, original.endOffset, original.catchParameter, catchBlock)
+            }
+
+            val newTry = aTry.run { IrTryImpl(startOffset, endOffset, unitType, tryBlock, catchBlocks, finallyExpression) }
+
+            return DecomposedResult(mutableListOf(resultDeclaration, newTry), JsIrBuilder.buildGetValue(resultSymbol))
+        }
+
+        override fun visitSetVariable(expression: IrSetVariable, data: VisitData) = statementVisitor.visitSetVariable(expression, data)
+
+        override fun visitSetField(expression: IrSetField, data: VisitData) = statementVisitor.visitSetField(expression, data)
     }
 
     fun makeTempVar(type: KotlinType) =

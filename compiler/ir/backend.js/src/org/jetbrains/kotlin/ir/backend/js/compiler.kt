@@ -62,6 +62,7 @@ fun JsIrBackendContext.lower(file: IrFile) {
     InnerClassConstructorCallsLowering(this).runOnFilePostfix(file)
     PropertiesLowering().lower(file)
     InitializersLowering(this, JsLoweredDeclarationOrigin.CLASS_STATIC_INITIALIZER, false).runOnFilePostfix(file)
+    MultipleCatchesLowering(this).lower(file)
     TypeOperatorLowering(this).lower(file)
     BlockDecomposerLowering(this).runOnFilePostfix(file)
     SecondaryCtorLowering(this).runOnFilePostfix(file)
