@@ -1,4 +1,3 @@
-// !WITH_NEW_INFERENCE
 typealias SuspendFn = suspend () -> Unit
 
 val test1f: suspend () -> Unit = <!TYPE_MISMATCH!>fun () {}<!>
