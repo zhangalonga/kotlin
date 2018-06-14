@@ -24,10 +24,7 @@ import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.declarations.IrTypeAlias
-import org.jetbrains.kotlin.ir.declarations.IrVariable
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.util.dump
@@ -111,10 +108,17 @@ class ExpressionCodegen(
 
     val state = classCodegen.state
 
+    private val sourceManager = classCodegen.context.psiSourceManager
+
+    private val fileEntry = sourceManager.getFileEntry(irFunction.fileParent)
+
     fun generate() {
         mv.visitCode()
+        irFunction.markLineNumber(true)
         val info = BlockInfo.create()
         val result = irFunction.body!!.accept(this, info)
+
+        irFunction.markLineNumber(false)
 
         val returnType = typeMapper.mapReturnType(irFunction.descriptor)
         if (irFunction.body is IrExpressionBody) {
@@ -533,11 +537,6 @@ class ExpressionCodegen(
         }
     }
 
-
-    fun markNewLabel(): Label {
-        return Label().apply { mv.visitLabel(this) }
-    }
-
     override fun visitReturn(expression: IrReturn, data: BlockInfo): StackValue {
         val value = expression.value.apply {
             gen(this, returnType, data)
@@ -546,6 +545,7 @@ class ExpressionCodegen(
         val afterReturnLabel = Label()
         generateFinallyBlocksIfNeeded(returnType, afterReturnLabel, data)
 
+        expression.markLineNumber(false)
         mv.areturn(returnType)
         mv.mark(afterReturnLabel)
         mv.nop()/*TODO check RESTORE_STACK_IN_TRY_CATCH processor*/
@@ -1094,6 +1094,12 @@ class ExpressionCodegen(
     override fun markLineNumberAfterInlineIfNeeded() {
         //TODO
     }
+
+    private fun markNewLabel() = Label().apply { mv.visitLabel(this) }
+
+    private fun IrElement.markLineNumber(startOffset: Boolean) {
+        mv.visitLineNumber(fileEntry.getLineNumber(if (startOffset) this.startOffset else endOffset) + 1, markNewLabel())
+    }
 }
 
 private class DefaultArg(val index: Int)
@@ -1123,4 +1129,3 @@ fun DefaultCallArgs.generateOnStackIfNeeded(callGenerator: IrCallGenerator, isCo
 internal fun CallableDescriptor.isInlineCall(state: GenerationState) =
     (!state.isInlineDisabled || InlineUtil.containsReifiedTypeParameters(this)) &&
             (InlineUtil.isInline(this) || InlineUtil.isArrayConstructorWithLambda(this))
-
