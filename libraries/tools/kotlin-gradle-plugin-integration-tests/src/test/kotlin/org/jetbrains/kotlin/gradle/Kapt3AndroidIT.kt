@@ -1,6 +1,8 @@
 package org.jetbrains.kotlin.gradle
 
 import org.jetbrains.kotlin.gradle.util.isLegacyAndroidGradleVersion
+import org.jetbrains.kotlin.gradle.util.getFileByName
+import org.jetbrains.kotlin.gradle.util.modify
 import org.jetbrains.kotlin.test.KotlinTestUtils
 import org.junit.Test
 import java.io.File
@@ -66,6 +68,15 @@ open class Kapt3AndroidIT : Kapt3BaseIT() {
             if (isLegacyAndroidGradleVersion(androidGradlePluginVersion)) {
                 // we don't copy classes with new AGP
                 assertFileExists("app/build/intermediates/classes/release/com/example/dagger/kotlin/AndroidModule.class")
+            }
+        }
+
+        Project("android-dagger", GradleVersionRequired.AtLeast("4.5"), directoryPrefix = "kapt2").apply {
+            projectDir.getFileByName("gradle.properties").modify { it + "\nkapt.use.worker.api=true" }
+
+            build("clean", "build", options = options) {
+                assertSuccessful()
+                assertKaptSuccessful()
             }
         }
     }
