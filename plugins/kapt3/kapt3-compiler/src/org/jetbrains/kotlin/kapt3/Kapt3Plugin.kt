@@ -243,6 +243,7 @@ class Kapt3ComponentRegistrar : ComponentRegistrar {
 
         if (apClasspath.isEmpty()) {
             // Skip annotation processing if no annotation processors were provided
+            abortAnalysis()
             return
         }
 
