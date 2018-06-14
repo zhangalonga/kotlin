@@ -589,6 +589,7 @@ abstract class AbstractAndroidProjectHandler<V>(private val kotlinConfigurationT
 
         val aptFiles = arrayListOf<File>()
 
+        var isOldKaptEffectivelyEnabled = false
         if (!isKapt3Enabled) {
             var hasAnyKaptDependency: Boolean = false
             for (provider in getSourceProviders(variantData)) {
@@ -601,11 +602,9 @@ abstract class AbstractAndroidProjectHandler<V>(private val kotlinConfigurationT
                 }
             }
 
-            if (!hasAnyKaptDependency) {
-                removeAnnotationProcessingPluginClasspathEntry(kotlinTask)
+            if (hasAnyKaptDependency) {
+                isOldKaptEffectivelyEnabled = true
             }
-        } else {
-            removeAnnotationProcessingPluginClasspathEntry(kotlinTask)
         }
 
         var kotlinAfterJavaTask: KotlinCompile? = null
@@ -634,6 +633,10 @@ abstract class AbstractAndroidProjectHandler<V>(private val kotlinConfigurationT
 
         appliedPlugins.flatMap { it.getSubpluginKotlinTasks(project, kotlinTask) }
                 .forEach { configureSources(it, variantData) }
+
+        if (!isOldKaptEffectivelyEnabled) {
+            removeAnnotationProcessingPluginClasspathEntry(kotlinTask)
+        }
     }
 
     private fun configureSources(compileTask: AbstractCompile, variantData: V) {
@@ -730,7 +733,7 @@ private fun SourceSet.clearJavaSrcDirs() {
     java.setSrcDirs(emptyList<File>())
 }
 
-private val KOTLIN_ANNOTATION_PROCESSING_FILE_REGEX = "kotlin-annotation-processing-[\\-0-9A-Za-z.]+\\.jar".toRegex()
+private val KOTLIN_ANNOTATION_PROCESSING_FILE_REGEX = "kotlin-annotation-processing-gradle-[\\-0-9A-Za-z.]+\\.jar".toRegex()
 
 private fun removeAnnotationProcessingPluginClasspathEntry(kotlinCompile: KotlinCompile) {
     kotlinCompile.pluginOptions.classpath
