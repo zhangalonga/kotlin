@@ -9309,6 +9309,11 @@ public class DiagnosticsUsingJavacTestGenerated extends AbstractDiagnosticsUsing
                 runTest("compiler/testData/diagnostics/tests/inference/reportAboutUnresolvedReferenceAsUnresolved.kt");
             }
 
+            @TestMetadata("test.kt")
+            public void testTest() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/test.kt");
+            }
+
             @TestMetadata("tryNumberLowerBoundsBeforeUpperBounds.kt")
             public void testTryNumberLowerBoundsBeforeUpperBounds() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/inference/tryNumberLowerBoundsBeforeUpperBounds.kt");
