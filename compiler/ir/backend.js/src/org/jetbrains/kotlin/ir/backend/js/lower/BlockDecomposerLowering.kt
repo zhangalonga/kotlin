@@ -38,8 +38,8 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
     private val constFalse = JsIrBuilder.buildBoolean(context.builtIns.booleanType, false)
     private val nothingType = context.builtIns.nullableNothingType
 
-    private val unitValue =
-        JsIrBuilder.buildGetObjectValue(context.builtIns.unitType, context.symbolTable.referenceClass(context.builtIns.unit))
+    private val unitType = context.builtIns.unitType
+    private val unitValue = JsIrBuilder.buildGetObjectValue(unitType, context.symbolTable.referenceClass(context.builtIns.unit))
 
     private val unreachableFunction =
         JsSymbolBuilder.buildSimpleFunction(context.module, Namer.UNREACHABLE_NAME).initialize(type = nothingType)
@@ -199,7 +199,6 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
 
             val conditionResult = loop.condition.accept(expressionVisitor, data)
             val bodyResult = loop.body?.accept(this, data)
-            val unitType = context.builtIns.unitType
 
             return conditionResult.runIfChanged {
                 bodyResult?.run { assert(status == VisitStatus.KEPT) }
@@ -245,7 +244,6 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
 
             val bodyResult = loop.body?.accept(this, data)
             val conditionResult = loop.condition.accept(expressionVisitor, data)
-            val unitType = context.builtIns.unitType
 
             return conditionResult.runIfChanged {
                 bodyResult?.run { assert(status == VisitStatus.KEPT) }
@@ -373,13 +371,13 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
                 is IrBlock -> IrBlockImpl(
                     expression.startOffset,
                     expression.endOffset,
-                    context.builtIns.unitType,
+                    unitType,
                     expression.origin
                 )
                 is IrComposite -> IrCompositeImpl(
                     expression.startOffset,
                     expression.endOffset,
-                    context.builtIns.unitType,
+                    unitType,
                     expression.origin
                 )
                 else -> error("Unsupported block type")
@@ -622,7 +620,6 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
         }
 
         override fun visitTry(aTry: IrTry, data: VisitData): VisitResult {
-            val unitType = context.builtIns.unitType
             val tryResult = aTry.tryResult.accept(expressionVisitor, data)
             val catchResults = aTry.catches.map { Pair(it, it.result.accept(expressionVisitor, data)) }
             val finallyResult = aTry.finallyExpression?.accept(statementVisitor, data)
@@ -652,9 +649,19 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
             return DecomposedResult(mutableListOf(resultDeclaration, newTry), JsIrBuilder.buildGetValue(resultSymbol))
         }
 
-        override fun visitSetVariable(expression: IrSetVariable, data: VisitData) = statementVisitor.visitSetVariable(expression, data)
+        override fun visitSetVariable(expression: IrSetVariable, data: VisitData): VisitResult {
+            val result = expression.accept(statementVisitor, data)
+            return if (result.status == VisitStatus.KEPT) {
+                DecomposedResult(expression, unitValue)
+            } else result
+        }
 
-        override fun visitSetField(expression: IrSetField, data: VisitData) = statementVisitor.visitSetField(expression, data)
+        override fun visitSetField(expression: IrSetField, data: VisitData): VisitResult {
+            val result = expression.accept(statementVisitor, data)
+            return if (result.status == VisitStatus.KEPT) {
+                DecomposedResult(expression, unitValue)
+            } else result
+        }
     }
 
     fun makeTempVar(type: KotlinType) =
@@ -680,8 +687,6 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : FunctionLowerin
 
         // keep it as is
         if (!(needNewConds || needNewBodies)) return expression
-
-        val unitType = context.builtIns.unitType
 
         if (needNewConds) {
 

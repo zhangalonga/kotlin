@@ -71,10 +71,10 @@ class MultipleCatchesLowering(val context: JsIrBackendContext) : FileLoweringPas
 
                 if (!commonType.isDynamic()) {
                     val throwStatement = JsIrBuilder.buildThrow(nothingType, pendingException)
-                    branches += IrElseBranchImpl(litTrue, JsIrBuilder.buildBlock(unitType, listOf(throwStatement)))
+                    branches += IrElseBranchImpl(litTrue, JsIrBuilder.buildBlock(aTry.type, listOf(throwStatement)))
                 }
 
-                val whenStatement = JsIrBuilder.buildWhen(unitType, branches)
+                val whenStatement = JsIrBuilder.buildWhen(aTry.type, branches)
 
                 val newCatch = aTry.run {
                     IrCatchImpl(catches.first().startOffset, catches.last().endOffset, pendingExceptionDeclaration, whenStatement)
