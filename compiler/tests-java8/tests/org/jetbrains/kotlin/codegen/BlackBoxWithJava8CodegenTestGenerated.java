@@ -25,6 +25,10 @@ public class BlackBoxWithJava8CodegenTestGenerated extends AbstractBlackBoxCodeg
         KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
     }
 
+    private void runTestWithPackageReplacement(String testDataFilePath, String packageName) throws Exception {
+        KotlinTestUtils.runTest(filePath -> doTestWithCoroutinesPackageReplacement(filePath, packageName), TargetBackend.ANY, testDataFilePath);
+    }
+
     public void testAllFilesPresentInBox() throws Exception {
         KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/java8/box"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
     }
@@ -32,25 +36,25 @@ public class BlackBoxWithJava8CodegenTestGenerated extends AbstractBlackBoxCodeg
     @TestMetadata("asyncException.kt")
     public void testAsyncException_1_2() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/java8/box/asyncException.kt");
-        doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines.experimental");
+        runTestWithPackageReplacement(fileName, "kotlin.coroutines.experimental");
     }
 
     @TestMetadata("asyncException.kt")
     public void testAsyncException_1_3() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/java8/box/asyncException.kt");
-        doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines");
+        runTestWithPackageReplacement(fileName, "kotlin.coroutines");
     }
 
     @TestMetadata("async.kt")
     public void testAsync_1_2() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/java8/box/async.kt");
-        doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines.experimental");
+        runTestWithPackageReplacement(fileName, "kotlin.coroutines.experimental");
     }
 
     @TestMetadata("async.kt")
     public void testAsync_1_3() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/java8/box/async.kt");
-        doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines");
+        runTestWithPackageReplacement(fileName, "kotlin.coroutines");
     }
 
     @TestMetadata("capturedSuperCall.kt")

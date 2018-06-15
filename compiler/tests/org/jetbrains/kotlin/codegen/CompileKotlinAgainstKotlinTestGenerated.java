@@ -25,6 +25,10 @@ public class CompileKotlinAgainstKotlinTestGenerated extends AbstractCompileKotl
         KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
     }
 
+    private void runTestWithPackageReplacement(String testDataFilePath, String packageName) throws Exception {
+        KotlinTestUtils.runTest(filePath -> doTestWithCoroutinesPackageReplacement(filePath, packageName), TargetBackend.ANY, testDataFilePath);
+    }
+
     public void testAllFilesPresentInCompileKotlinAgainstKotlin() throws Exception {
         KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/compileKotlinAgainstKotlin"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
     }
@@ -82,13 +86,13 @@ public class CompileKotlinAgainstKotlinTestGenerated extends AbstractCompileKotl
     @TestMetadata("coroutinesBinary.kt")
     public void testCoroutinesBinary_1_2() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/compileKotlinAgainstKotlin/coroutinesBinary.kt");
-        doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines.experimental");
+        runTestWithPackageReplacement(fileName, "kotlin.coroutines.experimental");
     }
 
     @TestMetadata("coroutinesBinary.kt")
     public void testCoroutinesBinary_1_3() throws Exception {
         String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/compileKotlinAgainstKotlin/coroutinesBinary.kt");
-        doTestWithCoroutinesPackageReplacement(fileName, "kotlin.coroutines");
+        runTestWithPackageReplacement(fileName, "kotlin.coroutines");
     }
 
     @TestMetadata("defaultConstructor.kt")
