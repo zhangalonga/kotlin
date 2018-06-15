@@ -462,9 +462,14 @@ internal fun createTypeForFunctionPlaceholder(
     } else {
         functionPlaceholderTypeConstructor.argumentTypes
     }
-    val receiverType = if (isExtension) DONT_CARE else null
+    val receiverType = if (isExtension) functionPlaceholderTypeConstructor.receiverType else null
     return createFunctionType(
-        functionPlaceholder.builtIns, Annotations.EMPTY, receiverType, newArgumentTypes, null, DONT_CARE,
+        functionPlaceholder.builtIns,
+        Annotations.EMPTY,
+        receiverType,
+        newArgumentTypes,
+        null,
+        functionPlaceholderTypeConstructor.returnType,
         suspendFunction = expectedType.isSuspendFunctionType
     )
 }

@@ -22,12 +22,14 @@ import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
 
 class FunctionPlaceholders(private val builtIns: KotlinBuiltIns) {
     fun createFunctionPlaceholderType(
+        receiverType: KotlinType,
+        returnType: KotlinType,
             argumentTypes: List<KotlinType>,
             hasDeclaredArguments: Boolean
     ): KotlinType {
         return ErrorUtils.createErrorTypeWithCustomConstructor(
                 "function placeholder type",
-                FunctionPlaceholderTypeConstructor(argumentTypes, hasDeclaredArguments, builtIns)
+                FunctionPlaceholderTypeConstructor(receiverType, returnType, argumentTypes, hasDeclaredArguments, builtIns)
         )
     }
 }
@@ -38,6 +40,8 @@ val KotlinType?.isFunctionPlaceholder: Boolean
     }
 
 class FunctionPlaceholderTypeConstructor(
+    val receiverType: KotlinType,
+    val returnType: KotlinType,
         val argumentTypes: List<KotlinType>,
         val hasDeclaredArguments: Boolean,
         private val kotlinBuiltIns: KotlinBuiltIns

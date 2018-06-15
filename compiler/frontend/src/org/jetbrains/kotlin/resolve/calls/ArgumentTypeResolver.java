@@ -272,7 +272,7 @@ public class ArgumentTypeResolver {
         }
 
         if (expectedTypeIsUnknown) {
-            return functionPlaceholders.createFunctionPlaceholderType(Collections.emptyList(), false);
+            return functionPlaceholders.createFunctionPlaceholderType(DONT_CARE, DONT_CARE, Collections.emptyList(), false);
         }
 
         return FunctionTypesKt.createFunctionType(
@@ -307,10 +307,10 @@ public class ArgumentTypeResolver {
             @NotNull BindingTrace trace,
             boolean expectedTypeIsUnknown
     ) {
-        boolean isFunctionLiteral = function instanceof KtFunctionLiteral;
+        boolean isFunctionLiteral = true;
         if (function.getValueParameterList() == null && isFunctionLiteral) {
             return expectedTypeIsUnknown
-                   ? functionPlaceholders.createFunctionPlaceholderType(Collections.emptyList(), /* hasDeclaredArguments = */ false)
+                   ? functionPlaceholders.createFunctionPlaceholderType(DONT_CARE, DONT_CARE, Collections.emptyList(), /* hasDeclaredArguments = */ false)
                    : FunctionTypesKt.createFunctionType(
                            builtIns, Annotations.Companion.getEMPTY(), null, Collections.emptyList(), null, DONT_CARE
                    );
@@ -333,7 +333,7 @@ public class ArgumentTypeResolver {
         KotlinType receiverType = resolveTypeRefWithDefault(function.getReceiverTypeReference(), scope, temporaryTrace, null);
 
         return expectedTypeIsUnknown && isFunctionLiteral
-               ? functionPlaceholders.createFunctionPlaceholderType(parameterTypes, /* hasDeclaredArguments = */ true)
+               ? functionPlaceholders.createFunctionPlaceholderType(receiverType == null ? DONT_CARE : receiverType, returnType, parameterTypes, /* hasDeclaredArguments = */ true)
                : FunctionTypesKt.createFunctionType(
                        builtIns, Annotations.Companion.getEMPTY(), receiverType, parameterTypes, parameterNames, returnType
                );
