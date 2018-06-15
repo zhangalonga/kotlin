@@ -116,7 +116,8 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
         if (module.kotlinCompilerSettings.copyJsLibraryFiles) {
             val outputLibraryRuntimeDirectory = File(outputDir, module.kotlinCompilerSettings.outputDirectoryForJsLibraryFiles).absolutePath
             JsLibraryUtils.copyJsFilesFromLibraries(
-                libraryFiles, outputLibraryRuntimeDirectory,
+                libraryFiles + dependenciesOutputDirs,
+                outputLibraryRuntimeDirectory,
                 copySourceMap = module.k2JsCompilerArguments.sourceMap
             )
         }
@@ -192,6 +193,35 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
             dependencyBuildTarget.sources.isNotEmpty()
         ) {
             val metaFile = dependencyBuildTarget.outputMetaFile
+            if (metaFile.exists()) {
+                result.add(metaFile.absolutePath)
+            }
+        }
+    }
+
+
+    private val dependenciesOutputDirs: List<String>
+        get() = mutableListOf<String>().also { result ->
+            allDependencies.processModules { module ->
+                if (isTests) addDependencyOutputDir(module, result, isTests = true)
+
+                // note: production targets should be also added as dependency to test targets
+                addDependencyOutputDir(module, result, isTests = false)
+            }
+        }
+
+    private fun addDependencyOutputDir(
+        module: JpsModule,
+        result: MutableList<String>,
+        isTests: Boolean
+    ) {
+        val dependencyBuildTarget = context.kotlinBuildTargets[ModuleBuildTarget(module, isTests)]
+
+        if (dependencyBuildTarget != this@KotlinJsModuleBuildTarget &&
+            dependencyBuildTarget is KotlinJsModuleBuildTarget &&
+            dependencyBuildTarget.sources.isNotEmpty()
+        ) {
+            val metaFile = dependencyBuildTarget.outputFile.parentFile
             if (metaFile.exists()) {
                 result.add(metaFile.absolutePath)
             }
