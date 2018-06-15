@@ -46,6 +46,7 @@ class AndroidGradleOrderEnumerationHandler(module: Module) : GradleOrderEnumerat
         if (type != OrderRootType.CLASSES) return false
 
         if (!ExternalSystemApiUtil.isExternalSystemAwareModule(GradleConstants.SYSTEM_ID, rootModel.module)) return false
+        if (!isAndroidPluginEnabled()) return false
         KotlinFacet.get(rootModel.module) ?: return false
 
         val module = rootModel.module
@@ -84,6 +85,17 @@ class AndroidGradleOrderEnumerationHandler(module: Module) : GradleOrderEnumerat
         }
 
         return true
+    }
+
+    // AndroidGradleOrderEnumerationHandler is dependent on both Gradle in Android.
+    // It's defined in gradle.xml so we have to check if the Android Plugin is enabled.
+    private fun isAndroidPluginEnabled(): Boolean {
+        try {
+            Class.forName("org.jetbrains.android.facet.AndroidFacet", false, javaClass.classLoader)
+            return true
+        } catch (e: Throwable) {
+            return false
+        }
     }
 
     class FactoryImpl : Factory() {
