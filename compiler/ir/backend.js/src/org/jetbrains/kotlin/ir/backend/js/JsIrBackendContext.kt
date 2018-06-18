@@ -15,14 +15,13 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.backend.js.utils.OperatorNames
 import org.jetbrains.kotlin.ir.backend.js.lower.inline.ModuleIndex
+import org.jetbrains.kotlin.ir.backend.js.utils.OperatorNames
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.util.SymbolTable
@@ -54,10 +53,6 @@ class JsIrBackendContext(
     val intrinsics = JsIntrinsics(module, irBuiltIns, this)
 
     private val operatorMap = referenceOperators()
-
-    data class SecondaryCtorPair(val delegate: IrSimpleFunctionSymbol, val stub: IrSimpleFunctionSymbol)
-
-    val secondaryConstructorsMap = mutableMapOf<IrConstructorSymbol, SecondaryCtorPair>()
 
     fun getOperatorByName(name: Name, type: KotlinType) = operatorMap[name]?.get(type)
 

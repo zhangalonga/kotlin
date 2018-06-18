@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.ir.backend.js.lower
 
 import org.jetbrains.kotlin.backend.common.DeclarationContainerLoweringPass
+import org.jetbrains.kotlin.backend.common.runOnFilePostfix
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.impl.LazyClassReceiverParameterDescriptor
 import org.jetbrains.kotlin.ir.IrElement
@@ -31,19 +32,29 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 
-class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransformerVoid(), DeclarationContainerLoweringPass {
+class SecondaryCtorLowering(val context: JsIrBackendContext) {
 
-    private val oldCtorToNewMap = mutableMapOf<IrConstructorSymbol, JsIrBackendContext.SecondaryCtorPair>()
+    data class ConstructorPair(val delegate: IrSimpleFunctionSymbol, val stub: IrSimpleFunctionSymbol)
 
-    override fun lower(irDeclarationContainer: IrDeclarationContainer) {
-        irDeclarationContainer.declarations.transformFlat {
-            if (it is IrClass) {
-                listOf(it) + lowerClass(it)
-            } else null
+    private val oldCtorToNewMap = mutableMapOf<IrConstructorSymbol, ConstructorPair>()
+
+    fun getConstructorProcessorLowering() = object : DeclarationContainerLoweringPass {
+        override fun lower(irDeclarationContainer: IrDeclarationContainer) {
+            irDeclarationContainer.declarations.transformFlat {
+                if (it is IrClass) {
+                    listOf(it) + lowerClass(it)
+                } else null
+            }
         }
+    }::runOnFilePostfix
 
-        context.secondaryConstructorsMap.putAll(oldCtorToNewMap)
-    }
+    fun getConstructorRedirectorLowering() = object : DeclarationContainerLoweringPass {
+        override fun lower(irDeclarationContainer: IrDeclarationContainer) {
+            for (it in irDeclarationContainer.declarations) {
+                it.accept(CallsiteRedirectionTransformer(), null)
+            }
+        }
+    }::runOnFilePostfix
 
     private fun lowerClass(irClass: IrClass): List<IrSimpleFunction> {
         val className = irClass.name.asString()
@@ -75,8 +86,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
                 val newInitConstructor = createInitConstructor(declaration, constructorName)
                 val newCreateConstructor = createCreateConstructor(declaration, newInitConstructor, constructorName)
 
-                oldCtorToNewMap[declaration.symbol] =
-                        JsIrBackendContext.SecondaryCtorPair(newInitConstructor.symbol, newCreateConstructor.symbol)
+                oldCtorToNewMap[declaration.symbol] = ConstructorPair(newInitConstructor.symbol, newCreateConstructor.symbol)
 
                 oldConstructors += declaration
                 newConstructors += newInitConstructor
@@ -189,23 +199,22 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
         }
 
 
-    class CallsiteRedirectionTransformer(val context: JsIrBackendContext) : IrElementTransformer<IrFunction?> {
+    inner class CallsiteRedirectionTransformer : IrElementTransformer<IrFunction?> {
 
         override fun visitFunction(declaration: IrFunction, data: IrFunction?): IrStatement = super.visitFunction(declaration, declaration)
 
-        override fun visitCall(expression: IrCall, ownerFunc: IrFunction?): IrElement {
-            super.visitCall(expression, ownerFunc)
+        override fun visitCall(expression: IrCall, data: IrFunction?): IrElement {
+            super.visitCall(expression, data)
 
             // TODO: figure out the reason why symbol is not bound
             if (expression.symbol.isBound) {
 
-                val target = expression.symbol.owner as IrFunction
+                val target = expression.symbol.owner
 
                 if (target is IrConstructor) {
                     if (!target.descriptor.isPrimary) {
-                        val ctor = context.secondaryConstructorsMap[target.symbol]
+                        val ctor = oldCtorToNewMap[target.symbol]
                         if (ctor != null) {
-
                             return redirectCall(expression, ctor.stub)
                         }
                     }
@@ -215,8 +224,8 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
             return expression
         }
 
-        override fun visitDelegatingConstructorCall(expression: IrDelegatingConstructorCall, ownerFunc: IrFunction?): IrElement {
-            super.visitDelegatingConstructorCall(expression, ownerFunc)
+        override fun visitDelegatingConstructorCall(expression: IrDelegatingConstructorCall, data: IrFunction?): IrElement {
+            super.visitDelegatingConstructorCall(expression, data)
 
             val target = expression.symbol
             if (target.owner.isPrimary) {
@@ -226,7 +235,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
 
             val fromPrimary = ownerFunc!! is IrConstructor
             // TODO: what is `deserialized` constructor?
-            val ctor = context.secondaryConstructorsMap[target] ?: return expression
+            val ctor = oldCtorToNewMap[target] ?: return expression
             val newCall = redirectCall(expression, ctor.delegate)
 
             val readThis = if (fromPrimary) {
@@ -236,7 +245,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
                     IrValueParameterSymbolImpl(LazyClassReceiverParameterDescriptor(target.descriptor.containingDeclaration))
                 )
             } else {
-                IrGetValueImpl(expression.startOffset, expression.endOffset, ownerFunc.valueParameters.last().symbol)
+                IrGetValueImpl(expression.startOffset, expression.endOffset, data.valueParameters.last().symbol)
             }
 
             newCall.putValueArgument(expression.valueArgumentsCount, readThis)
