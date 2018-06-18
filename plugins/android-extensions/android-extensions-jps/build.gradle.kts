@@ -23,7 +23,9 @@ dependencies {
     testCompileOnly(intellijDep("jps-build-test")) { includeJars("jps-build-test") }
     testCompileOnly(intellijDep()) { includeJars("jps-model") }
 
-    testRuntime(intellijPluginDep("android"))
+    if (ideaActive) testCompileOnly(intellijPluginDep("android"))
+    else testRuntime(intellijPluginDep("android"))
+
     testRuntime(intellijPluginDep("smali"))
     testRuntime(intellijDep("jps-build-test"))
     testRuntime(intellijDep("jps-standalone"))

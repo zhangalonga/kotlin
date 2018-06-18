@@ -11,6 +11,8 @@ dependencies {
     compile(projectRuntimeJar(":kotlin-compiler-embeddable"))
     compile(project(":kotlin-script-util"))
     testCompile(projectDist(":kotlin-test:kotlin-test-junit"))
+    testCompileOnly(project(":compiler:cli-common"))
+    testCompileOnly(project(":compiler:daemon-common"))
     testCompile(commonDep("junit:junit"))
     testRuntime(projectDist(":kotlin-reflect"))
 }

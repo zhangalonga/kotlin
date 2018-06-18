@@ -26,9 +26,11 @@ sourceSets {
             srcDir 'test'
         }
     }
-    unsigned {
-        kotlin {
-            srcDir '../unsigned/src'
+    if(!System.properties.'idea.active') {
+        unsigned {
+            kotlin {
+                srcDir '../unsigned/src'
+            }
         }
     }
     coroutines {
@@ -43,7 +45,7 @@ dependencies {
     testCompile project(":kotlin-test:kotlin-test-common")
     testCompile project(":kotlin-test:kotlin-test-annotations-common")
 
-    unsignedCompile sourceSets.main.output
+    if(!System.properties.'idea.active') unsignedCompile sourceSets.main.output
     coroutinesCompile sourceSets.main.output
 }
 
@@ -62,11 +64,13 @@ compileKotlinCommon {
     }
 }
 
-compileUnsignedKotlinCommon {
-    kotlinOptions {
-        freeCompilerArgs += [
-                "-XXLanguage:+InlineClasses"
-        ]
+if(!System.properties.'idea.active') {
+    compileUnsignedKotlinCommon {
+        kotlinOptions {
+            freeCompilerArgs += [
+                    "-XXLanguage:+InlineClasses"
+            ]
+        }
     }
 }
 

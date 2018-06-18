@@ -10,6 +10,7 @@ dependencies {
     compile(projectDist(":kotlin-stdlib"))
     compile(project(":kotlin-script-runtime"))
     compileOnly(project(":compiler:cli"))
+    compileOnly(project(":compiler:cli-common"))
     compileOnly(project(":compiler:daemon-common"))
     compile(projectRuntimeJar(":kotlin-daemon-client"))
     compileOnly("com.jcabi:jcabi-aether:0.10.1")

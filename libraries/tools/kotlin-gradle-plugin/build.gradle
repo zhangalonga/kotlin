@@ -32,6 +32,11 @@ pill {
 }
 
 dependencies {
+    if(System.properties.'idea.active') {
+        compileOnly "kotlin.build.custom.deps:intellij-core:${rootProject.ext["versions.intellijSdk"]}"
+        compileOnly project(':compiler:daemon')
+    }
+
     compile project(':kotlin-gradle-plugin-api')
     compileOnly project(':compiler')
     compileOnly project(':compiler:incremental-compilation-impl')
