@@ -48,7 +48,13 @@ abstract class BasicIrBoxTest(
             "libraries/stdlib/js/irRuntime/exceptions.kt",
             "libraries/stdlib/js/irRuntime/annotations.kt",
             "libraries/stdlib/js/irRuntime/internalAnnotations.kt",
-            "libraries/stdlib/js/irRuntime/typeCheckUtils.kt"
+            "libraries/stdlib/js/irRuntime/typeCheckUtils.kt",
+            "libraries/stdlib/js/irRuntime/coroutines.kt",
+            "libraries/stdlib/js/irRuntime/coroutineIntrinsics.kt",
+            "libraries/stdlib/js/irRuntime/coroutinesInternal.kt",
+            "libraries/stdlib/js/irRuntime/defaultArguments.kt",
+            "libraries/stdlib/js/irRuntime/SuspendFunction.kt",
+            "libraries/stdlib/js/irRuntime/SuspendFunctions.kt"
         ).map { createPsiFile(it) }
 
         val filesToIgnore = listOf(

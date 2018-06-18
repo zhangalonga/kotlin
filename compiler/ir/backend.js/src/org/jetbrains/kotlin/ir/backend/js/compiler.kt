@@ -81,6 +81,7 @@ fun JsIrBackendContext.lower(moduleFragment: IrModuleFragment) {
     moduleFragment.files.forEach(LocalDeclarationsLowering(this)::runOnFilePostfix)
     moduleFragment.files.forEach(InnerClassesLowering(this)::runOnFilePostfix)
     moduleFragment.files.forEach(InnerClassConstructorCallsLowering(this)::runOnFilePostfix)
+    moduleFragment.files.forEach(SuspendFunctionsLowering(this)::runOnFilePostfix)
     moduleFragment.files.forEach(PropertiesLowering()::lower)
     moduleFragment.files.forEach(InitializersLowering(this, JsLoweredDeclarationOrigin.CLASS_STATIC_INITIALIZER, false)::runOnFilePostfix)
     moduleFragment.files.forEach(MultipleCatchesLowering(this)::lower)

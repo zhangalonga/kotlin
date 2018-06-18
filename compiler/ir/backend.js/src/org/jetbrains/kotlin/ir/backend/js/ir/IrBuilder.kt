@@ -5,17 +5,26 @@
 
 package org.jetbrains.kotlin.ir.backend.js.ir
 
-import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
+import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOriginImpl
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
+import org.jetbrains.kotlin.ir.declarations.impl.IrPropertyImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrValueParameterImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrVariableImpl
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.*
+import org.jetbrains.kotlin.ir.symbols.impl.IrTypeParameterSymbolImpl
+import org.jetbrains.kotlin.ir.util.SymbolTable
+import org.jetbrains.kotlin.ir.util.createParameterDeclarations
+import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.resolve.OverridingStrategy
+import org.jetbrains.kotlin.resolve.OverridingUtil
 import org.jetbrains.kotlin.types.KotlinType
+import java.lang.reflect.Proxy
 
 object JsIrBuilder {
 
@@ -96,4 +105,168 @@ object JsIrBuilder {
     fun buildBoolean(type: KotlinType, v: Boolean) = IrConstImpl.boolean(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, v)
     fun buildInt(type: KotlinType, v: Int) = IrConstImpl.int(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, v)
     fun buildString(type: KotlinType, s: String) = IrConstImpl.string(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, s)
+}
+
+
+object SetDeclarationsParentVisitor : IrElementVisitor<Unit, IrDeclarationParent> {
+    override fun visitElement(element: IrElement, data: IrDeclarationParent) {
+        if (element !is IrDeclarationParent) {
+            element.acceptChildren(this, data)
+        }
+    }
+
+    override fun visitDeclaration(declaration: IrDeclaration, data: IrDeclarationParent) {
+        declaration.parent = data
+        super.visitDeclaration(declaration, data)
+    }
+}
+
+fun IrDeclarationContainer.addChildren(declarations: List<IrDeclaration>) {
+    declarations.forEach { this.addChild(it) }
+}
+
+fun IrDeclarationContainer.addChild(declaration: IrDeclaration) {
+    this.declarations += declaration
+    declaration.accept(SetDeclarationsParentVisitor, this)
+}
+
+fun IrTypeParameter.setSupers(symbolTable: SymbolTable) {
+    assert(this.superClassifiers.isEmpty())
+    this.descriptor.upperBounds.mapNotNullTo(this.superClassifiers) {
+        it.constructor.declarationDescriptor?.let {
+            if (it is TypeParameterDescriptor) {
+                IrTypeParameterSymbolImpl(it) // Workaround for deserialized inline functions
+            } else {
+                symbolTable.referenceClassifier(it)
+            }
+        }
+    }
+}
+
+fun IrClass.simpleFunctions(): List<IrSimpleFunction> = this.declarations.flatMap {
+    when (it) {
+        is IrSimpleFunction -> listOf(it)
+        is IrProperty -> listOfNotNull(it.getter as IrSimpleFunction?, it.setter as IrSimpleFunction?)
+        else -> emptyList()
+    }
+}
+
+fun IrClass.setSuperSymbols(supers: List<IrClass>) {
+    assert(this.superDescriptors().toSet() == supers.map { it.descriptor }.toSet())
+    assert(this.superClasses.isEmpty())
+    supers.mapTo(this.superClasses) { it.symbol }
+
+    val superMembers = supers.flatMap {
+        it.simpleFunctions()
+    }.associateBy { it.descriptor }
+
+    this.simpleFunctions().forEach {
+        assert(it.overriddenSymbols.isEmpty())
+
+        it.descriptor.overriddenDescriptors.mapTo(it.overriddenSymbols) {
+            val superMember = superMembers[it.original] ?: error(it.original)
+            superMember.symbol
+        }
+    }
+}
+
+fun IrSimpleFunction.setOverrides(symbolTable: SymbolTable) {
+    assert(this.overriddenSymbols.isEmpty())
+
+    this.descriptor.overriddenDescriptors.mapTo(this.overriddenSymbols) {
+        symbolTable.referenceSimpleFunction(it.original)
+    }
+
+    this.typeParameters.forEach { it.setSupers(symbolTable) }
+}
+
+
+private fun IrClass.superDescriptors() =
+    this.descriptor.typeConstructor.supertypes.map { it.constructor.declarationDescriptor as ClassDescriptor }
+
+fun IrClass.setSuperSymbols(symbolTable: SymbolTable) {
+    assert(this.superClasses.isEmpty())
+    this.superDescriptors().mapTo(this.superClasses) { symbolTable.referenceClass(it) }
+    this.simpleFunctions().forEach {
+        it.setOverrides(symbolTable)
+    }
+    this.typeParameters.forEach {
+        it.setSupers(symbolTable)
+    }
+}
+
+private fun createFakeOverride(descriptor: CallableMemberDescriptor, startOffset: Int, endOffset: Int): IrDeclaration {
+
+    fun FunctionDescriptor.createFunction(): IrFunction = IrFunctionImpl(
+        startOffset, endOffset,
+        IrDeclarationOrigin.FAKE_OVERRIDE, this
+    ).apply {
+        createParameterDeclarations()
+    }
+
+    return when (descriptor) {
+        is FunctionDescriptor -> descriptor.createFunction()
+        is PropertyDescriptor ->
+            IrPropertyImpl(startOffset, endOffset, IrDeclarationOrigin.FAKE_OVERRIDE, descriptor).apply {
+                // TODO: add field if getter is missing?
+                getter = descriptor.getter?.createFunction() as IrSimpleFunction?
+                setter = descriptor.setter?.createFunction() as IrSimpleFunction?
+            }
+        else -> TODO(descriptor.toString())
+    }
+}
+
+
+fun IrClass.setSuperSymbolsAndAddFakeOverrides(supers: List<IrClass>) {
+    val overriddenSuperMembers = this.declarations.map { it.descriptor }
+        .filterIsInstance<CallableMemberDescriptor>().flatMap { it.overriddenDescriptors.map { it.original } }
+
+    val unoverriddenSuperMembers = supers.flatMap {
+        it.declarations.mapNotNull {
+            when (it) {
+                is IrSimpleFunction -> it.descriptor
+                is IrProperty -> it.descriptor
+                else -> null
+            }
+        }
+    } - overriddenSuperMembers
+
+    val irClass = this
+
+    val overridingStrategy = object : OverridingStrategy() {
+        override fun addFakeOverride(fakeOverride: CallableMemberDescriptor) {
+            irClass.addChild(createFakeOverride(fakeOverride, startOffset, endOffset))
+        }
+
+        override fun inheritanceConflict(first: CallableMemberDescriptor, second: CallableMemberDescriptor) {
+            error("inheritance conflict in synthesized class ${irClass.descriptor}:\n  $first\n  $second")
+        }
+
+        override fun overrideConflict(fromSuper: CallableMemberDescriptor, fromCurrent: CallableMemberDescriptor) {
+            error("override conflict in synthesized class ${irClass.descriptor}:\n  $fromSuper\n  $fromCurrent")
+        }
+    }
+
+    unoverriddenSuperMembers.groupBy { it.name }.forEach { (name, members) ->
+        OverridingUtil.generateOverridesInFunctionGroup(
+            name,
+            members,
+            emptyList(),
+            this.descriptor,
+            overridingStrategy
+        )
+    }
+
+    this.setSuperSymbols(supers)
+}
+
+inline fun <reified T> stub(name: String): T {
+    return Proxy.newProxyInstance(T::class.java.classLoader, arrayOf(T::class.java)) {
+            _ /* proxy */, method, _ /* methodArgs */ ->
+        if (method.name == "toString" && method.parameterCount == 0) {
+            "${T::class.simpleName} stub for $name"
+        } else {
+            error("${T::class.simpleName}.${method.name} is not supported for $name")
+        }
+    } as T
 }

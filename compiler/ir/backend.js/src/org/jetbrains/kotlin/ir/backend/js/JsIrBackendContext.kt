@@ -50,9 +50,31 @@ class JsIrBackendContext(
     private val internalPackageName = FqName("kotlin.js")
     private val internalPackage = module.getPackage(internalPackageName)
 
+
+    private val coroutinePackageNameSrting = "kotlin.coroutines.experimental"
+    private val intrinsicsPackageName = Name.identifier("intrinsics")
+    private val COROUTINE_SUSPENDED_NAME = Name.identifier("COROUTINE_SUSPENDED")
+    private val COROUTINE_IMPL_NAME = Name.identifier("CoroutineImpl")
+
+    private val coroutinePackageName = FqName(coroutinePackageNameSrting)
+    private val coroutineIntrinsicsPackageName = coroutinePackageName.child(intrinsicsPackageName)
+
+    private val coroutinePackage = module.getPackage(coroutinePackageName)
+    private val coroutineIntrinsicsPackage = module.getPackage(coroutineIntrinsicsPackageName)
+
     val intrinsics = JsIntrinsics(module, irBuiltIns, this)
 
     private val operatorMap = referenceOperators()
+
+    val functions = (0..22)
+        .map { symbolTable.referenceClass(builtIns.getFunction(it)) }
+
+    val kFunctions by lazy {
+        (0..22).map { symbolTable.referenceClass(reflectionTypes.getKFunction(it)) }
+    }
+
+    val suspendFunctions = (0..22)
+        .map { symbolTable.referenceClass(builtIns.getSuspendFunction(it)) }
 
     fun getOperatorByName(name: Name, type: KotlinType) = operatorMap[name]?.get(type)
 
@@ -62,11 +84,12 @@ class JsIrBackendContext(
         override val symbols = object : Symbols<CommonBackendContext>(this@JsIrBackendContext, symbolTable) {
 
             override fun calc(initializer: () -> IrClassSymbol): IrClassSymbol {
+                val v = lazy { initializer() }
                 return object : IrClassSymbol {
-                    override val owner: IrClass get() = TODO("not implemented")
-                    override val isBound: Boolean get() = TODO("not implemented")
-                    override fun bind(owner: IrClass) = TODO("not implemented")
-                    override val descriptor: ClassDescriptor get() = TODO("not implemented")
+                    override val owner: IrClass get() = v.value.owner
+                    override val isBound: Boolean get() = v.value.isBound
+                    override fun bind(owner: IrClass) = v.value.bind(owner)
+                    override val descriptor: ClassDescriptor get() = v.value.descriptor
                 }
             }
 
@@ -94,10 +117,14 @@ class JsIrBackendContext(
                 get() = TODO("not implemented")
             override val copyRangeTo: Map<ClassDescriptor, IrSimpleFunctionSymbol>
                 get() = TODO("not implemented")
-            override val coroutineImpl: IrClassSymbol
-                get() = TODO("not implemented")
-            override val coroutineSuspendedGetter: IrSimpleFunctionSymbol
-                get() = TODO("not implemented")
+            override val coroutineImpl = symbolTable.referenceClass(
+                getClass(
+                    coroutinePackageName.child(COROUTINE_IMPL_NAME)
+                )
+            )
+            override val coroutineSuspendedGetter = symbolTable.referenceSimpleFunction(
+                coroutineIntrinsicsPackage.memberScope.getContributedVariables(COROUTINE_SUSPENDED_NAME, NoLookupLocation.FROM_BACKEND).single().getter!!
+            )
         }
 
         override fun shouldGenerateHandlerParameterForDefaultBodyFun() = true
@@ -127,6 +154,8 @@ class JsIrBackendContext(
     override fun getClass(fqName: FqName) = findClass(module.getPackage(fqName.parent()).memberScope, fqName.shortName())
 
     override fun getInternalFunctions(name: String) = findFunctions(internalPackage.memberScope, name)
+
+    fun getFunctions(fqName: FqName) = findFunctions(module.getPackage(fqName.parent()).memberScope, fqName.shortName())
 
     override fun log(message: () -> String) {
         /*TODO*/
