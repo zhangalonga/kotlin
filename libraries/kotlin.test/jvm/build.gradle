@@ -11,8 +11,10 @@ pill {
     importAsLibrary = true
 }
 
-sourceSets {
-    java9
+if(!System.properties.'idea.active') {
+    sourceSets {
+        java9
+    }
 }
 
 dependencies {

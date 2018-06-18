@@ -10,11 +10,11 @@ sourceSets {
             srcDir "${rootDir}/core/reflection.jvm/src"
         }
     }
-    java9
+    if(!System.properties.'idea.active') java9
 }
 
 dependencies {
-    compile project(path: ':kotlin-stdlib', configuration: 'distJar')
+    compile project(path: ':kotlin-stdlib')
     compileOnly project(':core:descriptors')
     compileOnly project(':core:descriptors.jvm')
     compileOnly project(':core:deserialization')

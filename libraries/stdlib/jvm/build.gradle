@@ -30,6 +30,9 @@ sourceSets {
             srcDir "${rootDir}/core/builtins/src"
             srcDir 'runtime'
             srcDir 'src'
+            if(System.properties.'idea.active') {
+                srcDir "${rootDir}/core/runtime.jvm/src"
+            }
         }
     }
     experimental {
@@ -48,9 +51,11 @@ sourceSets {
             srcDir 'test'
         }
     }
-    java9 {
-        java {
-            srcDir 'java9'
+    if(!System.properties.'idea.active') {
+        java9 {
+            java {
+                srcDir 'java9'
+            }
         }
     }
     unsigned {

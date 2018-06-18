@@ -28,9 +28,11 @@ sourceSets {
             }
         }
     }
-    java9 {
-        java {
-            srcDir 'java9'
+    if(!System.properties.'idea.active') {
+        java9 {
+            java {
+                srcDir 'java9'
+            }
         }
     }
 }
