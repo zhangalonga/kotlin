@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.idea.configuration
 
+import com.intellij.facet.FacetManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.psi.PsiFile
@@ -41,6 +42,15 @@ class KotlinGradleModuleConfigurator : KotlinWithGradleConfigurator() {
         if (forKotlinDsl) "kotlin(\"jvm\")" else "id 'org.jetbrains.kotlin.jvm'"
 
     override fun getJvmTarget(sdk: Sdk?, version: String) = getDefaultJvmTarget(sdk, version)?.description
+
+    override fun isApplicable(module: Module): Boolean {
+        return super.isApplicable(module) && !module.isAndroidModule()
+    }
+
+    private fun Module.isAndroidModule(): Boolean {
+        val facets = FacetManager.getInstance(this).allFacets
+        return facets.any { it.javaClass.simpleName == "AndroidFacet" }
+    }
 
     override fun configureModule(
         module: Module,
