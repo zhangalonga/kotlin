@@ -24,6 +24,29 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isDynamic
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
+/**
+ * Since JS does not support multiple catch blocks by default we should replace them with similar `when` statement, so
+ *
+ * try {}
+ * catch (ex1: Ex1) { catch1(ex1) }
+ * catch (ex2: Ex2) { catch2(ex2) }
+ * catch (ex3: Ex3) { catch3(ex3) }
+ * [catch (exd: dynamic) { catch_dynamic(exd) } ]
+ * finally {}
+ *
+ * is converted into
+ *
+ * try {}
+ * catch (ex: Ex = LCA(Ex1, Ex2, Ex3) {
+ *   when (ex) {
+ *     ex is Ex1 -> catch1((Ex1)ex)
+ *     ex is Ex2 -> catch2((Ex2)ex)
+ *     ex is Ex3 -> catch3((Ex3)ex)
+ *     else throw ex [ | catch_dynamic(ex) ]
+ *   }
+ * }
+ * finally {}
+ */
 
 class MultipleCatchesLowering(val context: JsIrBackendContext) : FileLoweringPass {
     val litTrue = JsIrBuilder.buildBoolean(context.irBuiltIns.bool, true)
