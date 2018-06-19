@@ -78,6 +78,12 @@ class JpsCompatiblePlugin : Plugin<Project> {
         project.configurations.create("jpsTest")
 
         if (project == project.rootProject) {
+            project.tasks.create("generateJpsArtifacts") {
+                doLast {
+                    generateAllJpsArtifacts(project, project)
+                }
+            }
+
             project.tasks.create("pill") {
                 doLast { pill(project) }
 
