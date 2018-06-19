@@ -34,6 +34,8 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.sun.jdi.ClassType
 import com.sun.jdi.Value
 import org.jetbrains.eval4j.jdi.asValue
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.types.KotlinType
@@ -84,7 +86,7 @@ abstract class KotlinRuntimeTypeEvaluator(
             val myValue = value.asValue()
             var psiClass = myValue.asmType.getClassDescriptor(scope)
             if (psiClass != null) {
-                return psiClass.defaultType
+                return psiClass.defaultTypeInReadAction
             }
 
             val type = value.type()
@@ -93,19 +95,22 @@ abstract class KotlinRuntimeTypeEvaluator(
                 if (superclass != null && CommonClassNames.JAVA_LANG_OBJECT != superclass.name()) {
                     psiClass = AsmType.getType(superclass.signature()).getClassDescriptor(scope)
                     if (psiClass != null) {
-                        return psiClass.defaultType
+                        return psiClass.defaultTypeInReadAction
                     }
                 }
 
                 for (interfaceType in type.interfaces()) {
                     psiClass = AsmType.getType(interfaceType.signature()).getClassDescriptor(scope)
                     if (psiClass != null) {
-                        return psiClass.defaultType
+                        return psiClass.defaultTypeInReadAction
                     }
                 }
             }
             return null
         }
+
+        val ClassDescriptor.defaultTypeInReadAction
+            get() = runReadAction { defaultType }
     }
 }
 
