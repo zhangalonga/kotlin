@@ -37,8 +37,7 @@ class CoroutinesTestModel(
         val filePath = KotlinTestUtils.getFilePath(file) + if (file.isDirectory) "/" else ""
         val packageName = if (isLanguageVersion1_3) "kotlin.coroutines" else "kotlin.coroutines.experimental"
 
-        p.println("String fileName = KotlinTestUtils.navigationMetadata(\"", filePath, "\");")
-        p.println(RunTestMethodWithPackageReplacementModel.METHOD_NAME, "(fileName, \"$packageName\");")
+        p.println(RunTestMethodWithPackageReplacementModel.METHOD_NAME, "(\"$filePath\", \"$packageName\");")
     }
 }
 
