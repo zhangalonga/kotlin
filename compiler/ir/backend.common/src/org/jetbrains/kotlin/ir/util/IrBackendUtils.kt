@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.ir.util
 
 import org.jetbrains.kotlin.backend.common.atMostOne
-import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
@@ -28,11 +27,17 @@ private fun IrClassSymbol.getPropertyDeclaration(name: String) =
         .atMostOne { it.descriptor.name == Name.identifier(name) }
 
 fun IrClassSymbol.getPropertyGetter(name: String): IrFunctionSymbol? =
-    this.getFunction("<get-$name>")?.symbol
+    this.getPropertyDeclaration(name)?.getter?.symbol
 
 fun IrClassSymbol.getPropertySetter(name: String): IrFunctionSymbol? =
-    this.getFunction("<set-$name>")?.symbol
+    this.getPropertyDeclaration(name)?.setter?.symbol
 
-fun IrClassSymbol.getFunction(name: String) =
-        this.owner.declarations.filterIsInstance<IrFunction>()
-            .atMostOne { it.descriptor.name.asString() == name }
+//fun IrClassSymbol.getPropertyGetter(name: String): IrFunctionSymbol? =
+//    this.getFunction("<get-$name>")?.symbol
+//
+//fun IrClassSymbol.getPropertySetter(name: String): IrFunctionSymbol? =
+//    this.getFunction("<set-$name>")?.symbol
+//
+//fun IrClassSymbol.getFunction(name: String) =
+//        this.owner.declarations.filterIsInstance<IrFunction>()
+//            .atMostOne { it.descriptor.name.asString() == name }

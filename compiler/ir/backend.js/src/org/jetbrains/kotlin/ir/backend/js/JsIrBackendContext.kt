@@ -74,7 +74,7 @@ class JsIrBackendContext(
     }
 
     val suspendFunctions = (0..22)
-        .map { symbolTable.referenceClass(builtIns.getSuspendFunction(it)) }
+        .map { symbolTable.referenceClass(getClass(FqName("kotlin.SuspendFunction$it"))) }
 
     fun getOperatorByName(name: Name, type: KotlinType) = operatorMap[name]?.get(type)
 
