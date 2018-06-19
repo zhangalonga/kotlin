@@ -45,10 +45,12 @@ open class IndexOutOfBoundsException(message: String?, cause: Throwable?) : Runt
 
 open class AssertionError(message: String?, cause: Throwable?) : Exception(message, cause) {
     constructor() : this(null, null)
-    constructor(message: String?) : this(message, null)
-    constructor(cause: Throwable?) : this(null, cause)
+    constructor(message: Any?) : this(message?.toString(), message as? Throwable)
+
 }
 
+
+// TODO: fix function names to satisfy style convention (depends on built-in names)
 fun THROW_CCE() {
     throw ClassCastException()
 }
