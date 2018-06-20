@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.js.backend.ast.*
 
+@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
 class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsStatement, JsGenerationContext> {
 
     override fun visitBlockBody(body: IrBlockBody, context: JsGenerationContext): JsStatement {
@@ -94,7 +95,37 @@ class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsSta
     override fun visitDoWhileLoop(loop: IrDoWhileLoop, context: JsGenerationContext): JsStatement {
         //TODO what if body null?
         val label = context.getNameForLoop(loop)
-        val loopStatement = JsDoWhile(loop.condition.accept(IrElementToJsExpressionTransformer(), context), loop.body?.accept(this, context))
+        val loopStatement =
+            JsDoWhile(loop.condition.accept(IrElementToJsExpressionTransformer(), context), loop.body?.accept(this, context))
         return label?.let { JsLabel(it, loopStatement) } ?: loopStatement
     }
+
+//    override fun visitSuspendableRoot(expression: IrSuspendableRoot, context: JsGenerationContext): JsStatement {
+//        val resumePoints = mutableListOf<Pair<Int, JsStatement>>()
+//        val coroutineContext = context.newSuspendableContext(resumePoints)
+//        val label = coroutineContext.coroutineLabel
+//
+//        val dispatchExpression = expression.suspensionPointId.accept(IrElementToJsExpressionTransformer(), context)
+//
+//        val startId = context.nextState()
+//
+//        val body = expression.result.accept(this, coroutineContext)
+//        resumePoints.add(0, Pair(startId, body))
+//
+//        val defaultStatement = JsDefault().apply { statements += JsInvocation(JsNameRef("Error")).makeStmt() }
+//
+//        val cases = resumePoints.map { (id, statement) ->
+//            val case = JsCase()
+//            case.caseExpression = JsIntLiteral(id)
+//            case.statements += statement
+//            case
+//        }
+//
+//        val stateSwitch = JsSwitch(dispatchExpression, cases + defaultStatement)
+//
+//        val rootLoop = JsDoWhile(JsBooleanLiteral(true), stateSwitch)
+//
+//        return JsLabel(label, rootLoop)
+//        TODO()
+//    }
 }
