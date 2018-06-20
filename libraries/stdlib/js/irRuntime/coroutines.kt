@@ -105,25 +105,28 @@ object EmptyContinuationX: Continuation<Unit> {
 
 //@JsName("CoroutineImpl")
 internal abstract class CoroutineImpl(private val completion: Continuation<Any?>) : Continuation<Any?> {
-    protected var state = 0
-    protected var exceptionState = 0
-    protected var result: Any? = null
-    protected var exception: Throwable? = null
-    var label: Any? = null
+//    protected var state = 0
+//    protected var exceptionState = 0
+//    protected var result: Any? = null
+//    protected var exception: Throwable? = null
+
+    protected var label: Int = 0
 //    protected var finallyPath: Array<Int>? = null
 
     public override val context: CoroutineContext = completion.context
 
+    val facade: Continuation<Any?> = this
+
 //    val facade: Continuation<Any?> = context[ContinuationInterceptor]?.interceptContinuation(this) ?: this
 
     override fun resume(value: Any?) {
-        result = value
+//        result = value
         doResumeWrapper()
     }
 
     override fun resumeWithException(exception: Throwable) {
-        state = exceptionState
-        this.exception = exception
+//        state = exceptionState
+//        this.exception = exception
         doResumeWrapper()
     }
 
@@ -142,7 +145,64 @@ internal abstract class CoroutineImpl(private val completion: Continuation<Any?>
     }
 }
 
+/*
+abstract internal class CoroutineImpl(
+    protected var completion: Continuation<Any?>?
+) : Continuation<Any?> {
+
+    // label == -1 when coroutine cannot be started (it is just a factory object) or has already finished execution
+    // label == 0 in initial part of the coroutine
+    protected var label: Int
+
+    private val _context: CoroutineContext? = completion?.context
+
+    override val context: CoroutineContext
+        get() = _context!!
+
+    private var _facade: Continuation<Any?>? = null
+
+    val facade: Continuation<Any?> get() {
+        if (_facade == null) _facade = interceptContinuationIfNeeded(_context!!, this)
+        return _facade!!
+    }
+
+    override fun resume(value: Any?) {
+        processBareContinuationResume(completion!!) {
+            doResume(value, null)
+        }
+    }
+
+    override fun resumeWithException(exception: Throwable) {
+        processBareContinuationResume(completion!!) {
+            doResume(null, exception)
+        }
+    }
+
+    protected abstract fun doResume(data: Any?, exception: Throwable?): Any?
+
+    open fun create(completion: Continuation<*>): Continuation<Unit> {
+        throw IllegalStateException("create(Continuation) has not been overridden")
+    }
+
+    open fun create(value: Any?, completion: Continuation<*>): Continuation<Unit> {
+        throw IllegalStateException("create(Any?;Continuation) has not been overridden")
+    }
+}*/
+
 private val UNDECIDED: Any? = Any()
 private val RESUMED: Any? = Any()
 
 private class Fail(val exception: Throwable)
+
+@kotlin.internal.InlineOnly
+internal inline fun processBareContinuationResume(completion: Continuation<*>, block: () -> Any?) {
+    try {
+        val result = block()
+        if (result !== COROUTINE_SUSPENDED) {
+            @Suppress("UNCHECKED_CAST")
+            (completion as Continuation<Any?>).resume(result)
+        }
+    } catch (t: Throwable) {
+        completion.resumeWithException(t)
+    }
+}

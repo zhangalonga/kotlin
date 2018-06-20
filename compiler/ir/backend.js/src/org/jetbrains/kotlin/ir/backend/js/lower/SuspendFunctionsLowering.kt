@@ -743,6 +743,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                         }
                     }
 
+                    // Fix up IR
                     originalBody.transformChildrenVoid(object : IrElementTransformerVoid() {
 
                         private val thisReceiver = function.dispatchReceiverParameter!!.symbol
@@ -806,6 +807,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                             return suspensionPoint
                         }
                     })
+
                     val statements = (originalBody as IrBlockBody).statements
                     +irVar(suspendResult, null)
                     +IrSuspendableExpressionImpl(
@@ -1003,7 +1005,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                         }
                         expression.isSuspendCall -> {
                             val lastChild = newChildren.last()
-                            if (lastChild != null) {
+                            if (lastChild != null) { // зачем сравнивать на 0? Почему просто не найти последний не-нулевой?
                                 // Save state as late as possible.
                                 calledSaveState = true
                                 newChildren[numberOfChildren - 1] =
@@ -1053,7 +1055,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                             startOffset                = startOffset,
                             endOffset                  = endOffset,
                             type                       = context.builtIns.nullableAnyType,
-                            suspensionPointIdParameter = irVar(suspensionPointIdParameter, null),
+                            suspensionPointIdParameter = irVar(suspensionPointIdParameter, null), // зачем нужна эта декларация?
                             result                     = irBlock(startOffset, endOffset) {
                                 if (!calledSaveState)
                                     +irCall(saveStateSymbol)
@@ -1063,7 +1065,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                             },
                             resumeResult               = irBlock(startOffset, endOffset) {
                                 +irCall(restoreStateSymbol)
-                                +irThrowIfNotNull(exceptionArgument)
+                                +irThrowIfNotNull(exceptionArgument) // зачем здесь это проверять?
                                 +irGet(dataArgument)
                             })
                     val expressionResult = when {

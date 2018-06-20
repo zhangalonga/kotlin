@@ -233,7 +233,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
                 return expression
             }
 
-            val fromPrimary = ownerFunc!! is IrConstructor
+            val fromPrimary = data!! is IrConstructor
             // TODO: what is `deserialized` constructor?
             val ctor = oldCtorToNewMap[target] ?: return expression
             val newCall = redirectCall(expression, ctor.delegate)
