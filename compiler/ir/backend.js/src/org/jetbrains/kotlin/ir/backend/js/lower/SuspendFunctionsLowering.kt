@@ -55,6 +55,12 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
     private val builtCoroutines = mutableMapOf<FunctionDescriptor, BuiltCoroutine>()
     private val suspendLambdas = mutableMapOf<FunctionDescriptor, IrFunctionReference>()
 
+    data class StateID(val id: Int)
+
+    data class State(val block: IrBlock, val id: StateID)
+
+    data class StateMachineResult(val states: List<State>)
+
     override fun lower(irDeclarationContainer: IrDeclarationContainer) {
         markSuspendLambdas(irDeclarationContainer)
         irDeclarationContainer.declarations.transformFlat {
@@ -690,6 +696,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 val originalBody = irFunction.body!!
                 val startOffset = irFunction.startOffset
                 val endOffset = irFunction.endOffset
+                val backendContext = context
                 val function = IrFunctionImpl(
                         startOffset = startOffset,
                         endOffset   = endOffset,
@@ -820,21 +827,236 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                     })
 
                     val statements = (originalBody as IrBlockBody).statements
+                    val newBody = IrBlockImpl(startOffset, endOffset, context.irBuiltIns.unit, null, statements)
+                        .transform(StateMachineGenerator(), null)
+
                     +irThrowIfNotNull(exceptionArgument)
                     +irVar(suspendResult, irGet(dataArgument))
                     +irVar(suspendState, irCall(coroutineImplLabelGetterSymbol).apply {
                         dispatchReceiver = irGet(function.dispatchReceiverParameter!!.symbol)
                     })
                     +suspendableRoot.apply {
-                        body = irBlock(startOffset, endOffset) {
-                            statements.forEach { +it }
-                        }
+                        body = newBody as IrExpression
                         condition = JsIrBuilder.buildBoolean(context.irBuiltIns.bool, true)
                     }
                 }
+
                 return function
             }
         }
+
+
+
+        private fun buildStateMachine(body: IrBlock, function: IrFunction) {
+            data class LoopState(val loopHead: IrBlock, val loopExit: IrBlock)
+
+            body.transformChildrenVoid(object : IrElementTransformerVoid() {
+                override fun visitCall(expression: IrCall): IrExpression {
+                    expression.transformChildrenVoid(this)
+                    return IrSuspensionPointImpl(expression)
+                }
+            })
+
+            val suspendableNodes = mutableListOf<IrElement>()
+            val states = mutableListOf<IrBlock>()
+            var currentState: IrBlock = JsIrBuilder.buildBlock(context.builtIns.unitType)
+
+            body.acceptVoid(object : IrElementVisitorVoid {
+
+                private var hasSuspendableChildren = false
+
+                override fun visitElement(element: IrElement) {
+                    val current = hasSuspendableChildren
+                    hasSuspendableChildren = false
+                    element.acceptChildrenVoid(this)
+                    if (hasSuspendableChildren) {
+                        suspendableNodes += element
+                    }
+                    hasSuspendableChildren = hasSuspendableChildren or current
+                }
+
+                override fun visitSuspensionPoint(expression: IrSuspensionPoint) {
+                    suspendableNodes += expression
+                    hasSuspendableChildren = true
+                }
+            })
+
+            body.acceptVoid(object : IrElementVisitorVoid {
+                override fun visitElement(element: IrElement) {
+                    if (element in suspendableNodes) {
+                        element.acceptChildrenVoid(this)
+                    }
+
+                }
+
+                val loopMap = mutableMapOf<IrLoop, LoopState>()
+                private val unit = context.builtIns.unitType
+                private val booleanNotSymbol = context.irBuiltIns.booleanNotSymbol
+
+                private fun newState() {
+                    val newState = JsIrBuilder.buildBlock(context.builtIns.unitType)
+                    currentState.statements += stateDispatch(newState)
+                    states += currentState
+                    currentState = newState
+                }
+
+
+                override fun visitWhileLoop(loop: IrWhileLoop) {
+                    assert(loop in suspendableNodes)
+
+                    val condtion = loop.condition
+                    val body = loop.body as IrBody
+
+                    newState()
+
+                    val loopHeadState = currentState
+                    val loopExitState = JsIrBuilder.buildBlock(context.builtIns.unitType)
+
+                    loopMap.put(loop, LoopState(loopHeadState, loopExitState))
+
+                    condtion.acceptVoid(this)
+                    val conditionValue = currentState.statements.last() as IrExpression
+
+                    val exitCond = JsIrBuilder.buildCall(booleanNotSymbol).apply { putValueArgument(0, conditionValue) }
+                    val irBreak = stateDispatch(loopExitState)
+                    val ifNode = JsIrBuilder.buildIfElse(unit, exitCond, irBreak)
+                    currentState.statements[currentState.statements.size - 1] = ifNode
+
+                    body.acceptVoid(this)
+
+                    currentState.statements += stateDispatch(loopHeadState)
+
+                    loopMap.remove(loop)
+
+                    states += currentState
+                    currentState = loopExitState
+                }
+
+                private fun stateDispatch(targetState: IrBlock): IrWhen {
+                    TODO("build node to jump loop out")
+                }
+
+                override fun visitDoWhileLoop(loop: IrDoWhileLoop) {
+                    assert(loop in suspendableNodes)
+
+                    val condtion = loop.condition
+                    val body = loop.body as IrBody
+
+                    newState()
+
+                    val loopHeadState = currentState
+                    val loopExitState = JsIrBuilder.buildBlock(context.builtIns.unitType)
+
+                    loopMap.put(loop, LoopState(loopHeadState, loopExitState))
+
+                    body.acceptVoid(this)
+
+                    condtion.acceptVoid(this)
+
+                    val conditionValue = currentState.statements.last() as IrExpression
+
+                    val irContinue = stateDispatch(loopHeadState)
+                    val ifNode = JsIrBuilder.buildIfElse(unit, conditionValue, irContinue)
+                    currentState.statements[currentState.statements.size - 1] = ifNode
+
+                    loopMap.remove(loop)
+
+                    currentState.statements += stateDispatch(loopExitState)
+                    states += currentState
+                    currentState = loopExitState
+                }
+
+                override fun visitSuspensionPoint(expression: IrSuspensionPoint) {
+                    currentState.statements += expression
+                    newState()
+                }
+
+                private fun processStatements(statements: Collection<IrStatement>) {
+                    for (stmt in statements) {
+                        if (stmt in suspendableNodes) {
+                            stmt.acceptVoid(this)
+                        } else {
+                            currentState.statements += stmt
+                        }
+                    }
+                }
+
+                override fun visitContainerExpression(expression: IrContainerExpression) {
+
+                    if (expression !in suspendableNodes) {
+                        currentState.statements += expression
+                        return
+                    }
+
+                    processStatements(expression.statements)
+                }
+
+                override fun visitBlockBody(body: IrBlockBody) {
+                    processStatements(body.statements)
+                }
+
+                override fun visitBreak(jump: IrBreak) {
+                    val exitState = loopMap[jump.loop]!!.loopExit
+                    currentState.statements += stateDispatch(exitState)
+                }
+
+                override fun visitContinue(jump: IrContinue) {
+                    val headState = loopMap[jump.loop]!!.loopHead
+                    currentState.statements += stateDispatch(headState)
+                }
+
+                override fun visitWhen(expression: IrWhen) {
+
+                    val exitState = JsIrBuilder.buildBlock(unit)
+
+                    data class BranchState(val condition: IrExpression, val body: IrExpression, val state: IrBlock, val orig: IrBranch)
+
+                    val branchStates = expression.branches.map { BranchState(it.condition, it.result, JsIrBuilder.buildBlock(unit), it) }
+
+                    var hasElseBranch = false
+
+                    for ((condition, _, branchState, orig) in branchStates) {
+                        val irThen = stateDispatch(branchState)
+
+                        if (orig is IrElseBranch) {
+                            hasElseBranch = true
+                            currentState.statements += irThen
+                            break
+                        } else {
+                            condition.acceptVoid(this)
+                            val condValue = currentState.statements.last() as IrExpression
+                            val irIf = JsIrBuilder.buildIfElse(unit, condValue, irThen)
+                            currentState.statements[currentState.statements.size - 1] = irIf
+                        }
+                    }
+
+                    if (!hasElseBranch) {
+                        currentState.statements += stateDispatch(exitState)
+                    }
+
+                    states += currentState
+
+                    for ((_, body, branchState, _) in branchStates) {
+                        currentState = branchState
+                        states += branchState
+                        body.acceptVoid(this)
+                        currentState.statements += stateDispatch(exitState)
+                    }
+
+                    currentState = exitState
+                }
+            })
+
+            val unitValue = JsIrBuilder.buildGetObjectValue(context.builtIns.unitType, context.symbolTable.referenceClass(context.builtIns.unit))
+
+            currentState.statements += JsIrBuilder.buildReturn(function.symbol, unitValue)
+            states += currentState
+
+            val statesWithId = states.mapIndexed { i, s -> Pair(i, s) }
+
+
+        }
+
 
         private fun transformVariables(element: IrElement, variablesMap: Map<VariableDescriptor, IrVariableSymbol>) {
             element.transformChildrenVoid(object: IrElementTransformerVoid() {
@@ -1062,7 +1284,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                                     +irCall(saveStateSymbol)
                                 +irSetVar(suspendResult, suspendCall)
                                 +irReturnIfSuspended(suspendResult)
-                                +irContinue(suspendableRoot)
+//                                +irContinue(suspendableRoot)
 //                            },
 //                            resumeResult               = irBlock(startOffset, endOffset) {
 //                                +irCall(restoreStateSymbol)
@@ -1079,7 +1301,6 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                         +irGet(suspendResult)
                     }
                 }
-
             }
 
             private fun IrBuilderWithScope.irWrap(expression: IrExpression, tempStatements: List<IrStatement>)
@@ -1090,31 +1311,9 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                           +expression
                       }
 
-            private val IrExpression.isSuspendCall: Boolean
-                get() = this is IrCall && this.descriptor.isSuspend
-
             private fun IrElement.isSpecialBlock()
                     = this is IrBlock && this.origin == STATEMENT_ORIGIN_COROUTINE_IMPL
 
-            private fun IrElement.hasSuspendCalls(): Boolean {
-                var hasSuspendCalls = false
-                acceptVoid(object : IrElementVisitorVoid {
-                    override fun visitElement(element: IrElement) {
-                        element.acceptChildrenVoid(this)
-                    }
-
-                    override fun visitCall(expression: IrCall) {
-                        expression.acceptChildrenVoid(this)
-                        hasSuspendCalls = hasSuspendCalls || expression.isSuspendCall
-                    }
-
-                    override fun visitSuspensionPoint(expression: IrSuspensionPoint) {
-                        hasSuspendCalls = true
-                    }
-                })
-
-                return hasSuspendCalls
-            }
 
             private fun IrExpression.isPure(): Boolean {
                 return when (this) {
@@ -1146,6 +1345,29 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
         private fun IrBuilderWithScope.irThrowIfNotNull(exception: IrValueSymbol) =
                 irIfThen(irNot(irEqeqeq(irGet(exception), irNull())),
                         irThrow(irImplicitCast(irGet(exception), exception.descriptor.type.makeNotNullable())))
+
+        private val IrExpression.isSuspendCall: Boolean
+            get() = this is IrCall && this.descriptor.isSuspend
+
+        private fun IrElement.hasSuspendCalls(): Boolean {
+            var hasSuspendCalls = false
+            acceptVoid(object : IrElementVisitorVoid {
+                override fun visitElement(element: IrElement) {
+                    element.acceptChildrenVoid(this)
+                }
+
+                override fun visitCall(expression: IrCall) {
+                    expression.acceptChildrenVoid(this)
+                    hasSuspendCalls = hasSuspendCalls || expression.isSuspendCall
+                }
+
+                override fun visitSuspensionPoint(expression: IrSuspensionPoint) {
+                    hasSuspendCalls = true
+                }
+            })
+
+            return hasSuspendCalls
+        }
     }
 
     private open class VariablesScopeTracker: IrElementVisitorVoid {

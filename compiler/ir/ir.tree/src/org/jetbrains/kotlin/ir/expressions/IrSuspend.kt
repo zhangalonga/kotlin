@@ -5,13 +5,11 @@
 
 package org.jetbrains.kotlin.ir.expressions
 
-import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
 
 
 interface IrSuspensionPoint : IrExpression {
-    var suspensionPointIdParameter: IrVariable
-    var result: IrExpression
+    val suspendableCall: IrCall
 }
 
 interface IrSuspendableRoot : IrDoWhileLoop {
