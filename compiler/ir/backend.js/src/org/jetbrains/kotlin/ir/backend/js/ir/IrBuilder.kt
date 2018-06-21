@@ -64,6 +64,9 @@ object JsIrBuilder {
     fun buildBlock(type: KotlinType, statements: List<IrStatement>) =
         IrBlockImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, SYNTHESIZED_STATEMENT, statements)
 
+    fun buildComposite(type: KotlinType, statements: List<IrStatement> = emptyList()) =
+        IrCompositeImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, SYNTHESIZED_STATEMENT, statements)
+
     fun buildFunctionReference(type: KotlinType, symbol: IrFunctionSymbol) =
         IrFunctionReferenceImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, symbol, symbol.descriptor)
 
@@ -80,7 +83,13 @@ object JsIrBuilder {
     fun buildWhen(type: KotlinType, branches: List<IrBranch>) =
         IrWhenImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, SYNTHESIZED_STATEMENT, branches)
 
-    fun buildTypeOperator(type: KotlinType, operator: IrTypeOperator, argument: IrExpression, toType: KotlinType, symbol: IrClassifierSymbol) =
+    fun buildTypeOperator(
+        type: KotlinType,
+        operator: IrTypeOperator,
+        argument: IrExpression,
+        toType: KotlinType,
+        symbol: IrClassifierSymbol
+    ) =
         IrTypeOperatorCallImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, operator, toType, argument, symbol)
 
     fun buildNull(type: KotlinType) = IrConstImpl.constNull(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type)
