@@ -10,7 +10,8 @@ import kotlin.jvm.functions.Function1;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.backend.common.CommonCoroutineCodegenUtilKt;
-import org.jetbrains.kotlin.config.*;
+import org.jetbrains.kotlin.config.CommonConfigurationKeysKt;
+import org.jetbrains.kotlin.config.LanguageVersionSettings;
 import org.jetbrains.kotlin.descriptors.CallableDescriptor;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor;
@@ -24,7 +25,6 @@ import org.jetbrains.kotlin.js.inline.context.FunctionContext;
 import org.jetbrains.kotlin.js.inline.context.InliningContext;
 import org.jetbrains.kotlin.js.inline.context.NamingContext;
 import org.jetbrains.kotlin.js.inline.util.*;
-import org.jetbrains.kotlin.js.translate.context.TranslationContext;
 import org.jetbrains.kotlin.js.translate.expression.InlineMetadata;
 import org.jetbrains.kotlin.resolve.inline.InlineStrategy;
 
@@ -388,7 +388,7 @@ public class JsInliner extends JsVisitorWithContextImpl {
 
         resultExpression = accept(resultExpression);
         MetadataProperties.setSynthetic(resultExpression, true);
-        context.replaceMe(resultExpression);
+        replaceContext(context, resultExpression);
     }
 
     private void applyWrapper(
@@ -451,7 +451,7 @@ public class JsInliner extends JsVisitorWithContextImpl {
 
             for (JsStatement statement : copiedStatements) {
                 statement = RewriteUtilsKt.replaceNames(statement, newReplacements);
-                ctx.addPrevious(accept(statement));
+                addPreviousUnchecked(ctx, accept(statement));
             }
 
             for (Map.Entry<JsName, JsFunction> entry : CollectUtilsKt.collectNamedFunctions(new JsBlock(copiedStatements)).entrySet()) {
@@ -484,7 +484,7 @@ public class JsInliner extends JsVisitorWithContextImpl {
             private void replaceIfNecessary(@NotNull JsExpression expression, @NotNull JsContext context) {
                 JsName alias = MetadataProperties.getLocalAlias(expression);
                 if (alias != null) {
-                    context.replaceMe(alias.makeRef());
+                    replaceContext(context, alias.makeRef());
                 }
             }
 
@@ -507,7 +507,7 @@ public class JsInliner extends JsVisitorWithContextImpl {
 
         JsInvocation invocation = new JsInvocation(lambda, continuationArg);
         MetadataProperties.setSuspend(invocation, true);
-        context.replaceMe(accept(invocation));
+        replaceContext(context, accept(invocation));
     }
 
     @NotNull
@@ -550,6 +550,16 @@ public class JsInliner extends JsVisitorWithContextImpl {
         if (strategy == null || !strategy.isInline()) return false;
 
         return getFunctionContext().hasFunctionDefinition(call);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void addPreviousUnchecked(JsContext context, JsNode node) {
+        context.addPrevious(node);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void replaceContext(JsContext context, JsNode node) {
+        context.replaceMe(node);
     }
 
     private class JsInliningContext implements InliningContext {
