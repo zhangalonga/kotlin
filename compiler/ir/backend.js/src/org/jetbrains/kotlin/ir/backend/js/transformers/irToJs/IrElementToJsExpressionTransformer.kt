@@ -195,13 +195,13 @@ class IrElementToJsExpressionTransformer : BaseIrElementToJsNodeTransformer<JsEx
         val continueId = resumeId + 1
         val statementTranslator = IrElementToJsStatementTransformer()
 
-        val resultPoint = expression.result.accept(statementTranslator, context).asBlock()
+//        val resultPoint = expression.result.accept(statementTranslator, context).asBlock()
 //        val resumeResultPoint = expression.resumeResult.accept(statementTranslator, context).asBlock()
 
-        resultPoint.statements += JsContinue(JsNameRef(label))
+//        resultPoint.statements += JsContinue(JsNameRef(label))
 //        resumeResultPoint.statements += JsContinue(JsNameRef(label))
 
-        context.addResumePoint(resumeId, resultPoint)
+//        context.addResumePoint(resumeId, resultPoint)
 //        context.addResumePoint(continueId, resumeResultPoint)
 
         return JsIntLiteral(0)

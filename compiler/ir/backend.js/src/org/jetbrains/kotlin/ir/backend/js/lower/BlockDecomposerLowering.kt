@@ -24,12 +24,12 @@ import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.types.KotlinType
 
 
-
-fun IrStatement.decompose(function: IrFunction, context: JsIrBackendContext) = transform(BlockDecomposerTransformer(function, context), null)
+fun IrStatement.decompose(function: IrFunction, context: JsIrBackendContext) =
+    transform(BlockDecomposerTransformer(function, context, false), null)
 
 class BlockDecomposerLowering(context: JsIrBackendContext) : DeclarationContainerLoweringPass {
 
-    private val decomposerTransformer = BlockDecomposerTransformer(context)
+    private val decomposerTransformer = BlockDecomposerTransformer(context, true)
 
     override fun lower(irDeclarationContainer: IrDeclarationContainer) {
         irDeclarationContainer.declarations.transformFlat { declaration ->
@@ -78,11 +78,11 @@ class BlockDecomposerLowering(context: JsIrBackendContext) : DeclarationContaine
     }
 }
 
-class BlockDecomposerTransformer(context: JsIrBackendContext) : IrElementTransformerVoid() {
+class BlockDecomposerTransformer(context: JsIrBackendContext, decomposeCFG: Boolean = true) : IrElementTransformerVoid() {
     private lateinit var function: IrFunction
     private var tmpVarCounter: Int = 0
 
-    private val statementTransformer = StatementTransformer()
+    private val statementTransformer = if (decomposeCFG) StatementTransformer() else StatementTransformerIgnoreCFG()
     private val expressionTransformer = ExpressionTransformer()
 
     private val constTrue = JsIrBuilder.buildBoolean(context.builtIns.booleanType, true)
@@ -96,7 +96,9 @@ class BlockDecomposerTransformer(context: JsIrBackendContext) : IrElementTransfo
         JsSymbolBuilder.buildSimpleFunction(context.module, Namer.UNREACHABLE_NAME).initialize(type = nothingType)
     private val booleanNotSymbol = context.irBuiltIns.booleanNotSymbol
 
-    constructor(function: IrFunction, context: JsIrBackendContext) : this(context) { this.function = function }
+    constructor(function: IrFunction, context: JsIrBackendContext, decomposeCFG: Boolean = false) : this(context, decomposeCFG) {
+        this.function = function
+    }
 
     override fun visitFunction(declaration: IrFunction): IrStatement {
         function = declaration
@@ -191,7 +193,7 @@ class BlockDecomposerTransformer(context: JsIrBackendContext) : IrElementTransfo
         }
     }
 
-    private inner class StatementTransformer : IrElementTransformerVoid() {
+    private open inner class StatementTransformer : IrElementTransformerVoid() {
         override fun visitBlockBody(body: IrBlockBody) = body.apply { processStatements(statements) }
 
         override fun visitContainerExpression(expression: IrContainerExpression) = expression.apply { processStatements(statements) }
@@ -445,10 +447,21 @@ class BlockDecomposerTransformer(context: JsIrBackendContext) : IrElementTransfo
             return block
         }
 
+        override fun visitTry(aTry: IrTry) = aTry.also { it.transformChildrenVoid(this) }
+
         override fun visitSuspensionPoint(expression: IrSuspensionPoint): IrExpression {
             expression.transformChildrenVoid(statementTransformer)
-            return expression
+
+            val composite = expression.suspendableExpression as? IrComposite ?: return expression
+            return materializeExpression(composite, ::IrSuspensionPointImpl)
         }
+    }
+
+    private inner class StatementTransformerIgnoreCFG : StatementTransformer() {
+        override fun visitWhileLoop(loop: IrWhileLoop) = loop.also { it.transformChildrenVoid(this) }
+        override fun visitDoWhileLoop(loop: IrDoWhileLoop) = loop.also { it.transformChildrenVoid(this) }
+        override fun visitWhen(expression: IrWhen) = expression.also { it.transformChildrenVoid(this) }
+        override fun visitTry(aTry: IrTry) = aTry.also { it.transformChildrenVoid(this) }
     }
 
     private inner class ExpressionTransformer : IrElementTransformerVoid() {

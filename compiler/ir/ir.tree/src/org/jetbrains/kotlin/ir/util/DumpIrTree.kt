@@ -279,8 +279,7 @@ class DumpIrTreeVisitor(out: Appendable) : IrElementVisitor<Unit, String> {
 
     override fun visitSuspensionPoint(expression: IrSuspensionPoint, data: String) {
         expression.dumpLabeledElementWith(data) {
-            expression.result.accept(this, "result")
-//            expression.resumeResult.accept(this, "resumeResult")
+            expression.suspendableExpression.accept(this, "EXPRESSION")
         }
     }
 

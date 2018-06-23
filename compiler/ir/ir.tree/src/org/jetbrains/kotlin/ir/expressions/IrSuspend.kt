@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
 
 
 interface IrSuspensionPoint : IrExpression {
-    val suspendableCall: IrCall
+    val suspendableExpression: IrExpression
 }
 
 interface IrSuspendableRoot : IrDoWhileLoop {

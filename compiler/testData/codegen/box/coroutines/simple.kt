@@ -1,4 +1,3 @@
-// IGNORE_BACKEND: JS_IR
 // WITH_RUNTIME
 // WITH_COROUTINES
 // COMMON_COROUTINES_TEST
@@ -9,24 +8,35 @@ import COROUTINES_PACKAGE.intrinsics.*
 fun baz(i: Int) {}
 
 suspend fun bol() = true
+suspend fun bal() = true
+fun bil() = true
 
 suspend fun foo() = 42
 
 suspend fun bar(b: Boolean) {
-//    baz(0)
-//    if (b) {
-//        val v = foo()
-//        baz(v)
-//    } else {
-//        val v = foo()
-//        baz(v)
-//        foo()
-//    }
-    baz(2)
+    baz(0)
+    L@while (bol()) {
+        do {
+            if (b) {
+                val v = foo()
+                baz(v)
+                if (bol()) continue
+                baz(foo())
+                if (bal()) break@L
+            } else {
+                val v = foo()
+                baz(v)
+                if (bol()) break
+                foo()
+                if (bil()) continue@L
+            }
+            baz(foo())
+        } while (bal())
+    }
     var v = foo()
     baz(v)
-//    v = foo()
-//    baz(v)
+    v = foo()
+    baz(v)
 }
 
 //suspend fun suspendHere(): String = suspendCoroutineOrReturn { x ->

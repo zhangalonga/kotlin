@@ -221,7 +221,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
         "COMPOSITE type=${expression.type.render()} origin=${expression.origin}"
 
     override fun visitSuspensionPoint(expression: IrSuspensionPoint, data: Nothing?): String =
-        "SUSPENSION_POINT ID=${expression.suspensionPointIdParameter.name()}"
+        "SUSPENSION_POINT"
 
     override fun visitSuspendableRoot(expression: IrSuspendableRoot, data: Nothing?): String =
         "SUSPENDABLE_ROOT type =${expression.type.render()}"
