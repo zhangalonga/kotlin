@@ -20,8 +20,8 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrExpressionBase
 import org.jetbrains.kotlin.ir.expressions.impl.IrSetFieldImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrStringConcatenationImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrSuspensionPointImpl
-import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
 import org.jetbrains.kotlin.ir.visitors.*
 import org.jetbrains.kotlin.types.KotlinType
 
@@ -104,6 +104,7 @@ class SuspendedTerminatorsCollector(suspendableNodes: MutableSet<IrElement>) : S
     }
 
     override fun visitReturn(expression: IrReturn) {
+        val enclosingTry = tryStack.peek()
         if (tryStack.isNotEmpty() && tryStack.peek() in suspendableNodes) {
             suspendableNodes.add(expression)
             hasSuspendableChildren = true
@@ -127,6 +128,9 @@ class StateMachineBuilder(
     val function: IrFunctionSymbol,
     val rootLoop: IrLoop,
     val suspendResult: () -> IrExpression,
+    val resultAccessor: (v: IrExpression?) -> IrExpression,
+    val exceptionAccessor: (v: IrExpression?) -> IrExpression,
+    val exceptionStateAccessor: (v: IrExpression?) -> IrExpression,
     val suspendCallProcessor: (IrExpression) -> IrExpression
 ) : IrElementVisitorVoid {
     override fun visitElement(element: IrElement) {
@@ -144,9 +148,36 @@ class StateMachineBuilder(
     private val booleanNotSymbol = context.irBuiltIns.booleanNotSymbol
 
     val entryState = SuspendState(unit)
+    val exceptionTrap = buildExceptionTrap()
+    val globalCatchState = SuspendState(unit)
+    // TODO: fix it to dynamic
+    val globalExceptionSymbol = JsSymbolBuilder.buildTempVar(function, context.builtIns.throwable.defaultType)
     var currentState = entryState
     var currentBlock = entryState.entryBlock
     val states = mutableSetOf<SuspendState>()
+
+    var tryId = 0
+    val tryStack = mutableListOf(TryState(tryId++, entryState, globalCatchState, null, SuspendState(unit)))
+    val exceptionStates = mutableListOf<TryState>()
+    val exceptionTransitions = mutableSetOf(Pair(0, buildExceptionTrapDispatch(exceptionTrap)))
+
+    private fun buildExceptionTrapDispatch(exceptionTrap: SuspendState): IrBlock {
+        val block = JsIrBuilder.buildBlock(unit)
+        return block
+    }
+
+    private fun buildExceptionTransition(target: SuspendState): IrBlock {
+        val block = JsIrBuilder.buildBlock(unit)
+        block.statements += setPendingException(JsIrBuilder.buildGetValue(globalExceptionSymbol))
+        doDispatchImpl(target, block, false)
+        return block
+    }
+
+    private fun buildExceptionTrap(): SuspendState {
+        val state = SuspendState(unit)
+        state.entryBlock.statements += JsIrBuilder.buildThrow(nothing, readPendingException())
+        return state
+    }
 
     private fun newState() {
         val newState = SuspendState(unit)
@@ -164,6 +195,8 @@ class StateMachineBuilder(
     private fun IrBlock.addStatement(statement: IrStatement) {
         statements.add(statement)
     }
+
+    private fun setPendingException(expr: IrExpression) = writePendingException(expr)
 
     private fun addStatement(statement: IrStatement) = currentBlock.addStatement(statement)
 
@@ -247,8 +280,11 @@ class StateMachineBuilder(
     }
 
 
-    private fun implicitCast(value: IrExpression, toType: KotlinType, toTypeSymbol: IrClassifierSymbol) =
-        JsIrBuilder.buildTypeOperator(toType, IrTypeOperator.IMPLICIT_CAST, value, toType, toTypeSymbol)
+    private fun implicitCast(value: IrExpression, toType: KotlinType) =
+        JsIrBuilder.buildTypeOperator(
+            toType, IrTypeOperator.IMPLICIT_CAST, value, toType,
+            context.symbolTable.referenceClassifier(toType.constructor.declarationDescriptor!!)
+        )
 
     override fun visitSuspensionPoint(expression: IrSuspensionPoint) {
 
@@ -260,8 +296,7 @@ class StateMachineBuilder(
         updateState(continueState)
 
         val type = expression.type
-        val typeSymbol = context.symbolTable.referenceClassifier(type.constructor.declarationDescriptor!!)
-        val implicitCast = implicitCast(suspendResult(), type, typeSymbol)
+        val implicitCast = implicitCast(suspendResult(), type)
         addStatement(implicitCast)
     }
 
@@ -421,9 +456,184 @@ class StateMachineBuilder(
         addStatement(expression.run { IrStringConcatenationImpl(startOffset, endOffset, type, newArguments.map { it!! }) })
     }
 
+    override fun visitReturn(expression: IrReturn) {
+        val finallyState = tryStack.firstOrNull { it.finallyState != null }?.finallyState
+
+        expression.acceptChildrenVoid(this)
+
+        if (finallyState != null) {
+            transformLastExpression { writePendingResult(it) }
+            doDispatch(finallyState.fromReturn)
+        } else {
+            transformLastExpression { expression.apply { value = it } }
+        }
+    }
+
+    override fun visitThrow(expression: IrThrow) {
+        expression.acceptChildrenVoid(this)
+        transformLastExpression { expression.apply { value = it } }
+    }
+
+
+    private fun readPendingResult() = resultAccessor(null)
+    private fun writePendingResult(value: IrExpression) = resultAccessor(value)
+
+    private fun readPendingException() = exceptionAccessor(null)
+    private fun writePendingException(value: IrExpression) = exceptionAccessor(value)
+
+
+
+    val normanID = JsIrBuilder.buildInt(context.builtIns.intType, 0)
+    val returnID = JsIrBuilder.buildInt(context.builtIns.intType, 1)
+    val throwID = JsIrBuilder.buildInt(context.builtIns.intType, 2)
+
+    override fun visitTry(aTry: IrTry) {
+        val tryState = buildTryState(aTry)
+        val outState = tryStack.peek()!!
+
+        tryStack.push(tryState)
+
+        doDispatch(tryState.tryState)
+        updateState(tryState.tryState)
+
+        val finallyStateVarSymbol = tempVar(context.builtIns.intType)
+        if (aTry.finallyExpression != null) {
+            addStatement(JsIrBuilder.buildVar(finallyStateVarSymbol, normanID))
+        }
+
+        setExceptionState(tryState.id)
+
+        aTry.tryResult.acceptVoid(this)
+
+        val exitState = SuspendState(unit)
+
+        tryState.finallyState?.also {
+            doDispatch(it.normal)
+        } ?: setExceptionState(outState.id)
+
+        states += tryState.catchState
+        tryState.tryState.successors += tryState.catchState
+        updateState(tryState.catchState)
+
+        val continueExId = tryState.finallyState?.finallyExId ?: outState.id
+        setExceptionState(continueExId)
+
+        exceptionTransitions.add(Pair(tryState.id, buildExceptionTransition(tryState.catchState)))
+
+        val ex = readPendingException()
+        for (catch in aTry.catches) {
+            val type = catch.catchParameter.type
+            val check = buildIsCheck(ex, type)
+            val branchBlock = JsIrBuilder.buildBlock(catch.result.type)
+            val elseBlock = JsIrBuilder.buildBlock(catch.result.type)
+            val irIf = JsIrBuilder.buildIfElse(catch.result.type, check, branchBlock, elseBlock)
+            val ifBlock = currentBlock
+            currentBlock = branchBlock
+            val irVar = catch.catchParameter.apply { initializer = implicitCast(ex, type) }
+            addStatement(irVar)
+            catch.result.acceptVoid(this)
+            tryState.finallyState?.also { doDispatch(it.normal) }
+            currentBlock = ifBlock
+            addStatement(irIf)
+            currentBlock = elseBlock
+        }
+
+        addStatement(JsIrBuilder.buildThrow(nothing, ex))
+
+        tryStack.pop()
+
+        val finallyState = tryState.finallyState
+        if (finallyState != null) {
+            updateState(finallyState.fromThrow)
+            tryState.tryState.successors += finallyState.fromThrow
+            addStatement(JsIrBuilder.buildSetVariable(finallyStateVarSymbol, throwID))
+            doDispatch(finallyState.normal)
+
+            updateState(finallyState.fromReturn)
+            tryState.tryState.successors += finallyState.fromReturn
+            addStatement(JsIrBuilder.buildSetVariable(finallyStateVarSymbol, returnID))
+            doDispatch(finallyState.normal)
+
+            updateState(finallyState.normal)
+            tryState.tryState.successors += finallyState.normal
+            setExceptionState(outState.id)
+            aTry.finallyExpression?.acceptVoid(this)
+            buildFinallyDispatch(exitState, finallyStateVarSymbol)
+
+
+            exceptionTransitions.add(Pair(finallyState.finallyExId, buildExceptionTransition(finallyState.fromThrow)))
+        }
+
+        updateState(exitState)
+    }
+
+    private fun buildFinallyDispatch(exitState: SuspendState, stateVar: IrVariableSymbol) {
+        val value = JsIrBuilder.buildGetValue(stateVar)
+        val normaDispatchBlock = buildDispatchBlock(exitState)
+        val elseNormalBlock = JsIrBuilder.buildBlock(unit)
+        val checkNormal = JsIrBuilder.buildCall(context.irBuiltIns.eqeqSymbol).apply {
+            putValueArgument(0, value)
+            putValueArgument(1, normanID)
+        }
+        val irIfNormal = JsIrBuilder.buildIfElse(unit, checkNormal, normaDispatchBlock, elseNormalBlock)
+        addStatement(irIfNormal)
+        currentBlock = elseNormalBlock
+        val checkReturn = JsIrBuilder.buildCall(context.irBuiltIns.eqeqSymbol).apply {
+            putValueArgument(0, value)
+            putValueArgument(1, returnID)
+        }
+
+        val enclosingState = tryStack.firstOrNull { it.finallyState != null }
+        val returnStatement = if (enclosingState == null) {
+            JsIrBuilder.buildReturn(function, readPendingResult())
+        } else {
+            buildDispatchBlock(enclosingState.finallyState!!.fromReturn)
+        }
+
+        val irThrowStatement = JsIrBuilder.buildThrow(nothing, readPendingException())
+        val irIfReturn = JsIrBuilder.buildIfElse(unit, checkReturn, returnStatement, irThrowStatement)
+
+        elseNormalBlock.statements += irIfReturn
+
+        updateState(exitState)
+    }
+
+    private fun setExceptionState(id: Int) {
+        addStatement(exceptionStateAccessor(JsIrBuilder.buildInt(context.builtIns.intType, id)))
+    }
+
+    private fun buildTryState(aTry: IrTry) =
+        TryState(
+            tryId++,
+            SuspendState(unit),
+            SuspendState(unit),
+            aTry.finallyExpression?.run { FinallyTargets(tryId++, SuspendState(unit), SuspendState(unit), SuspendState(unit)) },
+            SuspendState(unit)
+        )
+
+
+    private fun buildIsCheck(value: IrExpression, toType: KotlinType) =
+        JsIrBuilder.buildTypeOperator(
+            context.irBuiltIns.bool,
+            IrTypeOperator.INSTANCEOF,
+            value,
+            toType,
+            context.symbolTable.referenceClassifier(toType.constructor.declarationDescriptor!!)
+        )
 
     private fun tempVar(type: KotlinType) = JsSymbolBuilder.buildTempVar(function, type)
 }
+
+data class FinallyTargets(val finallyExId: Int, val normal: SuspendState, val fromReturn: SuspendState, val fromThrow: SuspendState)
+
+class TryState(
+    val id: Int,
+    val tryState: SuspendState,
+    val catchState: SuspendState,
+    val finallyState: FinallyTargets?,
+    val exitState: SuspendState
+)
+
 
 class DispatchPointTransformer(val action: (SuspendState) -> IrExpression) : IrElementTransformerVoid() {
     override fun visitExpression(expression: IrExpression): IrExpression {

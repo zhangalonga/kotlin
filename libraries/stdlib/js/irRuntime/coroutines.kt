@@ -106,11 +106,13 @@ object EmptyContinuationX: Continuation<Unit> {
 //@JsName("CoroutineImpl")
 internal abstract class CoroutineImpl(private val completion: Continuation<Any?>) : Continuation<Any?> {
 //    protected var state = 0
-//    protected var exceptionState = 0
+    protected var exceptionState = 0
 //    protected var result: Any? = null
 //    protected var exception: Throwable? = null
 
     protected var label: Int = 0
+    protected var pendingException: dynamic = null
+    protected var pendingResult: dynamic = null
 //    protected var finallyPath: Array<Int>? = null
 
     public override val context: CoroutineContext = completion.context
