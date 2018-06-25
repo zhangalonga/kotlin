@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @TestMetadata("compiler/testData/cfg-constant-propagation")
 @TestDataPath("$PROJECT_ROOT")
 @RunWith(JUnit3RunnerWithInners.class)
-public class ConstantPropogationTestGenerated extends AbstractConstantPropogationTest {
+public class ConstantPropagationTestGenerated extends AbstractConstantPropagationTest {
     public void testAllFilesPresentInCfg_constant_propagation() throws Exception {
         KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-constant-propagation"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
     }
@@ -39,7 +39,7 @@ public class ConstantPropogationTestGenerated extends AbstractConstantPropogatio
     @TestMetadata("compiler/testData/cfg-constant-propagation/basic")
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)
-    public static class Basic extends AbstractConstantPropogationTest {
+    public static class Basic extends AbstractConstantPropagationTest {
         public void testAllFilesPresentInBasic() throws Exception {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-constant-propagation/basic"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
         }
@@ -71,6 +71,18 @@ public class ConstantPropogationTestGenerated extends AbstractConstantPropogatio
         @TestMetadata("TrivialVals_1.kt")
         public void testTrivialVals_1() throws Exception {
             String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/TrivialVals_1.kt");
+            doTest(fileName);
+        }
+
+        @TestMetadata("When.kt")
+        public void testWhen() throws Exception {
+            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/When.kt");
+            doTest(fileName);
+        }
+
+        @TestMetadata("WhenExElse.kt")
+        public void testWhenExElse() throws Exception {
+            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cfg-constant-propagation/basic/WhenExElse.kt");
             doTest(fileName);
         }
     }

@@ -80,6 +80,7 @@ enum class LanguageFeature(
 
     StrictJavaNullabilityAssertions(sinceVersion = null, defaultState = State.DISABLED),
     ProperIeee754Comparisons(sinceVersion = null, defaultState = State.DISABLED),
+    ConstantPropagation(sinceVersion = null, defaultState = State.DISABLED),
 
     // Experimental features
 

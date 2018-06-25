@@ -834,6 +834,10 @@ public interface Errors {
     DiagnosticFactory2<KtBinaryExpression, KtElement, DeclarationDescriptor> UNUSED_VALUE = DiagnosticFactory2.create(WARNING, PositioningStrategies.UNUSED_VALUE);
     DiagnosticFactory1<KtElement, KtElement> UNUSED_CHANGED_VALUE = DiagnosticFactory1.create(WARNING);
     DiagnosticFactory0<KtElement> UNUSED_EXPRESSION = DiagnosticFactory0.create(WARNING);
+
+    DiagnosticFactory0<KtElement> ALWAYS_TRUE_EXPRESSION = DiagnosticFactory0.create(WARNING);
+    DiagnosticFactory0<KtElement> ALWAYS_FALSE_EXPRESSION = DiagnosticFactory0.create(WARNING);
+
     DiagnosticFactory0<KtLambdaExpression> UNUSED_LAMBDA_EXPRESSION = DiagnosticFactory0.create(WARNING);
 
     DiagnosticFactory1<KtExpression, DeclarationDescriptor> VAL_REASSIGNMENT = DiagnosticFactory1.create(ERROR);

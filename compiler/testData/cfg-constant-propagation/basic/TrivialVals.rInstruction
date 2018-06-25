@@ -1,26 +1,58 @@
 == foo ==
 fun foo(x: Boolean) {
-    val b: Int
-    val c = 1
-    b = c
+    val a = true
+    val b = false
+    var z = 1
+    if (a && !b && (b || a)) {
+        z = 0
+    }
 }
 ---------------------
 L0:
-  1 <START>
-    v(x: Boolean)
-    magic[FAKE_INITIALIZER](x: Boolean) -> <v0>
-    w(x|<v0>)
-  2 mark({ val b: Int val c = 1 b = c })           VAL: in: {} out: {}
-    v(val b: Int)                                  VAL: in: {} out: {b=C?}
-    v(val c = 1)
-    r(1) -> <v1>                                   VAL: in: {b=C?} out: {b=C?}
-    w(c|<v1>)                                      VAL: in: {b=C?} out: {b=C?, c=C: <1, INT>}
-    r(c) -> <v2>                                   VAL: in: {b=C?, c=C: <1, INT>} out: {b=C?, c=C: <1, INT>}
-    w(b|<v2>)                                      VAL: in: {b=C?, c=C: <1, INT>} out: {b=C: <1, INT>, c=C: <1, INT>}
+  1 <START>                                                                              VAL: in: {} out: {}
+    v(x: Boolean)                                                                        VAL: in: {} out: {}
+    magic[FAKE_INITIALIZER](x: Boolean) -> <v0>                                          VAL: in: {} out: {}
+    w(x|<v0>)                                                                            VAL: in: {} out: {x=N_C}
+  2 mark({ val a = true val b = false var z = 1 if (a && !b && (b || a)) { z = 0 } })    VAL: in: {x=N_C} out: {x=N_C}
+    v(val a = true)                                                                      VAL: in: {x=N_C} out: {x=N_C}
+    r(true) -> <v1>                                                                      VAL: in: {x=N_C} out: {x=N_C}
+    w(a|<v1>)                                                                            VAL: in: {x=N_C} out: {a=C: <true, BOOLEAN>, x=N_C}
+    v(val b = false)                                                                     VAL: in: {a=C: <true, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, x=N_C}
+    r(false) -> <v2>                                                                     VAL: in: {a=C: <true, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, x=N_C}
+    w(b|<v2>)                                                                            VAL: in: {a=C: <true, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C}
+    v(var z = 1)                                                                         VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C}
+    r(1) -> <v3>                                                                         VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C}
+    w(z|<v3>)                                                                            VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    mark(if (a && !b && (b || a)) { z = 0 })                                             VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    r(a) -> <v4>                                                                         VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    jf(L3|<v4>)                                                                          VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    r(b) -> <v5>                                                                         VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    mark(!b)                                                                             VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    call(!b, not|<v5>) -> <v6>                                                           VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+L3 [result of boolean operation]:
+    magic[AND](a && !b|<v4>, <v6>) -> <v7>                                               VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    jf(L2|<v7>)                                                                          VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    mark((b || a))                                                                       VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    r(b) -> <v8>                                                                         VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    jt(L4|<v8>)                                                                          VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    r(a) -> <v9>                                                                         VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+L4 [result of boolean operation]:
+    magic[OR](b || a|<v8>, <v9>) -> <v10>                                                VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+L2 [result of boolean operation]:
+    magic[AND](a && !b && (b || a)|<v7>, <v10>) -> <v11>                                 VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    jf(L5|<v11>)                                                                         VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+  3 mark({ z = 0 })                                                                      VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    r(0) -> <v12>                                                                        VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+    w(z|<v12>)                                                                           VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <0, INT>}
+  2 jmp(L6)                                                                              VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <0, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <0, INT>}
+L5 [else branch]:
+    read (Unit)                                                                          VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=C: <1, INT>}
+L6 ['if' expression result]:
+    merge(if (a && !b && (b || a)) { z = 0 }|!<v13>) -> <v14>                            VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=N_C} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C, z=N_C}
 L1:
-  1 <END>
+  1 <END>                                                                                VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C}
 error:
-    <ERROR>
+    <ERROR>                                                                              VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>}
 sink:
-    <SINK>                                         VAL: in: {c=C: <1, INT>} out: {c=C: <1, INT>}
+    <SINK>                                                                               VAL: in: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C} out: {a=C: <true, BOOLEAN>, b=C: <false, BOOLEAN>, x=N_C}
 =====================

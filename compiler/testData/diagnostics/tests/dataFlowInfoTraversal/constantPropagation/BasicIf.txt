@@ -1,0 +1,3 @@
+package
+
+public fun ifFun(/*0*/ k: kotlin.Boolean): kotlin.Unit

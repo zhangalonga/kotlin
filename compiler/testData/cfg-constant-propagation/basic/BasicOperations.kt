@@ -1,8 +1,13 @@
 fun operations() {
     var a = 1
-    var b = 2
+    val b = 2
 
-    var c = a + b
+    val c = a + b
     var d = c - 1
     --d
+
+    val z = true
+    val j = !z
+
+    val m = z || j
 }

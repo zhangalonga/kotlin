@@ -334,6 +334,8 @@ public class DefaultErrorMessages {
         MAP.put(VAL_OR_VAR_ON_SECONDARY_CONSTRUCTOR_PARAMETER, "''{0}'' on secondary constructor parameter is not allowed", TO_STRING);
 
         MAP.put(UNREACHABLE_CODE, "Unreachable code", TO_STRING);
+        MAP.put(ALWAYS_FALSE_EXPRESSION, "Expression is always false");
+        MAP.put(ALWAYS_TRUE_EXPRESSION, "Expression is always true");
 
         MAP.put(MANY_COMPANION_OBJECTS, "Only one companion object is allowed per class");
 

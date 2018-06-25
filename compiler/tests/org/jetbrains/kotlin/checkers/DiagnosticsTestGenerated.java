@@ -4851,6 +4851,27 @@ public class DiagnosticsTestGenerated extends AbstractDiagnosticsTest {
                 runTest("compiler/testData/diagnostics/tests/dataFlowInfoTraversal/WhileCondition.kt");
             }
 
+            @TestMetadata("compiler/testData/diagnostics/tests/dataFlowInfoTraversal/constantPropagation")
+            @TestDataPath("$PROJECT_ROOT")
+            @RunWith(JUnit3RunnerWithInners.class)
+            public static class ConstantPropagation extends AbstractDiagnosticsTest {
+                public void testAllFilesPresentInConstantPropagation() throws Exception {
+                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/diagnostics/tests/dataFlowInfoTraversal/constantPropagation"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                }
+
+                @TestMetadata("BasicIf.kt")
+                public void testBasicIf() throws Exception {
+                    String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/dataFlowInfoTraversal/constantPropagation/BasicIf.kt");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("DivByZero.kt")
+                public void testDivByZero() throws Exception {
+                    String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/dataFlowInfoTraversal/constantPropagation/DivByZero.kt");
+                    doTest(fileName);
+                }
+            }
+
             @TestMetadata("compiler/testData/diagnostics/tests/dataFlowInfoTraversal/smartcasts")
             @TestDataPath("$PROJECT_ROOT")
             @RunWith(JUnit3RunnerWithInners.class)

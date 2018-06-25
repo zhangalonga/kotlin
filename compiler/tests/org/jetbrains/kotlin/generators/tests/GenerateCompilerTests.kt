@@ -311,7 +311,7 @@ fun main(args: Array<String>) {
             model("cfgVariablesWithStdLib", testMethod = "doTestWithStdLib")
         }
 
-        testClass<AbstractConstantPropogationTest> {
+        testClass<AbstractConstantPropagationTest> {
             model("cfg-constant-propagation")
         }
 

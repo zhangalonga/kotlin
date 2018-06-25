@@ -22,6 +22,7 @@ data class LongLongOp(val longV: VarLongValue, val longV1: VarLongValue, val rev
     override fun div(): ArithmeticVar = VarLongValue(longV.longValue / longV1.longValue)
     override fun mul(): ArithmeticVar = VarLongValue(longV.longValue * longV1.longValue)
     override fun sum(): ArithmeticVar = VarLongValue(longV.longValue + longV1.longValue)
+    override fun cmp(): VarIntValue = VarIntValue(longV.longValue.compareTo(longV1.longValue))
 }
 
 data class ShortShortOp(val shortV: VarShortValue, val shortV1: VarShortValue, val reversed: Boolean = false)
@@ -30,6 +31,7 @@ data class ShortShortOp(val shortV: VarShortValue, val shortV1: VarShortValue, v
     override fun div(): ArithmeticVar = VarIntValue(shortV.shortValue / shortV1.shortValue)
     override fun mul(): ArithmeticVar = VarIntValue(shortV.shortValue * shortV1.shortValue)
     override fun sum(): ArithmeticVar = VarIntValue(shortV.shortValue + shortV1.shortValue)
+    override fun cmp(): VarIntValue = VarIntValue(shortV.shortValue.compareTo(shortV1.shortValue))
 }
 
 data class ShortLongOp(val shortV: VarShortValue, val longV: VarLongValue, val reversed: Boolean = false)
@@ -53,6 +55,11 @@ data class ShortLongOp(val shortV: VarShortValue, val longV: VarLongValue, val r
         false -> VarLongValue(shortV.shortValue + longV.longValue)
         else -> VarLongValue(longV.longValue + shortV.shortValue)
     }
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            longV.longValue.compareTo(shortV.shortValue)
+                        else
+                            shortV.shortValue.compareTo(longV.longValue))
 }
 
 data class ByteByteOp(val byteV: VarByteValue, val byteV1: VarByteValue, val reversed: Boolean = false)
@@ -61,6 +68,7 @@ data class ByteByteOp(val byteV: VarByteValue, val byteV1: VarByteValue, val rev
     override fun div(): ArithmeticVar = VarIntValue(byteV.byteValue / byteV1.byteValue)
     override fun mul(): ArithmeticVar = VarIntValue(byteV.byteValue * byteV1.byteValue)
     override fun sum(): ArithmeticVar = VarIntValue(byteV.byteValue + byteV1.byteValue)
+    override fun cmp(): VarIntValue = VarIntValue(byteV.byteValue.compareTo(byteV1.byteValue))
 }
 
 data class ByteLongOp(val byteV: VarByteValue, val longV: VarLongValue, val reversed: Boolean = false)
@@ -81,6 +89,11 @@ data class ByteLongOp(val byteV: VarByteValue, val longV: VarLongValue, val reve
         false -> VarLongValue(byteV.byteValue + longV.longValue)
         else -> VarLongValue(longV.longValue + byteV.byteValue)
     }
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            longV.longValue.compareTo(byteV.byteValue)
+                        else
+                            byteV.byteValue.compareTo(longV.longValue))
 }
 
 data class ByteShortOp(val byteV: VarByteValue, val shortV: VarShortValue, val reversed: Boolean = false)
@@ -101,6 +114,11 @@ data class ByteShortOp(val byteV: VarByteValue, val shortV: VarShortValue, val r
         false -> VarIntValue(byteV.byteValue + shortV.shortValue)
         else -> VarIntValue(shortV.shortValue + byteV.byteValue)
     }
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            shortV.shortValue.compareTo(byteV.byteValue)
+                        else
+                            byteV.byteValue.compareTo(shortV.shortValue))
 }
 
 data class DoubleDoubleOp(val doubleV: VarDoubleValue, val doubleV1: VarDoubleValue, val reversed: Boolean = false)
@@ -109,6 +127,7 @@ data class DoubleDoubleOp(val doubleV: VarDoubleValue, val doubleV1: VarDoubleVa
     override fun div(): ArithmeticVar = VarDoubleValue(doubleV.doubleValue / doubleV1.doubleValue)
     override fun mul(): ArithmeticVar = VarDoubleValue(doubleV.doubleValue * doubleV1.doubleValue)
     override fun sum(): ArithmeticVar = VarDoubleValue(doubleV.doubleValue + doubleV1.doubleValue)
+    override fun cmp(): VarIntValue = VarIntValue(doubleV.doubleValue.compareTo(doubleV1.doubleValue))
 }
 
 data class DoubleShortOp(val doubleV: VarDoubleValue, val shortV: VarShortValue, val reversed: Boolean = false)
@@ -129,6 +148,11 @@ data class DoubleShortOp(val doubleV: VarDoubleValue, val shortV: VarShortValue,
         false -> VarDoubleValue(doubleV.doubleValue + shortV.shortValue)
         else -> VarDoubleValue(shortV.shortValue + doubleV.doubleValue)
     }
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            shortV.shortValue.compareTo(doubleV.doubleValue)
+                        else
+                            doubleV.doubleValue.compareTo(shortV.shortValue))
 }
 
 data class DoubleLongOp(val doubleV: VarDoubleValue, val longV: VarLongValue, val reversed: Boolean = false)
@@ -149,6 +173,11 @@ data class DoubleLongOp(val doubleV: VarDoubleValue, val longV: VarLongValue, va
         false -> VarDoubleValue(doubleV.doubleValue + longV.longValue)
         else -> VarDoubleValue(longV.longValue + doubleV.doubleValue)
     }
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            longV.longValue.compareTo(doubleV.doubleValue)
+                        else
+                            doubleV.doubleValue.compareTo(longV.longValue))
 }
 
 data class DoubleByteOp(val doubleV: VarDoubleValue, val byteV: VarByteValue, val reversed: Boolean = false)
@@ -169,6 +198,11 @@ data class DoubleByteOp(val doubleV: VarDoubleValue, val byteV: VarByteValue, va
         false -> VarDoubleValue(doubleV.doubleValue + byteV.byteValue)
         else -> VarDoubleValue(byteV.byteValue + doubleV.doubleValue)
     }
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            byteV.byteValue.compareTo(doubleV.doubleValue)
+                        else
+                            doubleV.doubleValue.compareTo(byteV.byteValue))
 }
 
 data class FloatByteOp(val floatV: VarFloatValue, val byteV: VarByteValue, val reversed: Boolean = false)
@@ -189,6 +223,12 @@ data class FloatByteOp(val floatV: VarFloatValue, val byteV: VarByteValue, val r
         false -> VarFloatValue(floatV.floatValue + byteV.byteValue)
         else -> VarFloatValue(byteV.byteValue + floatV.floatValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            byteV.byteValue.compareTo(floatV.floatValue)
+                        else
+                            floatV.floatValue.compareTo(byteV.byteValue))
 }
 
 data class FloatShortOp(val floatV: VarFloatValue, val shortV: VarShortValue, val reversed: Boolean = false)
@@ -210,6 +250,12 @@ data class FloatShortOp(val floatV: VarFloatValue, val shortV: VarShortValue, va
         false -> VarFloatValue(floatV.floatValue + shortV.shortValue)
         else -> VarFloatValue(shortV.shortValue + floatV.floatValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            shortV.shortValue.compareTo(floatV.floatValue)
+                        else
+                            floatV.floatValue.compareTo(shortV.shortValue))
 }
 
 data class FloatFloatOp(val floatV: VarFloatValue, val floatV1: VarFloatValue, val reversed: Boolean = false)
@@ -218,6 +264,8 @@ data class FloatFloatOp(val floatV: VarFloatValue, val floatV1: VarFloatValue, v
     override fun div(): ArithmeticVar = VarFloatValue(floatV.floatValue / floatV1.floatValue)
     override fun mul(): ArithmeticVar = VarFloatValue(floatV.floatValue * floatV1.floatValue)
     override fun sum(): ArithmeticVar = VarFloatValue(floatV.floatValue + floatV1.floatValue)
+
+    override fun cmp(): VarIntValue = VarIntValue(floatV.floatValue.compareTo(floatV1.floatValue))
 }
 
 data class FloatDoubleOp(val floatV: VarFloatValue, val doubleV: VarDoubleValue, val reversed: Boolean = false)
@@ -239,6 +287,12 @@ data class FloatDoubleOp(val floatV: VarFloatValue, val doubleV: VarDoubleValue,
         false -> VarDoubleValue(floatV.floatValue + doubleV.doubleValue)
         else -> VarDoubleValue(doubleV.doubleValue + floatV.floatValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            doubleV.doubleValue.compareTo(floatV.floatValue)
+                        else
+                            floatV.floatValue.compareTo(doubleV.doubleValue))
 }
 
 data class FloatLongOp(val floatV: VarFloatValue, val longV: VarLongValue, val reversed: Boolean = false)
@@ -260,6 +314,12 @@ data class FloatLongOp(val floatV: VarFloatValue, val longV: VarLongValue, val r
         false -> VarFloatValue(floatV.floatValue + longV.longValue)
         else -> VarFloatValue(longV.longValue + floatV.floatValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            longV.longValue.compareTo(floatV.floatValue)
+                        else
+                            floatV.floatValue.compareTo(longV.longValue))
 }
 
 data class IntLongOp(val intV: VarIntValue, val longV: VarLongValue, val reversed: Boolean = false)
@@ -281,6 +341,12 @@ data class IntLongOp(val intV: VarIntValue, val longV: VarLongValue, val reverse
         false -> VarLongValue(intV.intValue + longV.longValue)
         else -> VarLongValue(longV.longValue + intV.intValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            longV.longValue.compareTo(intV.intValue)
+                        else
+                            intV.intValue.compareTo(longV.longValue))
 }
 
 data class IntShortOp(val intV: VarIntValue, val shortV: VarShortValue, val reversed: Boolean = false)
@@ -302,6 +368,12 @@ data class IntShortOp(val intV: VarIntValue, val shortV: VarShortValue, val reve
         false -> VarIntValue(intV.intValue + shortV.shortValue)
         else -> VarIntValue(shortV.shortValue + intV.intValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            shortV.shortValue.compareTo(intV.intValue)
+                        else
+                            intV.intValue.compareTo(shortV.shortValue))
 }
 
 data class IntByteOp(val intV: VarIntValue, val byteV: VarByteValue, val reversed: Boolean = false)
@@ -323,6 +395,12 @@ data class IntByteOp(val intV: VarIntValue, val byteV: VarByteValue, val reverse
         false -> VarIntValue(intV.intValue + byteV.byteValue)
         else -> VarIntValue(byteV.byteValue + intV.intValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            byteV.byteValue.compareTo(intV.intValue)
+                        else
+                            intV.intValue.compareTo(byteV.byteValue))
 }
 
 data class IntIntOp(val intV1: VarIntValue, val intV2: VarIntValue)
@@ -331,6 +409,9 @@ data class IntIntOp(val intV1: VarIntValue, val intV2: VarIntValue)
     override fun div(): ArithmeticVar = VarIntValue(intV1.intValue / intV2.intValue)
     override fun mul(): ArithmeticVar = VarIntValue(intV1.intValue * intV2.intValue)
     override fun sum(): ArithmeticVar = VarIntValue(intV1.intValue + intV2.intValue)
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(intV1.intValue.compareTo(intV2.intValue))
 }
 
 data class IntDoubleOp(val intV: VarIntValue, val doubleV: VarDoubleValue, val reversed: Boolean = false)
@@ -353,6 +434,12 @@ data class IntDoubleOp(val intV: VarIntValue, val doubleV: VarDoubleValue, val r
         false -> VarDoubleValue(intV.intValue + doubleV.doubleValue)
         else -> VarDoubleValue(doubleV.doubleValue + intV.intValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                            doubleV.doubleValue.compareTo(intV.intValue)
+                        else
+                            intV.intValue.compareTo(doubleV.doubleValue))
 }
 
 data class IntFloatOp(val intV: VarIntValue, val floatV: VarFloatValue, val reversed: Boolean = false)
@@ -375,6 +462,12 @@ data class IntFloatOp(val intV: VarIntValue, val floatV: VarFloatValue, val reve
         false -> VarFloatValue(intV.intValue + floatV.floatValue)
         else -> VarFloatValue(floatV.floatValue + intV.intValue)
     }
+
+    override fun cmp(): VarIntValue =
+            VarIntValue(if (reversed)
+                floatV.floatValue.compareTo(intV.intValue)
+            else
+                intV.intValue.compareTo(floatV.floatValue))
 }
 
 abstract class Operation(val v1: ArithmeticVar, val v2: ArithmeticVar, reversed: Boolean) {
@@ -382,6 +475,7 @@ abstract class Operation(val v1: ArithmeticVar, val v2: ArithmeticVar, reversed:
     abstract fun sub(): ArithmeticVar
     abstract fun div(): ArithmeticVar
     abstract fun mul(): ArithmeticVar
+    abstract fun cmp(): VarIntValue
 }
 
 
@@ -390,6 +484,7 @@ data class VarShortValue(val shortValue: Short) : ArithmeticVar(shortValue.toStr
     override fun div(aV: ArithmeticVar): ArithmeticVar = createOp(aV).div()
     override fun mul(aV: ArithmeticVar): ArithmeticVar = createOp(aV).mul()
     override fun sum(aV: ArithmeticVar): ArithmeticVar = createOp(aV).sum()
+    override fun cmp(aV: ArithmeticVar): VarIntValue = createOp(aV).cmp()
 
     override fun createOp(aV: ArithmeticVar): Operation {
         return when (aV) {
@@ -408,6 +503,7 @@ data class VarByteValue(val byteValue: Byte) : ArithmeticVar(byteValue.toString(
     override fun div(aV: ArithmeticVar): ArithmeticVar = createOp(aV).div()
     override fun mul(aV: ArithmeticVar): ArithmeticVar = createOp(aV).mul()
     override fun sum(aV: ArithmeticVar): ArithmeticVar = createOp(aV).sum()
+    override fun cmp(aV: ArithmeticVar): VarIntValue = createOp(aV).cmp()
 
     override fun createOp(aV: ArithmeticVar): Operation {
         return when (aV) {
@@ -426,6 +522,7 @@ data class VarLongValue(val longValue: Long) : ArithmeticVar(longValue.toString(
     override fun div(aV: ArithmeticVar): ArithmeticVar = createOp(aV).div()
     override fun mul(aV: ArithmeticVar): ArithmeticVar = createOp(aV).mul()
     override fun sum(aV: ArithmeticVar): ArithmeticVar = createOp(aV).sum()
+    override fun cmp(aV: ArithmeticVar): VarIntValue = createOp(aV).cmp()
 
     override fun createOp(aV: ArithmeticVar): Operation {
         return when (aV) {
@@ -445,6 +542,7 @@ data class VarFloatValue(val floatValue: Float) : ArithmeticVar(floatValue.toStr
     override fun div(aV: ArithmeticVar): ArithmeticVar = createOp(aV).div()
     override fun mul(aV: ArithmeticVar): ArithmeticVar = createOp(aV).mul()
     override fun sum(aV: ArithmeticVar): ArithmeticVar = createOp(aV).sum()
+    override fun cmp(aV: ArithmeticVar): VarIntValue = createOp(aV).cmp()
 
     override fun createOp(aV: ArithmeticVar): Operation {
         return when (aV) {
@@ -463,6 +561,7 @@ data class VarDoubleValue(val doubleValue: Double) : ArithmeticVar(doubleValue.t
     override fun div(aV: ArithmeticVar): ArithmeticVar = createOp(aV).div()
     override fun mul(aV: ArithmeticVar): ArithmeticVar = createOp(aV).mul()
     override fun sum(aV: ArithmeticVar): ArithmeticVar = createOp(aV).sum()
+    override fun cmp(aV: ArithmeticVar): VarIntValue = createOp(aV).cmp()
 
     override fun createOp(aV: ArithmeticVar): Operation {
         return when (aV) {
@@ -481,6 +580,7 @@ data class VarIntValue(val intValue: Int) : ArithmeticVar(intValue.toString(), P
     override fun div(aV: ArithmeticVar): ArithmeticVar = createOp(aV).div()
     override fun mul(aV: ArithmeticVar): ArithmeticVar = createOp(aV).mul()
     override fun sum(aV: ArithmeticVar): ArithmeticVar = createOp(aV).sum()
+    override fun cmp(aV: ArithmeticVar): VarIntValue = createOp(aV).cmp()
 
     override fun createOp(aV: ArithmeticVar): Operation {
         return when (aV) {
@@ -500,6 +600,8 @@ sealed class ArithmeticVar(val value: String, val type: PropagatedTypes): Propag
     abstract fun div(aV: ArithmeticVar): ArithmeticVar
     abstract fun mul(aV: ArithmeticVar): ArithmeticVar
     abstract fun createOp(aV: ArithmeticVar): Operation
+    abstract fun cmp(aV: ArithmeticVar): VarIntValue
+    fun eq(aV: ArithmeticVar): BooleanVar = BooleanVar(this.value == aV.value)
 }
 
 data class BooleanVar(val value: Boolean): PropagatedVariable(value.toString(), PropagatedTypes.BOOLEAN) {
@@ -509,9 +611,8 @@ data class BooleanVar(val value: Boolean): PropagatedVariable(value.toString(), 
 }
 
 data class StringVar(val value: String): PropagatedVariable(value, PropagatedTypes.STRING) {
-    fun sum(v: PropagatedVariable): String = value +
-                                             if (v is ArithmeticVar) v.value
-                                             else (v as BooleanVar).value
+    fun sum(v: PropagatedVariable): StringVar = StringVar(value + v.pValue)
 }
 
 sealed class PropagatedVariable(val pValue: String, val pType: PropagatedTypes)
+

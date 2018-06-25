@@ -1,0 +1,47 @@
+== foo ==
+fun foo() {
+    val x = 1
+    val y = 0
+    val z = 1.0
+    val w = 0.0
+
+    //val c = x / y
+    val n = z / w
+    val d = z / y
+
+}
+---------------------
+L0:
+  1 <START>                                                                                              VAL: in: {} out: {}
+  2 mark({ val x = 1 val y = 0 val z = 1.0 val w = 0.0 //val c = x / y val n = z / w val d = z / y })    VAL: in: {} out: {}
+    v(val x = 1)                                                                                         VAL: in: {} out: {}
+    r(1) -> <v0>                                                                                         VAL: in: {} out: {}
+    w(x|<v0>)                                                                                            VAL: in: {} out: {x=C: <1, INT>}
+    v(val y = 0)                                                                                         VAL: in: {x=C: <1, INT>} out: {x=C: <1, INT>}
+    r(0) -> <v1>                                                                                         VAL: in: {x=C: <1, INT>} out: {x=C: <1, INT>}
+    w(y|<v1>)                                                                                            VAL: in: {x=C: <1, INT>} out: {x=C: <1, INT>, y=C: <0, INT>}
+    v(val z = 1.0)                                                                                       VAL: in: {x=C: <1, INT>, y=C: <0, INT>} out: {x=C: <1, INT>, y=C: <0, INT>}
+    r(1.0) -> <v2>                                                                                       VAL: in: {x=C: <1, INT>, y=C: <0, INT>} out: {x=C: <1, INT>, y=C: <0, INT>}
+    w(z|<v2>)                                                                                            VAL: in: {x=C: <1, INT>, y=C: <0, INT>} out: {x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    v(val w = 0.0)                                                                                       VAL: in: {x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    r(0.0) -> <v3>                                                                                       VAL: in: {x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    w(w|<v3>)                                                                                            VAL: in: {x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    v(val n = z / w)                                                                                     VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    r(z) -> <v4>                                                                                         VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    r(w) -> <v5>                                                                                         VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    mark(z / w)                                                                                          VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    call(z / w, div|<v4>, <v5>) -> <v6>                                                                  VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    w(n|<v6>)                                                                                            VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    v(val d = z / y)                                                                                     VAL: in: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    r(z) -> <v7>                                                                                         VAL: in: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    r(y) -> <v8>                                                                                         VAL: in: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    mark(z / y)                                                                                          VAL: in: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    call(z / y, div|<v7>, <v8>) -> <v9>                                                                  VAL: in: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+    w(d|<v9>)                                                                                            VAL: in: {n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {d=C: <Infinity, DOUBLE>, n=C: <Infinity, DOUBLE>, w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+L1:
+  1 <END>                                                                                                VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+error:
+    <ERROR>                                                                                              VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+sink:
+    <SINK>                                                                                               VAL: in: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>} out: {w=C: <0.0, DOUBLE>, x=C: <1, INT>, y=C: <0, INT>, z=C: <1.0, DOUBLE>}
+=====================

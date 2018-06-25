@@ -1,6 +1,6 @@
 == foo ==
 fun foo(x: Boolean) {
-    var b: Int
+    val b: Int
     if (x) {
         b = 3
     } else {
@@ -15,43 +15,43 @@ fun foo(x: Boolean) {
 }
 ---------------------
 L0:
-  1 <START>
-    v(x: Boolean)
-    magic[FAKE_INITIALIZER](x: Boolean) -> <v0>
-    w(x|<v0>)
-  2 mark({ var b: Int if (x) { b = 3 } else { b = 2 } var c: Int if (x) { c = 4 } else { c = 4 } })    VAL: in: {} out: {}
-    v(var b: Int)                                                                                      VAL: in: {} out: {b=C?}
-    mark(if (x) { b = 3 } else { b = 2 })
-    r(x) -> <v1>
-    jf(L2|<v1>)
-  3 mark({ b = 3 })
-    r(3) -> <v2>                                                                                       VAL: in: {b=C?} out: {b=C?}
-    w(b|<v2>)                                                                                          VAL: in: {b=C?} out: {b=C: <3, INT>}
-  2 jmp(L3)                                                                                            VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
+  1 <START>                                                                                            VAL: in: {} out: {}
+    v(x: Boolean)                                                                                      VAL: in: {} out: {}
+    magic[FAKE_INITIALIZER](x: Boolean) -> <v0>                                                        VAL: in: {} out: {}
+    w(x|<v0>)                                                                                          VAL: in: {} out: {x=N_C}
+  2 mark({ val b: Int if (x) { b = 3 } else { b = 2 } var c: Int if (x) { c = 4 } else { c = 4 } })    VAL: in: {x=N_C} out: {x=N_C}
+    v(val b: Int)                                                                                      VAL: in: {x=N_C} out: {x=N_C}
+    mark(if (x) { b = 3 } else { b = 2 })                                                              VAL: in: {x=N_C} out: {x=N_C}
+    r(x) -> <v1>                                                                                       VAL: in: {x=N_C} out: {x=N_C}
+    jf(L2|<v1>)                                                                                        VAL: in: {x=N_C} out: {x=N_C}
+  3 mark({ b = 3 })                                                                                    VAL: in: {x=N_C} out: {x=C: <true, BOOLEAN>}
+    r(3) -> <v2>                                                                                       VAL: in: {x=C: <true, BOOLEAN>} out: {x=C: <true, BOOLEAN>}
+    w(b|<v2>)                                                                                          VAL: in: {x=C: <true, BOOLEAN>} out: {b=C: <3, INT>, x=C: <true, BOOLEAN>}
+  2 jmp(L3)                                                                                            VAL: in: {b=C: <3, INT>, x=C: <true, BOOLEAN>} out: {b=C: <3, INT>, x=C: <true, BOOLEAN>}
 L2 [else branch]:
-  3 mark({ b = 2 })
-    r(2) -> <v4>                                                                                       VAL: in: {b=C?} out: {b=C?}
-    w(b|<v4>)                                                                                          VAL: in: {b=C?} out: {b=C: <2, INT>}
+  3 mark({ b = 2 })                                                                                    VAL: in: {x=N_C} out: {x=C: <false, BOOLEAN>}
+    r(2) -> <v4>                                                                                       VAL: in: {x=C: <false, BOOLEAN>} out: {x=C: <false, BOOLEAN>}
+    w(b|<v4>)                                                                                          VAL: in: {x=C: <false, BOOLEAN>} out: {b=C: <2, INT>, x=C: <false, BOOLEAN>}
 L3 ['if' expression result]:
-  2 merge(if (x) { b = 3 } else { b = 2 }|!<v3>, !<v5>) -> <v6>                                        VAL: in: {b=N_C} out: {b=N_C}
-    v(var c: Int)                                                                                      VAL: in: {b=N_C} out: {b=N_C, c=C?}
-    mark(if (x) { c = 4 } else { c = 4 })
-    r(x) -> <v7>
-    jf(L4|<v7>)
-  3 mark({ c = 4 })
-    r(4) -> <v8>                                                                                       VAL: in: {b=N_C, c=C?} out: {b=N_C, c=C?}
-    w(c|<v8>)                                                                                          VAL: in: {b=N_C, c=C?} out: {b=N_C, c=C: <4, INT>}
-  2 jmp(L5)                                                                                            VAL: in: {b=N_C, c=C: <4, INT>} out: {b=N_C, c=C: <4, INT>}
+  2 merge(if (x) { b = 3 } else { b = 2 }|!<v3>, !<v5>) -> <v6>                                        VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    v(var c: Int)                                                                                      VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    mark(if (x) { c = 4 } else { c = 4 })                                                              VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    r(x) -> <v7>                                                                                       VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    jf(L4|<v7>)                                                                                        VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+  3 mark({ c = 4 })                                                                                    VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=C: <true, BOOLEAN>}
+    r(4) -> <v8>                                                                                       VAL: in: {b=N_C, x=C: <true, BOOLEAN>} out: {b=N_C, x=C: <true, BOOLEAN>}
+    w(c|<v8>)                                                                                          VAL: in: {b=N_C, x=C: <true, BOOLEAN>} out: {b=N_C, c=C: <4, INT>, x=C: <true, BOOLEAN>}
+  2 jmp(L5)                                                                                            VAL: in: {b=N_C, c=C: <4, INT>, x=C: <true, BOOLEAN>} out: {b=N_C, c=C: <4, INT>, x=C: <true, BOOLEAN>}
 L4 [else branch]:
-  3 mark({ c = 4 })
-    r(4) -> <v10>                                                                                      VAL: in: {b=N_C, c=C?} out: {b=N_C, c=C?}
-    w(c|<v10>)                                                                                         VAL: in: {b=N_C, c=C?} out: {b=N_C, c=C: <4, INT>}
+  3 mark({ c = 4 })                                                                                    VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=C: <false, BOOLEAN>}
+    r(4) -> <v10>                                                                                      VAL: in: {b=N_C, x=C: <false, BOOLEAN>} out: {b=N_C, x=C: <false, BOOLEAN>}
+    w(c|<v10>)                                                                                         VAL: in: {b=N_C, x=C: <false, BOOLEAN>} out: {b=N_C, c=C: <4, INT>, x=C: <false, BOOLEAN>}
 L5 ['if' expression result]:
-  2 merge(if (x) { c = 4 } else { c = 4 }|!<v9>, !<v11>) -> <v12>                                      VAL: in: {b=N_C, c=C: <4, INT>} out: {b=N_C, c=C: <4, INT>}
+  2 merge(if (x) { c = 4 } else { c = 4 }|!<v9>, !<v11>) -> <v12>                                      VAL: in: {b=N_C, c=C: <4, INT>, x=N_C} out: {b=N_C, c=C: <4, INT>, x=N_C}
 L1:
-  1 <END>
+  1 <END>                                                                                              VAL: in: {x=N_C} out: {x=N_C}
 error:
-    <ERROR>
+    <ERROR>                                                                                            VAL: in: {} out: {}
 sink:
-    <SINK>                                                                                             VAL: in: {} out: {}
+    <SINK>                                                                                             VAL: in: {x=N_C} out: {x=N_C}
 =====================

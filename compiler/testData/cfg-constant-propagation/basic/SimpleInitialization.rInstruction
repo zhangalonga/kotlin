@@ -1,26 +1,46 @@
 == bar ==
 fun bar() {
-    val b: Int
-    b = 3
-
-    val a = 4
-    var c
+    val b = 3
+    val c = 4
+    var z = 0
+    if (b * c <= 10) {
+        z = 1
+    }
 }
 ---------------------
 L0:
-  1 <START>
-  2 mark({ val b: Int b = 3 val a = 4 var c })    VAL: in: {} out: {}
-    v(val b: Int)                                 VAL: in: {} out: {b=C?}
-    r(3) -> <v0>                                  VAL: in: {b=C?} out: {b=C?}
-    w(b|<v0>)                                     VAL: in: {b=C?} out: {b=C: <3, INT>}
-    v(val a = 4)
-    r(4) -> <v1>                                  VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
-    w(a|<v1>)                                     VAL: in: {b=C: <3, INT>} out: {a=C: <4, INT>, b=C: <3, INT>}
-    v(var c)                                      VAL: in: {a=C: <4, INT>, b=C: <3, INT>} out: {a=C: <4, INT>, b=C: <3, INT>, c=C?}
+  1 <START>                                                               VAL: in: {} out: {}
+  2 mark({ val b = 3 val c = 4 var z = 0 if (b * c <= 10) { z = 1 } })    VAL: in: {} out: {}
+    v(val b = 3)                                                          VAL: in: {} out: {}
+    r(3) -> <v0>                                                          VAL: in: {} out: {}
+    w(b|<v0>)                                                             VAL: in: {} out: {b=C: <3, INT>}
+    v(val c = 4)                                                          VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
+    r(4) -> <v1>                                                          VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>}
+    w(c|<v1>)                                                             VAL: in: {b=C: <3, INT>} out: {b=C: <3, INT>, c=C: <4, INT>}
+    v(var z = 0)                                                          VAL: in: {b=C: <3, INT>, c=C: <4, INT>} out: {b=C: <3, INT>, c=C: <4, INT>}
+    r(0) -> <v2>                                                          VAL: in: {b=C: <3, INT>, c=C: <4, INT>} out: {b=C: <3, INT>, c=C: <4, INT>}
+    w(z|<v2>)                                                             VAL: in: {b=C: <3, INT>, c=C: <4, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    mark(if (b * c <= 10) { z = 1 })                                      VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    r(b) -> <v3>                                                          VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    r(c) -> <v4>                                                          VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    mark(b * c)                                                           VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    call(b * c, times|<v3>, <v4>) -> <v5>                                 VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    r(10) -> <v6>                                                         VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    mark(b * c <= 10)                                                     VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    call(b * c <= 10, compareTo|<v5>, <v6>) -> <v7>                       VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    jf(L2|<v7>)                                                           VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+  3 mark({ z = 1 })                                                       VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    r(1) -> <v8>                                                          VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+    w(z|<v8>)                                                             VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <1, INT>}
+  2 jmp(L3)                                                               VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <1, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <1, INT>}
+L2 [else branch]:
+    read (Unit)                                                           VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>} out: {b=C: <3, INT>, c=C: <4, INT>, z=C: <0, INT>}
+L3 ['if' expression result]:
+    merge(if (b * c <= 10) { z = 1 }|!<v9>) -> <v10>                      VAL: in: {b=C: <3, INT>, c=C: <4, INT>, z=N_C} out: {b=C: <3, INT>, c=C: <4, INT>, z=N_C}
 L1:
-  1 <END>
+  1 <END>                                                                 VAL: in: {b=C: <3, INT>, c=C: <4, INT>} out: {b=C: <3, INT>, c=C: <4, INT>}
 error:
-    <ERROR>
+    <ERROR>                                                               VAL: in: {b=C: <3, INT>, c=C: <4, INT>} out: {b=C: <3, INT>, c=C: <4, INT>}
 sink:
-    <SINK>                                        VAL: in: {a=C: <4, INT>} out: {a=C: <4, INT>}
+    <SINK>                                                                VAL: in: {b=C: <3, INT>, c=C: <4, INT>} out: {b=C: <3, INT>, c=C: <4, INT>}
 =====================

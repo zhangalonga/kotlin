@@ -144,7 +144,7 @@ sealed class ValueState {
     fun merge(other: ValueState): ValueState {
         if (this is VariableWithConstValue
             && other is VariableWithConstValue
-            && this == other)
+            && this.toString() == other.toString())
             return this
         return VariableWithNotAConstValue
     }
@@ -157,6 +157,13 @@ class VariableWithConstValue(val variable: PropagatedVariable) : ValueState() {
         val type = variable.pType
         return "C: <$value, $type>"
     }
+    fun isZeroValue(): Boolean =
+            when(variable.pType) {
+                PropagatedTypes.FLOAT -> variable.pValue.toFloat() == 0.0f
+                PropagatedTypes.DOUBLE -> variable.pValue.toDouble() == 0.0
+                PropagatedTypes.INT -> variable.pValue.toInt() == 0
+                else -> false
+            }
 }
 
 object VariableWithNotAConstValue : ValueState()
@@ -167,11 +174,20 @@ class VariableDataFlowState private constructor(val valueState: ValueState) {
                 VariableDataFlowState(valueState)
     }
 
+    override fun equals(other: Any?): Boolean =
+            if (other is VariableDataFlowState)
+                this.toString() == other.toString()
+            else false
+
     override fun toString(): String {
         return when (this.valueState) {
-            is VariableWithConstValue -> valueState.toString()
+            is VariableWithConstValue -> this.valueState.toString()
             is VariableWithNotAConstValue -> "N_C"
         }
+    }
+
+    override fun hashCode(): Int {
+        return valueState.hashCode()
     }
 }
 

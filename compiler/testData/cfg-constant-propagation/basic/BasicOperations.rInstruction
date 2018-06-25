@@ -1,42 +1,62 @@
 == operations ==
 fun operations() {
     var a = 1
-    var b = 2
+    val b = 2
 
-    var c = a + b
+    val c = a + b
     var d = c - 1
     --d
+
+    val z = true
+    val j = !z
+
+    val m = z || j
 }
 ---------------------
 L0:
-  1 <START>
-  2 mark({ var a = 1 var b = 2 var c = a + b var d = c - 1 --d })    VAL: in: {} out: {}
-    v(var a = 1)                                                     VAL: in: {} out: {a=C?}
-    r(1) -> <v0>                                                     VAL: in: {a=C?} out: {a=C?}
-    w(a|<v0>)                                                        VAL: in: {a=C?} out: {a=C: <1, INT>}
-    v(var b = 2)                                                     VAL: in: {a=C: <1, INT>} out: {a=C: <1, INT>, b=C?}
-    r(2) -> <v1>                                                     VAL: in: {a=C: <1, INT>, b=C?} out: {a=C: <1, INT>, b=C?}
-    w(b|<v1>)                                                        VAL: in: {a=C: <1, INT>, b=C?} out: {a=C: <1, INT>, b=C: <2, INT>}
-    v(var c = a + b)                                                 VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?}
-    r(a) -> <v2>
-    r(b) -> <v3>
-    mark(a + b)
-    call(a + b, plus|<v2>, <v3>) -> <v4>                             VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?}
-    w(c|<v4>)                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?}
-    v(var d = c - 1)                                                 VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
-    r(c) -> <v5>
-    r(1) -> <v6>
-    mark(c - 1)
-    call(c - 1, minus|<v5>, <v6>) -> <v7>                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
-    w(d|<v7>)                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
-    r(d) -> <v8>
-    mark(--d)
-    call(--d, dec|<v8>) -> <v9>                                      VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
-    w(d|<v9>)                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?} out: {a=C: <1, INT>, b=C: <2, INT>, c=C?, d=C?}
+  1 <START>                                                                                                 VAL: in: {} out: {}
+  2 mark({ var a = 1 val b = 2 val c = a + b var d = c - 1 --d val z = true val j = !z val m = z || j })    VAL: in: {} out: {}
+    v(var a = 1)                                                                                            VAL: in: {} out: {}
+    r(1) -> <v0>                                                                                            VAL: in: {} out: {}
+    w(a|<v0>)                                                                                               VAL: in: {} out: {a=C: <1, INT>}
+    v(val b = 2)                                                                                            VAL: in: {a=C: <1, INT>} out: {a=C: <1, INT>}
+    r(2) -> <v1>                                                                                            VAL: in: {a=C: <1, INT>} out: {a=C: <1, INT>}
+    w(b|<v1>)                                                                                               VAL: in: {a=C: <1, INT>} out: {a=C: <1, INT>, b=C: <2, INT>}
+    v(val c = a + b)                                                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>}
+    r(a) -> <v2>                                                                                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>}
+    r(b) -> <v3>                                                                                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>}
+    mark(a + b)                                                                                             VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>}
+    call(a + b, plus|<v2>, <v3>) -> <v4>                                                                    VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>}
+    w(c|<v4>)                                                                                               VAL: in: {a=C: <1, INT>, b=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>}
+    v(var d = c - 1)                                                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>}
+    r(c) -> <v5>                                                                                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>}
+    r(1) -> <v6>                                                                                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>}
+    mark(c - 1)                                                                                             VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>}
+    call(c - 1, minus|<v5>, <v6>) -> <v7>                                                                   VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>}
+    w(d|<v7>)                                                                                               VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>}
+    r(d) -> <v8>                                                                                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>}
+    mark(--d)                                                                                               VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>}
+    call(--d, dec|<v8>) -> <v9>                                                                             VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>}
+    w(d|<v9>)                                                                                               VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <2, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>}
+    v(val z = true)                                                                                         VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>}
+    r(true) -> <v10>                                                                                        VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>}
+    w(z|<v10>)                                                                                              VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>}
+    v(val j = !z)                                                                                           VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>}
+    r(z) -> <v11>                                                                                           VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>}
+    mark(!z)                                                                                                VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>}
+    call(!z, not|<v11>) -> <v12>                                                                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>}
+    w(j|<v12>)                                                                                              VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>}
+    v(val m = z || j)                                                                                       VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>}
+    r(z) -> <v13>                                                                                           VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>}
+    jt(L2|<v13>)                                                                                            VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>}
+    r(j) -> <v14>                                                                                           VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>}
+L2 [result of boolean operation]:
+    magic[OR](z || j|<v13>, <v14>) -> <v15>                                                                 VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>}
+    w(m|<v15>)                                                                                              VAL: in: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, z=C: <true, BOOLEAN>} out: {a=C: <1, INT>, b=C: <2, INT>, c=C: <3, INT>, d=C: <1, INT>, j=C: <false, BOOLEAN>, m=C: <true, BOOLEAN>, z=C: <true, BOOLEAN>}
 L1:
-  1 <END>
+  1 <END>                                                                                                   VAL: in: {b=C: <2, INT>, z=C: <true, BOOLEAN>} out: {b=C: <2, INT>, z=C: <true, BOOLEAN>}
 error:
-    <ERROR>
+    <ERROR>                                                                                                 VAL: in: {b=C: <2, INT>, z=C: <true, BOOLEAN>} out: {b=C: <2, INT>, z=C: <true, BOOLEAN>}
 sink:
-    <SINK>                                                           VAL: in: {} out: {}
+    <SINK>                                                                                                  VAL: in: {b=C: <2, INT>, z=C: <true, BOOLEAN>} out: {b=C: <2, INT>, z=C: <true, BOOLEAN>}
 =====================

@@ -32,7 +32,7 @@ import java.util.Map;
 
 
 
-public class AbstractConstantPropogationTest extends AbstractDataFlowTest {
+public abstract class AbstractConstantPropagationTest extends AbstractPseudocodeTest {
 
     @Override
     public void dumpInstructions(
@@ -50,9 +50,9 @@ public class AbstractConstantPropogationTest extends AbstractDataFlowTest {
         dumpInstructions(pseudocode, out, (instruction, next, prev) -> {
             StringBuilder result = new StringBuilder();
             Edges<ReadOnlyConstValueControlFlowInfo> valueEdges = variableValues.get(instruction);
-            Edges<ReadOnlyConstValueControlFlowInfo> nextValueEdges = variableValues.get(next);
+            Edges<ReadOnlyConstValueControlFlowInfo> prevValueEdges = variableValues.get(prev);
             String valuesData = "";
-            if (valueEdges != null && !valueEdges.equals(nextValueEdges)) {
+            if (valueEdges != null /*&& !valueEdges.equals(prevValueEdges)*/) {
                 valuesData = dumpEdgesData(valuePrefix, valueEdges, pseudocodeVariablesData);
             }
             result.append(String.format("%1$-" + initializersColumnWidth + "s", valuesData));

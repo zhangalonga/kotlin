@@ -15,13 +15,18 @@
  */
 
 package org.jetbrains.kotlin.cfg
+import com.intellij.codeInsight.controlflow.ConditionalInstruction
 import com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.KtNodeType
 import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.cfg.pseudocode.PseudoValue
 import org.jetbrains.kotlin.cfg.pseudocode.Pseudocode
 import org.jetbrains.kotlin.cfg.pseudocode.PseudocodeUtil
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.Instruction
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.eval.*
+import org.jetbrains.kotlin.cfg.pseudocode.instructions.jumps.ConditionalJumpInstruction
+import org.jetbrains.kotlin.cfg.pseudocode.instructions.special.MarkInstruction
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.special.VariableDeclarationInstruction
 import org.jetbrains.kotlin.cfg.pseudocodeTraverser.Edges
 import org.jetbrains.kotlin.cfg.pseudocodeTraverser.TraversalOrder
@@ -34,14 +39,29 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingContextUtils.variableDescriptorForDeclaration
 import org.jetbrains.kotlin.util.OperatorNameConventions
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
+import java.io.File
+import java.io.FileOutputStream
+import java.io.PrintWriter
 
 private typealias ImmutableSet<T> = javaslang.collection.Set<T>
 private typealias ImmutableHashSet<T> = javaslang.collection.HashSet<T>
 
 class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingContext: BindingContext) {
 
+    private val whenExElseInstructions = hashMapOf<MagicInstruction, ConstValueControlFlowInfo>()
     private val pseudoValueToValue = hashMapOf<PseudoValue, VariableWithConstValue>()
+
+    val countedPseudoValues: HashMap<PseudoValue, VariableWithConstValue>
+        get() = pseudoValueToValue
+
+
     private val uncountedTrivialVals = hashSetOf<VariableDescriptor>()
+    private val pseudoValueToDescriptor = hashMapOf<PseudoValue, VariableDescriptor>()
+    private val markInstructionsToDescriptorState = hashMapOf<MarkInstruction, DescriptorConstState>()
+    private val negativePseudoValues = hashSetOf<PseudoValue>()
+
+    private data class DescriptorConstState(val descriptor: VariableDescriptor,
+                                            val variableWithConstValue: VariableWithConstValue)
 
     private val containsDoWhile = pseudocode.rootPseudocode.containsDoWhile
     private val pseudocodeVariableDataCollector = PseudocodeVariableDataCollector(bindingContext, pseudocode)
@@ -491,18 +511,25 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
         private fun mergeIncomingEdgesDataForConstValues(
                 instruction: Instruction,
                 incomingEdgesData: Collection<ConstValueControlFlowInfo>,
-                blockScopeVariableInfo: BlockScopeVariableInfo
+                blockScopeVariableInfo: BlockScopeVariableInfo,
+                whenExElseInstructions: HashMap<MagicInstruction, ConstValueControlFlowInfo>
         ): ConstValueControlFlowInfo {
             if (incomingEdgesData.size == 1) return incomingEdgesData.single()
             if (incomingEdgesData.isEmpty()) return EMPTY_CONST_VALUE_DATA_FLOW_INFO
             val variablesInScope = linkedSetOf<VariableDescriptor>()
-            for (edgeData in incomingEdgesData) {
+
+            val previousInstruction = instruction.previousInstructions.last()
+            val incomingData: Collection<ConstValueControlFlowInfo> =
+                    if (previousInstruction in whenExElseInstructions.keys)
+                        incomingEdgesData.filter { it != whenExElseInstructions[previousInstruction] }
+                    else incomingEdgesData
+            for (edgeData in incomingData) {
                 variablesInScope.addAll(edgeData.keySet())
             }
 
             return variablesInScope.fold(EMPTY_CONST_VALUE_DATA_FLOW_INFO) { result, variable ->
                 var valueState: ValueState? = null
-                for (edgeData in incomingEdgesData) {
+                for (edgeData in incomingData) {
 
                     val varControlFlowState = edgeData.getOrNull(variable)
                                               ?: setDefaultStatesForVariables(
@@ -525,15 +552,16 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
         fun ReadValueInstruction.getConstant(): VariableDataFlowState? {
             val element = element
             val variable = TypesResolver.resolve(element.node.elementType, element.text)
-            if (true)
-                return VariableDataFlowState.create(VariableWithConstValue(variable))
-            return null
+            return if (variable != null)
+                VariableDataFlowState.create(VariableWithConstValue(variable))
+            else null
         }
     }
 
     object TypesResolver {
 
-        fun resolve(type: IElementType, value: String): PropagatedVariable {
+        fun resolve(type: IElementType, value: String): PropagatedVariable? {
+
             return when(type) {
                 KtNodeTypes.INTEGER_CONSTANT -> {
                     if (value.endsWith('l', true))
@@ -547,7 +575,8 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
                 }
                 //KtNodeTypes.CHARACTER_CONSTANT -> PropagatedTypes.CHAR
                 KtNodeTypes.BOOLEAN_CONSTANT -> BooleanVar(value.toBoolean())
-                else -> StringVar(value)
+                KtNodeTypes.STRING_TEMPLATE -> StringVar(value)
+                else -> null
             }
         }
 
@@ -594,19 +623,36 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
             result = 31 * result + (delegate?.hashCode() ?: 0)
             return result
         }
+        companion object {
+            val x = 5
+        }
     }
 
-    private fun FunctionDescriptor.getResultFromBasicOperation(input1: ArithmeticVar, input2: ArithmeticVar?): ArithmeticVar? {
-        val canPerformOperation = input2 != null
-        return when (this.name) {
-            OperatorNameConventions.PLUS -> if (canPerformOperation) input1.sum(input2!!) else null
-            OperatorNameConventions.MINUS -> if (canPerformOperation) input1.sum(input2!!) else null
-            OperatorNameConventions.DIV -> if (canPerformOperation) input1.sum(input2!!) else null
-            OperatorNameConventions.TIMES -> if (canPerformOperation) input1.sum(input2!!) else null
-            OperatorNameConventions.INC -> input1.sum(VarIntValue(1))
-            OperatorNameConventions.DEC -> input1.sub(VarIntValue(1))
-            else -> null
+    private fun FunctionDescriptor.getResultFromBasicOperation(input1: PropagatedVariable,
+                                                               input2: PropagatedVariable?): PropagatedVariable? {
+        input2?.let {
+            val isZero = VariableWithConstValue(input2).isZeroValue()
+            if (input1 is ArithmeticVar && (input2 is ArithmeticVar?))
+                return when (this.name) {
+                    OperatorNameConventions.PLUS -> input1.sum(input2)
+                    OperatorNameConventions.MINUS -> input1.sub(input2)
+                    OperatorNameConventions.DIV -> if (!isZero) input1.div(input2) else null
+                    OperatorNameConventions.TIMES -> input1.mul(input2)
+                    OperatorNameConventions.INC -> input1.sum(VarIntValue(1))
+                    OperatorNameConventions.DEC -> input1.sub(VarIntValue(1))
+                    OperatorNameConventions.EQUALS -> input1.eq(input2)
+                    OperatorNameConventions.COMPARE_TO -> input1.cmp(input2)
+                    else -> null
+                }
         }
+
+        if (input1 is BooleanVar && input2 == null)
+            if (this.name == OperatorNameConventions.NOT) return input1.not()
+        if (input1 is StringVar
+            && input2 is PropagatedVariable
+            && this.name == OperatorNameConventions.PLUS) return input1.sum(input2)
+
+        return null
     }
 
     private fun computeConstValues(): Map<Instruction, Edges<ReadOnlyConstValueControlFlowInfo>> {
@@ -615,11 +661,15 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
 
         val resultForValsWithTrivialInitializer = computeValuesForTrivialVals()
 
-        if (rootVariables.nonTrivialVariables.isEmpty()) return resultForValsWithTrivialInitializer
+        if (rootVariables.nonTrivialVariables.isEmpty()
+            && uncountedTrivialVals.isEmpty()) return resultForValsWithTrivialInitializer
 
         return pseudocodeVariableDataCollector.collectData(TraversalOrder.FORWARD, ConstValueControlFlowInfo()) {
             instruction: Instruction, incomingEdgesData: Collection<ConstValueControlFlowInfo> ->
-            val enterInstructionData = mergeIncomingEdgesDataForConstValues(instruction, incomingEdgesData, blockScopeVariableInfo)
+            val enterInstructionData = mergeIncomingEdgesDataForConstValues(instruction,
+                                                                            incomingEdgesData,
+                                                                            blockScopeVariableInfo,
+                                                                            whenExElseInstructions)
             val exitInstructionData = addVariableValueStateFromCurrentInstructionIfAny(
                     instruction, enterInstructionData, blockScopeVariableInfo)
             Edges(enterInstructionData, exitInstructionData)
@@ -646,6 +696,9 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
                                 pseudoValueToValue.put(instruction.outputValue, valueState)
                             }
                         }
+                        if (KotlinBuiltIns.isBoolean(varDescriptor.type)) {
+                            pseudoValueToDescriptor.put(instruction.outputValue, varDescriptor)
+                        }
                     } else {
                         createConstValueState(instruction)?.let {
                             pseudoValueToValue.put(instruction.outputValue, it.valueState as VariableWithConstValue)
@@ -655,13 +708,13 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
                 is WriteValueInstruction -> {
                     val variableDescriptor = extractValWithTrivialInitializer(instruction)
                     if (variableDescriptor != null) {
-                        if (instruction.isTrivialInitializer()
-                        && instruction.inputValues.all { value -> pseudoValueToValue.containsKey(value) }) {
-                            descriptorToConstStateMap =
-                                    descriptorToConstStateMap.put(variableDescriptor, pseudoValueToValue[instruction.inputValues.first()])
-                        } else {
-                            uncountedTrivialVals.add(variableDescriptor)
-                        }
+                        if (instruction.isTrivialInitializer())
+                             if (instruction.inputValues.all { value -> pseudoValueToValue.containsKey(value) }) {
+                                descriptorToConstStateMap =
+                                        descriptorToConstStateMap.put(variableDescriptor, pseudoValueToValue[instruction.inputValues.first()])
+                             } else {
+                                uncountedTrivialVals.add(variableDescriptor)
+                             }
                     }
                 }
             }
@@ -670,23 +723,42 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
         }
         return result
     }
+
+    private fun CallInstruction.getBooleanResultFromCompareTo(cmpResult: PropagatedVariable?): BooleanVar? {
+        // >, >=, <, <=
+        val intCmpResult = cmpResult as? VarIntValue ?: return null
+        if (intCmpResult.intValue > 0) return BooleanVar(element.text.contains('>'))
+        if (intCmpResult.intValue < 0) return BooleanVar(element.text.contains('<'))
+        return BooleanVar(element.text.contains('='))
+    }
+
     private fun addVariableValueStateFromCurrentInstructionIfAny(
             instruction: Instruction,
             enterInstructionData: ConstValueControlFlowInfo,
             blockScopeVariableInfo: BlockScopeVariableInfo): ConstValueControlFlowInfo {
 
-/*        if (instruction is MagicInstruction) {
-            if (instruction.kind === MagicKind.EXHAUSTIVE_WHEN_ELSE) {
-                return enterInstructionData.iterator().fold(enterInstructionData) {
-                    result, (key, value) ->
-                    if (value.valueState != VariableWithNotAConstValue) {
-                        result.put(key, (instruction as ReadValueInstruction).getConstant()!!)
+        if (instruction is MagicInstruction) {
+            if (instruction.kind in arrayOf(MagicKind.AND, MagicKind.OR)
+                && instruction.inputValues.all { pseudoValueToValue.contains(it) }
+                && instruction.inputValues.size == 2) {
+                val input1 = pseudoValueToValue[instruction.inputValues[0]]!!.variable
+                val input2 = pseudoValueToValue[instruction.inputValues[1]]!!.variable
+                if (input1 is BooleanVar && input2 is BooleanVar) {
+                    val result = when (instruction.kind) {
+                        MagicKind.AND -> input1.and(input2)
+                        MagicKind.OR -> input1.or(input2)
+                        else -> null
                     }
-                    else result
+                    result?.let { pseudoValueToValue.put(instruction.outputValue, VariableWithConstValue(it)) }
                 }
             }
+
+            if (instruction.kind === MagicKind.EXHAUSTIVE_WHEN_ELSE) {
+                whenExElseInstructions.put(instruction, enterInstructionData)
+                return enterInstructionData
+            }
         }
- */
+
 
         if (instruction is CallInstruction) {
             val functionDescriptor
@@ -694,33 +766,90 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
             if (functionDescriptor != null && functionDescriptor.isOperator) {
                 val inputValues = instruction.inputValues
                 val outputValue = instruction.outputValue
-                if (!inputValues.filter { pseudoValueToValue.contains(it) }.isEmpty() && outputValue != null) {
-                    val input1 = pseudoValueToValue[inputValues[0]]?.variable as? ArithmeticVar
-                    val input2 = pseudoValueToValue[inputValues[1]]?.variable as? ArithmeticVar
-                    val operationResult =
-                            if (input1 != null)
-                                functionDescriptor.getResultFromBasicOperation(input1, input2)
-                            else null
+                if (inputValues.all { pseudoValueToValue.contains(it) } && outputValue != null) {
+                    val input1 = pseudoValueToValue[inputValues[0]]!!.variable
+                    val input2 = if (inputValues.size == 2) pseudoValueToValue[inputValues[1]]!!.variable else null
+                    val tempResult = functionDescriptor.getResultFromBasicOperation(input1, input2)
+                    val operationResult = if (functionDescriptor.name != OperatorNameConventions.COMPARE_TO)
+                        tempResult else instruction.getBooleanResultFromCompareTo(tempResult)
                     operationResult?.let { pseudoValueToValue.put(outputValue, VariableWithConstValue(it)) }
+                } else {
+                    (pseudoValueToValue[inputValues[0]] ?: pseudoValueToValue[inputValues[1]])?.let {
+                        if (it.isZeroValue() && functionDescriptor.name == OperatorNameConventions.TIMES && outputValue != null) {
+                            pseudoValueToValue.put(outputValue, it)
+                        }
+                    }
+                    if (inputValues.size == 1
+                        && functionDescriptor.name == OperatorNameConventions.NOT) {
+                        pseudoValueToDescriptor[inputValues.first()]?.let {
+                            pseudoValueToDescriptor.put(outputValue!!, it)
+                            negativePseudoValues.add(outputValue)
+                        }
+                    }
+                }
+            }
+        }
+        val previousInstructions = instruction.previousInstructions
+        val previousInstruction = if (previousInstructions.isNotEmpty()) previousInstructions.last() else null
+        if (instruction is MarkInstruction) {
+            if (previousInstruction is ConditionalJumpInstruction
+                && !pseudoValueToValue.containsKey(previousInstruction.inputValues.first())
+                && !previousInstruction.previousInstructions.any {
+                    it is InstructionWithValue
+                    && it.outputValue == previousInstruction.inputValues.first()
+            }) {
+                var nextElseInstructions: MarkInstruction? = null
+                var elseValue: Boolean? = null
+                val pseudoValue = previousInstruction.inputValues.first()
+                val inNegatives = previousInstruction.inputValues.first() in negativePseudoValues
+                if (previousInstruction.nextOnFalse == instruction) {
+                    pseudoValueToValue.put(pseudoValue, VariableWithConstValue(BooleanVar(inNegatives)))
+                    nextElseInstructions = previousInstruction.nextOnTrue as? MarkInstruction
+                    elseValue = true
+                } else if (previousInstruction.nextOnTrue == instruction) {
+                    pseudoValueToValue.put(pseudoValue,
+                                           VariableWithConstValue(BooleanVar(!inNegatives)))
+                    nextElseInstructions = previousInstruction.nextOnFalse as? MarkInstruction
+                    elseValue = false
+                }
+                val varDescriptor = pseudoValueToDescriptor[pseudoValue]
+                if (varDescriptor != null && nextElseInstructions != null && elseValue != null) {
+                    markInstructionsToDescriptorState.put(nextElseInstructions,
+                                                          DescriptorConstState(varDescriptor,
+                                                                               VariableWithConstValue(BooleanVar(elseValue))))
+                    val enterValueState = enterInstructionData.getOrNull(varDescriptor)
+                    var exitInstructionData = enterInstructionData
+                    val currentElemState = VariableDataFlowState.create(pseudoValueToValue[pseudoValue]!!)
+                    exitInstructionData = exitInstructionData.put(varDescriptor, currentElemState, enterValueState)
+                    return exitInstructionData
+                }
+
+            } else {
+                markInstructionsToDescriptorState[instruction]?.let {
+                    val enterValueState = enterInstructionData.getOrNull(it.descriptor)
+                    var exitInstructionData = enterInstructionData
+                    val currentElemState = VariableDataFlowState.create(it.variableWithConstValue)
+                    exitInstructionData = exitInstructionData.put(it.descriptor, currentElemState, enterValueState)
+                    return exitInstructionData
                 }
             }
         }
 
-//        if (instruction is ReadValueInstruction) {
-//            val varDescriptor = PseudocodeUtil.extractVariableDescriptorIfAny(instruction, bindingContext)
-//            if (varDescriptor != null) {
-//                if (enterInstructionData.containsKey(varDescriptor)) {
-//                    val valueState = enterInstructionData[varDescriptor]?.get()?.valueState
-//                    if (valueState is VariableWithConstValue) {
-//                        pseudoValueToValue.put(instruction.outputValue, valueState)
-//                    }
-//                }
-//            } else {
-//                createConstValueState(instruction)?.let {
-//                    pseudoValueToValue.put(instruction.outputValue, it.valueState as VariableWithConstValue)
-//                }
-//            }
-//        }
+        if (instruction is ReadValueInstruction) {
+            val varDescriptor = PseudocodeUtil.extractVariableDescriptorIfAny(instruction, bindingContext)
+            if (varDescriptor != null) {
+                if (enterInstructionData.containsKey(varDescriptor)) {
+                    val valueState = enterInstructionData[varDescriptor]?.get()?.valueState
+                    if (valueState is VariableWithConstValue) {
+                        pseudoValueToValue.put(instruction.outputValue, valueState)
+                    }
+                }
+            } else {
+                createConstValueState(instruction)?.let {
+                    pseudoValueToValue.put(instruction.outputValue, it.valueState as VariableWithConstValue)
+                }
+            }
+        }
 
         if (instruction !is WriteValueInstruction
             && instruction !is VariableDeclarationInstruction) {
@@ -739,14 +868,11 @@ class PseudocodeVariablesData(val pseudocode: Pseudocode, private val bindingCon
 //                return enterInstructionData
 //            }
             val enterValueState = enterInstructionData.getOrNull(variable)
-            val currentElemState: VariableDataFlowState
-            if (pseudoValueToValue.containsKey(instruction.inputValues.first())) {
-                currentElemState = VariableDataFlowState.create(pseudoValueToValue[instruction.inputValues.first()]!!)
-
+            val currentElemState = if (pseudoValueToValue.containsKey(instruction.inputValues.first())) {
+                VariableDataFlowState.create(pseudoValueToValue[instruction.inputValues.first()]!!)
             } else {
-                currentElemState = VariableDataFlowState.create(VariableWithNotAConstValue)
+                VariableDataFlowState.create(VariableWithNotAConstValue)
             }
-
             exitInstructionData =
                     exitInstructionData.put(variable, currentElemState, enterValueState)
         }

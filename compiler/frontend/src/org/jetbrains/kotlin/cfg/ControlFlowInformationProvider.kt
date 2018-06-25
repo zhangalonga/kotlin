@@ -5,7 +5,9 @@
 
 package org.jetbrains.kotlin.cfg
 
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil.getParentOfType
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.cfg.TailRecursionKind.*
 import org.jetbrains.kotlin.cfg.VariableUseState.*
@@ -49,6 +51,7 @@ import org.jetbrains.kotlin.types.TypeUtils.*
 import org.jetbrains.kotlin.types.expressions.ExpressionTypingUtils
 import org.jetbrains.kotlin.types.isFlexible
 import org.jetbrains.kotlin.util.OperatorNameConventions
+import java.util.concurrent.locks.Condition
 
 class ControlFlowInformationProvider private constructor(
     private val subroutine: KtElement,
@@ -92,6 +95,7 @@ class ControlFlowInformationProvider private constructor(
 
         if (trace.wantsDiagnostics()) {
             markUnusedVariables()
+
         }
 
         markStatements()
@@ -103,6 +107,11 @@ class ControlFlowInformationProvider private constructor(
         }
 
         checkWhenExpressions()
+
+        if (languageVersionSettings.supportsFeature(LanguageFeature.ConstantPropagation)) {
+            markAlwaysTrueFalseBooleanExpression()
+            markDivisionByZeroExpressions()
+        }
 
         checkConstructorConsistency()
     }
@@ -228,7 +237,6 @@ class ControlFlowInformationProvider private constructor(
             trace.record(BindingContext.UNREACHABLE_CODE, element, true)
         }
     }
-
     private fun collectUnreachableCode(): UnreachableCode {
         val reachableElements = hashSetOf<KtElement>()
         val unreachableElements = hashSetOf<KtElement>()
@@ -259,13 +267,59 @@ class ControlFlowInformationProvider private constructor(
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+    //  Boolean expression is always true/false analysis
+    private fun markAlwaysTrueFalseBooleanExpression() {
+        val variableValues = pseudocodeVariablesData.variableValues
+        val reportedDiagnosticMap = hashMapOf<Instruction, DiagnosticFactory<*>>()
+        pseudocode.traverse(TraversalOrder.FORWARD, variableValues) {
+            instruction: Instruction, _, _ ->
+            val ctxt = VariableValueContext(instruction, reportedDiagnosticMap)
+            if (instruction is OperationInstruction)
+                if ((instruction is MagicInstruction
+                    && (instruction.kind == MagicKind.AND
+                    || instruction.kind == MagicKind.OR))
+                    || instruction is CallInstruction) {
+                    val nextKtElement = (instruction.next as? ConditionalJumpInstruction)?.run { this.element }
+                    if (nextKtElement is KtIfExpression)
+                        pseudocodeVariablesData.countedPseudoValues[instruction.outputValue]?.let {
+                            if (it.variable.pType == PropagatedTypes.BOOLEAN) {
+                                when (it.variable.pValue.toBoolean()) {
+                                    false -> report(Errors.ALWAYS_FALSE_EXPRESSION.on(instruction.element), ctxt)
+                                    true -> report(Errors.ALWAYS_TRUE_EXPRESSION.on(instruction.element), ctxt)
+                                }
+                            }
+                        }
+                }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Division by zero
+    private fun markDivisionByZeroExpressions() {
+        val variableValues = pseudocodeVariablesData.variableValues
+        val reportedDiagnosticMap = hashMapOf<Instruction, DiagnosticFactory<*>>()
+        pseudocode.traverse(TraversalOrder.FORWARD, variableValues) { instruction: Instruction, _, _ ->
+            val ctxt = VariableValueContext(instruction, reportedDiagnosticMap)
+            if (instruction is CallInstruction) {
+                val functionDescriptor
+                        = instruction.resolvedCall.resultingDescriptor as? FunctionDescriptor
+                if (functionDescriptor != null
+                    && functionDescriptor.name == OperatorNameConventions.DIV) {
+                    pseudocodeVariablesData.countedPseudoValues[instruction.inputValues[1]]?.let {
+                        if (it.isZeroValue()) report(Errors.DIVISION_BY_ZERO.on(instruction.element as KtExpression), ctxt)
+                    }
+                }
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
     //  Uninitialized variables analysis
 
     private fun markUninitializedVariables() {
         val varWithUninitializedErrorGenerated = hashSetOf<VariableDescriptor>()
         val varWithValReassignErrorGenerated = hashSetOf<VariableDescriptor>()
         val processClassOrObject = subroutine is KtClassOrObject
-
         val initializers = pseudocodeVariablesData.variableInitializers
         val declaredVariables = pseudocodeVariablesData.getDeclaredVariables(pseudocode, true)
         val blockScopeVariableInfo = pseudocodeVariablesData.blockScopeVariableInfo
@@ -495,7 +549,6 @@ class ControlFlowInformationProvider private constructor(
 
         report(diagnosticFactory.on(expression, variableDescriptor), ctxt)
     }
-
     private fun checkAssignmentBeforeDeclaration(ctxt: VariableInitContext, expression: KtExpression) =
         if (ctxt.isInitializationBeforeDeclaration()) {
             if (ctxt.variableDescriptor != null) {
@@ -992,6 +1045,13 @@ class ControlFlowInformationProvider private constructor(
     ) {
         internal val variableDescriptor = PseudocodeUtil.extractVariableDescriptorFromReference(instruction, trace.bindingContext)
     }
+
+    private inner class VariableValueContext(
+            instruction: Instruction,
+            map: MutableMap<Instruction, DiagnosticFactory<*>>
+    ) : VariableContext(instruction, map)
+
+
 
     private inner class VariableInitContext(
         instruction: Instruction,

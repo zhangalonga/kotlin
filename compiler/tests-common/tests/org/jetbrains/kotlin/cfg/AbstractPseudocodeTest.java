@@ -141,15 +141,6 @@ public abstract class AbstractPseudocodeTest extends KotlinTestWithEnvironmentMa
         }
 
         File expectedInstructionsFile = KotlinTestUtils.replaceExtension(file, getDataFileExtension());
-        File realOutputFile = KotlinTestUtils.replaceExtension(file, "rInstruction");
-        PrintWriter pw = new PrintWriter(realOutputFile);
-        try {
-            pw.write(instructionDump.toString());
-        }
-        catch (Exception ignored) {
-        } finally {
-            pw.close();
-        }
         KotlinTestUtils.assertEqualsToFile(expectedInstructionsFile, instructionDump.toString());
     }
 

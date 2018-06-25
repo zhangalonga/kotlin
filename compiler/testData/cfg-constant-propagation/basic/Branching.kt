@@ -1,5 +1,5 @@
 fun foo(x: Boolean) {
-    var b: Int
+    val b: Int
     if (x) {
         b = 3
     } else {

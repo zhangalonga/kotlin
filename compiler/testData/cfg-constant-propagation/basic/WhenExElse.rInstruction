@@ -1,0 +1,79 @@
+== whenFun ==
+fun whenFun(b: Boolean) {
+    var x: Int
+    when (b) {
+        true -> x = 3
+        false -> x = 4
+    }
+    val z: Int
+    when (b) {
+        true -> z = 5
+        false -> z = 5
+    }
+}
+---------------------
+L0:
+  1 <START>                                                                                                                VAL: in: {} out: {}
+    v(b: Boolean)                                                                                                          VAL: in: {} out: {}
+    magic[FAKE_INITIALIZER](b: Boolean) -> <v0>                                                                            VAL: in: {} out: {}
+    w(b|<v0>)                                                                                                              VAL: in: {} out: {b=N_C}
+  2 mark({ var x: Int when (b) { true -> x = 3 false -> x = 4 } val z: Int when (b) { true -> z = 5 false -> z = 5 } })    VAL: in: {b=N_C} out: {b=N_C}
+    v(var x: Int)                                                                                                          VAL: in: {b=N_C} out: {b=N_C}
+    mark(when (b) { true -> x = 3 false -> x = 4 })                                                                        VAL: in: {b=N_C} out: {b=N_C}
+    r(b) -> <v1>                                                                                                           VAL: in: {b=N_C} out: {b=N_C}
+    mark(true -> x = 3)                                                                                                    VAL: in: {b=N_C} out: {b=N_C}
+    mark(true)                                                                                                             VAL: in: {b=N_C} out: {b=N_C}
+    r(true) -> <v2>                                                                                                        VAL: in: {b=N_C} out: {b=N_C}
+    magic[EQUALS_IN_WHEN_CONDITION](true|<v1>, <v2>) -> <v3>                                                               VAL: in: {b=N_C} out: {b=N_C}
+    jmp?(L4|<v3>)                                                                                                          VAL: in: {b=N_C} out: {b=N_C}
+L3 ['when' entry body]:
+    r(3) -> <v4>                                                                                                           VAL: in: {b=N_C} out: {b=N_C}
+    w(x|<v4>)                                                                                                              VAL: in: {b=N_C} out: {b=N_C, x=C: <3, INT>}
+    jmp(L2)                                                                                                                VAL: in: {b=N_C, x=C: <3, INT>} out: {b=N_C, x=C: <3, INT>}
+L4 [next 'when' entry]:
+    mark(false -> x = 4)                                                                                                   VAL: in: {b=N_C} out: {b=N_C}
+    mark(false)                                                                                                            VAL: in: {b=N_C} out: {b=N_C}
+    r(false) -> <v5>                                                                                                       VAL: in: {b=N_C} out: {b=N_C}
+    magic[EQUALS_IN_WHEN_CONDITION](false|<v1>, <v5>) -> <v6>                                                              VAL: in: {b=N_C} out: {b=N_C}
+    jmp?(L6|<v6>)                                                                                                          VAL: in: {b=N_C} out: {b=N_C}
+L5 ['when' entry body]:
+    r(4) -> <v7>                                                                                                           VAL: in: {b=N_C} out: {b=N_C}
+    w(x|<v7>)                                                                                                              VAL: in: {b=N_C} out: {b=N_C, x=C: <4, INT>}
+    jmp(L2)                                                                                                                VAL: in: {b=N_C, x=C: <4, INT>} out: {b=N_C, x=C: <4, INT>}
+L6 [next 'when' entry]:
+    magic[EXHAUSTIVE_WHEN_ELSE](when (b) { true -> x = 3 false -> x = 4 }) -> <v8>                                         VAL: in: {b=N_C} out: {b=N_C}
+L2 [after 'when' expression]:
+    merge(when (b) { true -> x = 3 false -> x = 4 }|!<v9>, !<v10>) -> <v11>                                                VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    v(val z: Int)                                                                                                          VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    mark(when (b) { true -> z = 5 false -> z = 5 })                                                                        VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    r(b) -> <v12>                                                                                                          VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    mark(true -> z = 5)                                                                                                    VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    mark(true)                                                                                                             VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    r(true) -> <v13>                                                                                                       VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    magic[EQUALS_IN_WHEN_CONDITION](true|<v12>, <v13>) -> <v14>                                                            VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    jmp?(L9|<v14>)                                                                                                         VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+L8 ['when' entry body]:
+    r(5) -> <v15>                                                                                                          VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    w(z|<v15>)                                                                                                             VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C, z=C: <5, INT>}
+    jmp(L7)                                                                                                                VAL: in: {b=N_C, x=N_C, z=C: <5, INT>} out: {b=N_C, x=N_C, z=C: <5, INT>}
+L9 [next 'when' entry]:
+    mark(false -> z = 5)                                                                                                   VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    mark(false)                                                                                                            VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    r(false) -> <v16>                                                                                                      VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    magic[EQUALS_IN_WHEN_CONDITION](false|<v12>, <v16>) -> <v17>                                                           VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    jmp?(L11|<v17>)                                                                                                        VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+L10 ['when' entry body]:
+    r(5) -> <v18>                                                                                                          VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+    w(z|<v18>)                                                                                                             VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C, z=C: <5, INT>}
+    jmp(L7)                                                                                                                VAL: in: {b=N_C, x=N_C, z=C: <5, INT>} out: {b=N_C, x=N_C, z=C: <5, INT>}
+L11 [next 'when' entry]:
+    magic[EXHAUSTIVE_WHEN_ELSE](when (b) { true -> z = 5 false -> z = 5 }) -> <v19>                                        VAL: in: {b=N_C, x=N_C} out: {b=N_C, x=N_C}
+L7 [after 'when' expression]:
+    merge(when (b) { true -> z = 5 false -> z = 5 }|!<v20>, !<v21>) -> <v22>                                               VAL: in: {b=N_C, x=N_C, z=C: <5, INT>} out: {b=N_C, x=N_C, z=C: <5, INT>}
+L1:
+  1 <END>                                                                                                                  VAL: in: {b=N_C} out: {b=N_C}
+error:
+    <ERROR>                                                                                                                VAL: in: {} out: {}
+sink:
+    <SINK>                                                                                                                 VAL: in: {b=N_C} out: {b=N_C}
+=====================
