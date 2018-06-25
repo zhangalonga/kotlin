@@ -23,13 +23,9 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.types.KotlinType
 
-
-fun IrStatement.decompose(function: IrFunction, context: JsIrBackendContext) =
-    transform(BlockDecomposerTransformer(function, context, false), null)
-
 class BlockDecomposerLowering(context: JsIrBackendContext) : DeclarationContainerLoweringPass {
 
-    private val decomposerTransformer = BlockDecomposerTransformer(context, true)
+    private val decomposerTransformer = BlockDecomposerTransformer(context)
 
     override fun lower(irDeclarationContainer: IrDeclarationContainer) {
         irDeclarationContainer.declarations.transformFlat { declaration ->
@@ -78,11 +74,11 @@ class BlockDecomposerLowering(context: JsIrBackendContext) : DeclarationContaine
     }
 }
 
-class BlockDecomposerTransformer(context: JsIrBackendContext, decomposeCFG: Boolean = true) : IrElementTransformerVoid() {
+class BlockDecomposerTransformer(context: JsIrBackendContext) : IrElementTransformerVoid() {
     private lateinit var function: IrFunction
     private var tmpVarCounter: Int = 0
 
-    private val statementTransformer = if (decomposeCFG) StatementTransformer() else StatementTransformerIgnoreCFG()
+    private val statementTransformer = StatementTransformer()
     private val expressionTransformer = ExpressionTransformer()
 
     private val constTrue = JsIrBuilder.buildBoolean(context.builtIns.booleanType, true)
@@ -96,10 +92,6 @@ class BlockDecomposerTransformer(context: JsIrBackendContext, decomposeCFG: Bool
         JsSymbolBuilder.buildSimpleFunction(context.module, Namer.UNREACHABLE_NAME).initialize(type = nothingType)
     private val booleanNotSymbol = context.irBuiltIns.booleanNotSymbol
 
-    constructor(function: IrFunction, context: JsIrBackendContext, decomposeCFG: Boolean = false) : this(context, decomposeCFG) {
-        this.function = function
-    }
-
     override fun visitFunction(declaration: IrFunction): IrStatement {
         function = declaration
         tmpVarCounter = 0
@@ -107,7 +99,7 @@ class BlockDecomposerTransformer(context: JsIrBackendContext, decomposeCFG: Bool
     }
 
     override fun visitElement(element: IrElement) = element.transform(statementTransformer, null)
-
+//
 //    override fun lower(irDeclarationContainer: IrDeclarationContainer) {
 //        irDeclarationContainer.declarations.transformFlat { declaration ->
 //            when (declaration) {
@@ -455,13 +447,6 @@ class BlockDecomposerTransformer(context: JsIrBackendContext, decomposeCFG: Bool
             val composite = expression.suspendableExpression as? IrComposite ?: return expression
             return materializeExpression(composite, ::IrSuspensionPointImpl)
         }
-    }
-
-    private inner class StatementTransformerIgnoreCFG : StatementTransformer() {
-        override fun visitWhileLoop(loop: IrWhileLoop) = loop.also { it.transformChildrenVoid(this) }
-        override fun visitDoWhileLoop(loop: IrDoWhileLoop) = loop.also { it.transformChildrenVoid(this) }
-        override fun visitWhen(expression: IrWhen) = expression.also { it.transformChildrenVoid(this) }
-        override fun visitTry(aTry: IrTry) = aTry.also { it.transformChildrenVoid(this) }
     }
 
     private inner class ExpressionTransformer : IrElementTransformerVoid() {

@@ -18,32 +18,32 @@ fun aaa(a: Any) {}
 suspend fun bar(b: Boolean) {
 
 
-    try {
+//    try {
+//
+//        if (bal()) {
+//            bar(bol())
+//        } else {
+//            baz(foo())
+//        }
+//    } catch (e: Exception) {
+//        aaa(e)
+//    }
 
-        if (bal()) {
-            bar(bol())
-        } else {
+    try {
+        if (b) {
+            baz(1)
+            baz(foo())
+            baz(2)
+        }
+    } catch (ex: Exception) {
+        if (bil()) {
+            baz(3)
+        } else{
             baz(foo())
         }
-    } catch (e: Exception) {
-        aaa(e)
+    } finally {
+        baz(foo())
     }
-
-//    try {
-//        if (b) {
-//            baz(1)
-//            baz(foo())
-//            baz(2)
-//        }
-//    } catch (ex: Exception) {
-//        if (bil()) {
-//            baz(3)
-//        } else{
-//            baz(foo())
-//        }
-//    } finally {
-//        baz(foo())
-//    }
 
 //    baz(0)
 //    L@while (bol()) {
@@ -60,6 +60,7 @@ suspend fun bar(b: Boolean) {
 //                baz(v)
 //                if (bol()) break
 //                foo()
+//                baz(v)
 //                if (bil()) continue@L
 //            }
 //            baz(foo())

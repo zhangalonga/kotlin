@@ -972,11 +972,12 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
             val liveLocals = computeLivenessAtSuspensionPoints(functionBody).values.flatten().toSet()
 
             val localToPropertyMap = mutableMapOf<IrValueSymbol, IrFieldSymbol>()
+            var localCounter = 0
             // TODO: optimize by using the same property for different locals.
             liveLocals.forEach {
                 if (it != suspendState && it != suspendResult) {
                     localToPropertyMap.getOrPut(it) {
-                        buildPropertyWithBackingField(it.descriptor.name, it.descriptor.type, true)
+                        buildPropertyWithBackingField(Name.identifier("${it.descriptor.name}${localCounter++}"), it.descriptor.type, true)
                     }
                 }
             }
@@ -986,7 +987,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 }
             }
 
-            body.transform(LiveLocalsTransformer(localToPropertyMap, JsIrBuilder.buildGetValue(thisReceiver)), null)
+            function.transform(LiveLocalsTransformer(localToPropertyMap, JsIrBuilder.buildGetValue(thisReceiver)), null)
         }
 
         private fun transformVariables(element: IrElement, variablesMap: Map<VariableDescriptor, IrVariableSymbol>) {
