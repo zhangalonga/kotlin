@@ -66,14 +66,14 @@ class MultipleCatchesLowering(val context: JsIrBackendContext) : FileLoweringPas
 
                 val commonType = mergeTypes(aTry.catches.map { it.catchParameter.type })
 
-                val pendingExceptionSymbol = JsSymbolBuilder.buildVar(data!!.descriptor, commonType, "\$pending\$", false)
+                val pendingExceptionSymbol = JsSymbolBuilder.buildVar(data!!.descriptor, commonType, "\$p", false)
                 val pendingExceptionDeclaration = JsIrBuilder.buildVar(pendingExceptionSymbol)
                 val pendingException = JsIrBuilder.buildGetValue(pendingExceptionSymbol)
 
                 val branches = mutableListOf<IrBranch>()
 
                 for (catch in aTry.catches) {
-                    assert(!catch.catchParameter.isVar) { "caught exception parameter has to immutable" }
+                    assert(!catch.catchParameter.isVar) { "caught exception parameter has to be immutable" }
                     val type = catch.catchParameter.type
                     val typeSymbol = context.symbolTable.referenceClassifier(type.constructor.declarationDescriptor!!)
                     val castedPendingException = buildImplicitCast(pendingException, type, typeSymbol)

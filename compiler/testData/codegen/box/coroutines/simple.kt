@@ -13,23 +13,37 @@ fun bil() = true
 
 suspend fun foo() = 42
 
+fun aaa(a: Any) {}
+
 suspend fun bar(b: Boolean) {
 
+
     try {
-        if (b) {
-            baz(1)
-            baz(foo())
-            baz(2)
-        }
-    } catch (ex: Exception) {
-        if (bil()) {
-            baz(3)
-        } else{
+
+        if (bal()) {
+            bar(bol())
+        } else {
             baz(foo())
         }
-    } finally {
-        baz(foo())
+    } catch (e: Exception) {
+        aaa(e)
     }
+
+//    try {
+//        if (b) {
+//            baz(1)
+//            baz(foo())
+//            baz(2)
+//        }
+//    } catch (ex: Exception) {
+//        if (bil()) {
+//            baz(3)
+//        } else{
+//            baz(foo())
+//        }
+//    } finally {
+//        baz(foo())
+//    }
 
 //    baz(0)
 //    L@while (bol()) {

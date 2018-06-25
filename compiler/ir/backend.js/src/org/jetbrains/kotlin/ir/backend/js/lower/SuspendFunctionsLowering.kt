@@ -311,6 +311,13 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
         private val coroutineImplExceptionStateGetterSymbol = coroutineImplSymbol.getPropertyGetter("exceptionState")!!
         private val coroutineImplExceptionStateSetterSymbol = coroutineImplSymbol.getPropertySetter("exceptionState")!!
 
+        private val coroutineImplLabelFieldSymbol = coroutineImplSymbol.getPropertyField("label")!!
+        private val coroutineImplResultFieldSymbol = coroutineImplSymbol.getPropertyField("pendingResult")!!
+        private val coroutineImplExceptionFieldSymbol = coroutineImplSymbol.getPropertyField("pendingException")!!
+        private val coroutineImplExceptionStateFieldSymbol = coroutineImplSymbol.getPropertyField("exceptionState")!!
+
+        private lateinit var coroutineConstructor: IrConstructor
+
         fun build(): BuiltCoroutine {
             val superTypes = mutableListOf<KotlinType>(coroutineImplClassDescriptor.defaultType)
             val superClasses = mutableListOf<IrClass>(coroutineImplSymbol.owner)
@@ -401,6 +408,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
 
             coroutineConstructorBuilder.initialize()
             coroutineClass.addChild(coroutineConstructorBuilder.ir)
+            coroutineConstructor = coroutineConstructorBuilder.ir
 
             coroutineFactoryConstructorBuilder?.let {
                 it.initialize()
@@ -887,7 +895,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 rootTry,
                 JsIrBuilder.buildBoolean(context.builtIns.booleanType, true)
             ).apply {
-                label = "\$SM" // State Machine
+//                label = "\$SM" // State Machine
             }
 
 //            body.acceptVoid(SuspendableNodesCollector(suspendableNodes))
@@ -895,112 +903,40 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
             val suspendableNodes = collectSuspendableNodes(body)
             val thisReceiver = (function.dispatchReceiverParameter as IrValueParameter).symbol
 
-            fun accessPendingException(value: IrExpression?): IrExpression {
-                val (symbol, args) = if (value == null) {
-                    Pair(coroutineImplExceptionGetterSymbol, emptyList())
-                } else {
-                    Pair(coroutineImplExceptionSetterSymbol, listOf(value))
-                }
-
-                return JsIrBuilder.buildCall(symbol).apply {
-                    dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
-                    args.forEachIndexed { i, a -> putValueArgument(i, a) }
-                }
-            }
-
-            fun accessResult(value: IrExpression?): IrExpression {
-                val (symbol, args) = if (value == null) {
-                    Pair(coroutineImplResultGetterSymbol, emptyList())
-                } else {
-                    Pair(coroutineImplResultSetterSymbol, listOf(value))
-                }
-
-                return JsIrBuilder.buildCall(symbol).apply {
-                    dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
-                    args.forEachIndexed { i, a -> putValueArgument(i, a) }
-                }
-            }
-
-            fun accessExceptionState(value: IrExpression?): IrExpression {
-                val (symbol, args) = if (value == null) {
-                    Pair(coroutineImplExceptionStateGetterSymbol, emptyList())
-                } else {
-                    Pair(coroutineImplExceptionStateSetterSymbol, listOf(value))
-                }
-
-                return JsIrBuilder.buildCall(symbol).apply {
-                    dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
-                    args.forEachIndexed { i, a -> putValueArgument(i, a) }
-                }
-            }
-
-            fun suspendResult() = JsIrBuilder.buildGetValue(suspendResult)
-            fun transformSuspensionPoint(expr: IrExpression): IrExpression {
-                val call = expr as IrCall
-                assert(call.isSuspendCall)
-
-                /**
-                 * $suspendResult = call()
-                 * if ($suspendResult === COROUTINE_SUSPEND) {
-                 *   this.label = $suspendState
-                 *   return $suspendResult
-                 * }
-                 */
-
-                val irSetVar = JsIrBuilder.buildSetVariable(suspendResult, call)
-                val irSaveState = JsIrBuilder.buildCall(coroutineImplLabelSetterSymbol).apply {
-                    dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
-                    putValueArgument(0, JsIrBuilder.buildGetValue(suspendState))
-
-                }
-                val irReturn = JsIrBuilder.buildReturn(function.symbol, suspendResult())
-
-                val irCoroutineSuspendValue = JsIrBuilder.buildCall(symbols.coroutineSuspendedGetter)
-                val irThen = JsIrBuilder.buildBlock(unit, listOf(irSaveState, irReturn))
-                val irCondition = JsIrBuilder.buildCall(context.irBuiltIns.eqeqeqSymbol).apply {
-                    putValueArgument(0, suspendResult())
-                    putValueArgument(1, irCoroutineSuspendValue)
-                }
-
-                val irIf = JsIrBuilder.buildIfElse(unit, irCondition, irThen)
-
-                return JsIrBuilder.buildComposite(unit, listOf(irSetVar, irIf))
-            }
-
             val stateMachineBuilder = StateMachineBuilder(
                 suspendableNodes,
                 context,
                 function.symbol,
                 rootLoop,
-                ::suspendResult,
-                ::accessResult,
-                ::accessPendingException,
-                ::accessExceptionState,
-                ::transformSuspensionPoint
-            )
+                coroutineImplResultFieldSymbol,
+                coroutineImplExceptionFieldSymbol,
+                coroutineImplExceptionStateFieldSymbol,
+                thisReceiver,
+                suspendState,
+                suspendResult
+            ) {
+                JsIrBuilder.buildCall(coroutineImplLabelSetterSymbol).apply {
+                    dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
+                    putValueArgument(0, JsIrBuilder.buildGetValue(suspendState))
+
+                }
+            }
 
             body.acceptVoid(stateMachineBuilder)
 
-            val catchBlock = JsIrBuilder.buildBlock(unit)
+            stateMachineBuilder.finalizeStateMachine()
 
-
-            rootTry.catches += buildCatch(stateMachineBuilder.globalExceptionSymbol, stateMachineBuilder.exceptionTransitions, thisReceiver)
-
-            val unitValue =
-                JsIrBuilder.buildGetObjectValue(context.builtIns.unitType, context.symbolTable.referenceClass(context.builtIns.unit))
-
-            stateMachineBuilder.currentBlock.statements.add(JsIrBuilder.buildReturn(function.symbol, unitValue))
-            stateMachineBuilder.states += stateMachineBuilder.currentState
+            rootTry.catches += stateMachineBuilder.globalCatch
 
             val visited = mutableSetOf<SuspendState>()
 
             val sortedStates =
-                DFS.topologicalOrder(listOf(stateMachineBuilder.entryState, stateMachineBuilder.exceptionTrap), { it.successors }, { visited.add(it) })
+                DFS.topologicalOrder(listOf(stateMachineBuilder.entryState), { it.successors }, { visited.add(it) })
             sortedStates.withIndex().forEach { it.value.id = it.index }
 
             fun buildDispatch(target: SuspendState) = target.run {
                 assert(id >= 0)
-                JsIrBuilder.buildSetVariable(suspendState, JsIrBuilder.buildInt(context.builtIns.intType, id))
+                JsIrBuilder.buildInt(context.builtIns.intType, id)
             }
 
             val eqeqInt = context.irBuiltIns.eqeqSymbol
@@ -1018,44 +954,22 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
             val irStateDeclaration = JsIrBuilder.buildVar(suspendState, JsIrBuilder.buildCall(coroutineImplLabelGetterSymbol).apply {
                 dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
             })
+            val irSaveException = JsIrBuilder.buildSetField(
+                coroutineImplExceptionFieldSymbol,
+                JsIrBuilder.buildGetValue(thisReceiver),
+                JsIrBuilder.buildGetValue(exceptionArgument)
+            )
 
             rootLoop.transform(DispatchPointTransformer(::buildDispatch), null)
 
-            // TODO: check for exception
+            (coroutineConstructor.body as? IrBlockBody)?.run {
+                val receiver = coroutineConstructor.dispatchReceiverParameter?.let { JsIrBuilder.buildGetValue(it.symbol) }
+                val id = JsIrBuilder.buildInt(context.builtIns.intType, stateMachineBuilder.rootExceptionTrap.id)
+                statements += JsIrBuilder.buildSetField(coroutineImplExceptionStateFieldSymbol, receiver, id)
+            }
 
-            function.body = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, irStateDeclaration, rootLoop))
+            function.body = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, irStateDeclaration, irSaveException, rootLoop))
         }
-
-        private fun buildCatch(
-            globalExceptionSymbol: IrVariableSymbolImpl,
-            exceptionTransitions: Set<Pair<Int, IrBlock>>,
-            thisReceiver: IrValueParameterSymbol
-        ): IrCatch {
-            val unit = unit.descriptor.defaultType
-            val block = JsIrBuilder.buildBlock(unit)
-
-            block.statements += JsIrBuilder.buildCall(coroutineImplExceptionSetterSymbol).apply {
-                dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
-                putValueArgument(0, JsIrBuilder.buildGetValue(globalExceptionSymbol))
-            }
-
-            val exceptionState = JsIrBuilder.buildCall(coroutineImplExceptionStateGetterSymbol).apply {
-                dispatchReceiver = JsIrBuilder.buildGetValue(thisReceiver)
-            }
-
-            val branches = exceptionTransitions.map { (id, block) ->
-                val const = JsIrBuilder.buildInt(context.builtIns.intType, id)
-                val check = JsIrBuilder.buildCall(context.irBuiltIns.eqeqSymbol).apply {
-                    putValueArgument(0, exceptionState)
-                    putValueArgument(1, const)
-                }
-                IrBranchImpl(check, block)
-            }
-
-            val switch = JsIrBuilder.buildWhen(unit, branches, COROUTINE_SWITCH)
-            return JsIrBuilder.buildCatch(globalExceptionSymbol, JsIrBuilder.buildBlock(unit, listOf(switch)))
-        }
-
 
         private fun transformVariables(element: IrElement, variablesMap: Map<VariableDescriptor, IrVariableSymbol>) {
             element.transformChildrenVoid(object: IrElementTransformerVoid() {

@@ -123,17 +123,16 @@ internal abstract class CoroutineImpl(private val completion: Continuation<Any?>
 
     override fun resume(value: Any?) {
 //        result = value
-        doResumeWrapper()
+        doResumeWrapper(value, null)
     }
 
     override fun resumeWithException(exception: Throwable) {
-//        state = exceptionState
-//        this.exception = exception
-        doResumeWrapper()
+        label = exceptionState
+        doResumeWrapper(null, exception)
     }
 
-    protected fun doResumeWrapper() {
-//        processBareContinuationResume(resultContinuation) { doResume() }
+    protected fun doResumeWrapper(data: Any?, exception: Throwable?) {
+        processBareContinuationResume(completion) { doResume(data, exception) }
     }
 
     protected abstract fun doResume(data: Any?, exception: Throwable?): Any?
