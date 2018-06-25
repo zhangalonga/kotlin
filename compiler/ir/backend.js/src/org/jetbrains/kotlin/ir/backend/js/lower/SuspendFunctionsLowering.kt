@@ -894,11 +894,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 COROUTINE_ROOT_LOOP,
                 rootTry,
                 JsIrBuilder.buildBoolean(context.builtIns.booleanType, true)
-            ).apply {
-//                label = "\$SM" // State Machine
-            }
-
-//            body.acceptVoid(SuspendableNodesCollector(suspendableNodes))
+            )
 
             val suspendableNodes = collectSuspendableNodes(body)
             val thisReceiver = (function.dispatchReceiverParameter as IrValueParameter).symbol
@@ -939,10 +935,10 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 JsIrBuilder.buildInt(context.builtIns.intType, id)
             }
 
-            val eqeqInt = context.irBuiltIns.eqeqSymbol
+            val eqeqeqInt = context.irBuiltIns.eqeqeqSymbol
 
             for (state in sortedStates) {
-                val condition = JsIrBuilder.buildCall(eqeqInt).apply {
+                val condition = JsIrBuilder.buildCall(eqeqeqInt).apply {
                     putValueArgument(0, JsIrBuilder.buildGetValue(suspendState))
                     putValueArgument(1, JsIrBuilder.buildInt(context.builtIns.intType, state.id))
                 }
@@ -968,7 +964,29 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 statements += JsIrBuilder.buildSetField(coroutineImplExceptionStateFieldSymbol, receiver, id)
             }
 
-            function.body = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, irStateDeclaration, irSaveException, rootLoop))
+            val functionBody = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, irStateDeclaration, irSaveException, rootLoop))
+
+            function.body = functionBody
+
+
+            val liveLocals = computeLivenessAtSuspensionPoints(functionBody).values.flatten().toSet()
+
+            val localToPropertyMap = mutableMapOf<IrValueSymbol, IrFieldSymbol>()
+            // TODO: optimize by using the same property for different locals.
+            liveLocals.forEach {
+                if (it != suspendState && it != suspendResult) {
+                    localToPropertyMap.getOrPut(it) {
+                        buildPropertyWithBackingField(it.descriptor.name, it.descriptor.type, true)
+                    }
+                }
+            }
+            irFunction.explicitParameters.forEach {
+                localToPropertyMap.getOrPut(it) {
+                    argumentToPropertiesMap.getValue(it.descriptor)
+                }
+            }
+
+            body.transform(LiveLocalsTransformer(localToPropertyMap, JsIrBuilder.buildGetValue(thisReceiver)), null)
         }
 
         private fun transformVariables(element: IrElement, variablesMap: Map<VariableDescriptor, IrVariableSymbol>) {
@@ -1018,12 +1036,17 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
             })
         }
 
-        private fun computeLivenessAtSuspensionPoints(body: IrBody): Map<IrSuspensionPoint, List<IrVariableSymbol>> {
+        private fun computeLivenessAtSuspensionPoints(body: IrBody): Map<IrCall, List<IrVariableSymbol>> {
             // TODO: data flow analysis.
             // Just save all visible for now.
-            val result = mutableMapOf<IrSuspensionPoint, List<IrVariableSymbol>>()
+            val result = mutableMapOf<IrCall, List<IrVariableSymbol>>()
             body.acceptChildrenVoid(object : VariablesScopeTracker() {
-                override fun visitSuspensionPoint(expression: IrSuspensionPoint) {
+                override fun visitCall(expression: IrCall) {
+
+                    if (!expression.descriptor.isSuspend) return super.visitCall(expression)
+
+
+                    expression.acceptChildrenVoid(this)
 //                    expression.result.acceptChildrenVoid(this)
 //                    expression.resumeResult.acceptChildrenVoid(this)
 

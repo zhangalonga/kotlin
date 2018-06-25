@@ -16,14 +16,8 @@ import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.symbols.JsSymbolBuilder
 import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
-import org.jetbrains.kotlin.ir.expressions.impl.IrExpressionBase
-import org.jetbrains.kotlin.ir.expressions.impl.IrSetFieldImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrStringConcatenationImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrSuspensionPointImpl
-import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
-import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
+import org.jetbrains.kotlin.ir.expressions.impl.*
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.visitors.*
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isDynamic
@@ -661,6 +655,31 @@ class StateMachineBuilder(
         )
 
     private fun tempVar(type: KotlinType) = JsSymbolBuilder.buildTempVar(function, type)
+}
+
+
+class LiveLocalsTransformer(private val localMap: Map<IrValueSymbol, IrFieldSymbol>, private val receiver: IrExpression): IrElementTransformerVoid() {
+    override fun visitGetValue(expression: IrGetValue): IrExpression {
+        val field = localMap[expression.symbol] ?: return expression
+        return expression.run { IrGetFieldImpl(startOffset, endOffset, field, receiver, origin) }
+    }
+
+    override fun visitSetVariable(expression: IrSetVariable): IrExpression {
+        expression.transformChildrenVoid(this)
+        val field = localMap[expression.symbol] ?: return expression
+        return expression.run { IrSetFieldImpl(startOffset, endOffset, field, receiver, value, origin) }
+    }
+
+    override fun visitVariable(declaration: IrVariable): IrStatement {
+        declaration.transformChildrenVoid(this)
+        val field = localMap[declaration.symbol] ?: return declaration
+        val initializer = declaration.initializer
+        return if (initializer != null) {
+            declaration.run { IrSetFieldImpl(startOffset, endOffset, field, receiver, initializer) }
+        } else {
+            JsIrBuilder.buildComposite(declaration.type)
+        }
+    }
 }
 
 data class FinallyTargets(val normal: SuspendState, val fromReturn: SuspendState, val fromThrow: SuspendState)
