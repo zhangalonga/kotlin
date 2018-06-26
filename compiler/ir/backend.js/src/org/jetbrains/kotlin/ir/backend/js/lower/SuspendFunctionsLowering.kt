@@ -767,8 +767,8 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 coroutineImplResultFieldSymbol,
                 coroutineImplExceptionFieldSymbol,
                 coroutineImplExceptionStateFieldSymbol,
-                thisReceiver,
                 coroutineImplLabelFieldSymbol,
+                thisReceiver,
                 suspendResult
             )
 

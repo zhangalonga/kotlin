@@ -82,7 +82,6 @@ fun builder(c: suspend () -> Unit) {
 }
 
 fun box(): String {
-//    return "OK"
     var result = ""
 
     builder {

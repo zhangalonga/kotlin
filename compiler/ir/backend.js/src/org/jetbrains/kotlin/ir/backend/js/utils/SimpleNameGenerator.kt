@@ -47,7 +47,7 @@ class SimpleNameGenerator : NameGenerator {
                     }
                 }
                 is PropertyDescriptor -> {
-                    nameBuilder.append(descriptor.name.identifier)
+                    nameBuilder.append(descriptor.name.asString())
                     if (descriptor.visibility == Visibilities.PRIVATE || descriptor.modality != Modality.FINAL) {
                         nameBuilder.append('$')
                         nameBuilder.append(getNameForDescriptor(descriptor.containingDeclaration, context))

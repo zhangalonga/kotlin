@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.visitors.*
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isDynamic
+import org.jetbrains.kotlin.types.typeUtil.isUnit
 
 
 object COROUTINE_ROOT_LOOP : IrStatementOriginImpl("COROUTINE_ROOT_LOOP")
@@ -118,8 +119,8 @@ class StateMachineBuilder(
     val resultSymbol: IrFieldSymbol,
     val exceptionSymbol: IrFieldSymbol,
     val exStateSymbol: IrFieldSymbol,
-    val thisSymbol: IrValueParameterSymbol,
     val stateSymbol: IrFieldSymbol,
+    val thisSymbol: IrValueParameterSymbol,
     val suspendResult: IrVariableSymbol
 ) : IrElementVisitorVoid {
     override fun visitElement(element: IrElement) {
@@ -452,6 +453,7 @@ class StateMachineBuilder(
 
         addStatement(expression.run { IrStringConcatenationImpl(startOffset, endOffset, type, newArguments.map { it!! }) })
     }
+    private val unitValue = JsIrBuilder.buildGetObjectValue(unit, context.symbolTable.referenceClass(context.builtIns.unit))
 
     override fun visitReturn(expression: IrReturn) {
         val finallyState = tryStack.asReversed().firstOrNull { it.finallyState != null }?.finallyState
@@ -462,7 +464,11 @@ class StateMachineBuilder(
             transformLastExpression { setupPendingResult(it) }
             doDispatch(finallyState.fromReturn)
         } else {
-            transformLastExpression { expression.apply { value = it } }
+            if (!expression.value.type.isUnit()) {
+                transformLastExpression { expression.apply { value = it } }
+            } else {
+                addStatement(expression.apply { value = unitValue })
+            }
         }
     }
 
