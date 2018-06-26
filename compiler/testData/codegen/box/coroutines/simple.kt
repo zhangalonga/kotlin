@@ -72,22 +72,22 @@ suspend fun bar(b: Boolean) {
 //    baz(v)
 }
 
-//suspend fun suspendHere(): String = suspendCoroutineOrReturn { x ->
-//    x.resume("OK")
-//    COROUTINE_SUSPENDED
-//}
-//
-//fun builder(c: suspend () -> Unit) {
-//    c.startCoroutine(EmptyContinuation)
-//}
+suspend fun suspendHere(): String = suspendCoroutineOrReturn { x ->
+    x.resume("OK")
+    COROUTINE_SUSPENDED
+}
+
+fun builder(c: suspend () -> Unit) {
+    c.startCoroutine(EmptyContinuation)
+}
 
 fun box(): String {
-    return "OK"
-//    var result = ""
-//
-//    builder {
-//        result = suspendHere()
-//    }
-//
-//    return result
+//    return "OK"
+    var result = ""
+
+    builder {
+        result = suspendHere()
+    }
+
+    return result
 }

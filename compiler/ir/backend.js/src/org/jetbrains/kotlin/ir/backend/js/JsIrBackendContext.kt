@@ -67,7 +67,7 @@ class JsIrBackendContext(
     private val operatorMap = referenceOperators()
 
     val functions = (0..22)
-        .map { symbolTable.referenceClass(builtIns.getFunction(it)) }
+        .map { symbolTable.referenceClass(getClass(FqName("kotlin.Function$it"))) }
 
     val kFunctions by lazy {
         (0..22).map { symbolTable.referenceClass(reflectionTypes.getKFunction(it)) }

@@ -53,12 +53,6 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
     private val builtCoroutines = mutableMapOf<FunctionDescriptor, BuiltCoroutine>()
     private val suspendLambdas = mutableMapOf<FunctionDescriptor, IrFunctionReference>()
 
-    data class StateID(val id: Int)
-
-    data class State(val block: IrBlock, val id: StateID)
-
-    data class StateMachineResult(val states: List<State>)
-
     override fun lower(irDeclarationContainer: IrDeclarationContainer) {
         markSuspendLambdas(irDeclarationContainer)
         irDeclarationContainer.declarations.transformFlat {
@@ -298,7 +292,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
         private val coroutineImplExceptionFieldSymbol = coroutineImplSymbol.getPropertyField("pendingException")!!
         private val coroutineImplExceptionStateFieldSymbol = coroutineImplSymbol.getPropertyField("exceptionState")!!
 
-        private lateinit var coroutineConstructor: IrConstructor
+        private val coroutineConstructors = mutableListOf<IrConstructor>()
 
         fun build(): BuiltCoroutine {
             val superTypes = mutableListOf<KotlinType>(coroutineImplClassDescriptor.defaultType)
@@ -390,11 +384,12 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
 
             coroutineConstructorBuilder.initialize()
             coroutineClass.addChild(coroutineConstructorBuilder.ir)
-            coroutineConstructor = coroutineConstructorBuilder.ir
+            coroutineConstructors += coroutineConstructorBuilder.ir
 
             coroutineFactoryConstructorBuilder?.let {
                 it.initialize()
                 coroutineClass.addChild(it.ir)
+                coroutineConstructors += it.ir
             }
 
             createMethodBuilder?.let {
@@ -773,15 +768,9 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 coroutineImplExceptionFieldSymbol,
                 coroutineImplExceptionStateFieldSymbol,
                 thisReceiver,
-                suspendState,
+                coroutineImplLabelFieldSymbol,
                 suspendResult
-            ) {
-                JsIrBuilder.buildSetField(
-                    coroutineImplLabelFieldSymbol,
-                    JsIrBuilder.buildGetValue(thisReceiver),
-                    JsIrBuilder.buildGetValue(suspendState)
-                )
-            }
+            )
 
             body.acceptVoid(stateMachineBuilder)
 
@@ -791,8 +780,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
 
             val visited = mutableSetOf<SuspendState>()
 
-            val sortedStates =
-                DFS.topologicalOrder(listOf(stateMachineBuilder.entryState), { it.successors }, { visited.add(it) })
+            val sortedStates = DFS.topologicalOrder(listOf(stateMachineBuilder.entryState), { it.successors }, { visited.add(it) })
             sortedStates.withIndex().forEach { it.value.id = it.index }
 
             fun buildDispatch(target: SuspendState) = target.run {
@@ -804,7 +792,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
 
             for (state in sortedStates) {
                 val condition = JsIrBuilder.buildCall(eqeqeqInt).apply {
-                    putValueArgument(0, JsIrBuilder.buildGetValue(suspendState))
+                    putValueArgument(0, JsIrBuilder.buildGetField(coroutineImplLabelFieldSymbol, JsIrBuilder.buildGetValue(thisReceiver)))
                     putValueArgument(1, JsIrBuilder.buildInt(context.builtIns.intType, state.id))
                 }
 
@@ -812,7 +800,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
             }
 
             val irResultDeclaration = JsIrBuilder.buildVar(suspendResult, JsIrBuilder.buildGetValue(dataArgument))
-            val irStateDeclaration = JsIrBuilder.buildVar(suspendState, JsIrBuilder.buildGetField(coroutineImplLabelFieldSymbol, JsIrBuilder.buildGetValue(thisReceiver)))
+//            val irStateDeclaration = JsIrBuilder.buildVar(suspendState, JsIrBuilder.buildGetField(coroutineImplLabelFieldSymbol, JsIrBuilder.buildGetValue(thisReceiver)))
             val irSaveException = JsIrBuilder.buildSetField(
                 coroutineImplExceptionFieldSymbol,
                 JsIrBuilder.buildGetValue(thisReceiver),
@@ -821,13 +809,17 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
 
             rootLoop.transform(DispatchPointTransformer(::buildDispatch), null)
 
-            (coroutineConstructor.body as? IrBlockBody)?.run {
-                val receiver = coroutineConstructor.dispatchReceiverParameter?.let { JsIrBuilder.buildGetValue(it.symbol) }
-                val id = JsIrBuilder.buildInt(context.builtIns.intType, stateMachineBuilder.rootExceptionTrap.id)
-                statements += JsIrBuilder.buildSetField(coroutineImplExceptionStateFieldSymbol, receiver, id)
+
+
+            for (it in coroutineConstructors) {
+                (it.body as? IrBlockBody)?.run {
+                    val receiver = JsIrBuilder.buildGetValue(coroutineClassThis)
+                    val id = JsIrBuilder.buildInt(context.builtIns.intType, stateMachineBuilder.rootExceptionTrap.id)
+                    statements += JsIrBuilder.buildSetField(coroutineImplExceptionStateFieldSymbol, receiver, id)
+                }
             }
 
-            val functionBody = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, irStateDeclaration, irSaveException, rootLoop))
+            val functionBody = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, irSaveException, rootLoop))
 
             function.body = functionBody
 
@@ -840,7 +832,11 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
             liveLocals.forEach {
                 if (it != suspendState && it != suspendResult) {
                     localToPropertyMap.getOrPut(it) {
-                        buildPropertyWithBackingField(Name.identifier("${it.descriptor.name}${localCounter++}"), it.descriptor.type, true)
+                        buildPropertyWithBackingField(
+                            Name.identifier("${it.descriptor.name}${localCounter++}"),
+                            it.descriptor.type,
+                            it.descriptor.isVar
+                        )
                     }
                 }
             }

@@ -6,7 +6,7 @@
 package kotlin.coroutines.experimental.intrinsics
 
 import kotlin.coroutines.experimental.Continuation
-import kotlin.coroutines.experimental.EmptyContinuationX
+import kotlin.coroutines.experimental.CoroutineImpl
 
 @SinceKotlin("1.1")
 @kotlin.internal.InlineOnly
@@ -21,17 +21,18 @@ public suspend inline fun <T> suspendCoroutineOrReturn(crossinline block: (Conti
  * Unlike [suspendCoroutineOrReturn] it does not intercept continuation.
  */
 @SinceKotlin("1.2")
-@kotlin.internal.InlineOnly
-public suspend inline fun <T> suspendCoroutineUninterceptedOrReturn(crossinline block: (Continuation<T>) -> Any?): T =
-    throw Exception("Implementation of suspendCoroutineUninterceptedOrReturn is intrinsic")
+public suspend fun <T> suspendCoroutineUninterceptedOrReturn(block: (Continuation<T>) -> Any?): T =
+    js("block(arguments[arguments.length - 1])").unsafeCast<T>()
 
 /**
  * Intercept continuation with [ContinuationInterceptor].
  */
 @SinceKotlin("1.2")
 @kotlin.internal.InlineOnly
-public inline fun <T> Continuation<T>.intercepted(): Continuation<T> =
-    throw Exception("Implementation of intercepted is intrinsic")
+public inline fun <T> Continuation<T>.intercepted(): Continuation<T> {
+    val self = this
+    return js("self_0.facade").unsafeCast<Continuation<T>>()
+}
 
 /**
  * This value is used as a return value of [suspendCoroutineOrReturn] `block` argument to state that
@@ -46,7 +47,10 @@ public val COROUTINE_SUSPENDED: Any = Any()
 @kotlin.internal.InlineOnly
 public inline fun <T> (suspend () -> T).startCoroutineUninterceptedOrReturn(
     completion: Continuation<T>
-): Any? = null//this.asDynamic()(completion, false)
+): Any? {
+    val self = this
+    return js("self_0(completion, false)").unsafeCast<Any?>()
+}
 
 @SinceKotlin("1.1")
 @Suppress("UNCHECKED_CAST")
@@ -54,15 +58,23 @@ public inline fun <T> (suspend () -> T).startCoroutineUninterceptedOrReturn(
 public inline fun <R, T> (suspend R.() -> T).startCoroutineUninterceptedOrReturn(
     receiver: R,
     completion: Continuation<T>
-): Any? = null //this.asDynamic()(receiver, completion, false)
+): Any? {
+    val self = this
+    return js("self_0(receiver, completion, false)").unsafeCast<Any?>()
+}
 
 @SinceKotlin("1.1")
 public fun <R, T> (suspend R.() -> T).createCoroutineUnchecked(
     receiver: R,
     completion: Continuation<T>
-): Continuation<Unit> = EmptyContinuationX //this.asDynamic()(receiver, completion, true).facade
+): Continuation<Unit> {
+    val self = this
+    return js("self_0(receiver, completion, true).facade").unsafeCast<Continuation<Unit>>()
+}
 
 @SinceKotlin("1.1")
 public fun <T> (suspend () -> T).createCoroutineUnchecked(
     completion: Continuation<T>
-): Continuation<Unit> = EmptyContinuationX //this.asDynamic()(completion, true).facade
+): Continuation<Unit> {
+    return ((this as CoroutineImpl).create(completion) as CoroutineImpl).facade
+}

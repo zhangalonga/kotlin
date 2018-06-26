@@ -53,6 +53,8 @@ abstract class BasicIrBoxTest(
             "libraries/stdlib/js/irRuntime/coroutineIntrinsics.kt",
             "libraries/stdlib/js/irRuntime/coroutinesInternal.kt",
             "libraries/stdlib/js/irRuntime/defaultArguments.kt",
+            "libraries/stdlib/js/irRuntime/Function.kt",
+            "libraries/stdlib/js/irRuntime/Functions.kt",
             "libraries/stdlib/js/irRuntime/SuspendFunction.kt",
             "libraries/stdlib/js/irRuntime/SuspendFunctions.kt"
         ).map { createPsiFile(it) }

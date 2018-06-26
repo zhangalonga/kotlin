@@ -153,7 +153,7 @@ fun IrClass.simpleFunctions(): List<IrSimpleFunction> = this.declarations.flatMa
 }
 
 fun IrClass.setSuperSymbols(supers: List<IrClass>) {
-    val s1  =this.superDescriptors().toSet()
+    val s1 = this.superDescriptors().toSet()
     val s2 = supers.map { it.descriptor }.toSet()
     assert(s1 == s2)
     assert(this.superClasses.isEmpty())

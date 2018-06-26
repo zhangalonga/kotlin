@@ -119,9 +119,8 @@ class StateMachineBuilder(
     val exceptionSymbol: IrFieldSymbol,
     val exStateSymbol: IrFieldSymbol,
     val thisSymbol: IrValueParameterSymbol,
-    val stateSymbol: IrVariableSymbol,
-    val suspendResult: IrVariableSymbol,
-    val stateSaver: () -> IrStatement
+    val stateSymbol: IrFieldSymbol,
+    val suspendResult: IrVariableSymbol
 ) : IrElementVisitorVoid {
     override fun visitElement(element: IrElement) {
         if (element in suspendableNodes) {
@@ -139,7 +138,7 @@ class StateMachineBuilder(
     private val eqeqeqSymbol = context.irBuiltIns.eqeqeqSymbol
 
     private val thisReceiver = JsIrBuilder.buildGetValue(thisSymbol)
-    private val state = JsIrBuilder.buildGetValue(stateSymbol)
+    private val state = JsIrBuilder.buildGetField(stateSymbol, thisReceiver)
 
     private var hasExceptions = false
 
@@ -166,7 +165,7 @@ class StateMachineBuilder(
         thenBlock.statements += JsIrBuilder.buildSetField(exStateSymbol, thisReceiver, state)
         thenBlock.statements += JsIrBuilder.buildThrow(nothing, JsIrBuilder.buildGetValue(globalExceptionSymbol))
 
-        elseBlock.statements += JsIrBuilder.buildSetVariable(stateSymbol, exceptionState())
+        elseBlock.statements += JsIrBuilder.buildSetField(stateSymbol, thisReceiver, exceptionState())
         elseBlock.statements += JsIrBuilder.buildSetField(exceptionSymbol, thisReceiver, JsIrBuilder.buildGetValue(globalExceptionSymbol))
 
         return JsIrBuilder.buildCatch(globalExceptionSymbol, block)
@@ -207,7 +206,7 @@ class StateMachineBuilder(
     private fun doDispatchImpl(target: SuspendState, block: IrContainerExpression, andContinue: Boolean) {
         val irDispatch = IrDispatchPoint(target)
         currentState.successors.add(target)
-        block.addStatement(JsIrBuilder.buildSetVariable(stateSymbol, irDispatch))
+        block.addStatement(JsIrBuilder.buildSetField(stateSymbol, thisReceiver, irDispatch))
         if (andContinue) doContinue(block)
     }
 
@@ -285,10 +284,11 @@ class StateMachineBuilder(
 
 
     private fun implicitCast(value: IrExpression, toType: KotlinType) =
-        JsIrBuilder.buildTypeOperator(
-            toType, IrTypeOperator.IMPLICIT_CAST, value, toType,
-            context.symbolTable.referenceClassifier(toType.constructor.declarationDescriptor!!)
-        )
+//        JsIrBuilder.buildTypeOperator(
+//            toType, IrTypeOperator.IMPLICIT_CAST, value, toType,
+//            context.symbolTable.referenceClassifier(toType.constructor.declarationDescriptor!!)
+//        )
+        IrTypeOperatorCallImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, toType, IrTypeOperator.IMPLICIT_CAST, toType, value)
 
     override fun visitSuspensionPoint(expression: IrSuspensionPoint) {
         expression.acceptChildrenVoid(this)
@@ -299,18 +299,18 @@ class StateMachineBuilder(
 
         currentState.successors += continueState
 
-        transformLastExpression { JsIrBuilder.buildSetVariable(stateSymbol, dispatch) }
+        transformLastExpression { JsIrBuilder.buildSetField(stateSymbol, thisReceiver, dispatch) }
 
         addStatement(JsIrBuilder.buildSetVariable(suspendResult, result))
 
-        val irSaveState = stateSaver()
+//        val irSaveState = stateSaver()
         val irReturn = JsIrBuilder.buildReturn(function, JsIrBuilder.buildGetValue(suspendResult))
         val check = JsIrBuilder.buildCall(eqeqeqSymbol).apply {
             putValueArgument(0, JsIrBuilder.buildGetValue(suspendResult))
             putValueArgument(1, JsIrBuilder.buildCall(context.ir.symbols.coroutineSuspendedGetter))
         }
 
-        val suspensionBlock = JsIrBuilder.buildBlock(unit, listOf(irSaveState, irReturn))
+        val suspensionBlock = JsIrBuilder.buildBlock(unit, listOf(irReturn))
         addStatement(JsIrBuilder.buildIfElse(unit, check, suspensionBlock))
         doContinue()
 

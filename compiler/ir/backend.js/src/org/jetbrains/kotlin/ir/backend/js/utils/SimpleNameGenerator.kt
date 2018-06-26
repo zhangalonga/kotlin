@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.ir.backend.js.utils
 
 import org.jetbrains.kotlin.descriptors.*
-import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.IrLoop
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.js.backend.ast.JsName
@@ -82,9 +81,14 @@ class SimpleNameGenerator : NameGenerator {
                     nameDeclarator = context.currentScope::declareFreshName
                 }
                 is CallableDescriptor -> {
-                    nameBuilder.append(descriptor.name.asString())
-                    descriptor.typeParameters.forEach { nameBuilder.append("_${it.name.asString()}") }
-                    descriptor.valueParameters.forEach { nameBuilder.append("_${it.type}") }
+                    if (descriptor.name.asString() == "resume"){
+                        nameBuilder.append(descriptor.name.asString())
+                    }
+                    else {
+                        nameBuilder.append(descriptor.name.asString())
+                        descriptor.typeParameters.forEach { nameBuilder.append("_${it.name.asString()}") }
+                        descriptor.valueParameters.forEach { nameBuilder.append("_${it.type}") }
+                    }
                 }
 
             }

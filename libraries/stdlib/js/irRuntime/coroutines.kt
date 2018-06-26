@@ -88,20 +88,20 @@ public interface Continuation<in T> {
     public fun resumeWithException(exception: Throwable)
 }
 
-object EmptyContinuationX: Continuation<Unit> {
-    override public val context = EmptyCoroutineContext()
-
-    /**
-     * Resumes the execution of the corresponding coroutine passing [value] as the return value of the last suspension point.
-     */
-    override fun resume(value: Unit) {}
-
-    /**
-     * Resumes the execution of the corresponding coroutine so that the [exception] is re-thrown right after the
-     * last suspension point.
-     */
-    override fun resumeWithException(exception: Throwable) {}
-}
+//object EmptyContinuation: Continuation<Unit> {
+//    override public val context = EmptyCoroutineContext()
+//
+//    /**
+//     * Resumes the execution of the corresponding coroutine passing [value] as the return value of the last suspension point.
+//     */
+//    override fun resume(value: Unit) {}
+//
+//    /**
+//     * Resumes the execution of the corresponding coroutine so that the [exception] is re-thrown right after the
+//     * last suspension point.
+//     */
+//    override fun resumeWithException(exception: Throwable) {}
+//}
 
 //@JsName("CoroutineImpl")
 internal abstract class CoroutineImpl(private val completion: Continuation<Any?>) : Continuation<Any?> {
@@ -115,7 +115,7 @@ internal abstract class CoroutineImpl(private val completion: Continuation<Any?>
     protected var pendingResult: dynamic = null
 //    protected var finallyPath: Array<Int>? = null
 
-    public override val context: CoroutineContext = completion.context
+    public override val context: CoroutineContext = completion?.context
 
     val facade: Continuation<Any?> = this
 
