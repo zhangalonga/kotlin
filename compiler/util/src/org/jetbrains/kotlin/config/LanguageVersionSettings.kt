@@ -56,6 +56,7 @@ enum class LanguageFeature(
     AssigningArraysToVarargsInNamedFormInAnnotations(KOTLIN_1_2),
     ExpectedTypeFromCast(KOTLIN_1_2),
     DefaultMethodsCallFromJava6TargetError(KOTLIN_1_2),
+    ConstantPropagation(KOTLIN_1_2),
 
     BooleanElvisBoundSmartCasts(KOTLIN_1_3),
     RestrictionOfValReassignmentViaBackingField(KOTLIN_1_3, kind = BUG_FIX),
@@ -80,7 +81,6 @@ enum class LanguageFeature(
 
     StrictJavaNullabilityAssertions(sinceVersion = null, defaultState = State.DISABLED),
     ProperIeee754Comparisons(sinceVersion = null, defaultState = State.DISABLED),
-    ConstantPropagation(sinceVersion = null, defaultState = State.DISABLED),
 
     // Experimental features
 
