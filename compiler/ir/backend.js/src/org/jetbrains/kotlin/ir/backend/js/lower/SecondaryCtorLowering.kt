@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.symbols.JsSymbolBuilder
 import org.jetbrains.kotlin.ir.backend.js.symbols.initialize
-import org.jetbrains.kotlin.ir.backend.js.utils.Namer
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
 import org.jetbrains.kotlin.ir.expressions.*
@@ -25,7 +24,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrReturnImpl
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
+import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
 import org.jetbrains.kotlin.ir.util.transformFlat
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
@@ -99,21 +98,21 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
         return newConstructors
     }
 
-    private class ThisUsageReplaceTransformer(val function: IrFunctionSymbol, val thisSymbol: IrValueParameterSymbol) :
+    private class ThisUsageReplaceTransformer(val function: IrFunctionSymbol, val newThisSymbol: IrValueSymbol, val oldThisSymbol: IrValueSymbol) :
         IrElementTransformerVoid() {
 
         override fun visitReturn(expression: IrReturn): IrExpression = IrReturnImpl(
             expression.startOffset,
             expression.endOffset,
             function,
-            IrGetValueImpl(expression.startOffset, expression.endOffset, thisSymbol)
+            IrGetValueImpl(expression.startOffset, expression.endOffset, newThisSymbol)
         )
 
         override fun visitGetValue(expression: IrGetValue): IrExpression =
-            if (expression.descriptor.name.isSpecial && expression.descriptor.name.asString() == Namer.THIS_SPECIAL_NAME) IrGetValueImpl(
+            if (expression.symbol == oldThisSymbol) IrGetValueImpl(
                 expression.startOffset,
                 expression.endOffset,
-                thisSymbol,
+                newThisSymbol,
                 expression.origin
             ) else {
                 expression
@@ -136,6 +135,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
             )
 
             val thisParam = JsIrBuilder.buildValueParameter(thisSymbol)
+            val oldThisReceiver = declaration.dispatchReceiverParameter!!.symbol
 
             return IrFunctionImpl(
                 declaration.startOffset, declaration.endOffset,
@@ -148,7 +148,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
                 typeParameters += declaration.typeParameters
 //                parent = declaration.parent
                 body = JsIrBuilder.buildBlockBody(statements + retStmt).apply {
-                    transformChildrenVoid(ThisUsageReplaceTransformer(it, thisSymbol))
+                    transformChildrenVoid(ThisUsageReplaceTransformer(it, thisSymbol, oldThisReceiver))
                 }
             }
 

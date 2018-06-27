@@ -83,6 +83,8 @@ class SimpleNameGenerator : NameGenerator {
                 is CallableDescriptor -> {
                     if (descriptor.name.asString() == "resume"){
                         nameBuilder.append(descriptor.name.asString())
+                    } else if (descriptor.name.asString() == "create") {
+                        nameBuilder.append(descriptor.name.asString())
                     }
                     else {
                         nameBuilder.append(descriptor.name.asString())

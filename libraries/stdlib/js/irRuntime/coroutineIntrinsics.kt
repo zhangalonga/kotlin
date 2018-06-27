@@ -48,8 +48,7 @@ public val COROUTINE_SUSPENDED: Any = Any()
 public inline fun <T> (suspend () -> T).startCoroutineUninterceptedOrReturn(
     completion: Continuation<T>
 ): Any? {
-    val self = this
-    return js("self_0(completion, false)").unsafeCast<Any?>()
+    return (this as Function1<Continuation<T>, Any?>).invoke(completion)
 }
 
 @SinceKotlin("1.1")
@@ -59,8 +58,7 @@ public inline fun <R, T> (suspend R.() -> T).startCoroutineUninterceptedOrReturn
     receiver: R,
     completion: Continuation<T>
 ): Any? {
-    val self = this
-    return js("self_0(receiver, completion, false)").unsafeCast<Any?>()
+    return (this as Function2<R, Continuation<T>, Any?>).invoke(receiver, completion)
 }
 
 @SinceKotlin("1.1")
@@ -68,8 +66,7 @@ public fun <R, T> (suspend R.() -> T).createCoroutineUnchecked(
     receiver: R,
     completion: Continuation<T>
 ): Continuation<Unit> {
-    val self = this
-    return js("self_0(receiver, completion, true).facade").unsafeCast<Continuation<Unit>>()
+    return ((this as CoroutineImpl).create(receiver, completion) as CoroutineImpl).facade
 }
 
 @SinceKotlin("1.1")
