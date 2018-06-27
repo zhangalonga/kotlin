@@ -24,21 +24,29 @@ internal object FloatCompanionObject {
 internal object IntCompanionObject {
     const val MIN_VALUE: Int = java.lang.Integer.MIN_VALUE
     const val MAX_VALUE: Int = java.lang.Integer.MAX_VALUE
+    const val BYTE_SIZE: Int = 4
+    const val BIT_SIZE: Int = BYTE_SIZE * 8
 }
 
 internal object LongCompanionObject {
     const val MIN_VALUE: Long = java.lang.Long.MIN_VALUE
     const val MAX_VALUE: Long = java.lang.Long.MAX_VALUE
+    const val BYTE_SIZE: Int = 8
+    const val BIT_SIZE: Int = BYTE_SIZE * 8
 }
 
 internal object ShortCompanionObject {
     const val MIN_VALUE: Short = java.lang.Short.MIN_VALUE
     const val MAX_VALUE: Short = java.lang.Short.MAX_VALUE
+    const val BYTE_SIZE: Int = 2
+    const val BIT_SIZE: Int = BYTE_SIZE * 8
 }
 
 internal object ByteCompanionObject {
     const val MIN_VALUE: Byte = java.lang.Byte.MIN_VALUE
     const val MAX_VALUE: Byte = java.lang.Byte.MAX_VALUE
+    const val BYTE_SIZE: Int = 1
+    const val BIT_SIZE: Int = BYTE_SIZE * 8
 }
 
 
@@ -49,6 +57,8 @@ internal object CharCompanionObject {
     const val MAX_LOW_SURROGATE: Char = '\uDFFF'
     const val MIN_SURROGATE: Char = MIN_HIGH_SURROGATE
     const val MAX_SURROGATE: Char = MAX_LOW_SURROGATE
+    const val BYTE_SIZE: Int = 2
+    const val BIT_SIZE: Int = BYTE_SIZE * 8
 }
 
 internal object StringCompanionObject {}

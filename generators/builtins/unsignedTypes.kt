@@ -54,6 +54,16 @@ class UnsignedTypeGenerator(val type: UnsignedType, out: PrintWriter) : BuiltIns
          * A constant holding the maximum value an instance of $className can have.
          */
         public /*const*/ val MAX_VALUE: $className = $className(-1)
+
+        /**
+         * The number of bytes used to represent an instance of $className in a binary form.
+         */
+        public const val BYTE_SIZE: Int = ${type.byteSize}
+
+        /**
+         * The number of bits used to represent an instance of $className in a binary form.
+         */
+        public const val BIT_SIZE: Int = ${type.byteSize * 8}
     }""")
 
         generateCompareTo()

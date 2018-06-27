@@ -362,6 +362,8 @@ public final class kotlin/jvm/internal/BooleanSpreadBuilder : kotlin/jvm/interna
 }
 
 public final class kotlin/jvm/internal/ByteCompanionObject {
+	public static final field BIT_SIZE I
+	public static final field BYTE_SIZE I
 	public static final field INSTANCE Lkotlin/jvm/internal/ByteCompanionObject;
 	public static final field MAX_VALUE B
 	public static final field MIN_VALUE B
@@ -399,6 +401,8 @@ public abstract class kotlin/jvm/internal/CallableReference : java/io/Serializab
 }
 
 public final class kotlin/jvm/internal/CharCompanionObject {
+	public static final field BIT_SIZE I
+	public static final field BYTE_SIZE I
 	public static final field INSTANCE Lkotlin/jvm/internal/CharCompanionObject;
 	public static final field MAX_HIGH_SURROGATE C
 	public static final field MAX_LOW_SURROGATE C
@@ -554,6 +558,8 @@ public class kotlin/jvm/internal/InlineMarker {
 }
 
 public final class kotlin/jvm/internal/IntCompanionObject {
+	public static final field BIT_SIZE I
+	public static final field BYTE_SIZE I
 	public static final field INSTANCE Lkotlin/jvm/internal/IntCompanionObject;
 	public static final field MAX_VALUE I
 	public static final field MIN_VALUE I
@@ -620,6 +626,8 @@ public class kotlin/jvm/internal/LocalVariableReference : kotlin/jvm/internal/Pr
 }
 
 public final class kotlin/jvm/internal/LongCompanionObject {
+	public static final field BIT_SIZE I
+	public static final field BYTE_SIZE I
 	public static final field INSTANCE Lkotlin/jvm/internal/LongCompanionObject;
 	public static final field MAX_VALUE J
 	public static final field MIN_VALUE J
@@ -901,6 +909,8 @@ public class kotlin/jvm/internal/ReflectionFactory {
 }
 
 public final class kotlin/jvm/internal/ShortCompanionObject {
+	public static final field BIT_SIZE I
+	public static final field BYTE_SIZE I
 	public static final field INSTANCE Lkotlin/jvm/internal/ShortCompanionObject;
 	public static final field MAX_VALUE S
 	public static final field MIN_VALUE S

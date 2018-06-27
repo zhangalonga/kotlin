@@ -22,6 +22,16 @@ public inline class UByte internal constructor(private val data: Byte) : Compara
          * A constant holding the maximum value an instance of UByte can have.
          */
         public /*const*/ val MAX_VALUE: UByte = UByte(-1)
+
+        /**
+         * The number of bytes used to represent an instance of UByte in a binary form.
+         */
+        public const val BYTE_SIZE: Int = 1
+
+        /**
+         * The number of bits used to represent an instance of UByte in a binary form.
+         */
+        public const val BIT_SIZE: Int = 8
     }
 
     /**

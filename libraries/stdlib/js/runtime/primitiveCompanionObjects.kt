@@ -48,6 +48,12 @@ private object IntCompanionObject {
 
     @JsName("MAX_VALUE")
     val MAX_VALUE: Int = 2147483647
+
+    @JsName("BYTE_SIZE")
+    val BYTE_SIZE = 4
+
+    @JsName("BIT_SIZE")
+    val BIT_SIZE = 32
 }
 
 @JsName("LongCompanionObject")
@@ -57,6 +63,12 @@ private object LongCompanionObject {
 
     @JsName("MAX_VALUE")
     val MAX_VALUE: Long = js("Kotlin.Long.MAX_VALUE")
+
+    @JsName("BYTE_SIZE")
+    val BYTE_SIZE = 8
+
+    @JsName("BIT_SIZE")
+    val BIT_SIZE = 64
 }
 
 @JsName("ShortCompanionObject")
@@ -66,6 +78,12 @@ private object ShortCompanionObject {
 
     @JsName("MAX_VALUE")
     val MAX_VALUE: Short = 32767
+
+    @JsName("BYTE_SIZE")
+    val BYTE_SIZE = 2
+
+    @JsName("BIT_SIZE")
+    val BIT_SIZE = 16
 }
 
 @JsName("ByteCompanionObject")
@@ -75,6 +93,12 @@ private object ByteCompanionObject {
 
     @JsName("MAX_VALUE")
     val MAX_VALUE: Byte = 127
+
+    @JsName("BYTE_SIZE")
+    val BYTE_SIZE = 1
+
+    @JsName("BIT_SIZE")
+    val BIT_SIZE = 8
 }
 
 @JsName("CharCompanionObject")
@@ -96,6 +120,12 @@ private object CharCompanionObject {
 
     @JsName("MAX_SURROGATE")
     public const val MAX_SURROGATE: Char = MAX_LOW_SURROGATE
+
+    @JsName("BYTE_SIZE")
+    public const val BYTE_SIZE = 2
+
+    @JsName("BIT_SIZE")
+    public const val BIT_SIZE = 16
 }
 
 private object StringCompanionObject {}

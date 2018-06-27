@@ -22,6 +22,19 @@ public class Byte private constructor() : Number(), Comparable<Byte> {
          * A constant holding the maximum value an instance of Byte can have.
          */
         public const val MAX_VALUE: Byte = 127
+
+        /**
+         * The number of bytes used to represent an instance of Byte in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BYTE_SIZE: Int = 1
+
+        /**
+         * The number of bits used to represent an instance of Byte in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BIT_SIZE: Int = 8
+
     }
 
     /**
@@ -198,6 +211,19 @@ public class Short private constructor() : Number(), Comparable<Short> {
          * A constant holding the maximum value an instance of Short can have.
          */
         public const val MAX_VALUE: Short = 32767
+
+        /**
+         * The number of bytes used to represent an instance of Short in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BYTE_SIZE: Int = 2
+
+        /**
+         * The number of bits used to represent an instance of Short in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BIT_SIZE: Int = 16
+
     }
 
     /**
@@ -374,6 +400,19 @@ public class Int private constructor() : Number(), Comparable<Int> {
          * A constant holding the maximum value an instance of Int can have.
          */
         public const val MAX_VALUE: Int = 2147483647
+
+        /**
+         * The number of bytes used to represent an instance of Int in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BYTE_SIZE: Int = 4
+
+        /**
+         * The number of bits used to represent an instance of Int in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BIT_SIZE: Int = 32
+
     }
 
     /**
@@ -565,6 +604,19 @@ public class Long private constructor() : Number(), Comparable<Long> {
          * A constant holding the maximum value an instance of Long can have.
          */
         public const val MAX_VALUE: Long = 9223372036854775807L
+
+        /**
+         * The number of bytes used to represent an instance of Long in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BYTE_SIZE: Int = 8
+
+        /**
+         * The number of bits used to represent an instance of Long in a binary form.
+         */
+        @SinceKotlin("1.3")
+        public const val BIT_SIZE: Int = 64
+
     }
 
     /**
@@ -771,6 +823,7 @@ public class Float private constructor() : Number(), Comparable<Float> {
          * A constant holding the "not a number" value of Float.
          */
         public val NaN: Float
+
     }
 
     /**
@@ -954,6 +1007,7 @@ public class Double private constructor() : Number(), Comparable<Double> {
          * A constant holding the "not a number" value of Double.
          */
         public val NaN: Double
+
     }
 
     /**
