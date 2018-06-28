@@ -40,7 +40,7 @@ public expect annotation class JvmStatic()
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.FILE)
 @MustBeDocumented
 @OptionalExpectation
-public expect annotation class JvmName(actual val name: String)
+public expect annotation class JvmName(val name: String)
 
 /**
  * Instructs the Kotlin compiler to generate a multifile class with top-level functions and properties declared in this file as one of its parts.
