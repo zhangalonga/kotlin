@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.ConversionNames
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer
 import org.jetbrains.kotlin.ir.backend.js.utils.OperatorNames
+import org.jetbrains.kotlin.ir.backend.js.utils.isFakeOverriddenFromAny
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
@@ -262,29 +263,26 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
     }
 }
 
-// Return is method has no real implementation except fake overrides from Any
-fun CallableMemberDescriptor.isFakeOverriddenFromAny(): Boolean {
-    if (kind.isReal) {
-        return (containingDeclaration is ClassDescriptor) && KotlinBuiltIns.isAny(containingDeclaration as ClassDescriptor)
-    }
-    return overriddenDescriptors.all { it.isFakeOverriddenFromAny() }
-}
-
 fun shouldReplaceToStringWithRuntimeCall(call: IrCall): Boolean {
     if (call.superQualifier != null) return false
-    return call.symbol.owner.dispatchReceiverParameter?.type?.run {
+
+    val receiverParameterType = with(call.symbol.owner) {
+        dispatchReceiverParameter ?: extensionReceiverParameter
+    }?.type ?: return false
+
+    return receiverParameterType.run {
         KotlinBuiltIns.isArray(this)
                 || this.isAnyOrNullableAny()
                 || this.isNullable()
                 || this.isDynamic()
                 || KotlinBuiltIns.isString(this)
-    } ?: true
+    }
 }
 
 fun shouldReplaceCompareToWithRuntimeCall(call: IrCall): Boolean {
     if (call.superQualifier != null) return false
 
-    // TODO: Replace all comapreTo to with runtime call when Comparable<*>.copmpareTo() bridge is implemented
+    // TODO: Replace all compareTo to with runtime call when Comparable<*>.compareTo() bridge is implemented
     return call.symbol.owner.dispatchReceiverParameter?.run {
         type.isDynamic()
                 || type.isJsNumber()
