@@ -16,10 +16,12 @@
 
 package org.jetbrains.kotlin.idea.debugger.stepping
 
+import com.intellij.debugger.engine.DebugProcessImpl
 import com.intellij.debugger.engine.RequestHint
 import com.intellij.debugger.engine.SuspendContextImpl
 import com.intellij.debugger.engine.evaluation.EvaluateException
 import com.intellij.debugger.jdi.ThreadReferenceProxyImpl
+import com.intellij.debugger.ui.breakpoints.Breakpoint
 import com.intellij.openapi.diagnostic.Logger
 import com.sun.jdi.VMDisconnectedException
 import com.sun.jdi.request.StepRequest
@@ -28,7 +30,8 @@ import com.sun.jdi.request.StepRequest
 class KotlinStepOverInlinedLinesHint(
     stepThread: ThreadReferenceProxyImpl,
     suspendContext: SuspendContextImpl,
-    methodFilter: KotlinMethodFilter
+    methodFilter: KotlinMethodFilter,
+    private val disabledBreakpoints: List<Breakpoint<*>>
 ) : RequestHint(stepThread, suspendContext, methodFilter) {
 
     private val LOG = Logger.getInstance(KotlinStepOverInlinedLinesHint::class.java)
@@ -38,19 +41,25 @@ class KotlinStepOverInlinedLinesHint(
     override fun getDepth(): Int = StepRequest.STEP_OVER
 
     override fun getNextStepDepth(context: SuspendContextImpl): Int {
+        @Suppress("FunctionName")
+        fun STOP(): Int {
+            enableBreakpoints(context.debugProcess)
+            return STOP
+        }
+
         try {
             val frameProxy = context.frameProxy
             if (frameProxy != null) {
                 if (isTheSameFrame(context)) {
                     return if (filter.locationMatches(context, frameProxy.location())) {
-                        STOP
+                        STOP()
                     } else {
                         StepRequest.STEP_OVER
                     }
                 }
 
                 if (isSteppedOut) {
-                    return STOP
+                    return STOP()
                 }
 
                 return StepRequest.STEP_OUT
@@ -60,6 +69,13 @@ class KotlinStepOverInlinedLinesHint(
             LOG.error(e)
         }
 
-        return STOP
+        return STOP()
+    }
+
+    private fun enableBreakpoints(debugProcess: DebugProcessImpl) {
+        for (breakpoint in disabledBreakpoints) {
+            breakpoint.markVerified(false)
+            breakpoint.createRequest(debugProcess)
+        }
     }
 }

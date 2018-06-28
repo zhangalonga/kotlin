@@ -23,9 +23,13 @@ import com.intellij.debugger.impl.DebuggerContextImpl
 import com.intellij.debugger.impl.DebuggerSession
 import com.intellij.debugger.jdi.ThreadReferenceProxyImpl
 import com.intellij.debugger.settings.DebuggerSettings
+import com.intellij.debugger.ui.breakpoints.Breakpoint
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
+import com.intellij.xdebugger.XSourcePosition
+import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.sun.jdi.Location
 import com.sun.jdi.request.EventRequest
 import com.sun.jdi.request.StepRequest
 import java.lang.reflect.Field
@@ -133,7 +137,10 @@ class KotlinStepActionFactory(private val debuggerProcess: DebugProcessImpl) {
                 return
             }
 
-            val hint = KotlinStepOverInlinedLinesHint(stepThread, suspendContext, mySmartStepFilter)
+            val currentLocation = suspendContext.frameProxy?.location()
+            val disabledBreakpoints = currentLocation?.let { suspendContext.disableBreakpointsOnLocation(it) } ?: emptyList()
+
+            val hint = KotlinStepOverInlinedLinesHint(stepThread, suspendContext, mySmartStepFilter, disabledBreakpoints)
             hint.isResetIgnoreFilters = !session.shouldIgnoreSteppingFilters()
 
             try {
@@ -149,6 +156,36 @@ class KotlinStepActionFactory(private val debuggerProcess: DebugProcessImpl) {
             showStatusText("Process resumed")
             resumeAction(suspendContext, stepThread)
             debugProcessDispatcher.multicaster.resumed(suspendContext)
+        }
+
+        // This (and 'enableBreakpointsOnLine()') are partially copied from 'BreakpointManager.enableBreakpoints()'
+        private fun SuspendContextImpl.disableBreakpointsOnLocation(location: Location): List<Breakpoint<*>> {
+            val breakpoints = getBreakpointsOnLocation(location)
+
+            for (breakpoint in breakpoints) {
+                val requestsManager = debugProcess.requestsManager
+                breakpoint.markVerified(requestsManager.isVerified(breakpoint))
+                requestsManager.deleteRequest(breakpoint)
+            }
+
+            return breakpoints
+        }
+
+        private fun SuspendContextImpl.getBreakpointsOnLocation(location: Location): List<Breakpoint<*>> {
+            val currentFileName = location.sourceName().takeIf { it.isNotEmpty() } ?: return emptyList()
+            val lineNumberInSources = location.lineNumber() - 1
+
+            val project = debugProcess.project
+            val allBreakpoints = DebuggerManagerEx.getInstanceEx(project).breakpointManager.breakpoints
+
+            fun isValidSourcePosition(position: XSourcePosition?) = currentFileName == position?.file?.name
+
+            return allBreakpoints.filter { breakpoint ->
+                val xBreakpoint = breakpoint.xBreakpoint
+                xBreakpoint is XLineBreakpoint<*>
+                        && xBreakpoint.line == lineNumberInSources
+                        && isValidSourcePosition(xBreakpoint.sourcePosition)
+            }
         }
     }
 
