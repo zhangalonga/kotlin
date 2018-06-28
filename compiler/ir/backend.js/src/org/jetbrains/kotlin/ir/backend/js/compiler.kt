@@ -28,9 +28,9 @@ fun compile(
     export: FqName
 ): String {
     val analysisResult = TopDownAnalyzerFacadeForJS.analyzeFiles(files, project, configuration, emptyList(), emptyList())
-    TopDownAnalyzerFacadeForJS.checkForErrors(files, analysisResult.bindingContext)
     ProgressIndicatorAndCompilationCanceledStatus.checkCanceled()
 
+    TopDownAnalyzerFacadeForJS.checkForErrors(files, analysisResult.bindingContext)
 
     val psi2IrTranslator = Psi2IrTranslator()
     val psi2IrContext = psi2IrTranslator.createGeneratorContext(analysisResult.moduleDescriptor, analysisResult.bindingContext)
@@ -92,6 +92,7 @@ fun JsIrBackendContext.lower(moduleFragment: IrModuleFragment) {
     moduleFragment.files.forEach(sctor.getConstructorRedirectorLowering())
     moduleFragment.files.forEach(CallableReferenceLowering(this)::lower)
     moduleFragment.files.forEach(IntrinsicifyCallsLowering(this)::lower)
+    moduleFragment.files.forEach(BridgesConstruction(this)::runOnFilePostfix)
 }
 
 // TODO find out why duplicates occur
