@@ -94,6 +94,7 @@ fun JsIrBackendContext.lower(file: IrFile) {
     SecondaryCtorLowering(this).runOnFilePostfix(file)
     CallableReferenceLowering(this).lower(file)
     IntrinsicifyCallsLowering(this).lower(file)
+    BridgesConstruction(this).runOnFilePostfix(file)
 }
 
 // TODO find out why duplicates occur
