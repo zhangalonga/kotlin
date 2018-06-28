@@ -31,6 +31,9 @@ fun main(args: Array<String>) {
 
     // EXPRESSION: it + 8
     // RESULT: Unresolved reference: it
+
+    // EXPRESSION: it + 8
+    // RESULT: Unresolved reference: it
     //Breakpoint! (lambdaOrdinal = -1)
     a.bar(1) { 1 }.bar(2) { 1 }
 
@@ -49,6 +52,9 @@ fun main(args: Array<String>) {
 
     // EXPRESSION: it + 12
     // RESULT: 13: I
+
+    // EXPRESSION: it + 11
+    // RESULT: Unresolved reference: it
 
     // EXPRESSION: it + 14
     // RESULT: 16: I

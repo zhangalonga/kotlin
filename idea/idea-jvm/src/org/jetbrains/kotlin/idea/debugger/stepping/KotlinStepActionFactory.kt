@@ -23,12 +23,17 @@ import com.intellij.debugger.impl.DebuggerContextImpl
 import com.intellij.debugger.impl.DebuggerSession
 import com.intellij.debugger.jdi.ThreadReferenceProxyImpl
 import com.intellij.debugger.settings.DebuggerSettings
+import com.intellij.debugger.ui.breakpoints.Breakpoint
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
+import com.intellij.xdebugger.XDebugSessionListener
+import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.sun.jdi.Location
 import com.sun.jdi.request.EventRequest
 import com.sun.jdi.request.StepRequest
 import java.lang.reflect.Field
+import java.util.concurrent.atomic.AtomicBoolean
 
 // Mass-copy-paste code for commands behaviour from com.intellij.debugger.engine.DebugProcessImpl
 @SuppressWarnings("UnnecessaryFinalOnLocalVariableOrParameter")
@@ -133,6 +138,10 @@ class KotlinStepActionFactory(private val debuggerProcess: DebugProcessImpl) {
                 return
             }
 
+            val currentLocation = suspendContext.frameProxy?.location()
+            val breakpointsToDisable = currentLocation?.let { getBreakpointsOnLocation(suspendContext, it) }
+            TemporarilyDisabledBreakpoints(breakpointsToDisable ?: emptyList()).disableTemporarily(suspendContext)
+
             val hint = KotlinStepOverInlinedLinesHint(stepThread, suspendContext, mySmartStepFilter)
             hint.isResetIgnoreFilters = !session.shouldIgnoreSteppingFilters()
 
@@ -150,6 +159,21 @@ class KotlinStepActionFactory(private val debuggerProcess: DebugProcessImpl) {
             resumeAction(suspendContext, stepThread)
             debugProcessDispatcher.multicaster.resumed(suspendContext)
         }
+
+        private fun getBreakpointsOnLocation(suspendContext: SuspendContextImpl, location: Location): List<Breakpoint<*>> {
+            val currentFileName = location.sourceName().takeIf { it.isNotEmpty() } ?: return emptyList()
+            val lineNumberInSources = location.lineNumber() - 1
+
+            val project = suspendContext.debugProcess.project
+            val allBreakpoints = DebuggerManagerEx.getInstanceEx(project).breakpointManager.breakpoints
+
+            return allBreakpoints.filter { breakpoint ->
+                val xBreakpoint = breakpoint.xBreakpoint
+                xBreakpoint is XLineBreakpoint<*>
+                        && xBreakpoint.line == lineNumberInSources
+                        && currentFileName == xBreakpoint.sourcePosition?.file?.name
+            }
+        }
     }
 
     companion object {
@@ -157,5 +181,46 @@ class KotlinStepActionFactory(private val debuggerProcess: DebugProcessImpl) {
 
         private val isResumeOnlyCurrentThread: Boolean
             get() = DebuggerSettings.getInstance().RESUME_ONLY_CURRENT_THREAD
+    }
+}
+
+class TemporarilyDisabledBreakpoints(breakpoints: List<Breakpoint<*>>?) {
+    private val breakpoints = breakpoints ?: emptyList()
+    private var areEnabled = AtomicBoolean(true)
+
+    fun disableTemporarily(suspendContext: SuspendContextImpl) {
+        val debugProcess = suspendContext.debugProcess
+        val xDebugSession = debugProcess.session.xDebugSession ?: return
+
+        xDebugSession.addSessionListener(object : XDebugSessionListener {
+            override fun sessionPaused() {
+                xDebugSession.removeSessionListener(this)
+                enableBreakpoints(debugProcess)
+            }
+        })
+
+        disableBreakpoints(debugProcess)
+    }
+
+    private fun disableBreakpoints(debugProcess: DebugProcessImpl) {
+        for (breakpoint in breakpoints) {
+            val requestsManager = debugProcess.requestsManager
+            breakpoint.markVerified(requestsManager.isVerified(breakpoint))
+            requestsManager.deleteRequest(breakpoint)
+        }
+
+        areEnabled.set(false)
+    }
+
+    private fun enableBreakpoints(debugProcess: DebugProcessImpl) {
+        if (areEnabled.getAndSet(true)) {
+            return
+        }
+
+        for (breakpoint in breakpoints) {
+            breakpoint.markVerified(false)
+            // TODO check if still actual
+            breakpoint.createRequest(debugProcess)
+        }
     }
 }

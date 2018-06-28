@@ -158,30 +158,6 @@ class KotlinPositionManager(private val myDebugProcess: DebugProcess) : MultiReq
             return SourcePosition.createFromLine(ktFile ?: psiFile, line - 1)
         }
 
-        val sameLineLocations = location.safeMethod()?.safeAllLineLocations()?.filter {
-            it.safeLineNumber() == lineNumber && it.safeSourceName() == fileName
-        }
-
-        if (sameLineLocations != null) {
-            // There're several locations for same source line. If same source position would be created for all of them,
-            // breakpoints at this line will stop on every location.
-            // Each location is probably some code in arguments between inlined invocations (otherwise same line locations would
-            // have been merged into one), but it's impossible to correctly map locations to actual source expressions now.
-            val locationIndex = sameLineLocations.indexOf(location)
-            if (locationIndex > 0) {
-                /*
-                    `finally {}` block code is placed in the class file twice.
-                    Unless the debugger metadata is available, we can't figure out if we are inside `finally {}`, so we have to check it using PSI.
-                    This is conceptually wrong and won't work in some cases, but it's still better than nothing.
-                */
-                val elementAt = psiFile.getLineStartOffset(lineNumber)?.let { psiFile.findElementAt(it) }
-                val isInsideDuplicatedFinally = elementAt != null && elementAt.getStrictParentOfType<KtFinallySection>() != null
-                if (!isInsideDuplicatedFinally) {
-                    return KotlinReentrantSourcePosition(SourcePosition.createFromLine(psiFile, sourceLineNumber))
-                }
-            }
-        }
-
         return SourcePosition.createFromLine(psiFile, sourceLineNumber)
     }
 

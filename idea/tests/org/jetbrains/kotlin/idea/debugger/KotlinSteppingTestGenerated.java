@@ -1017,6 +1017,11 @@ public class KotlinSteppingTestGenerated extends AbstractKotlinSteppingTest {
             runTest("idea/testData/debugger/tinyApp/src/stepping/custom/anonymousFunAsParamDefaultValue.kt");
         }
 
+        @TestMetadata("breakpointWhileStepOver.kt")
+        public void testBreakpointWhileStepOver() throws Exception {
+            runTest("idea/testData/debugger/tinyApp/src/stepping/custom/breakpointWhileStepOver.kt");
+        }
+
         @TestMetadata("coroutine.kt")
         public void testCoroutine() throws Exception {
             runTest("idea/testData/debugger/tinyApp/src/stepping/custom/coroutine.kt");
@@ -1025,6 +1030,11 @@ public class KotlinSteppingTestGenerated extends AbstractKotlinSteppingTest {
         @TestMetadata("crossinlineLiteral.kt")
         public void testCrossinlineLiteral() throws Exception {
             runTest("idea/testData/debugger/tinyApp/src/stepping/custom/crossinlineLiteral.kt");
+        }
+
+        @TestMetadata("duplicateLineNumbers.kt")
+        public void testDuplicateLineNumbers() throws Exception {
+            runTest("idea/testData/debugger/tinyApp/src/stepping/custom/duplicateLineNumbers.kt");
         }
 
         @TestMetadata("finallyBlock.kt")

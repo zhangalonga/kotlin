@@ -1,0 +1,18 @@
+LineBreakpoint created at breakpointWhileStepOver.kt:10
+LineBreakpoint created at breakpointWhileStepOver.kt:17
+Run Java
+Connected to the target VM
+breakpointWhileStepOver.kt:10
+breakpointWhileStepOver.kt:17
+breakpointWhileStepOver.kt:10
+breakpointWhileStepOver.kt:17
+breakpointWhileStepOver.kt:18
+breakpointWhileStepOver.kt:12
+breakpointWhileStepOver.kt:18
+breakpointWhileStepOver.kt:12
+breakpointWhileStepOver.kt:5
+Disconnected from the target VM
+
+Process finished with exit code 0
+hello
+hello
