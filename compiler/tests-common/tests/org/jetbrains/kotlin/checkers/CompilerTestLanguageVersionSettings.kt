@@ -22,8 +22,8 @@ const val JVM_DEFAULT_MODE = "JVM_DEFAULT_MODE"
 const val SKIP_METADATA_VERSION_CHECK = "SKIP_METADATA_VERSION_CHECK"
 
 data class CompilerTestLanguageVersionSettings(
-    private val initialLanguageFeatures: Map<LanguageFeature, LanguageFeature.State>,
-    override val apiVersion: ApiVersion,
+        private val initialLanguageFeatures: Map<LanguageFeature, LanguageFeature.State>,
+        override val apiVersion: ApiVersion,
         override val languageVersion: LanguageVersion,
         private val analysisFlags: Map<AnalysisFlag<*>, Any?> = emptyMap()
 ) : LanguageVersionSettings {
