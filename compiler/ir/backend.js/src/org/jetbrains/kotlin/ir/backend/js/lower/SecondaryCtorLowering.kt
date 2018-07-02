@@ -82,7 +82,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
                 //   val t = Object.create(Foo.prototype);
                 //   return Foo_init_$Init$(..., t)
                 // }
-                val newInitConstructor = createInitConstructor(declaration, constructorName)
+                val newInitConstructor = createInitConstructor(declaration, irClass, constructorName)
                 val newCreateConstructor = createCreateConstructor(declaration, newInitConstructor, constructorName)
 
                 oldCtorToNewMap[declaration.symbol] = ConstructorPair(newInitConstructor.symbol, newCreateConstructor.symbol)
@@ -98,7 +98,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
         return newConstructors
     }
 
-    private class ThisUsageReplaceTransformer(val function: IrFunctionSymbol, val newThisSymbol: IrValueSymbol, val oldThisSymbol: IrValueSymbol) :
+    private class ThisUsageReplaceTransformer(val function: IrFunctionSymbol, val newThisSymbol: IrValueSymbol, val oldThisSymbol: IrValueSymbol?) :
         IrElementTransformerVoid() {
 
         override fun visitReturn(expression: IrReturn): IrExpression = IrReturnImpl(
@@ -119,7 +119,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
             }
     }
 
-    private fun createInitConstructor(declaration: IrConstructor, name: String): IrSimpleFunction =
+    private fun createInitConstructor(declaration: IrConstructor, klass: IrClass, name: String): IrSimpleFunction =
         JsSymbolBuilder.copyFunctionSymbol(declaration.symbol, "${name}_\$Init\$").let {
 
             val thisSymbol =
@@ -135,7 +135,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) {
             )
 
             val thisParam = JsIrBuilder.buildValueParameter(thisSymbol)
-            val oldThisReceiver = declaration.dispatchReceiverParameter!!.symbol
+            val oldThisReceiver = klass.thisReceiver?.symbol
 
             return IrFunctionImpl(
                 declaration.startOffset, declaration.endOffset,
