@@ -73,7 +73,7 @@ abstract class KotlinRuntimeTypeEvaluator(
 
         val value = evaluator.evaluate(evaluationContext)
         if (value != null) {
-            return getCastableRuntimeType(evaluationContext.debugProcess.searchScope, value)
+            return runReadAction { getCastableRuntimeType(evaluationContext.debugProcess.searchScope, value) }
         }
 
         throw EvaluateExceptionUtil.createEvaluateException(DebuggerBundle.message("evaluation.error.surrounded.expression.null"))
