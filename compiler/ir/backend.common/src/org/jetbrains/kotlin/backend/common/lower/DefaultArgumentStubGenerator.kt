@@ -83,6 +83,7 @@ open class DefaultArgumentStubGenerator constructor(val context: CommonBackendCo
         functionDescriptor.overriddenDescriptors.forEach { context.log { "DEFAULT-REPLACER: $it" } }
         if (bodies.isNotEmpty()) {
             val newIrFunction = functionDescriptor.generateDefaultsFunction(context)
+            newIrFunction.parent = irFunction.parent
             val descriptor = newIrFunction.descriptor
             log { "$functionDescriptor -> $descriptor" }
             val builder = context.createIrBuilder(newIrFunction.symbol)

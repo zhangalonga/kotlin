@@ -52,7 +52,7 @@ abstract class BasicIrBoxTest(
             "libraries/stdlib/js/irRuntime/coroutines.kt",
             "libraries/stdlib/js/irRuntime/coroutineIntrinsics.kt",
             "libraries/stdlib/js/irRuntime/coroutinesInternal.kt",
-            "libraries/stdlib/js/irRuntime/defaultArguments.kt",
+            "libraries/stdlib/js/irRuntime/DefaultConstructorMarker.kt",
             "libraries/stdlib/js/irRuntime/Function.kt",
             "libraries/stdlib/js/irRuntime/Functions.kt",
             "libraries/stdlib/js/irRuntime/SuspendFunction.kt",

@@ -5,4 +5,4 @@
 
 package kotlin.js
 
-class DefaultConstructorMarker {}
+internal object DefaultConstructorMarker

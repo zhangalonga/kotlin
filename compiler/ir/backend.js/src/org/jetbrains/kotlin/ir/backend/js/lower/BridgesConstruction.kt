@@ -144,7 +144,10 @@ class BridgesConstruction(val context: JsIrBackendContext) : ClassLoweringPass {
                     IrStatementOrigin.BRIDGE_DELEGATION
                 )
             }
-            irFunction.valueParameters.mapIndexed { i, valueParameter ->
+
+            val toDrop = if (call.descriptor.isSuspend) 1 else 0
+
+            irFunction.valueParameters.dropLast(toDrop).mapIndexed { i, valueParameter ->
                 call.putValueArgument(
                     i,
                     IrGetValueImpl(

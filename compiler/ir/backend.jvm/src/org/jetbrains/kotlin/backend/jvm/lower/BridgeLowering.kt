@@ -212,7 +212,7 @@ class BridgeLowering(val context: JvmBackendContext) : ClassLoweringPass {
             bridge.descriptor.returnType, Modality.OPEN, descriptor.visibility
         )
 
-        val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.BRIDGE, bridgeDescriptorForIrFunction)
+        val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.DEFINED, bridgeDescriptorForIrFunction)
         irFunction.createParameterDeclarations()
 
         context.createIrBuilder(irFunction.symbol).irBlockBody(irFunction) {

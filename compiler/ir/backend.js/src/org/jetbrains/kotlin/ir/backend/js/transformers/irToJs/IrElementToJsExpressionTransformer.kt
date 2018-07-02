@@ -159,7 +159,7 @@ class IrElementToJsExpressionTransformer : BaseIrElementToJsNodeTransformer<JsEx
         val arguments = translateCallArguments(expression, context)
 
         if (dispatchReceiver != null &&
-            dispatchReceiver.type.isFunctionTypeOrSubtype && symbol.owner.name == OperatorNameConventions.INVOKE
+            dispatchReceiver.type.isFunctionTypeOrSubtype && symbol.descriptor.name == OperatorNameConventions.INVOKE
         ) {
             return JsInvocation(jsDispatchReceiver!!, arguments)
         }

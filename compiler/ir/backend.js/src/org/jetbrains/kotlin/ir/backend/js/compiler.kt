@@ -76,6 +76,7 @@ fun JsIrBackendContext.performInlining(moduleFragment: IrModuleFragment) {
 fun JsIrBackendContext.lower(moduleFragment: IrModuleFragment) {
     moduleFragment.files.forEach(LateinitLowering(this, true)::lower)
     moduleFragment.files.forEach(DefaultArgumentStubGenerator(this)::runOnFilePostfix)
+    moduleFragment.files.forEach(DefaultParameterInjector(this)::runOnFilePostfix)
     moduleFragment.files.forEach(SharedVariablesLowering(this)::runOnFilePostfix)
     moduleFragment.files.forEach(ReturnableBlockLowering(this)::lower)
     moduleFragment.files.forEach(LocalDeclarationsLowering(this)::runOnFilePostfix)
