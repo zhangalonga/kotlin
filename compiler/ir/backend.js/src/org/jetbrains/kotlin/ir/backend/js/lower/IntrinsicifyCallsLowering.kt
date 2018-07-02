@@ -7,8 +7,6 @@ package org.jetbrains.kotlin.ir.backend.js.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
-import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.ConversionNames
@@ -97,14 +95,6 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
                 op(it, ConversionNames.TO_FLOAT, intrinsics.jsAsIs)
                 op(it, ConversionNames.TO_INT, intrinsics.jsAsIs)
                 op(it, ConversionNames.TO_SHORT, intrinsics.jsAsIs)
-            }
-
-            irBuiltIns.double.let {
-                op(it, ConversionNames.TO_BYTE, intrinsics.jsNumberToByte)
-                op(it, ConversionNames.TO_DOUBLE, intrinsics.jsAsIs)
-                op(it, ConversionNames.TO_FLOAT, intrinsics.jsAsIs)
-                op(it, ConversionNames.TO_INT, intrinsics.jsNumberToInt)
-                op(it, ConversionNames.TO_SHORT, intrinsics.jsNumberToShort)
             }
 
             for (type in listOf(irBuiltIns.float, irBuiltIns.double)) {
@@ -265,6 +255,11 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
 
 fun shouldReplaceToStringWithRuntimeCall(call: IrCall): Boolean {
     if (call.superQualifier != null) return false
+
+    // TODO: (KOTLIN-CR-2079)
+    //  - User defined extension functions Any?.toString() call can be lost during lowering.
+    //  - Use direct method call for dynamic types???
+    //  - Define Any?.toString() in runtime library and stop intrincifying extensions
 
     val receiverParameterType = with(call.symbol.owner) {
         dispatchReceiverParameter ?: extensionReceiverParameter
