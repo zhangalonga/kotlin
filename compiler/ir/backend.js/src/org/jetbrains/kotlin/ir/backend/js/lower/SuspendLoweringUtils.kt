@@ -71,7 +71,7 @@ class SuspendState(type: KotlinType) {
     var id = -1
 }
 
-fun collectSuspendableNodes(body: IrBlock): Set<IrElement> {
+fun collectSuspendableNodes(body: IrBlock): MutableSet<IrElement> {
     val suspendableNodes = mutableSetOf<IrElement>()
 
     // 1st: mark suspendable loops and trys
@@ -112,7 +112,7 @@ class SuspendedTerminatorsCollector(suspendableNodes: MutableSet<IrElement>) : S
 
 
 class StateMachineBuilder(
-    private val suspendableNodes: Set<IrElement>,
+    private val suspendableNodes: MutableSet<IrElement>,
     val context: JsIrBackendContext,
     val function: IrFunctionSymbol,
     val rootLoop: IrLoop,
@@ -150,7 +150,9 @@ class StateMachineBuilder(
 
     fun finalizeStateMachine() {
         val unitValue = JsIrBuilder.buildGetObjectValue(unit, context.symbolTable.referenceClass(context.builtIns.unit))
-        addStatement(JsIrBuilder.buildReturn(function, unitValue))
+        if (currentBlock.statements.lastOrNull() !is IrReturn) {
+            addStatement(JsIrBuilder.buildReturn(function, unitValue))
+        }
         if (!hasExceptions) entryState.successors += rootExceptionTrap
     }
 
@@ -329,13 +331,37 @@ class StateMachineBuilder(
         doDispatch(headState)
     }
 
+    private fun wrap(expression: IrExpression, variable: IrVariableSymbol) = JsIrBuilder.buildSetVariable(variable, expression)
+
     override fun visitWhen(expression: IrWhen) {
 
         if (expression !in suspendableNodes) return addStatement(expression)
 
         val exitState = SuspendState(expression.type)
 
-        for (branch in expression.branches) {
+        val varSymbol: IrVariableSymbol?
+        val branches: List<IrBranch>
+
+        if (!expression.type.isUnit()) {
+            varSymbol = tempVar(expression.type)
+            addStatement(JsIrBuilder.buildVar(varSymbol))
+
+            branches = expression.branches.map {
+                val wrapped = wrap(it.result, varSymbol)
+                if (it.result in suspendableNodes) {
+                    suspendableNodes += wrapped
+                }
+                when (it) {
+                    is IrElseBranch -> IrElseBranchImpl(it.startOffset, it.endOffset, it.condition, wrapped)
+                    else /* IrBranch */ -> IrBranchImpl(it.startOffset, it.endOffset, it.condition, wrapped)
+                }
+            }
+        } else {
+            varSymbol = null
+            branches = expression.branches
+        }
+
+        for (branch in branches) {
             if (branch !is IrElseBranch) {
                 branch.condition.acceptVoid(this)
                 val branchBlock = JsIrBuilder.buildComposite(branch.result.type)
@@ -363,28 +389,31 @@ class StateMachineBuilder(
 
         doDispatch(exitState)
         updateState(exitState)
+        if (varSymbol != null) {
+            addStatement(JsIrBuilder.buildGetValue(varSymbol))
+        }
     }
 
     override fun visitSetVariable(expression: IrSetVariable) {
-        assert(expression in suspendableNodes)
+        if (expression !in suspendableNodes) return addStatement(expression)
         expression.acceptChildrenVoid(this)
         transformLastExpression { expression.apply { value = it } }
     }
 
     override fun visitVariable(declaration: IrVariable) {
-        assert(declaration in suspendableNodes)
+        if (declaration !in suspendableNodes) return addStatement(declaration)
         declaration.acceptChildrenVoid(this)
         transformLastExpression { declaration.apply { initializer = it } }
     }
 
     override fun visitGetField(expression: IrGetField) {
-        assert(expression in suspendableNodes)
+        if (expression !in suspendableNodes) return addStatement(expression)
         expression.acceptChildrenVoid(this)
         transformLastExpression { expression.apply { receiver = it } }
     }
 
     override fun visitGetClass(expression: IrGetClass) {
-        assert(expression in suspendableNodes)
+        if (expression !in suspendableNodes) return addStatement(expression)
         expression.acceptChildrenVoid(this)
         transformLastExpression { expression.apply { argument = it } }
     }
@@ -490,13 +519,25 @@ class StateMachineBuilder(
         tryStack.push(tryState)
 
         val finallyStateVarSymbol = tempVar(context.builtIns.intType)
+
+        val varSymbol = if (!aTry.type.isUnit()) tempVar(aTry.type) else null
+
         if (aTry.finallyExpression != null) {
             addStatement(JsIrBuilder.buildVar(finallyStateVarSymbol, normanID))
+        }
+        if (varSymbol != null) {
+            addStatement(JsIrBuilder.buildVar(varSymbol))
         }
 
         setupExceptionState(tryState.catchState)
 
-        aTry.tryResult.acceptVoid(this)
+        val tryResult = if (varSymbol != null) {
+            JsIrBuilder.buildSetVariable(varSymbol, aTry.tryResult).also {
+                if (it.value in suspendableNodes) suspendableNodes += it
+            }
+        } else aTry.tryResult
+
+        tryResult.acceptVoid(this)
 
         val exitState = SuspendState(unit)
 
@@ -522,22 +563,27 @@ class StateMachineBuilder(
         for (catch in aTry.catches) {
             val type = catch.catchParameter.type
             val irVar = catch.catchParameter.apply { initializer = implicitCast(ex, type) }
+            val catchResult = if (varSymbol != null) {
+                JsIrBuilder.buildSetVariable(varSymbol, catch.result).also {
+                    if (it.value in suspendableNodes) suspendableNodes += it
+                }
+            } else catch.result
             if (type.isDynamic()) {
                 rethrowNeeded = false
-                val block = JsIrBuilder.buildComposite(catch.result.type)
+                val block = JsIrBuilder.buildComposite(catchResult.type)
                 currentBlock = block
                 addStatement(irVar)
-                catch.result.acceptVoid(this)
+                catchResult.acceptVoid(this)
                 tryState.finallyState?.also { doDispatch(it.normal) }
             } else {
                 val check = buildIsCheck(ex, type)
-                val branchBlock = JsIrBuilder.buildComposite(catch.result.type)
-                val elseBlock = JsIrBuilder.buildComposite(catch.result.type)
-                val irIf = JsIrBuilder.buildIfElse(catch.result.type, check, branchBlock, elseBlock)
+                val branchBlock = JsIrBuilder.buildComposite(catchResult.type)
+                val elseBlock = JsIrBuilder.buildComposite(catchResult.type)
+                val irIf = JsIrBuilder.buildIfElse(catchResult.type, check, branchBlock, elseBlock)
                 val ifBlock = currentBlock
                 currentBlock = branchBlock
                 addStatement(irVar)
-                catch.result.acceptVoid(this)
+                catchResult.acceptVoid(this)
                 tryState.finallyState?.also { doDispatch(it.normal) }
                 currentBlock = ifBlock
                 addStatement(irIf)
@@ -576,6 +622,9 @@ class StateMachineBuilder(
         }
 
         updateState(exitState)
+        if (varSymbol != null) {
+            addStatement(JsIrBuilder.buildGetValue(varSymbol))
+        }
     }
 
     private fun buildFinallyDispatch(exitState: SuspendState, stateVar: IrVariableSymbol) {
