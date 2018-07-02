@@ -30,12 +30,11 @@ import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.isStatic
+import org.jetbrains.kotlin.ir.builders.irCall
+import org.jetbrains.kotlin.ir.builders.irGet
+import org.jetbrains.kotlin.ir.builders.irReturn
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
-import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
-import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrReturnImpl
 import org.jetbrains.kotlin.ir.util.createParameterDeclarations
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.util.isReal
@@ -104,57 +103,39 @@ class BridgesConstruction(val context: JsIrBackendContext) : ClassLoweringPass {
 
     // Ported from from jvm.lower.BridgeLowering
     private fun createBridge(
-        descriptor: IrSimpleFunction,
+        function: IrSimpleFunction,
         bridge: IrSimpleFunction,
         delegateTo: IrSimpleFunction
     ): IrFunction {
-        val containingClass = descriptor.parentAsClass.descriptor
+        val containingClass = function.parentAsClass.descriptor
 
         val bridgeDescriptorForIrFunction = SimpleFunctionDescriptorImpl.create(
             containingClass,
             Annotations.EMPTY,
             bridge.name,
             CallableMemberDescriptor.Kind.SYNTHESIZED,
-            descriptor.descriptor.source)
+            function.descriptor.source)
 
         bridgeDescriptorForIrFunction.initialize(
             bridge.extensionReceiverParameter?.type, containingClass.thisAsReceiverParameter, bridge.descriptor.typeParameters,
             bridge.descriptor.valueParameters.map { it.copy(bridgeDescriptorForIrFunction, it.name, it.index) },
-            bridge.returnType, Modality.OPEN, descriptor.visibility
+            bridge.returnType, Modality.OPEN, function.visibility
         )
 
+        // TODO: Support offsets for debug info
         val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.DEFINED, bridgeDescriptorForIrFunction)
         irFunction.createParameterDeclarations()
 
         context.createIrBuilder(irFunction.symbol).irBlockBody(irFunction) {
-            val call = IrCallImpl(
-                UNDEFINED_OFFSET, UNDEFINED_OFFSET,
-                delegateTo.descriptor,
-                null, IrStatementOrigin.BRIDGE_DELEGATION, null
-            )
-            call.dispatchReceiver = IrGetValueImpl(
-                UNDEFINED_OFFSET, UNDEFINED_OFFSET,
-                irFunction.dispatchReceiverParameter!!.symbol,
-                IrStatementOrigin.BRIDGE_DELEGATION
-            )
+            val call = irCall(delegateTo.symbol)
+            call.dispatchReceiver = irGet(irFunction.dispatchReceiverParameter!!.symbol)
             irFunction.extensionReceiverParameter?.let {
-                call.extensionReceiver = IrGetValueImpl(
-                    UNDEFINED_OFFSET, UNDEFINED_OFFSET,
-                    it.symbol,
-                    IrStatementOrigin.BRIDGE_DELEGATION
-                )
+                call.extensionReceiver = irGet(it.symbol)
             }
             irFunction.valueParameters.mapIndexed { i, valueParameter ->
-                call.putValueArgument(
-                    i,
-                    IrGetValueImpl(
-                        UNDEFINED_OFFSET, UNDEFINED_OFFSET,
-                        valueParameter.symbol,
-                        IrStatementOrigin.BRIDGE_DELEGATION
-                    )
-                )
+                call.putValueArgument(i, irGet(valueParameter.symbol))
             }
-            +IrReturnImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, irFunction.symbol, call)
+            +irReturn(call)
         }.apply {
             irFunction.body = this
         }
