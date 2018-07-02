@@ -55,7 +55,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
     fun lower(irFunction: IrFunction) {
         function = irFunction
         tmpVarCounter = 0
-        irFunction.body = irFunction.body?.accept(statementTransformer, null) as? IrBody
+        irFunction.transformChildrenVoid(statementTransformer)
     }
 
     fun lower(irField: IrField, container: IrDeclarationContainer): List<IrDeclaration> {
@@ -377,6 +377,8 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
             return block
         }
+
+        override fun visitTry(aTry: IrTry) = aTry.also { it.transformChildrenVoid(this); }
     }
 
     private inner class ExpressionTransformer : IrElementTransformerVoid() {
@@ -575,7 +577,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
         //  else -> else_block {}
         // }
         //
-        // transformed into if-else chain
+        // transformed into if-else chain in anything should be decomposed
         //
         // Composite [
         //   var tmp
@@ -587,23 +589,46 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
         //   }
         //   tmp
         // ]
+        //
+        // kept `as is` otherwise
 
         override fun visitWhen(expression: IrWhen): IrExpression {
-            val tmp = makeTempVar(expression.type)
 
-            val newBranches = expression.branches.map {
-                val newResult = wrap(it.result, tmp)
-                when (it) {
-                    is IrElseBranch -> IrElseBranchImpl(it.startOffset, it.endOffset, it.condition, newResult)
-                    else /* IrBranch */ -> IrBranchImpl(it.startOffset, it.endOffset, it.condition, newResult)
-                }
+            var hasComposites = false
+            val decomposedResults = expression.branches.map {
+                val transformedCondition = it.condition.transform(expressionTransformer, null)
+                val transformedResult = it.result.transform(expressionTransformer, null)
+                hasComposites = hasComposites || transformedCondition is IrComposite || transformedResult is IrComposite
+                Triple(it, transformedCondition, transformedResult)
             }
 
-            val irVar = JsIrBuilder.buildVar(tmp)
-            val newWhen =
-                expression.run { IrWhenImpl(startOffset, endOffset, unitType, origin, newBranches) }.transform(statementTransformer, null)
+            if (hasComposites) {
+                val tmp = makeTempVar(expression.type)
 
-            return JsIrBuilder.buildComposite(expression.type, listOf(irVar, newWhen, JsIrBuilder.buildGetValue(tmp)))
+                val newBranches = decomposedResults.map { (branch, condition, result) ->
+                    val newResult = wrap(result, tmp)
+                    when (branch) {
+                        is IrElseBranch -> IrElseBranchImpl(branch.startOffset, branch.endOffset, condition, newResult)
+                        else /* IrBranch */ -> IrBranchImpl(branch.startOffset, branch.endOffset, condition, newResult)
+                    }
+                }
+
+                val irVar = JsIrBuilder.buildVar(tmp)
+                val newWhen =
+                    expression.run { IrWhenImpl(startOffset, endOffset, unitType, origin, newBranches) }
+                        .transform(statementTransformer, null)  // deconstruct into `if-else` chain
+
+                return JsIrBuilder.buildComposite(expression.type, listOf(irVar, newWhen, JsIrBuilder.buildGetValue(tmp)))
+            } else {
+                val newBranches = decomposedResults.map { (branch, condition, result) ->
+                    when (branch) {
+                        is IrElseBranch -> IrElseBranchImpl(branch.startOffset, branch.endOffset, condition, result)
+                        else /* IrBranch */ -> IrBranchImpl(branch.startOffset, branch.endOffset, condition, result)
+                    }
+                }
+
+                return expression.run { IrWhenImpl(startOffset, endOffset, type, origin, newBranches) }
+            }
         }
     }
 }
