@@ -801,11 +801,11 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
 
             val irResultDeclaration = JsIrBuilder.buildVar(suspendResult, JsIrBuilder.buildGetValue(dataArgument))
 //            val irStateDeclaration = JsIrBuilder.buildVar(suspendState, JsIrBuilder.buildGetField(coroutineImplLabelFieldSymbol, JsIrBuilder.buildGetValue(thisReceiver)))
-            val irSaveException = JsIrBuilder.buildSetField(
-                coroutineImplExceptionFieldSymbol,
-                JsIrBuilder.buildGetValue(thisReceiver),
-                JsIrBuilder.buildGetValue(exceptionArgument)
-            )
+//            val irSaveException = JsIrBuilder.buildSetField(
+//                coroutineImplExceptionFieldSymbol,
+//                JsIrBuilder.buildGetValue(thisReceiver),
+//                JsIrBuilder.buildGetValue(exceptionArgument)
+//            )
 
             rootLoop.transform(DispatchPointTransformer(::buildDispatch), null)
 
@@ -819,7 +819,7 @@ internal class SuspendFunctionsLowering(val context: JsIrBackendContext): Declar
                 }
             }
 
-            val functionBody = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, irSaveException, rootLoop))
+            val functionBody = IrBlockBodyImpl(function.startOffset, function.endOffset, listOf(irResultDeclaration, rootLoop))
 
             function.body = functionBody
 

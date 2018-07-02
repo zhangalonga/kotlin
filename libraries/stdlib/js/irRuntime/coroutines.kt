@@ -128,6 +128,7 @@ internal abstract class CoroutineImpl(private val completion: Continuation<Any?>
 
     override fun resumeWithException(exception: Throwable) {
         label = exceptionState
+        pendingException = exception
         doResumeWrapper(null, exception)
     }
 

@@ -165,7 +165,7 @@ class StateMachineBuilder(
             putValueArgument(1, IrDispatchPoint(rootExceptionTrap))
         }
         block.statements += JsIrBuilder.buildIfElse(unit, check, thenBlock, elseBlock)
-        thenBlock.statements += JsIrBuilder.buildSetField(exStateSymbol, thisReceiver, state)
+//        thenBlock.statements += JsIrBuilder.buildSetField(exStateSymbol, thisReceiver, state)
         thenBlock.statements += JsIrBuilder.buildThrow(nothing, JsIrBuilder.buildGetValue(globalExceptionSymbol))
 
         elseBlock.statements += JsIrBuilder.buildSetField(stateSymbol, thisReceiver, exceptionState())
@@ -584,7 +584,8 @@ class StateMachineBuilder(
                 currentBlock = branchBlock
                 addStatement(irVar)
                 catchResult.acceptVoid(this)
-                tryState.finallyState?.also { doDispatch(it.normal) }
+                val exitDispatch = tryState.finallyState?.run { normal } ?: exitState
+                doDispatch(exitDispatch)
                 currentBlock = ifBlock
                 addStatement(irIf)
                 currentBlock = elseBlock
@@ -598,7 +599,7 @@ class StateMachineBuilder(
         if (tryState.finallyState == null) {
             currentState.successors += outState.catchState
         }
-        doDispatchImpl(exitState, catchRootBlock, true)
+//        doDispatchImpl(exitState, catchRootBlock, true)
 
         tryStack.pop()
 
@@ -650,8 +651,9 @@ class StateMachineBuilder(
             buildDispatchBlock(enclosingState.finallyState!!.fromReturn)
         }
 
+        val setExceptionState = JsIrBuilder.buildSetField(exStateSymbol, thisReceiver, IrDispatchPoint(tryStack.peek()!!.catchState))
         val irThrowStatement = JsIrBuilder.buildThrow(nothing, pendingException())
-        val irIfReturn = JsIrBuilder.buildIfElse(unit, checkReturn, returnStatement, irThrowStatement)
+        val irIfReturn = JsIrBuilder.buildIfElse(unit, checkReturn, returnStatement, JsIrBuilder.buildBlock(unit, listOf(setExceptionState, irThrowStatement)))
 
         elseNormalBlock.statements += irIfReturn
 
