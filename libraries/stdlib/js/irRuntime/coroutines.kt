@@ -63,11 +63,157 @@ public fun <T> (suspend () -> T).createCoroutine(
     completion: Continuation<T>
 ): Continuation<Unit> = SafeContinuation(createCoroutineUnchecked(completion), COROUTINE_SUSPENDED)
 
+inline fun <T, R> T.let(f: (T) -> R) = f(this)
+inline fun <R> run(f: () -> R) = f()
 
-public interface CoroutineContext
+public interface CoroutineContext {
+    /**
+     * Returns the element with the given [key] from this context or `null`.
+     * Keys are compared _by reference_, that is to get an element from the context the reference to its actual key
+     * object must be presented to this function.
+     */
+    public operator fun <E : Element> get(key: Key<E>): E?
 
-open class EmptyCoroutineContext : CoroutineContext {
-    companion object : EmptyCoroutineContext()
+    /**
+     * Accumulates entries of this context starting with [initial] value and applying [operation]
+     * from left to right to current accumulator value and each element of this context.
+     */
+    public fun <R> fold(initial: R, operation: (R, Element) -> R): R
+
+    /**
+     * Returns a context containing elements from this context and elements from  other [context].
+     * The elements from this context with the same key as in the other one are dropped.
+     */
+    public operator fun plus(context: CoroutineContext): CoroutineContext =
+        if (context === EmptyCoroutineContext) this else // fast path -- avoid lambda creation
+            context.fold(this) { acc, element ->
+                val removed = acc.minusKey(element.key)
+                if (removed === EmptyCoroutineContext) element else {
+                    // make sure interceptor is always last in the context (and thus is fast to get when present)
+                    val interceptor = removed[ContinuationInterceptor]
+                    if (interceptor == null) CombinedContext(removed, element) else {
+                        val left = removed.minusKey(ContinuationInterceptor)
+                        if (left === EmptyCoroutineContext) CombinedContext(element, interceptor) else
+                            CombinedContext(CombinedContext(left, element), interceptor)
+                    }
+                }
+            }
+
+    /**
+     * Returns a context containing elements from this context, but without an element with
+     * the specified [key]. Keys are compared _by reference_, that is to remove an element from the context
+     * the reference to its actual key object must be presented to this function.
+     */
+    public fun minusKey(key: Key<*>): CoroutineContext
+
+    /**
+     * An element of the [CoroutineContext]. An element of the coroutine context is a singleton context by itself.
+     */
+    public interface Element : CoroutineContext {
+        /**
+         * A key of this coroutine context element.
+         */
+        public val key: Key<*>
+
+        @Suppress("UNCHECKED_CAST")
+        public override operator fun <E : Element> get(key: Key<E>): E? =
+            if (this.key === key) this as E else null
+
+        public override fun <R> fold(initial: R, operation: (R, Element) -> R): R =
+            operation(initial, this)
+
+        public override fun minusKey(key: Key<*>): CoroutineContext =
+            if (this.key === key) EmptyCoroutineContext else this
+    }
+
+    /**
+     * Key for the elements of [CoroutineContext]. [E] is a type of element with this key.
+     * Keys in the context are compared _by reference_.
+     */
+    public interface Key<E : Element>
+}
+
+public abstract class AbstractCoroutineContextElement(public override val key: CoroutineContext.Key<*>) : CoroutineContext.Element
+
+public interface ContinuationInterceptor : CoroutineContext.Element {
+    /**
+     * The key that defines *the* context interceptor.
+     */
+    companion object Key : CoroutineContext.Key<ContinuationInterceptor>
+
+    /**
+     * Returns continuation that wraps the original [continuation], thus intercepting all resumptions.
+     * This function is invoked by coroutines framework when needed and the resulting continuations are
+     * cached internally per each instance of the original [continuation].
+     *
+     * By convention, implementations that install themselves as *the* interceptor in the context with
+     * the [Key] shall also scan the context for other element that implement [ContinuationInterceptor] interface
+     * and use their [interceptContinuation] functions, too.
+     */
+    public fun <T> interceptContinuation(continuation: Continuation<T>): Continuation<T>
+}
+
+internal class CombinedContext(val left: CoroutineContext, val element: CoroutineContext.Element) : CoroutineContext {
+    override fun <E : CoroutineContext.Element> get(key: CoroutineContext.Key<E>): E? {
+        var cur = this
+        while (true) {
+            cur.element[key]?.let { return it }
+            val next = cur.left
+            if (next is CombinedContext) {
+                cur = next
+            } else {
+                return next[key]
+            }
+        }
+    }
+
+    public override fun <R> fold(initial: R, operation: (R, CoroutineContext.Element) -> R): R =
+        operation(left.fold(initial, operation), element)
+
+    public override fun minusKey(key: CoroutineContext.Key<*>): CoroutineContext {
+        element[key]?.let { return left }
+        val newLeft = left.minusKey(key)
+        return when {
+            newLeft === left -> this
+            newLeft === EmptyCoroutineContext -> element
+            else -> CombinedContext(newLeft, element)
+        }
+    }
+
+    private fun size(): Int =
+        if (left is CombinedContext) left.size() + 1 else 2
+
+    private fun contains(element: CoroutineContext.Element): Boolean =
+        get(element.key) == element
+
+    private fun containsAll(context: CombinedContext): Boolean {
+        var cur = context
+        while (true) {
+            if (!contains(cur.element)) return false
+            val next = cur.left
+            if (next is CombinedContext) {
+                cur = next
+            } else {
+                return contains(next as CoroutineContext.Element)
+            }
+        }
+    }
+
+    override fun equals(other: Any?): Boolean =
+        this === other || other is CombinedContext && other.size() == size() && other.containsAll(this)
+
+    override fun hashCode(): Int = left.hashCode() + element.hashCode()
+
+    override fun toString(): String = "CC"
+}
+
+public object EmptyCoroutineContext : CoroutineContext {
+    public override fun <E : CoroutineContext.Element> get(key: CoroutineContext.Key<E>): E? = null
+    public override fun <R> fold(initial: R, operation: (R, CoroutineContext.Element) -> R): R = initial
+    public override fun plus(context: CoroutineContext): CoroutineContext = context
+    public override fun minusKey(key: CoroutineContext.Key<*>): CoroutineContext = this
+    public override fun hashCode(): Int = 0
+    public override fun toString(): String = "EmptyCoroutineContext"
 }
 
 public interface Continuation<in T> {
@@ -147,13 +293,13 @@ internal abstract class CoroutineImpl(private val completion: Continuation<Any?>
     }
 }
 
-internal class SafeContinuation<in T>
-internal constructor(
+public class SafeContinuation<in T>
+public constructor(
     private val delegate: Continuation<T>,
     initialResult: Any?
 ) : Continuation<T> {
 
-    internal constructor(delegate: Continuation<T>) : this(delegate, UNDECIDED)
+    public constructor(delegate: Continuation<T>) : this(delegate, UNDECIDED)
 
     public override val context: CoroutineContext
         get() = delegate.context
@@ -190,7 +336,7 @@ internal constructor(
         }
     }
 
-    internal fun getResult(): Any? {
+    public fun getResult(): Any? {
         if (result === UNDECIDED) {
             result = COROUTINE_SUSPENDED
         }
@@ -209,50 +355,12 @@ internal constructor(
     }
 }
 
-
-/*
-abstract internal class CoroutineImpl(
-    protected var completion: Continuation<Any?>?
-) : Continuation<Any?> {
-
-    // label == -1 when coroutine cannot be started (it is just a factory object) or has already finished execution
-    // label == 0 in initial part of the coroutine
-    protected var label: Int
-
-    private val _context: CoroutineContext? = completion?.context
-
-    override val context: CoroutineContext
-        get() = _context!!
-
-    private var _facade: Continuation<Any?>? = null
-
-    val facade: Continuation<Any?> get() {
-        if (_facade == null) _facade = interceptContinuationIfNeeded(_context!!, this)
-        return _facade!!
+public suspend inline fun <T> suspendCoroutine(crossinline block: (Continuation<T>) -> Unit): T =
+    suspendCoroutineOrReturn { c: Continuation<T> ->
+        val safe = SafeContinuation(c)
+        block(safe)
+        safe.getResult()
     }
-
-    override fun resume(value: Any?) {
-        processBareContinuationResume(completion!!) {
-            doResume(value, null)
-        }
-    }
-
-    override fun resumeWithException(exception: Throwable) {
-        processBareContinuationResume(completion!!) {
-            doResume(null, exception)
-        }
-    }
-
-    protected abstract fun doResume(data: Any?, exception: Throwable?): Any?
-
-    open fun create(completion: Continuation<*>): Continuation<Unit> {
-        throw IllegalStateException("create(Continuation) has not been overridden")
-    }
-
-    open fun create(value: Any?, completion: Continuation<*>): Continuation<Unit> {
-        throw IllegalStateException("create(Any?;Continuation) has not been overridden")
-    }
-}*/
 
 private val UNDECIDED: Any? = Any()
 private val RESUMED: Any? = Any()
