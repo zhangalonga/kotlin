@@ -42,12 +42,12 @@ public fun <T> (suspend () -> T).startCoroutine(
  * The [completion] continuation is invoked when coroutine completes with result or exception.
  * Repeated invocation of any resume function on the resulting continuation produces [IllegalStateException].
  */
-//@SinceKotlin("1.1")
-//@Suppress("UNCHECKED_CAST")
-//public fun <R, T> (suspend R.() -> T).createCoroutine(
-//    receiver: R,
-//    completion: Continuation<T>
-//): Continuation<Unit> = SafeContinuation(createCoroutineUnchecked(receiver, completion), COROUTINE_SUSPENDED)
+@SinceKotlin("1.1")
+@Suppress("UNCHECKED_CAST")
+public fun <R, T> (suspend R.() -> T).createCoroutine(
+    receiver: R,
+    completion: Continuation<T>
+): Continuation<Unit> = SafeContinuation(createCoroutineUnchecked(receiver, completion), COROUTINE_SUSPENDED)
 
 /**
  * Creates a coroutine without receiver and with result type [T].
@@ -57,11 +57,11 @@ public fun <T> (suspend () -> T).startCoroutine(
  * The [completion] continuation is invoked when coroutine completes with result or exception.
  * Repeated invocation of any resume function on the resulting continuation produces [IllegalStateException].
  */
-//@SinceKotlin("1.1")
-//@Suppress("UNCHECKED_CAST")
-//public fun <T> (suspend () -> T).createCoroutine(
-//    completion: Continuation<T>
-//): Continuation<Unit> = SafeContinuation(createCoroutineUnchecked(completion), COROUTINE_SUSPENDED)
+@SinceKotlin("1.1")
+@Suppress("UNCHECKED_CAST")
+public fun <T> (suspend () -> T).createCoroutine(
+    completion: Continuation<T>
+): Continuation<Unit> = SafeContinuation(createCoroutineUnchecked(completion), COROUTINE_SUSPENDED)
 
 
 public interface CoroutineContext
@@ -146,6 +146,69 @@ internal abstract class CoroutineImpl(private val completion: Continuation<Any?>
         throw IllegalStateException("create(Any?;Continuation) has not been overridden")
     }
 }
+
+internal class SafeContinuation<in T>
+internal constructor(
+    private val delegate: Continuation<T>,
+    initialResult: Any?
+) : Continuation<T> {
+
+    internal constructor(delegate: Continuation<T>) : this(delegate, UNDECIDED)
+
+    public override val context: CoroutineContext
+        get() = delegate.context
+
+    private var result: Any? = initialResult
+
+    override fun resume(value: T) {
+        when {
+            result === UNDECIDED -> {
+                result = value
+            }
+            result === COROUTINE_SUSPENDED -> {
+                result = RESUMED
+                delegate.resume(value)
+            }
+            else -> {
+                throw IllegalStateException("Already resumed")
+            }
+        }
+    }
+
+    override fun resumeWithException(exception: Throwable) {
+        when {
+            result === UNDECIDED -> {
+                result = Fail(exception)
+            }
+            result === COROUTINE_SUSPENDED -> {
+                result = RESUMED
+                delegate.resumeWithException(exception)
+            }
+            else -> {
+                throw IllegalStateException("Already resumed")
+            }
+        }
+    }
+
+    internal fun getResult(): Any? {
+        if (result === UNDECIDED) {
+            result = COROUTINE_SUSPENDED
+        }
+        val result = this.result
+        return when {
+            result === RESUMED -> {
+                COROUTINE_SUSPENDED // already called continuation, indicate SUSPENDED upstream
+            }
+            result is Fail -> {
+                throw result.exception
+            }
+            else -> {
+                result // either SUSPENDED or data
+            }
+        }
+    }
+}
+
 
 /*
 abstract internal class CoroutineImpl(
