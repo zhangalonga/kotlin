@@ -49,12 +49,29 @@ abstract class BasicIrBoxTest(
             "libraries/stdlib/js/irRuntime/long.kt",
             "libraries/stdlib/js/irRuntime/longjs.kt",
             "libraries/stdlib/js/irRuntime/numberConversion.kt",
+            "libraries/stdlib/js/irRuntime/rangeTo.kt",
             "libraries/stdlib/js/irRuntime/compareTo.kt",
             "libraries/stdlib/js/irRuntime/annotations.kt",
             "libraries/stdlib/js/irRuntime/DefaultConstructorMarker.kt",
             "libraries/stdlib/js/irRuntime/exceptions.kt",
             "libraries/stdlib/js/irRuntime/internalAnnotations.kt",
-            "libraries/stdlib/js/irRuntime/typeCheckUtils.kt"
+            "libraries/stdlib/js/irRuntime/typeCheckUtils.kt",
+
+            "core/builtins/src/kotlin/internal/InternalAnnotations.kt",
+            "core/builtins/src/kotlin/internal/progressionUtil.kt",
+            // "core/builtins/src/kotlin/Annotations.kt",  // TODO: Support enum classes
+            "core/builtins/src/kotlin/Function.kt",
+            "core/builtins/src/kotlin/Iterators.kt",
+            "core/builtins/src/kotlin/ProgressionIterators.kt",
+            "core/builtins/src/kotlin/Progressions.kt",
+            "core/builtins/src/kotlin/Range.kt",
+            "core/builtins/src/kotlin/Ranges.kt",
+            "core/builtins/src/kotlin/Unit.kt",
+            "core/builtins/native/kotlin/Collections.kt",
+            "core/builtins/native/kotlin/Iterator.kt",
+
+            "core/builtins/native/kotlin/Number.kt",
+            "core/builtins/native/kotlin/Comparable.kt"
         ).map { createPsiFile(it) }
 
         val filesToIgnore = listOf(

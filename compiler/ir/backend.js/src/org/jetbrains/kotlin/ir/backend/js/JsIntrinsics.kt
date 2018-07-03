@@ -114,6 +114,8 @@ class JsIntrinsics(
     val jsCompareTo = getInternalFunction("compareTo")
     val jsEquals = getInternalFunction("equals")
 
+    val jsNumberRangeToNumber = getInternalFunction("numberRangeToNumber")
+    val jsNumberRangeToLong = getInternalFunction("numberRangeToLong")
 
     val longConstructor= context.symbolTable.referenceConstructor(context.getClass(FqName("kotlin.Long")).constructors.single())
     val longToDouble= context.symbolTable.referenceSimpleFunction(context.getClass(FqName("kotlin.Long")).unsubstitutedMemberScope.findSingleFunction(Name.identifier("toDouble")))

@@ -49,6 +49,10 @@ open class AssertionError(message: String?, cause: Throwable?) : Exception(messa
 
 }
 
+open class NoSuchElementException(message: String?, cause: Throwable?) : RuntimeException(message, cause) {
+    constructor() : this(null, null)
+    constructor(message: String?) : this(message, null)
+}
 
 // TODO: fix function names to satisfy style convention (depends on built-in names)
 fun THROW_CCE() {
