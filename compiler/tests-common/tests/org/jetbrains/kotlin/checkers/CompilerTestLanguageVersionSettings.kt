@@ -22,8 +22,8 @@ const val JVM_DEFAULT_MODE = "JVM_DEFAULT_MODE"
 const val SKIP_METADATA_VERSION_CHECK = "SKIP_METADATA_VERSION_CHECK"
 
 data class CompilerTestLanguageVersionSettings(
-        private val initialLanguageFeatures: Map<LanguageFeature, LanguageFeature.State>,
-        override val apiVersion: ApiVersion,
+    private val initialLanguageFeatures: Map<LanguageFeature, LanguageFeature.State>,
+    override val apiVersion: ApiVersion,
         override val languageVersion: LanguageVersion,
         private val analysisFlags: Map<AnalysisFlag<*>, Any?> = emptyMap()
 ) : LanguageVersionSettings {
@@ -45,6 +45,10 @@ private fun specificFeaturesForTests(): Map<LanguageFeature, LanguageFeature.Sta
     else
         emptyMap()
 }
+
+fun parseLanguageVersionSettingsOrDefault(directiveMap: Map<String, String>): LanguageVersionSettings =
+    parseLanguageVersionSettings(directiveMap)
+        ?: CompilerTestLanguageVersionSettings(emptyMap(), ApiVersion.LATEST_STABLE, LanguageVersion.LATEST_STABLE)
 
 fun parseLanguageVersionSettings(directiveMap: Map<String, String>): LanguageVersionSettings? {
     val apiVersionString = directiveMap[API_VERSION_DIRECTIVE]
@@ -76,8 +80,7 @@ fun parseLanguageVersionSettings(directiveMap: Map<String, String>): LanguageVer
 
 fun setupLanguageVersionSettingsForCompilerTests(originalFileText: String, environment: KotlinCoreEnvironment) {
     val directives = KotlinTestUtils.parseDirectives(originalFileText)
-    val languageVersionSettings = parseLanguageVersionSettings(directives) ?:
-                                  CompilerTestLanguageVersionSettings(emptyMap(), ApiVersion.LATEST_STABLE, LanguageVersion.LATEST_STABLE)
+    val languageVersionSettings = parseLanguageVersionSettingsOrDefault(directives)
     environment.configuration.languageVersionSettings = languageVersionSettings
 }
 
