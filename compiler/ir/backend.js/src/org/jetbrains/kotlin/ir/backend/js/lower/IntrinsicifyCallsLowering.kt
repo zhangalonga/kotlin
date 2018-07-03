@@ -315,59 +315,59 @@ class RuntimeFunctionCall : EqualityLoweringType()
 class RuntimeOrMethodCall : EqualityLoweringType()
 
 fun translateEquals(lhs: KotlinType, rhs: KotlinType): EqualityLoweringType = when {
-    lhs.isJsNumber()         -> translateEqualsForJsNumber(rhs)
+    lhs.isJsNumber() -> translateEqualsForJsNumber(rhs)
     lhs.isNullableJsNumber() -> translateEqualsForNullableJsNumber(rhs)
-    lhs.isLong()             -> translateEqualsForLong(rhs)
-    lhs.isNullableLong()     -> translateEqualsForNullableLong(rhs)
-    lhs.isBoolean()          -> translateEqualsForBoolean(rhs)
-    lhs.isNullableBoolean()  -> translateEqualsForNullableBoolean(rhs)
-    else                     -> RuntimeOrMethodCall()
+    lhs.isLong() -> translateEqualsForLong(rhs)
+    lhs.isNullableLong() -> translateEqualsForNullableLong(rhs)
+    lhs.isBoolean() -> translateEqualsForBoolean(rhs)
+    lhs.isNullableBoolean() -> translateEqualsForNullableBoolean(rhs)
+    else -> RuntimeOrMethodCall()
 }
 
 fun translateEqualsForJsNumber(rhs: KotlinType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator()
-    rhs.isLong() || rhs.isNullableLong()         -> EqualityOperator()
-    rhs.isBooleanOrNullableBoolean()             -> IdentityOperator()
-    else                                         -> RuntimeFunctionCall()
+    rhs.isLong() || rhs.isNullableLong() -> EqualityOperator()
+    rhs.isBooleanOrNullableBoolean() -> IdentityOperator()
+    else -> RuntimeFunctionCall()
 }
 
 fun translateEqualsForNullableJsNumber(rhs: KotlinType): EqualityLoweringType = when {
-    rhs.isJsNumber()                             -> IdentityOperator()
-    rhs.isNullableJsNumber()                     -> EqualityOperator()
-    rhs.isLong() || rhs.isNullableLong()         -> EqualityOperator()
-    rhs.isBoolean()                              -> IdentityOperator()
-    else                                         -> RuntimeFunctionCall()
+    rhs.isJsNumber() -> IdentityOperator()
+    rhs.isNullableJsNumber() -> EqualityOperator()
+    rhs.isLong() || rhs.isNullableLong() -> EqualityOperator()
+    rhs.isBoolean() -> IdentityOperator()
+    else -> RuntimeFunctionCall()
 }
 
 fun translateEqualsForLong(rhs: KotlinType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> EqualityOperator()
-    rhs.isLong() || rhs.isNullableLong()         -> RuntimeFunctionCall()
-    rhs.isBooleanOrNullableBoolean()             -> IdentityOperator()
-    else                                         -> RuntimeFunctionCall()
+    rhs.isLong() || rhs.isNullableLong() -> RuntimeFunctionCall()
+    rhs.isBooleanOrNullableBoolean() -> IdentityOperator()
+    else -> RuntimeFunctionCall()
 }
 
 fun translateEqualsForNullableLong(rhs: KotlinType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> EqualityOperator()
-    rhs.isLong() || rhs.isNullableLong()         -> RuntimeFunctionCall()
-    rhs.isBoolean()                              -> IdentityOperator()
-    else                                         -> RuntimeFunctionCall()
+    rhs.isLong() || rhs.isNullableLong() -> RuntimeFunctionCall()
+    rhs.isBoolean() -> IdentityOperator()
+    else -> RuntimeFunctionCall()
 }
 
 fun translateEqualsForBoolean(rhs: KotlinType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator()
-    rhs.isLong() || rhs.isNullableLong()         -> IdentityOperator()
-    rhs.isBooleanOrNullableBoolean()             -> IdentityOperator()
-    else                                         -> RuntimeFunctionCall()
+    rhs.isLong() || rhs.isNullableLong() -> IdentityOperator()
+    rhs.isBooleanOrNullableBoolean() -> IdentityOperator()
+    else -> RuntimeFunctionCall()
 }
 
 fun translateEqualsForNullableBoolean(rhs: KotlinType): EqualityLoweringType = when {
-    rhs.isJsNumber()                             -> IdentityOperator()
-    rhs.isNullableJsNumber()                     -> RuntimeFunctionCall()
-    rhs.isLong()                                 -> IdentityOperator()
-    rhs.isNullableLong()                         -> RuntimeFunctionCall()
-    rhs.isBoolean()                              -> IdentityOperator()
-    rhs.isNullableBoolean()                      -> EqualityOperator()
-    else                                         -> RuntimeFunctionCall()
+    rhs.isJsNumber() -> IdentityOperator()
+    rhs.isNullableJsNumber() -> RuntimeFunctionCall()
+    rhs.isLong() -> IdentityOperator()
+    rhs.isNullableLong() -> RuntimeFunctionCall()
+    rhs.isBoolean() -> IdentityOperator()
+    rhs.isNullableBoolean() -> EqualityOperator()
+    else -> RuntimeFunctionCall()
 }
 
 private fun KotlinType.isNullableBoolean(): Boolean = isBooleanOrNullableBoolean() && isNullable()
