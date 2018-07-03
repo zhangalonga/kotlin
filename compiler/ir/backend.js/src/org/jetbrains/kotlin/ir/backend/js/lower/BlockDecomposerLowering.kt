@@ -89,7 +89,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
     private fun processStatements(statements: MutableList<IrStatement>) {
         statements.transformFlat {
-            uncastComposite(it.transform(statementTransformer, null))
+            destructureComposite(it.transform(statementTransformer, null))
         }
     }
 
@@ -105,14 +105,14 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
         return composite
     }
 
-    private fun materializeExpression(composite: IrComposite, block: (IrExpression) -> IrStatement): IrComposite {
+    private fun materializeLastExpression(composite: IrComposite, block: (IrExpression) -> IrStatement): IrComposite {
         val statements = composite.statements
         val expression = statements.lastOrNull() as? IrExpression ?: return composite
-        statements[statements.size - 1] = block(expression)
+        statements[statements.lastIndex] = block(expression)
         return composite
     }
 
-    private fun uncastComposite(expression: IrStatement) = (expression as? IrComposite)?.statements ?: listOf(expression)
+    private fun destructureComposite(expression: IrStatement) = (expression as? IrComposite)?.statements ?: listOf(expression)
 
     private inner class BreakContinueUpdater(val breakLoop: IrLoop, val continueLoop: IrLoop) : IrElementTransformer<IrLoop> {
         override fun visitBreak(jump: IrBreak, data: IrLoop) = jump.apply {
@@ -135,7 +135,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             expression.transformChildrenVoid(expressionTransformer)
 
             val composite = expression.value as? IrComposite ?: return expression
-            return materializeExpression(composite) {
+            return materializeLastExpression(composite) {
                 IrReturnImpl(expression.startOffset, expression.endOffset, expression.type, expression.returnTargetSymbol, it)
             }
         }
@@ -144,7 +144,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             expression.transformChildrenVoid(expressionTransformer)
 
             val composite = expression.value as? IrComposite ?: return expression
-            return materializeExpression(composite) {
+            return materializeLastExpression(composite) {
                 IrThrowImpl(expression.startOffset, expression.endOffset, expression.type, it)
             }
         }
@@ -155,7 +155,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             declaration.transformChildrenVoid(expressionTransformer)
 
             val composite = declaration.initializer as? IrComposite ?: return declaration
-            return materializeExpression(composite) {
+            return materializeLastExpression(composite) {
                 declaration.apply { initializer = it }
             }
         }
@@ -173,9 +173,9 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
                 val tmp = makeTempVar(receiverResult.type)
                 val irVar = JsIrBuilder.buildVar(tmp, receiverValue)
                 val setValue = valueResult.statements.last() as IrExpression
-                result.statements += receiverResult.statements.dropLast(1)
+                result.statements += receiverResult.statements.run { subList(0, lastIndex) }
                 result.statements += irVar
-                result.statements += valueResult.statements.dropLast(1)
+                result.statements += valueResult.statements.run { subList(0, lastIndex) }
                 result.statements += expression.run {
                     IrSetFieldImpl(
                         startOffset,
@@ -191,7 +191,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             }
 
             if (receiverResult != null) {
-                return materializeExpression(receiverResult) {
+                return materializeLastExpression(receiverResult) {
                     expression.run { IrSetFieldImpl(startOffset, endOffset, symbol, it, value, origin, superQualifierSymbol) }
                 }
             }
@@ -205,7 +205,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
                 JsIrBuilder.buildGetValue(tmp)
             }
 
-            return materializeExpression(valueResult!!) {
+            return materializeLastExpression(valueResult!!) {
                 expression.run { IrSetFieldImpl(startOffset, endOffset, symbol, receiver, it, origin, superQualifierSymbol) }
             }
         }
@@ -215,7 +215,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
             val composite = expression.value as? IrComposite ?: return expression
 
-            return materializeExpression(composite) {
+            return materializeLastExpression(composite) {
                 expression.run { IrSetVariableImpl(startOffset, endOffset, symbol, it, origin) }
             }
         }
@@ -239,7 +239,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             if (newCondition is IrComposite) {
                 val newLoopBody = IrBlockImpl(loop.startOffset, loop.endOffset, loop.type, loop.origin)
 
-                newLoopBody.statements += newCondition.statements.dropLast(1)
+                newLoopBody.statements += newCondition.statements.run { subList(0, lastIndex) }
                 val thenBlock = JsIrBuilder.buildBlock(unitType, listOf(JsIrBuilder.buildBreak(unitType, loop)))
 
                 val newLoopCondition = newCondition.statements.last() as IrExpression
@@ -251,12 +251,9 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
                 newLoopBody.statements += JsIrBuilder.buildIfElse(unitType, breakCond, thenBlock)
                 newLoopBody.statements += newBody!!
 
-                val newLoop = IrWhileLoopImpl(loop.startOffset, loop.endOffset, loop.type, loop.origin)
-
-                return newLoop.apply {
-                    label = loop.label
+                return loop.apply {
                     condition = constTrue
-                    body = newLoopBody.transform(BreakContinueUpdater(newLoop, newLoop), loop)
+                    body = newLoopBody
                 }
             }
 
@@ -291,7 +288,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
                 val newLoopCondition = newCondition.statements.last() as IrExpression
                 val newLoopBody = IrBlockImpl(newCondition.startOffset, newBody.endOffset, newBody.type).apply {
                     statements += innerLoop
-                    statements += newCondition.statements.dropLast(1)
+                    statements += newCondition.statements.run { subList(0, lastIndex) }
                 }
 
                 val newLoop = IrDoWhileLoopImpl(loop.startOffset, loop.endOffset, unitType, loop.origin)
@@ -353,11 +350,12 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
             val block = IrBlockImpl(expression.startOffset, expression.endOffset, unitType, expression.origin)
 
+            // TODO: consider decomposing only when it is really required
             results.fold(block) { appendBlock, (cond, res, orig) ->
-                val condStatements = uncastComposite(cond)
+                val condStatements = destructureComposite(cond)
                 val condValue = condStatements.last() as IrExpression
 
-                appendBlock.statements += condStatements.dropLast(1)
+                appendBlock.statements += condStatements.run { subList(0, lastIndex) }
 
                 JsIrBuilder.buildBlock(unitType).also {
                     val elseBlock = if (orig is IrElseBranch) null else it
@@ -390,7 +388,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
             val composite = expression.receiver as? IrComposite ?: return expression
 
-            return materializeExpression(composite) {
+            return materializeLastExpression(composite) {
                 expression.run { IrGetFieldImpl(startOffset, endOffset, symbol, it, origin, superQualifierSymbol) }
             }
         }
@@ -400,7 +398,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
             val composite = expression.argument as? IrComposite ?: return expression
 
-            return materializeExpression(composite) {
+            return materializeLastExpression(composite) {
                 expression.run { IrGetClassImpl(startOffset, endOffset, type, it) }
             }
         }
@@ -420,7 +418,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
         override fun visitStringConcatenation(expression: IrStringConcatenation): IrExpression {
             expression.transformChildrenVoid(expressionTransformer)
 
-            val compositeCount = expression.arguments.fold(0) { r, t -> if (t is IrComposite) r + 1 else r }
+            val compositeCount = expression.arguments.count { it is IrComposite }
 
             if (compositeCount == 0) return expression
 
@@ -442,12 +440,13 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             for (arg in oldArguments) {
                 val value = if (arg is IrComposite) {
                     compositesLeft--
-                    newStatements += arg.statements.dropLast(1)
+                    newStatements += arg.statements.run { subList(0, lastIndex) }
                     arg.statements.last() as IrExpression
                 } else arg
 
                 val newArg = if (compositesLeft != 0) {
                     if (value != null) {
+                        // TODO: do not wrap if value is pure (const, variable, etc)
                         val tmp = makeTempVar(value.type)
                         newStatements += JsIrBuilder.buildVar(tmp, value)
                         JsIrBuilder.buildGetValue(tmp)
@@ -459,10 +458,11 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             return arguments
         }
 
+        // TODO: remove this when vararg is lowered
         override fun visitVararg(expression: IrVararg): IrExpression {
             expression.transformChildrenVoid(expressionTransformer)
 
-            val compositeCount = expression.elements.fold(0) { r, t -> if (t is IrComposite) r + 1 else r }
+            val compositeCount = expression.elements.count{ it is IrComposite }
 
             if (compositeCount == 0) return expression
 
@@ -499,7 +499,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
             val oldArguments = mutableListOf(expression.dispatchReceiver, expression.extensionReceiver)
             for (i in 0 until expression.valueArgumentsCount) oldArguments += expression.getValueArgument(i)
-            val compositeCount = oldArguments.fold(0) { r, t -> if (t is IrComposite) r + 1 else r }
+            val compositeCount = oldArguments.count { it is IrComposite }
 
             if (compositeCount == 0) return expression
 
@@ -525,10 +525,10 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
             val newStatements = mutableListOf<IrStatement>()
 
             for (i in 0 until expression.statements.size - 1) {
-                newStatements += uncastComposite(expression.statements[i].transform(statementTransformer, null))
+                newStatements += destructureComposite(expression.statements[i].transform(statementTransformer, null))
             }
 
-            newStatements += uncastComposite(expression.statements.last().transform(expressionTransformer, null))
+            newStatements += destructureComposite(expression.statements.last().transform(expressionTransformer, null))
 
             return JsIrBuilder.buildComposite(expression.type, newStatements)
         }
@@ -577,7 +577,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
         //  else -> else_block {}
         // }
         //
-        // transformed into if-else chain in anything should be decomposed
+        // transformed into if-else chain if anything should be decomposed
         //
         // Composite [
         //   var tmp
