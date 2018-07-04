@@ -24,6 +24,8 @@ import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
+import org.jetbrains.kotlin.psi.psiUtil.pureEndOffset
+import org.jetbrains.kotlin.psi.psiUtil.pureStartOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.psi2ir.intermediate.VariableLValue
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -175,15 +177,16 @@ class BodyGenerator(
     fun getLoop(expression: KtExpression): IrLoop? =
         loopTable[expression]
 
-    fun generatePrimaryConstructorBody(ktClassOrObject: KtClassOrObject): IrBody {
-        val irBlockBody = IrBlockBodyImpl(ktClassOrObject.startOffset, ktClassOrObject.endOffset)
+    fun generatePrimaryConstructorBody(ktClassOrObject: KtPureClassOrObject): IrBody {
+        val irBlockBody = IrBlockBodyImpl(ktClassOrObject.pureStartOffset, ktClassOrObject.pureEndOffset)
 
-        generateSuperConstructorCall(irBlockBody, ktClassOrObject)
+        if (ktClassOrObject is KtClassOrObject) // todo: super constructor calls for synthetic declarations
+            generateSuperConstructorCall(irBlockBody, ktClassOrObject)
 
         val classDescriptor = (scopeOwner as ClassConstructorDescriptor).containingDeclaration
         irBlockBody.statements.add(
             IrInstanceInitializerCallImpl(
-                ktClassOrObject.startOffset, ktClassOrObject.endOffset,
+                ktClassOrObject.pureStartOffset, ktClassOrObject.pureEndOffset,
                 context.symbolTable.referenceClass(classDescriptor),
                 context.irBuiltIns.unitType
             )
