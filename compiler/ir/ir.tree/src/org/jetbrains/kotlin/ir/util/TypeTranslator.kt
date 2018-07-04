@@ -20,10 +20,9 @@ import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.typesApproximation.approximateCapturedTypes
 
 class TypeTranslator(
-    private val symbolTable: SymbolTable
+    private val symbolTable: SymbolTable,
+    private val typeParametersResolver: TypeParametersResolver = ScopedTypeParametersResolver()
 ) {
-
-    private val typeParametersResolver = ScopedTypeParametersResolver()
     lateinit var constantValueGenerator: ConstantValueGenerator
 
     fun enterScope(irElement: IrTypeParametersContainer) {
