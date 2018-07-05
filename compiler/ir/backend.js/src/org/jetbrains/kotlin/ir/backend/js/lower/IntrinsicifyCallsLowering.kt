@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.ir.backend.js.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.utils.isNullable
+import org.jetbrains.kotlin.backend.common.utils.isSubtypeOf
 import org.jetbrains.kotlin.backend.common.utils.isSubtypeOfClass
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
@@ -14,6 +15,7 @@ import org.jetbrains.kotlin.ir.backend.js.utils.ConversionNames
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer
 import org.jetbrains.kotlin.ir.backend.js.utils.OperatorNames
 import org.jetbrains.kotlin.ir.backend.js.utils.isFakeOverriddenFromAny
+import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
@@ -25,6 +27,7 @@ import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.originalKotlinType
+import org.jetbrains.kotlin.ir.util.isNullConst
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.SimpleType
@@ -225,14 +228,47 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
     }
 
     private fun transformEqeqOperator(call: IrCall): IrExpression {
-        val lhs = call.getValueArgument(0) ?: return call
-        val rhs = call.getValueArgument(1) ?: return call
+        val lhs = call.getValueArgument(0)!!
+        val rhs = call.getValueArgument(1)!!
+
+        // Special optimization for "<expression> == null"
+        if (rhs.isNullConst())
+            return irCall(call, intrinsics.jsEqeq.symbol)
+
         return when (translateEquals(lhs.type, rhs.type)) {
             is IdentityOperator -> irCall(call, intrinsics.jsEqeqeq.symbol)
             is EqualityOperator -> irCall(call, intrinsics.jsEqeq.symbol)
-            is RuntimeFunctionCall,
-            is RuntimeOrMethodCall -> irCall(call, intrinsics.jsEquals)
+            is RuntimeFunctionCall -> irCall(call, intrinsics.jsEquals)
+            is RuntimeOrMethodCall -> {
+                assert(!lhs.type.isNullable())
+                val equalsMethod = lhs.type.findEqualsMethod(rhs.type)
+                if (equalsMethod != null) {
+                    irCall(call, equalsMethod.symbol, firstArgumentAsDispatchReceiver = true)
+                } else {
+                    irCall(call, intrinsics.jsEquals)
+                }
+            }
         }
+    }
+
+    private fun IrType.findEqualsMethod(rhs: IrType): IrSimpleFunction? {
+        val classifier = classifierOrNull ?: return null
+        if (!classifier.isBound) return null
+        return ((classifier.owner as? IrClass) ?: return null).declarations
+            .filterIsInstance<IrSimpleFunction>()
+            .filter { it.name == Name.identifier("equals") }
+            .filter { it.valueParameters.size == 1 }
+            .filter { rhs.isSubtypeOf(it.valueParameters[0].type) }
+            .filterNot { it.descriptor.isFakeOverriddenFromAny() }
+            .maxWith(  // Find the most specific function
+                Comparator { f1, f2 ->
+                    val t1 = f1.valueParameters[0].type
+                    val t2 = f2.valueParameters[0].type
+                    if (t1.isSubtypeOf(t2)) {
+                        if (t2.isSubtypeOf(t1)) 0 else 1
+                    } else -1
+                }
+            )
     }
 
     private fun transformEqualsMethodCall(call: IrCall): IrExpression {
@@ -321,6 +357,7 @@ fun translateEquals(lhs: IrType, rhs: IrType): EqualityLoweringType = when {
     lhs.isNullableLong() -> translateEqualsForNullableLong(rhs)
     lhs.isBoolean() -> translateEqualsForBoolean(rhs)
     lhs.isNullableBoolean() -> translateEqualsForNullableBoolean(rhs)
+    lhs.isNullable() -> RuntimeFunctionCall
     else -> RuntimeOrMethodCall
 }
 
@@ -377,7 +414,12 @@ private fun IrType.isJsNumber(): Boolean = isPrimitiveType() && !isLong()
 
 
 // TODO extract to common place?
-fun irCall(call: IrCall, newSymbol: IrFunctionSymbol, dispatchReceiverAsFirstArgument: Boolean = false): IrCall =
+fun irCall(
+    call: IrCall,
+    newSymbol: IrFunctionSymbol,
+    dispatchReceiverAsFirstArgument: Boolean = false,
+    firstArgumentAsDispatchReceiver: Boolean = false
+): IrCall =
     call.run {
         IrCallImpl(
             startOffset,
@@ -389,26 +431,41 @@ fun irCall(call: IrCall, newSymbol: IrFunctionSymbol, dispatchReceiverAsFirstArg
             origin,
             superQualifierSymbol
         ).apply {
-            copyTypeAndValueArgumentsFrom(call, dispatchReceiverAsFirstArgument)
+            copyTypeAndValueArgumentsFrom(
+                call,
+                dispatchReceiverAsFirstArgument,
+                firstArgumentAsDispatchReceiver
+            )
         }
     }
 
 // TODO extract to common place?
-private fun IrCall.copyTypeAndValueArgumentsFrom(call: IrCall, dispatchReceiverAsFirstArgument: Boolean = false) {
+private fun IrCall.copyTypeAndValueArgumentsFrom(
+    call: IrCall,
+    dispatchReceiverAsFirstArgument: Boolean = false,
+    firstArgumentAsDispatchReceiver: Boolean = false
+) {
     copyTypeArgumentsFrom(call)
 
-    var j = 0
+    var toValueArgumentIndex = 0
+    var fromValueArgumentIndex = 0
 
-    if (!dispatchReceiverAsFirstArgument) {
-        dispatchReceiver = call.dispatchReceiver
-    } else {
-        putValueArgument(j++, call.dispatchReceiver)
+    when {
+        dispatchReceiverAsFirstArgument -> {
+            putValueArgument(toValueArgumentIndex++, call.dispatchReceiver)
+        }
+        firstArgumentAsDispatchReceiver -> {
+            dispatchReceiver = call.getValueArgument(fromValueArgumentIndex++)
+        }
+        else -> {
+            dispatchReceiver = call.dispatchReceiver
+        }
     }
 
     extensionReceiver = call.extensionReceiver
 
-    for (i in 0 until call.valueArgumentsCount) {
-        putValueArgument(j++, call.getValueArgument(i))
+    while (fromValueArgumentIndex < call.valueArgumentsCount) {
+        putValueArgument(toValueArgumentIndex++, call.getValueArgument(fromValueArgumentIndex++))
     }
 }
 
@@ -417,7 +474,7 @@ private fun MemberToTransformer.op(type: IrType, name: Name, v: IrSimpleFunction
 }
 
 private fun MemberToTransformer.op(type: IrType, name: Name, v: IrSimpleFunction) {
-    op(type, name, v = { irCall(it, v.symbol, dispatchReceiverAsFirstArgument = true) })
+    op(type, name, v.symbol)
 }
 
 private fun MemberToTransformer.op(type: IrType, name: Name, v: (IrCall) -> IrExpression) {
