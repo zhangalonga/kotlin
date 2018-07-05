@@ -16,20 +16,28 @@ public abstract @interface Anno2 {
 
     public abstract int i() default 5;
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.String s() default "ABC";
 
+    @org.jetbrains.annotations.NotNull()
     public abstract int[] ii() default {1, 2, 3};
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.String[] ss() default {"A", "B"};
 
+    @org.jetbrains.annotations.NotNull()
     public abstract Anno1 a();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract Colors color() default Colors.BLACK;
 
+    @org.jetbrains.annotations.NotNull()
     public abstract Colors[] colors() default {Colors.BLACK, Colors.WHITE};
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.Class<?> clazz();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.Class<?>[] classes();
 }
 
@@ -42,6 +50,7 @@ import java.lang.System;
 @java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 public abstract @interface Anno3 {
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.String value();
 }
 

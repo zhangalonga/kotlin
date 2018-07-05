@@ -159,6 +159,7 @@ public abstract interface IFoo {
         @java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
         public static abstract @interface Anno {
 
+            @org.jetbrains.annotations.NotNull()
             public abstract java.lang.Class<?>[] value();
         }
 

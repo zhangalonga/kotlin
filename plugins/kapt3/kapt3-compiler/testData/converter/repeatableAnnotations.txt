@@ -6,6 +6,7 @@ public abstract @interface AnnoArray {
 
     public abstract int x();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.String[] a();
 }
 
@@ -48,6 +49,7 @@ public abstract @interface AnnoClass {
 
     public abstract int x();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.Class<Color> c();
 }
 
@@ -76,6 +78,7 @@ public abstract @interface AnnoEnum {
 
     public abstract int x();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract Color c();
 }
 
@@ -118,6 +121,7 @@ public abstract @interface AnnoIntArray {
 
     public abstract int x();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract int[] b();
 }
 
@@ -146,6 +150,7 @@ public abstract @interface AnnoLongArray {
 
     public abstract int x();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract long[] b();
 }
 
@@ -160,6 +165,7 @@ public abstract @interface AnnoString {
 
     public abstract int x();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.String s();
 }
 

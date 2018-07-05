@@ -4,8 +4,10 @@ import java.lang.System;
 @java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 public abstract @interface Anno {
 
+    @org.jetbrains.annotations.NotNull()
     public abstract StrangeEnum size();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.String name();
 }
 

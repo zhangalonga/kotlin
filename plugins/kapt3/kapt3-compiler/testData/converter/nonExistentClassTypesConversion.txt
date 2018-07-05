@@ -5,12 +5,16 @@ import kotlin.reflect.KClass;
 @java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 public abstract @interface Anno {
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.Class<?> a();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.Class<?>[] b();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.Class<?>[] c();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.Class<?>[] d();
 }
 

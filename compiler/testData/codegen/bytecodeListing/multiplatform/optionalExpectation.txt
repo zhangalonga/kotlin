@@ -2,7 +2,7 @@
 @kotlin.Metadata
 @kotlin.OptionalExpectation
 annotation class Anno {
-    public abstract method s(): java.lang.String
+    public abstract @org.jetbrains.annotations.NotNull method s(): java.lang.String
 }
 
 @kotlin.Metadata

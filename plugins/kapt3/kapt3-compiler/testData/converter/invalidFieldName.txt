@@ -5,6 +5,7 @@ import java.lang.System;
 @Anno(color = Color.InvalidFieldName)
 public abstract @interface Anno {
 
+    @org.jetbrains.annotations.NotNull()
     public abstract Color color();
 }
 

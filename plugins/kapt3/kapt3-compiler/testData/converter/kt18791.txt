@@ -22,6 +22,7 @@ public abstract @interface Anno {
 
     public abstract double a8();
 
+    @org.jetbrains.annotations.NotNull()
     public abstract java.lang.String a9();
 }
 
