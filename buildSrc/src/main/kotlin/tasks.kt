@@ -84,7 +84,7 @@ fun Project.projectTest(taskName: String = "test", body: Test.() -> Unit = {}): 
     jvmArgs(
         "-ea",
         "-XX:+HeapDumpOnOutOfMemoryError",
-        "-Xmx1600m",
+        "-Xmx4000m",
         "-XX:+UseCodeCacheFlushing",
         "-XX:ReservedCodeCacheSize=128m",
         "-Djna.nosys=true"
