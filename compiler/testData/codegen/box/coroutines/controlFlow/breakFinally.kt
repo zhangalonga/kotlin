@@ -1,4 +1,5 @@
 // IGNORE_BACKEND: JS_IR
+// IGNORE_BACKEND: JS
 // IGNORE_BACKEND: JVM_IR
 // WITH_RUNTIME
 // WITH_COROUTINES
@@ -15,6 +16,8 @@ class Controller {
         c.resume(value)
         COROUTINE_SUSPENDED
     }
+
+    suspend fun foo(s: String) { result += s }
 }
 
 fun builder(c: suspend Controller.() -> Unit): String {
@@ -26,10 +29,16 @@ fun builder(c: suspend Controller.() -> Unit): String {
 fun box(): String {
     val value = builder {
         try {
-            outer@for (x in listOf("A", "B")) {
+            var i1 = 0
+            outer@while (i1 < 2) {
+                val x = if (i1 == 0) "A" else "B"
+                ++i1
                 try {
                     result += suspendWithResult(x)
-                    for (y in listOf("C", "D")) {
+                    var i2 = 0
+                    while (i2 < 2) {
+                        val y = if (i2 == 0) "C" else "D"
+                        ++i2
                         try {
                             result += suspendWithResult(y)
                             if (y == "D") {
@@ -44,6 +53,21 @@ fun box(): String {
                 }
                 finally {
                     result += "@"
+                    var i3 = 0
+                    while (i3 < 2) {
+                        val z = if (i3 == 0) "F" else "G"
+                        ++i3
+                        try {
+                            foo(z)
+                            if (z == "G") {
+                                break
+                            }
+                        }
+                        finally {
+                            result += "?"
+                        }
+                        result += "H"
+                    }
                 }
                 result += "ignore"
             }
@@ -54,7 +78,7 @@ fun box(): String {
         }
         result += "."
     }
-    if (value != "AC!ED!@*finally.") return "fail: $value"
+    if (value != "AC!ED!@F?HG?*finally.") return "fail: $value"
 
     return "OK"
 }
