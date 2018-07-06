@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrReturnableBlock
 import org.jetbrains.kotlin.ir.symbols.*
+import org.jetbrains.kotlin.resolve.source.getPsi
 
 abstract class IrSymbolBase<out D : DeclarationDescriptor>(override val descriptor: D) : IrSymbol
 
@@ -39,7 +40,8 @@ abstract class IrBindableSymbolBase<out D : DeclarationDescriptor, B : IrSymbolO
 
     private var _owner: B? = null
     override val owner: B
-        get() = _owner ?: throw IllegalStateException("Symbol for $descriptor is unbound")
+        get() = _owner ?:
+        throw IllegalStateException("Symbol for $descriptor ${descriptor.containingDeclaration}  ${(descriptor.containingDeclaration as? DeclarationDescriptorWithSource)?.source?.getPsi()?.containingFile?.name} is unbound")
 
     override fun bind(owner: B) {
         if (_owner == null)

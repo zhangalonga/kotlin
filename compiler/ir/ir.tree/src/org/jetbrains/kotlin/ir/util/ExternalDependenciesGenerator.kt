@@ -35,6 +35,7 @@ class ExternalDependenciesGenerator(
     private inner class DependencyGenerationTask(val irModule: IrModuleFragment) {
 
         fun run() {
+            stubGenerator.unboundSymbolGeneration = true
             ArrayList(symbolTable.unboundClasses).forEach {
                 stubGenerator.generateClassStub(it.descriptor)
             }
@@ -50,11 +51,17 @@ class ExternalDependenciesGenerator(
             ArrayList(symbolTable.unboundSimpleFunctions).forEach {
                 stubGenerator.generateFunctionStub(it.descriptor)
             }
+            ArrayList(symbolTable.unboundTypeParameters).forEach {
+                stubGenerator.generateOrGetTypeParameterStub(it.descriptor)
+            }
+
             assert(symbolTable.unboundClasses.isEmpty())
             assert(symbolTable.unboundConstructors.isEmpty())
             assert(symbolTable.unboundEnumEntries.isEmpty())
             assert(symbolTable.unboundEnumEntries.isEmpty())
             assert(symbolTable.unboundSimpleFunctions.isEmpty())
+            assert(symbolTable.unboundTypeParameters.isEmpty())
+            assert(symbolTable.unboundTypeParameters.isEmpty())
         }
     }
 }

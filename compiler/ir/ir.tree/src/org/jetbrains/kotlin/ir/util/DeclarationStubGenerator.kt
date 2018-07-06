@@ -38,6 +38,11 @@ class DeclarationStubGenerator(
 
     private val lazyTable = IrLazySymbolTable(this, symbolTable)
 
+    internal var unboundSymbolGeneration: Boolean
+        get() = lazyTable.unboundSymbolGeneration
+        set(value) { lazyTable.unboundSymbolGeneration = value }
+
+
     private val typeTranslator = TypeTranslator(lazyTable, LazyScopedTypeParametersResolver())
     private val constantValueGenerator = ConstantValueGenerator(moduleDescriptor, lazyTable)
 
@@ -154,10 +159,17 @@ class DeclarationStubGenerator(
         return symbolTable.declareEnumEntry(UNDEFINED_OFFSET, UNDEFINED_OFFSET, origin, descriptor)
     }
 
-    internal fun generateTypeParameterStub(descriptor: TypeParameterDescriptor): IrTypeParameter {
-        return IrLazyTypeParameter(
-            UNDEFINED_OFFSET, UNDEFINED_OFFSET, origin,
-            IrTypeParameterSymbolImpl(descriptor), this, typeTranslator
-        )
+    internal fun generateOrGetTypeParameterStub(descriptor: TypeParameterDescriptor): IrTypeParameter {
+//        val referenced = symbolTable.referenceTypeParameter(descriptor)
+//        if (referenced.isBound) {
+//            return referenced.owner
+//        }
+        //TODO: not sure about declareGlobalTypeParameter, maybe in some cases declareScopedTypeParameter is required
+        //return symbolTable.declareGlobalTypeParameter(UNDEFINED_OFFSET, UNDEFINED_OFFSET, origin, descriptor) {
+            return IrLazyTypeParameter(
+                    UNDEFINED_OFFSET, UNDEFINED_OFFSET, origin,
+                    IrTypeParameterSymbolImpl(descriptor), this, typeTranslator
+            )
+        //}
     }
 }

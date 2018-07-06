@@ -36,7 +36,7 @@ abstract class IrLazyFunctionBase(
 
     override val typeParameters: MutableList<IrTypeParameter> by lazy {
         descriptor.propertyIfAccessor.typeParameters.mapTo(arrayListOf()) {
-            stubGenerator.generateTypeParameterStub(it)
+            stubGenerator.generateOrGetTypeParameterStub(it)
         }
     }
 

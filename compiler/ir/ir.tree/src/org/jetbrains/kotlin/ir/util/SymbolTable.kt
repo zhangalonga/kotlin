@@ -276,13 +276,14 @@ open class SymbolTable {
         startOffset: Int,
         endOffset: Int,
         origin: IrDeclarationOrigin,
-        descriptor: TypeParameterDescriptor
+        descriptor: TypeParameterDescriptor,
+        typeParameterFactory: (IrTypeParameterSymbol) -> IrTypeParameter = { IrTypeParameterImpl(startOffset, endOffset, origin, it) }
     ): IrTypeParameter =
         globalTypeParameterSymbolTable.declare(
             descriptor,
             { IrTypeParameterSymbolImpl(descriptor) },
-            { IrTypeParameterImpl(startOffset, endOffset, origin, it) }
-        )
+            typeParameterFactory
+        ).also { if (descriptor.name.asString().equals("E") && descriptor.containingDeclaration.name.equals("Enum")) RuntimeException(descriptor.toString()).printStackTrace() }
 
     fun declareScopedTypeParameter(
         startOffset: Int,

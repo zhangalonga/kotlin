@@ -16,18 +16,20 @@ import org.jetbrains.kotlin.ir.util.SymbolTable
 
 class IrLazySymbolTable(private val stubGenerator: DeclarationStubGenerator, val originalTable: SymbolTable) : SymbolTable() {
 
+    /*Don't force builtins class linking before unbound symbols linking: otherwise stdlib compilation will failed*/
+    internal var unboundSymbolGeneration = false
+
     override fun referenceClass(descriptor: ClassDescriptor): IrClassSymbol {
         return originalTable.referenceClass(descriptor).also {
-            if (!it.isBound) {
+            if (unboundSymbolGeneration && !it.isBound) {
                 stubGenerator.generateClassStub(descriptor).symbol
             }
         }
     }
 
-
     override fun referenceConstructor(descriptor: ClassConstructorDescriptor): IrConstructorSymbol {
         return originalTable.referenceConstructor(descriptor).also {
-            if (!it.isBound) {
+            if (!it.isBound && unboundSymbolGeneration) {
                 stubGenerator.generateConstructorStub(descriptor).symbol
             }
         }
@@ -35,7 +37,7 @@ class IrLazySymbolTable(private val stubGenerator: DeclarationStubGenerator, val
 
     override fun referenceEnumEntry(descriptor: ClassDescriptor): IrEnumEntrySymbol {
         return originalTable.referenceEnumEntry(descriptor).also {
-            if (!it.isBound) {
+            if (!it.isBound && unboundSymbolGeneration) {
                 stubGenerator.generateEnumEntryStub(descriptor).symbol
             }
         }
@@ -43,7 +45,7 @@ class IrLazySymbolTable(private val stubGenerator: DeclarationStubGenerator, val
 
     override fun referenceSimpleFunction(descriptor: FunctionDescriptor): IrSimpleFunctionSymbol {
         return originalTable.referenceSimpleFunction(descriptor).also {
-            if (!it.isBound) {
+            if (!it.isBound && unboundSymbolGeneration) {
                 stubGenerator.generateFunctionStub(descriptor).symbol
             }
         }
@@ -51,8 +53,8 @@ class IrLazySymbolTable(private val stubGenerator: DeclarationStubGenerator, val
 
     override fun referenceTypeParameter(classifier: TypeParameterDescriptor): IrTypeParameterSymbol {
         return originalTable.referenceTypeParameter(classifier).also {
-            if (!it.isBound) {
-                stubGenerator.generateTypeParameterStub(classifier).symbol
+            if (!it.isBound && unboundSymbolGeneration) {
+                stubGenerator.generateOrGetTypeParameterStub(classifier).symbol
             }
         }
     }
