@@ -455,7 +455,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
             return;
         }
 
-        Collection<SimpleFunctionDescriptor> functions = descriptor.getDefaultType().getMemberScope().getContributedFunctions(
+        Collection<? extends SimpleFunctionDescriptor> functions = descriptor.getDefaultType().getMemberScope().getContributedFunctions(
                 Name.identifier("toArray"), NoLookupLocation.FROM_BACKEND
         );
         boolean hasGenericToArray = false;

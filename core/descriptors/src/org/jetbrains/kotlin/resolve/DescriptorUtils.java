@@ -603,8 +603,7 @@ public class DescriptorUtils {
 
     @Nullable
     public static FunctionDescriptor getFunctionByNameOrNull(@NotNull MemberScope scope, @NotNull Name name) {
-        Collection<SimpleFunctionDescriptor> functions = scope.getContributedFunctions(name, NoLookupLocation.FROM_BACKEND);
-        for (SimpleFunctionDescriptor d : functions) {
+        for (SimpleFunctionDescriptor d : scope.getContributedFunctions(name, NoLookupLocation.FROM_BACKEND)) {
             if (name.equals(d.getOriginal().getName())) {
                 return d;
             }
@@ -615,8 +614,7 @@ public class DescriptorUtils {
 
     @NotNull
     public static PropertyDescriptor getPropertyByName(@NotNull MemberScope scope, @NotNull Name name) {
-        Collection<PropertyDescriptor> properties = scope.getContributedVariables(name, NoLookupLocation.FROM_BACKEND);
-        for (PropertyDescriptor d : properties) {
+        for (PropertyDescriptor d : scope.getContributedVariables(name, NoLookupLocation.FROM_BACKEND)) {
             if (name.equals(d.getOriginal().getName())) {
                 return d;
             }
