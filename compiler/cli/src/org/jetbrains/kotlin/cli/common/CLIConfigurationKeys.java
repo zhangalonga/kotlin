@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.cli.common;
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
-import org.jetbrains.kotlin.cli.jvm.compiler.CompilerJarLocator;
 import org.jetbrains.kotlin.config.CompilerConfigurationKey;
 
 import java.io.File;
@@ -33,9 +32,6 @@ public class CLIConfigurationKeys {
     // Used in Eclipse plugin (see KotlinCLICompiler)
     public static final CompilerConfigurationKey<String> INTELLIJ_PLUGIN_ROOT =
             CompilerConfigurationKey.create("intellij plugin root");
-    @SuppressWarnings("deprecation")
-    public static final CompilerConfigurationKey<CompilerJarLocator> COMPILER_JAR_LOCATOR =
-            CompilerConfigurationKey.create("compiler jar locator");
 
     // See K2MetadataCompilerArguments
 
