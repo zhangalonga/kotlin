@@ -34,6 +34,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.sun.jdi.ClassType
 import com.sun.jdi.Value
 import org.jetbrains.eval4j.jdi.asValue
+import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.types.KotlinType
