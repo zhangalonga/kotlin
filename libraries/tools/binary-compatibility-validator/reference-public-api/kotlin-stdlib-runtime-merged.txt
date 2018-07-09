@@ -145,6 +145,43 @@ public abstract interface annotation class kotlin/SinceKotlin : java/lang/annota
 	public abstract fun version ()Ljava/lang/String;
 }
 
+public final class kotlin/SuccessOrFailure : java/io/Serializable {
+	public static final field Companion Lkotlin/SuccessOrFailure$Companion;
+	public fun <init> (Ljava/lang/Object;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun exceptionOrNull ()Ljava/lang/Throwable;
+	public final fun getOrNull ()Ljava/lang/Object;
+	public final fun getOrThrow ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public final fun isFailure ()Z
+	public final fun isSuccess ()Z
+	public fun toString ()Ljava/lang/String;
+	public final fun unbox ()Ljava/lang/Object;
+}
+
+public final class kotlin/SuccessOrFailure$Companion {
+}
+
+public final class kotlin/SuccessOrFailure$Erased {
+	public static final fun box (Ljava/lang/Object;)Lkotlin/SuccessOrFailure;
+	public static fun equals (Ljava/lang/Object;Ljava/lang/Object;)Z
+	public static final fun exceptionOrNull (Ljava/lang/Object;)Ljava/lang/Throwable;
+	public static final fun getOrNull (Ljava/lang/Object;)Ljava/lang/Object;
+	public static final fun getOrThrow (Ljava/lang/Object;)Ljava/lang/Object;
+	public static fun hashCode (Ljava/lang/Object;)I
+	public static final fun isFailure (Ljava/lang/Object;)Z
+	public static final fun isSuccess (Ljava/lang/Object;)Z
+	public static fun toString (Ljava/lang/Object;)Ljava/lang/String;
+}
+
+public final class kotlin/SuccessOrFailure$Failure : java/io/Serializable {
+	public final field exception Ljava/lang/Throwable;
+	public fun <init> (Ljava/lang/Throwable;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public abstract interface annotation class kotlin/Suppress : java/lang/annotation/Annotation {
 	public abstract fun names ()[Ljava/lang/String;
 }
@@ -2607,13 +2644,13 @@ public abstract class kotlin/coroutines/AbstractCoroutineContextElement : kotlin
 
 public abstract interface class kotlin/coroutines/Continuation {
 	public abstract fun getContext ()Lkotlin/coroutines/CoroutineContext;
-	public abstract fun resume (Ljava/lang/Object;)V
-	public abstract fun resumeWithException (Ljava/lang/Throwable;)V
+	public abstract fun resumeWith (Ljava/lang/Object;)V
 }
 
 public abstract interface class kotlin/coroutines/ContinuationInterceptor : kotlin/coroutines/CoroutineContext$Element {
 	public static final field Key Lkotlin/coroutines/ContinuationInterceptor$Key;
 	public abstract fun interceptContinuation (Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+	public abstract fun releaseInterceptedContinuation (Lkotlin/coroutines/Continuation;)V
 }
 
 public final class kotlin/coroutines/ContinuationInterceptor$DefaultImpls {
@@ -2621,9 +2658,17 @@ public final class kotlin/coroutines/ContinuationInterceptor$DefaultImpls {
 	public static fun get (Lkotlin/coroutines/ContinuationInterceptor;Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext$Element;
 	public static fun minusKey (Lkotlin/coroutines/ContinuationInterceptor;Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext;
 	public static fun plus (Lkotlin/coroutines/ContinuationInterceptor;Lkotlin/coroutines/CoroutineContext;)Lkotlin/coroutines/CoroutineContext;
+	public static fun releaseInterceptedContinuation (Lkotlin/coroutines/ContinuationInterceptor;Lkotlin/coroutines/Continuation;)V
 }
 
 public final class kotlin/coroutines/ContinuationInterceptor$Key : kotlin/coroutines/CoroutineContext$Key {
+}
+
+public final class kotlin/coroutines/ContinuationKt {
+	public static final fun createCoroutine (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+	public static final fun createCoroutine (Lkotlin/jvm/functions/Function2;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+	public static final fun startCoroutine (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)V
+	public static final fun startCoroutine (Lkotlin/jvm/functions/Function2;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)V
 }
 
 public abstract interface class kotlin/coroutines/CoroutineContext {
@@ -2654,14 +2699,7 @@ public final class kotlin/coroutines/CoroutineContext$Element$DefaultImpls {
 public abstract interface class kotlin/coroutines/CoroutineContext$Key {
 }
 
-public final class kotlin/coroutines/CoroutinesKt {
-	public static final fun createCoroutine (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
-	public static final fun createCoroutine (Lkotlin/jvm/functions/Function2;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
-	public static final fun startCoroutine (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)V
-	public static final fun startCoroutine (Lkotlin/jvm/functions/Function2;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)V
-}
-
-public final class kotlin/coroutines/EmptyCoroutineContext : kotlin/coroutines/CoroutineContext {
+public final class kotlin/coroutines/EmptyCoroutineContext : java/io/Serializable, kotlin/coroutines/CoroutineContext {
 	public static final field INSTANCE Lkotlin/coroutines/EmptyCoroutineContext;
 	public fun fold (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)Ljava/lang/Object;
 	public fun get (Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext$Element;
@@ -2675,15 +2713,10 @@ public abstract interface annotation class kotlin/coroutines/RestrictsSuspension
 }
 
 public final class kotlin/coroutines/SafeContinuation : kotlin/coroutines/Continuation {
-	public static final field Companion Lkotlin/coroutines/SafeContinuation$Companion;
 	public fun <init> (Lkotlin/coroutines/Continuation;)V
 	public fun getContext ()Lkotlin/coroutines/CoroutineContext;
-	public final fun getResult ()Ljava/lang/Object;
-	public fun resume (Ljava/lang/Object;)V
-	public fun resumeWithException (Ljava/lang/Throwable;)V
-}
-
-public final class kotlin/coroutines/SafeContinuation$Companion {
+	public final fun getOrThrow ()Ljava/lang/Object;
+	public fun resumeWith (Ljava/lang/Object;)V
 }
 
 public abstract class kotlin/coroutines/experimental/AbstractCoroutineContextElement : kotlin/coroutines/experimental/CoroutineContext$Element {
@@ -2811,27 +2844,19 @@ public final class kotlin/coroutines/experimental/jvm/internal/CoroutineIntrinsi
 	public static final fun normalizeContinuation (Lkotlin/coroutines/experimental/Continuation;)Lkotlin/coroutines/experimental/Continuation;
 }
 
+public final class kotlin/coroutines/intrinsics/CoroutineSingletons : java/lang/Enum {
+	public static final field COROUTINE_SUSPENDED Lkotlin/coroutines/intrinsics/CoroutineSingletons;
+	public static final field RESUMED Lkotlin/coroutines/intrinsics/CoroutineSingletons;
+	public static final field UNDECIDED Lkotlin/coroutines/intrinsics/CoroutineSingletons;
+	public static fun valueOf (Ljava/lang/String;)Lkotlin/coroutines/intrinsics/CoroutineSingletons;
+	public static fun values ()[Lkotlin/coroutines/intrinsics/CoroutineSingletons;
+}
+
 public final class kotlin/coroutines/intrinsics/IntrinsicsKt {
-	public static final fun createCoroutineUnchecked (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
-	public static final fun createCoroutineUnchecked (Lkotlin/jvm/functions/Function2;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+	public static final fun createCoroutineUnintercepted (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+	public static final fun createCoroutineUnintercepted (Lkotlin/jvm/functions/Function2;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
 	public static final fun getCOROUTINE_SUSPENDED ()Ljava/lang/Object;
-}
-
-public abstract class kotlin/coroutines/jvm/internal/CoroutineImpl : kotlin/jvm/internal/Lambda, kotlin/coroutines/Continuation {
-	protected field completion Lkotlin/coroutines/Continuation;
-	protected field label I
-	public fun <init> (ILkotlin/coroutines/Continuation;)V
-	public fun create (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
-	public fun create (Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
-	protected abstract fun doResume (Ljava/lang/Object;Ljava/lang/Throwable;)Ljava/lang/Object;
-	public fun getContext ()Lkotlin/coroutines/CoroutineContext;
-	public final fun getFacade ()Lkotlin/coroutines/Continuation;
-	public fun resume (Ljava/lang/Object;)V
-	public fun resumeWithException (Ljava/lang/Throwable;)V
-}
-
-public final class kotlin/coroutines/jvm/internal/CoroutineIntrinsics {
-	public static final fun normalizeContinuation (Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+	public static final fun intercepted (Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
 }
 
 public final class kotlin/internal/PlatformImplementationsKt {
