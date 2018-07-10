@@ -14,67 +14,47 @@
  * limitations under the License.
  */
 
-package org.jetbrains.kotlin.psi;
+package org.jetbrains.kotlin.psi
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
-import kotlin.Lazy;
-import kotlin.LazyKt;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.name.FqName;
-import org.jetbrains.kotlin.psi.stubs.KotlinScriptStub;
-import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes;
-import org.jetbrains.kotlin.script.KotlinScriptDefinition;
-import org.jetbrains.kotlin.script.KotlinScriptDefinitionProviderKt;
+import com.intellij.lang.ASTNode
+import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.stubs.KotlinScriptStub
+import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
+import org.jetbrains.kotlin.script.getScriptDefinition
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
-import java.util.List;
-import java.util.Objects;
-
-import static kotlin.LazyThreadSafetyMode.PUBLICATION;
-
-public class KtScript extends KtNamedDeclarationStub<KotlinScriptStub> implements KtDeclarationContainer {
-    public final Lazy<KotlinScriptDefinition> kotlinScriptDefinition = LazyKt.lazy(PUBLICATION, () -> Objects.requireNonNull(
-            KotlinScriptDefinitionProviderKt.getScriptDefinition(getContainingKtFile()),
-            () -> "Should not parse a script without definition: " + getContainingKtFile().getVirtualFile().getPath()
-    ));
-
-    public KtScript(@NotNull ASTNode node) {
-        super(node);
+class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContainer {
+    val kotlinScriptDefinition = lazy(PUBLICATION) {
+        getScriptDefinition(containingKtFile)
+            ?: throw NullPointerException("Should not parse a script without definition: " + containingKtFile.virtualFile.path)
     }
 
-    public KtScript(@NotNull KotlinScriptStub stub) {
-        super(stub, KtStubElementTypes.SCRIPT);
-    }
+    val blockExpression: KtBlockExpression
+        get() = findNotNullChildByClass(KtBlockExpression::class.java)
 
-    @NotNull
-    @Override
-    public FqName getFqName() {
-        KotlinScriptStub stub = getStub();
+    constructor(node: ASTNode) : super(node) {}
+
+    constructor(stub: KotlinScriptStub) : super(stub, KtStubElementTypes.SCRIPT) {}
+
+    override fun getFqName(): FqName {
+        val stub = stub
         if (stub != null) {
-            return stub.getFqName();
+            return stub.getFqName()
         }
-        KtFile containingKtFile = getContainingKtFile();
-        return containingKtFile.getPackageFqName().child(kotlinScriptDefinition.getValue().getScriptName(this));
+        val containingKtFile = containingKtFile
+        return containingKtFile.packageFqName.child(kotlinScriptDefinition.value.getScriptName(this))
     }
 
-    @Override
-    public String getName() {
-        return getFqName().shortName().asString();
+    override fun getName(): String? {
+        return fqName.shortName().asString()
     }
 
-    @NotNull
-    public KtBlockExpression getBlockExpression() {
-        return findNotNullChildByClass(KtBlockExpression.class);
+    override fun getDeclarations(): List<KtDeclaration> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(blockExpression, KtDeclaration::class.java)
     }
 
-    @Override
-    @NotNull
-    public List<KtDeclaration> getDeclarations() {
-        return PsiTreeUtil.getChildrenOfTypeAsList(getBlockExpression(), KtDeclaration.class);
-    }
-
-    @Override
-    public <R, D> R accept(@NotNull KtVisitor<R, D> visitor, D data) {
-        return visitor.visitScript(this, data);
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R {
+        return visitor.visitScript(this, data)
     }
 }
