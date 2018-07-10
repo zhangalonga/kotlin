@@ -26,7 +26,7 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContainer {
 
-    val kotlinScriptDefinition = lazy(PUBLICATION) {
+    val kotlinScriptDefinition by lazy(PUBLICATION) {
         getScriptDefinition(containingKtFile)
             ?: throw NullPointerException("Should not parse a script without definition: " + containingKtFile.virtualFile.path)
     }
@@ -39,7 +39,7 @@ class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContaine
     constructor(stub: KotlinScriptStub) : super(stub, KtStubElementTypes.SCRIPT)
 
     override fun getFqName(): FqName = stub?.getFqName()
-        ?: containingKtFile.packageFqName.child(kotlinScriptDefinition.value.getScriptName(this))
+        ?: containingKtFile.packageFqName.child(kotlinScriptDefinition.getScriptName(this))
 
     override fun getName(): String? = fqName.shortName().asString()
 
