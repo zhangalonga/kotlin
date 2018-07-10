@@ -67,7 +67,7 @@ class ScriptContext(
     fun getImplicitReceiverName(index: Int): String = "\$\$implicitReceiver$index"
 
     fun getImplicitReceiverType(index: Int): Type? {
-        val receivers = script.kotlinScriptDefinition.value.implicitReceivers
+        val receivers = script.kotlinScriptDefinition.implicitReceivers
         val kClass = receivers.getOrNull(index)?.classifier as? KClass<*>
         return kClass?.java?.classId?.let(AsmUtil::asmTypeByClassId)
     }
