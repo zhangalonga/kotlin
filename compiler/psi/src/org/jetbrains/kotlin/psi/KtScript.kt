@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.script.getScriptDefinition
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContainer {
+
     val kotlinScriptDefinition = lazy(PUBLICATION) {
         getScriptDefinition(containingKtFile)
             ?: throw NullPointerException("Should not parse a script without definition: " + containingKtFile.virtualFile.path)
@@ -33,28 +34,18 @@ class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContaine
     val blockExpression: KtBlockExpression
         get() = findNotNullChildByClass(KtBlockExpression::class.java)
 
-    constructor(node: ASTNode) : super(node) {}
+    constructor(node: ASTNode) : super(node)
 
-    constructor(stub: KotlinScriptStub) : super(stub, KtStubElementTypes.SCRIPT) {}
+    constructor(stub: KotlinScriptStub) : super(stub, KtStubElementTypes.SCRIPT)
 
-    override fun getFqName(): FqName {
-        val stub = stub
-        if (stub != null) {
-            return stub.getFqName()
-        }
-        val containingKtFile = containingKtFile
-        return containingKtFile.packageFqName.child(kotlinScriptDefinition.value.getScriptName(this))
-    }
+    override fun getFqName(): FqName = stub?.getFqName()
+        ?: containingKtFile.packageFqName.child(kotlinScriptDefinition.value.getScriptName(this))
 
-    override fun getName(): String? {
-        return fqName.shortName().asString()
-    }
+    override fun getName(): String? = fqName.shortName().asString()
 
     override fun getDeclarations(): List<KtDeclaration> {
         return PsiTreeUtil.getChildrenOfTypeAsList(blockExpression, KtDeclaration::class.java)
     }
 
-    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R {
-        return visitor.visitScript(this, data)
-    }
+    override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitScript(this, data)
 }
