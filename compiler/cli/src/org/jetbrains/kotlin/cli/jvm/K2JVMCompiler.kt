@@ -203,7 +203,7 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
                     if (!it) return COMPILATION_ERROR
                 }
             }
-            
+
             return OK
         } catch (e: CompilationException) {
             messageCollector.report(
@@ -342,6 +342,7 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
         }
 
         private fun putAdvancedOptions(configuration: CompilerConfiguration, arguments: K2JVMCompilerArguments) {
+            configuration.put(JVMConfigurationKeys.IR, true)
             configuration.put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, arguments.noCallAssertions)
             configuration.put(JVMConfigurationKeys.DISABLE_RECEIVER_ASSERTIONS, arguments.noReceiverAssertions)
             configuration.put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, arguments.noParamAssertions)
