@@ -32,6 +32,7 @@ class KotlinVersionInfoProviderByModuleDependencies : KotlinVersionInfoProvider 
 
     override fun getLibraryVersions(module: Module, targetPlatform: TargetPlatformKind<*>, rootModel: ModuleRootModel?): Collection<String> {
         val versionProvider: (Library) -> String? = when (targetPlatform) {
+            // ?
             is TargetPlatformKind.JavaScript -> fun(library: Library) = JsLibraryStdDetectionUtil.getJsLibraryStdVersion(library, module.project)
             is TargetPlatformKind.Jvm -> JavaRuntimeDetectionUtil::getJavaRuntimeVersion
             is TargetPlatformKind.Common -> ::getCommonRuntimeLibraryVersion

@@ -23,7 +23,11 @@ import com.intellij.openapi.roots.libraries.DummyLibraryProperties
 import com.intellij.openapi.roots.libraries.Library
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind
 import com.intellij.openapi.util.io.JarUtil
-import com.intellij.openapi.vfs.*
+import com.intellij.openapi.vfs.JarFileSystem
+import com.intellij.openapi.vfs.VfsUtilCore
+import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.kotlin.idea.vfilefinder.KnownLibraryKindForIndex
+import org.jetbrains.kotlin.idea.vfilefinder.KotlinLibraryKindIndex
 import org.jetbrains.kotlin.js.resolve.JsPlatform
 import org.jetbrains.kotlin.resolve.TargetPlatform
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
@@ -59,7 +63,11 @@ fun getLibraryPlatform(project: Project, library: Library): TargetPlatform {
 fun detectLibraryKind(roots: Array<VirtualFile>): PersistentLibraryKind<*>? {
     val jarFile = roots.firstOrNull() ?: return null
     if (jarFile.fileSystem is JarFileSystem) {
-        return detectLibraryKindFromJarContents(jarFile)
+        return when (KotlinLibraryKindIndex.getKindForFile(jarFile)) {
+            KnownLibraryKindForIndex.COMMON -> CommonLibraryKind
+            KnownLibraryKindForIndex.JS -> JSLibraryKind
+            null -> null
+        }
     }
 
     return when (jarFile.extension) {
@@ -67,29 +75,6 @@ fun detectLibraryKind(roots: Array<VirtualFile>): PersistentLibraryKind<*>? {
         MetadataPackageFragment.METADATA_FILE_EXTENSION -> CommonLibraryKind
         else -> null
     }
-}
-
-private fun detectLibraryKindFromJarContents(jarRoot: VirtualFile): PersistentLibraryKind<*>? {
-    var result: PersistentLibraryKind<*>? = null
-    VfsUtil.visitChildrenRecursively(jarRoot, object : VirtualFileVisitor<PersistentLibraryKind<*>>() {
-        override fun visitFile(file: VirtualFile): Boolean =
-                when (file.extension) {
-                    "class" -> false
-
-                    "kjsm" -> {
-                        result = JSLibraryKind
-                        false
-                    }
-
-                    MetadataPackageFragment.METADATA_FILE_EXTENSION -> {
-                        result = CommonLibraryKind
-                        false
-                    }
-
-                    else -> true
-                }
-    })
-    return result
 }
 
 fun getLibraryJar(roots: Array<VirtualFile>, jarPattern: Pattern): VirtualFile? {
