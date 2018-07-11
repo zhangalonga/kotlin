@@ -33,6 +33,13 @@ class CustomScriptCodegenTest : CodegenTestCase() {
         assertNotNull(res.getConstructor().safeGetAnnotation(MyScriptConstructorAnnotation::class))
     }
 
+    fun testGenIntoMethod() {
+        createScriptTestEnvironment("org.jetbrains.kotlin.codegen.TestScriptWithMethodBodyTarget")
+        loadScript("val x = 1")
+        val res = generateScriptClass()
+        val methods = res.declaredMethods
+    }
+
     private fun generateScriptClass(): Class<*> = generateClass("ScriptTest")
 
     private fun loadScript(text: String) {

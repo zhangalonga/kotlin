@@ -23,6 +23,7 @@ import java.io.File
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.annotations.KotlinScriptDefaultCompilationConfiguration
 import kotlin.script.experimental.api.KotlinType
+import kotlin.script.experimental.api.ScriptBodyTarget
 import kotlin.script.experimental.api.ScriptCompileConfigurationProperties
 import kotlin.script.experimental.util.TypedKey
 
@@ -138,6 +139,7 @@ object TestScriptWithReceiversConfiguration : ArrayList<Pair<TypedKey<*>, Any?>>
 @KotlinScriptDefaultCompilationConfiguration(TestScriptWithReceiversConfiguration::class)
 abstract class TestScriptWithReceivers
 
+
 object TestScriptWithSimpleEnvVarsConfiguration : ArrayList<Pair<TypedKey<*>, Any?>>(
     listOf(
         ScriptCompileConfigurationProperties.contextVariables to mapOf("stringVar1" to KotlinType(String::class))
@@ -148,3 +150,21 @@ object TestScriptWithSimpleEnvVarsConfiguration : ArrayList<Pair<TypedKey<*>, An
 @KotlinScript
 @KotlinScriptDefaultCompilationConfiguration(TestScriptWithSimpleEnvVarsConfiguration::class)
 abstract class TestScriptWithSimpleEnvVars
+
+
+object TestScriptWithMethodBodyTargetConfiguration : ArrayList<Pair<TypedKey<*>, Any?>>(
+    listOf(
+        ScriptCompileConfigurationProperties.scriptBodyTarget to ScriptBodyTarget.SingleAbstractMethod
+    )
+)
+
+@Suppress("unused")
+@KotlinScript
+@KotlinScriptDefaultCompilationConfiguration(TestScriptWithMethodBodyTargetConfiguration::class)
+abstract class TestScriptWithMethodBodyTarget : Other() {
+    abstract fun body()
+}
+
+abstract class Other {
+    abstract fun other()
+}
