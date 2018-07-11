@@ -87,6 +87,12 @@ abstract class KotlinScriptDefinitionAdapterFromNewAPIBase : KotlinScriptDefinit
         get() = scriptDefinition.compilationConfigurator.defaultConfiguration.getOrNull(ScriptCompileConfigurationProperties.generatedMethodAnnotations)
             .orEmpty()
 
+    override val scriptBodyTarget: org.jetbrains.kotlin.script.ScriptBodyTarget
+        get() = when (scriptDefinition.compilationConfigurator.defaultConfiguration.getOrNull(ScriptCompileConfigurationProperties.scriptBodyTarget)) {
+            null, ScriptBodyTarget.Constructor -> org.jetbrains.kotlin.script.ScriptBodyTarget.Constructor
+            ScriptBodyTarget.SingleAbstractMethod -> org.jetbrains.kotlin.script.ScriptBodyTarget.SingleAbstractMethod
+        }
+
     private val scriptingClassGetter by lazy(LazyThreadSafetyMode.PUBLICATION) {
         scriptDefinition.properties.getOrNull(ScriptingEnvironmentProperties.getScriptingClass)
                 ?: throw IllegalArgumentException("Expecting 'getScriptingClass' property in the scripting environment")

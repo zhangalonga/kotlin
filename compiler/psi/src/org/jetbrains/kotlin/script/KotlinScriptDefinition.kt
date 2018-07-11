@@ -62,7 +62,14 @@ open class KotlinScriptDefinition(open val template: KClass<out Any>) : UserData
     open val targetClassAnnotations: List<Annotation> get() = emptyList()
 
     open val targetMethodAnnotations: List<Annotation> get() = emptyList()
+
+    open val scriptBodyTarget: ScriptBodyTarget get() = ScriptBodyTarget.Constructor
 }
 
 object StandardScriptDefinition : KotlinScriptDefinition(ScriptTemplateWithArgs::class)
+
+enum class ScriptBodyTarget {
+    Constructor,
+    SingleAbstractMethod
+}
 
