@@ -71,10 +71,4 @@ class BuiltinCompanionTest {
 
         assertSame(String, s)
     }
-
-    @Test
-    fun booleanTest() {
-        val b = Boolean
-        assertSame(Boolean, b)
-    }
 }
