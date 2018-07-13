@@ -11,15 +11,14 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrField
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
 import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrReturnTargetSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
-import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classifierOrFail
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.addToStdlib.assertedCast
 
 
@@ -52,8 +51,12 @@ inline fun IrBuilderWithScope.irLetS(
 }
 
 
-fun <T : IrElement> IrStatementsBuilder<T>.irTemporary(value: IrExpression, nameHint: String? = null): IrVariable {
-    val temporary = scope.createTemporaryVariable(value, nameHint)
+fun <T : IrElement> IrStatementsBuilder<T>.irTemporary(
+    value: IrExpression,
+    nameHint: String? = null,
+    typeHint: KotlinType? = null
+): IrVariable {
+    val temporary = scope.createTemporaryVariable(value, nameHint, type = typeHint)
     +temporary
     return temporary
 }
@@ -64,8 +67,14 @@ fun <T : IrElement> IrStatementsBuilder<T>.defineTemporary(value: IrExpression, 
     return temporary.descriptor
 }
 
-fun <T : IrElement> IrStatementsBuilder<T>.irTemporaryVar(value: IrExpression, nameHint: String? = null): IrVariable {
-    val temporary = scope.createTemporaryVariable(value, nameHint, isMutable = true)
+fun <T : IrElement> IrStatementsBuilder<T>.irTemporaryVar(
+    value: IrExpression,
+    nameHint: String? = null,
+    typeHint: KotlinType? = null,
+    parent: IrDeclarationParent? = null
+): IrVariable {
+    val temporary = scope.createTemporaryVariable(value, nameHint, isMutable = true, type = typeHint)
+    parent?.let { temporary.parent = it }
     +temporary
     return temporary
 }
@@ -121,7 +130,7 @@ fun IrBuilderWithScope.irIfThenMaybeElse(type: IrType, condition: IrExpression, 
 fun IrBuilderWithScope.irIfNull(type: IrType, subject: IrExpression, thenPart: IrExpression, elsePart: IrExpression) =
     irIfThenElse(type, irEqualsNull(subject), thenPart, elsePart)
 
-fun IrBuilderWithScope.irThrowNpe(origin: IrStatementOrigin) =
+fun IrBuilderWithScope.irThrowNpe(origin: IrStatementOrigin? = null) =
     IrNullaryPrimitiveImpl(startOffset, endOffset, context.irBuiltIns.nothingType, origin, context.irBuiltIns.throwNpeSymbol)
 
 fun IrBuilderWithScope.irIfThenReturnTrue(condition: IrExpression) =
@@ -141,6 +150,9 @@ fun IrBuilderWithScope.irSetVar(variable: IrVariableSymbol, value: IrExpression)
 fun IrBuilderWithScope.irGetField(receiver: IrExpression?, field: IrField) =
     IrGetFieldImpl(startOffset, endOffset, field.symbol, field.type, receiver)
 
+fun IrBuilderWithScope.irSetField(receiver: IrExpression, field: IrField, value: IrExpression) =
+    IrSetFieldImpl(startOffset, endOffset, field.symbol, receiver, value, context.irBuiltIns.unitType)
+
 fun IrBuilderWithScope.irEqeqeq(arg1: IrExpression, arg2: IrExpression) =
     context.eqeqeq(startOffset, endOffset, arg1, arg2)
 
@@ -151,6 +163,12 @@ fun IrBuilderWithScope.irEqualsNull(argument: IrExpression) =
     primitiveOp2(
         startOffset, endOffset, context.irBuiltIns.eqeqSymbol, IrStatementOrigin.EQEQ,
         argument, irNull()
+    )
+
+fun IrBuilderWithScope.irEquals(lhs: IrExpression, rhs: IrExpression) =
+    primitiveOp2(
+        startOffset, endOffset, context.irBuiltIns.eqeqSymbol, IrStatementOrigin.EQEQ,
+        lhs, rhs
     )
 
 fun IrBuilderWithScope.irNotEquals(arg1: IrExpression, arg2: IrExpression) =
