@@ -97,4 +97,11 @@ class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsSta
         val loopStatement = JsDoWhile(loop.condition.accept(IrElementToJsExpressionTransformer(), context), loop.body?.accept(this, context))
         return label?.let { JsLabel(it, loopStatement) } ?: loopStatement
     }
+
+    override fun visitSyntheticBody(body: IrSyntheticBody, context: JsGenerationContext): JsStatement {
+        return when (body.kind) {
+            IrSyntheticBodyKind.ENUM_VALUEOF -> JsEmpty // TODO: Implement
+            IrSyntheticBodyKind.ENUM_VALUES -> JsEmpty // TODO: Implement
+        }
+    }
 }
