@@ -144,6 +144,12 @@ class JpsKotlinCompilerRunner : KotlinCompilerRunner<JpsCompilerEnvironment>() {
 
         log.debug("K2JS: arguments after setup" + ArgumentUtils.convertArgumentsToStringList(arguments))
 
+        val allArgs = ArgumentUtils.convertArgumentsToStringList(arguments) + compilerSettings.additionalArgumentsAsList
+
+        File("/Users/jetbrains/kotlin/compiler/watch-daemon/testData/args.txt").appendText(
+            allArgs.joinToString { "\"$it\"" } + "\n"
+        )
+
         withCompilerSettings(compilerSettings) {
             runCompiler(K2JS_COMPILER, arguments, environment)
         }

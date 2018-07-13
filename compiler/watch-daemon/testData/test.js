@@ -18,6 +18,8 @@ var test = function (_, Kotlin) {
   function main(args) {
     println('- 1');
     println('- 2');
+    println('- 2');
+    println('- 2');
   }
   _.MyProject = MyProject;
   _.main_kand9s$ = main;
