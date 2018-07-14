@@ -180,12 +180,12 @@ class KotlinJvmWithJavaTargetPreset(
         val target = KotlinWithJavaTarget(project, KotlinPlatformType.jvm, name)
 
         AbstractKotlinPlugin.configureTarget(target) { compilation ->
-            Kotlin2JvmSourceSetProcessor(
-                project,
-                KotlinTasksProvider(),
-                compilation as KotlinJvmCompilation,
-                kotlinPluginVersion
-            )
+            Kotlin2JvmSourceSetProcessor(project, KotlinTasksProvider(), compilation, kotlinPluginVersion)
+        }
+
+        target.compilations.all { compilation ->
+            // Set up dependency resolution using platforms:
+            KotlinTargetConfigurator.defineConfigurationsForCompilation(compilation, target, project.configurations)
         }
 
         return target
