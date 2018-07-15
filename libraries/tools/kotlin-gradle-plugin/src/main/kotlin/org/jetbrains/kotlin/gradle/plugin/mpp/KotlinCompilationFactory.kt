@@ -17,8 +17,6 @@ package org.jetbrains.kotlin.gradle.plugin.mpp
 
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginConvention
-import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
@@ -53,15 +51,12 @@ class KotlinWithJavaCompilationFactory(
     val project: Project,
     val target: KotlinWithJavaTarget
 ) : KotlinCompilationFactory<KotlinWithJavaCompilation> {
-    private val javaSourceSets: SourceSetContainer
-        get() = project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets
 
     override val itemClass: Class<KotlinWithJavaCompilation>
         get() = KotlinWithJavaCompilation::class.java
 
     override fun create(name: String): KotlinWithJavaCompilation {
-        val javaSourceSet = javaSourceSets.maybeCreate(name)
-        val result = KotlinWithJavaCompilation(target, name, javaSourceSet)
+        val result = KotlinWithJavaCompilation(target, name)
         return result
     }
 }

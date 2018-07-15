@@ -390,16 +390,29 @@ internal abstract class AbstractKotlinPlugin(
             val project = kotlinTarget.project
             val javaSourceSets = project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets
 
+            // Workaround for indirect mutual recursion between the two `all { ... }` handlers:
+            val compilationsUnderConstruction = mutableMapOf<String, KotlinWithJavaCompilation>()
+
             javaSourceSets.all { javaSourceSet ->
-                val kotlinCompilation = kotlinTarget.compilations.maybeCreate(javaSourceSet.name) as KotlinWithJavaCompilation
-                val kotlinSourceSet = project.kotlinExtension.sourceSets.maybeCreate(kotlinCompilation.fullName)
+                val kotlinCompilation = compilationsUnderConstruction[javaSourceSet.name] ?: kotlinTarget.compilations.maybeCreate(javaSourceSet.name)
+                kotlinCompilation.javaSourceSet = javaSourceSet
+                val kotlinSourceSet = project.kotlinExtension.sourceSets.maybeCreate(kotlinCompilation.name)
                 javaSourceSet.addConvention(KOTLIN_DSL_NAME, kotlinSourceSet)
                 kotlinSourceSet.kotlin.source(javaSourceSet.java)
                 kotlinCompilation.source(kotlinSourceSet)
             }
 
             kotlinTarget.compilations.all { kotlinCompilation ->
-                javaSourceSets.maybeCreate(kotlinCompilation.fullName)
+                val sourceSetName = kotlinCompilation.name
+                compilationsUnderConstruction[sourceSetName] = kotlinCompilation
+                kotlinCompilation.javaSourceSet = javaSourceSets.maybeCreate(sourceSetName)
+
+                // Another Kotlin source set following the other convention, named according to the compilation, not the Java source set:
+                val kotlinSourceSet = project.kotlinExtension.sourceSets.maybeCreate(kotlinCompilation.fullName)
+                kotlinCompilation.javaSourceSet.java.srcDirs(Callable {
+                    kotlinSourceSet.kotlin.srcDirs.filter { it.name == "kotlin" }.mapNotNull { it.parentFile?.resolve("java") }
+                })
+                kotlinCompilation.source(kotlinSourceSet)
             }
         }
 

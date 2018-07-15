@@ -147,9 +147,10 @@ open class KotlinJvmCompilation(
 
 class KotlinWithJavaCompilation(
     target: KotlinWithJavaTarget,
-    name: String,
-    val javaSourceSet: SourceSet
+    name: String
 ) : AbstractKotlinCompilationToRunnableFiles(target, name), KotlinCompilationWithResources {
+    lateinit var javaSourceSet: SourceSet
+
     override val output: SourceSetOutput
         get() = javaSourceSet.output
 
