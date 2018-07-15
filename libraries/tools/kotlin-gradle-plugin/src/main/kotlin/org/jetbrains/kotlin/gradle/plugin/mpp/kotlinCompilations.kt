@@ -36,7 +36,9 @@ internal fun KotlinCompilation.composeName(prefix: String? = null, suffix: Strin
 }
 
 internal val KotlinCompilation.fullName: String
-    get() = lowerCamelCaseName(target.disambiguationClassifier, compilationName)
+    get() = fullCompilationName(target, compilationName)
+
+internal fun fullCompilationName(target: KotlinTarget, simpleName: String) = lowerCamelCaseName(target.disambiguationClassifier, simpleName)
 
 internal class DefaultKotlinDependencyHandler(
     val parent: HasKotlinDependencies,
@@ -63,23 +65,23 @@ abstract class AbstractKotlinCompilation(
 
     override fun getAttributes(): AttributeContainer = attributeContainer
 
-    override val kotlinSourceSets: MutableList<KotlinSourceSet> = mutableListOf()
+    override val kotlinSourceSets: MutableSet<KotlinSourceSet> = mutableSetOf()
 
     override fun source(sourceSet: KotlinSourceSet) {
-        kotlinSourceSets += sourceSet
+        if (kotlinSourceSets.add(sourceSet)) {
+            with(target.project) {
+                whenEvaluated {
+                    (target.project.tasks.getByName(compileKotlinTaskName) as AbstractKotlinCompile<*>).source(sourceSet.kotlin)
+                }
 
-        with(target.project) {
-            whenEvaluated {
-                (target.project.tasks.getByName(compileKotlinTaskName) as AbstractKotlinCompile<*>).source(sourceSet.kotlin)
-            }
+                // Use `forced = false` since `api` and `implementation` may be missing in some cases like old Java & Android projects
+                addExtendsFromRelation(apiConfigurationName, sourceSet.apiConfigurationName, forced = false)
+                addExtendsFromRelation(implementationConfigurationName, sourceSet.implementationConfigurationName, forced = false)
 
-            // Use `forced = false` since `api` and `implementation` may be missing in some cases like old Java & Android projects
-            addExtendsFromRelation(apiConfigurationName, sourceSet.apiConfigurationName, forced = false)
-            addExtendsFromRelation(implementationConfigurationName, sourceSet.implementationConfigurationName, forced = false)
-
-            addExtendsFromRelation(compileOnlyConfigurationName, sourceSet.compileOnlyConfigurationName)
-            if (this is KotlinCompilationToRunnableFiles) {
-                addExtendsFromRelation(runtimeOnlyConfigurationName, sourceSet.runtimeOnlyConfigurationName)
+                addExtendsFromRelation(compileOnlyConfigurationName, sourceSet.compileOnlyConfigurationName)
+                if (this is KotlinCompilationToRunnableFiles) {
+                    addExtendsFromRelation(runtimeOnlyConfigurationName, sourceSet.runtimeOnlyConfigurationName)
+                }
             }
         }
     }
