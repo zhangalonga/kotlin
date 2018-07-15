@@ -177,7 +177,9 @@ class KotlinJvmWithJavaTargetPreset(
     override fun createTarget(name: String): KotlinWithJavaTarget {
         project.plugins.apply(JavaPlugin::class.java)
 
-        val target = KotlinWithJavaTarget(project, KotlinPlatformType.jvm, name)
+        val target = KotlinWithJavaTarget(project, KotlinPlatformType.jvm, name).apply {
+            disambiguationClassifier = name
+        }
 
         AbstractKotlinPlugin.configureTarget(target) { compilation ->
             Kotlin2JvmSourceSetProcessor(project, KotlinTasksProvider(), compilation, kotlinPluginVersion)
