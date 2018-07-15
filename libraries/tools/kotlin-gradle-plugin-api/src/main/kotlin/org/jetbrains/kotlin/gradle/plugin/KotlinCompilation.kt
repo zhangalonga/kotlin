@@ -16,7 +16,7 @@ interface KotlinCompilation: Named, HasAttributes, HasKotlinDependencies {
 
     val compilationName: String
 
-    val kotlinSourceSets: List<KotlinSourceSet>
+    val kotlinSourceSets: Set<KotlinSourceSet>
 
     val compileDependencyConfigurationName: String
 
