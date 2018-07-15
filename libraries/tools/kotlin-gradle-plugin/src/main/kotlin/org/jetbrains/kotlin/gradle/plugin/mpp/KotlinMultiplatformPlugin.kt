@@ -100,7 +100,7 @@ internal class KotlinMultiplatformPlugin(
 
         project.afterEvaluate { project -> // Use afterEvaluate because publications configuration is no more lazy since Gradle 4.9
             project.extensions.configure(PublishingExtension::class.java) { publishing ->
-                publishing.publications.create("kotlinCompositeLibrary", MavenPublication::class.java) { publication ->
+                publishing.publications.create("kotlin", MavenPublication::class.java) { publication ->
                     publication.from(kotlinSoftwareComponent)
                     (publication as MavenPublicationInternal).publishWithOriginalFileName()
                     publication.artifactId = project.name
@@ -108,6 +108,8 @@ internal class KotlinMultiplatformPlugin(
                 }
             }
         }
+
+        project.components.add(kotlinSoftwareComponent)
     }
 
     private fun configureSourceSets(project: Project) = with (project.kotlinExtension as KotlinMultiplatformExtension) {
