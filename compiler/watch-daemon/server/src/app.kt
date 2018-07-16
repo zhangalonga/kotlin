@@ -11,9 +11,10 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PsiManagerEx
 import com.intellij.psi.impl.PsiManagerImpl
 import com.intellij.psi.impl.file.impl.FileManagerImpl
+import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
-import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.kotlin.cli.common.messages.GroupingMessageCollector
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.js.K2JSCompiler
@@ -21,6 +22,7 @@ import org.jetbrains.kotlin.cli.js.K2JsSetup
 import org.jetbrains.kotlin.cli.js.K2JsSetupConsumer
 import org.jetbrains.kotlin.cli.js.doExecute
 import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.incremental.*
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 import javax.swing.SwingUtilities
@@ -30,11 +32,128 @@ import javax.swing.SwingUtilities
 
 class WatchDaemon() {
     val compiler = K2JSCompiler()
+    val workingDir = File("/Users/jetbrains/kotlin/compiler/watch-daemon/testData/caches")
+    val msgs = PrintingMessageCollector(
+        System.out,
+        MessageRenderer.PLAIN_RELATIVE_PATHS,
+        false//true
+    )
 
-    val compilerArgs = K2JSCompilerArguments()
 
-    fun run2() {
-        val moduleArgs = time("loadCircletModules") { loadCircletModules() }
+    fun runIncremental() {
+        val jsProjects = loadCircletProjects()
+
+        val fileWatcher = FileWatcher(jsProjects.flatMap { project ->
+            project.sourceRoots.map {
+                FileWatchRoot(it, project)
+            }
+        })
+
+        fileWatcher.start()
+        fileWatcher.takeDirtyRoots()
+
+        while (true) {
+            fileWatcher.markDirty(File("/Users/jetbrains/circlet/app/app-web/src/main/kotlin/circlet/api/Routing.kt"))
+            processDirty(fileWatcher.takeDirtyRoots())
+        }
+
+//        watch(fileWatcher)
+    }
+
+    fun watch(fileWatcher: FileWatcher<JsProject>) {
+        watchloop@ while (true) {
+            val dirtyRoots = fileWatcher.pollDirtyRoots()
+            processDirty(dirtyRoots)
+        }
+    }
+
+    fun processDirty(dirtyRoots: List<DirtyRoot<JsProject>>) {
+        val dirtyProjects = dirtyRoots.filter { !it.isInitial }.groupBy { it.root.data }
+        if (dirtyProjects.isNotEmpty()) {
+            val sorted = dirtyProjects.entries
+                .sortedBy { (project, _) -> project.order }
+
+            sorted.forEach { (project, dirty) ->
+                time("$dirty") {
+                    val allFiles = mutableListOf<File>()
+                    val modified = mutableSetOf<File>()
+
+                    dirty.forEach {
+                        allFiles.addAll(it.all)
+                        modified.addAll(it.modified)
+                    }
+
+                    val exitCode = execJsIncrementalCompiler(
+                        allFiles,
+//                        ChangedFiles.Unknown(),
+                        ChangedFiles.Known(modified.toList(), listOf()),
+                        File(workingDir, project.name),
+                        project.compilerArguments,
+                        msgs
+                    )
+
+                    if (exitCode.code != 0) {
+                        error(exitCode)
+                    }
+                }
+            }
+        }
+    }
+
+    fun loadCircletProjects(): List<JsProject> {
+        val executionsCmdArgs = loadCircletExecutionsCmdArgs()
+
+        val jsProjects = executionsCmdArgs.mapIndexed { index: Int, module: K2JSCompilerArguments ->
+            module.detectJsProject(index)
+        }
+
+        val metaJsToProject = mutableMapOf<String, JsProject>()
+        jsProjects.forEach {
+            val outputFile = it.compilerArguments.outputFile!!
+            check(outputFile.endsWith(".js"))
+            val metaJs = outputFile.substring(0, outputFile.length - ".js".length) + ".meta.js"
+            metaJsToProject[metaJs] = it
+        }
+
+        jsProjects.forEach { src ->
+            val libs = src.compilerArguments.libraries?.split(':') ?: listOf()
+            libs.forEach { lib ->
+                val jsProject = metaJsToProject[lib]
+                if (jsProject != null) {
+                    src.deps.add(jsProject)
+                    jsProject.usages.add(src)
+                } else {
+                    check(!lib.endsWith(".meta.js"))
+                    val libFile = File(lib)
+                    check(libFile.exists())
+                    src.libs.add(libFile)
+                }
+            }
+        }
+
+        return jsProjects
+    }
+
+    private fun execJsIncrementalCompiler(
+        allKotlinFiles: List<File>,
+        changedFiles: ChangedFiles,
+        workingDir: File,
+        args: K2JSCompilerArguments,
+        compilerMessageCollector: MessageCollector
+    ): ExitCode {
+        val reporter = object : ICReporter {
+            override fun report(message: () -> String) {
+                println(message())
+            }
+        }
+
+        val versions = commonCacheVersions(workingDir)
+        val compiler = IncrementalJsCompilerRunner(workingDir, versions, reporter)
+        return compiler.compile(allKotlinFiles, args, compilerMessageCollector, changedFiles)
+    }
+
+    fun runRebuild() {
+        val moduleArgs = time("loadCircletExecutionsCmdArgs") { loadCircletExecutionsCmdArgs() }
 
         val setUps = time("Initializing...") {
             moduleArgs.map { args ->
@@ -69,76 +188,15 @@ class WatchDaemon() {
             time("Compiling all...") {
                 val outputDir = File("/Users/jetbrains/kotlin/compiler/watch-daemon/testData/output")
 
-                setUps.forEach {
-                    it as K2JsSetup.Valid
-                    compile(it.copy(
-                        outputDir = outputDir,
-                        outputFile = File(outputDir, it.outputFile.name)
-                    ))
-                }
-            }
-        }
-    }
+                setUps.forEach { setup ->
+                    setup as K2JsSetup.Valid
 
-    fun loadCircletModules(): List<K2JSCompilerArguments> {
-        return File("/Users/jetbrains/kotlin/compiler/watch-daemon/testData/args_backup.txt")
-            .readLines()
-            .map { line ->
-                val args = line.split(",").map { it.trim() }.map {
-                    check(it.startsWith("\"")) { it }
-                    check(it.endsWith("\"")) { it }
-                    it.substring(1, it.length - 1)
-                }
-
-                K2JSCompilerArguments().also { parseCommandLineArguments(args, it) }
-            }
-    }
-
-    fun run() {
-        println("Initializing...")
-
-        lateinit var mySetup: K2JsSetup
-        val services = Services.Builder().also {
-            it.register(K2JsSetupConsumer::class.java, object : K2JsSetupConsumer {
-                override fun consume(setup: K2JsSetup) {
-                    mySetup = setup
-                }
-            })
-        }.build()
-
-        val testData = "/Users/jetbrains/kotlin/compiler/watch-daemon/testData"
-        compilerArgs.outputFile = "$testData/test.js"
-        val fileName = "$testData/src/test.kt"
-        compilerArgs.freeArgs = listOf(fileName)
-
-        println("Setup...")
-
-        compiler.exec(
-            PrintingMessageCollector(
-                System.out,
-                MessageRenderer.PLAIN_RELATIVE_PATHS,
-                true
-            ),
-            services,
-            compilerArgs
-        )
-
-        val myFinalSetup = mySetup
-        if (myFinalSetup is K2JsSetup.Valid) {
-            val file = File(fileName)
-
-            // initial compilation
-            repeat(3) {
-                print("Warning up... [$it%] :")
-                compile(myFinalSetup)
-            }
-
-            var m = file.lastModified()
-            while (true) {
-                val m1 = file.lastModified()
-                if (m1 != m) {
-                    m = m1
-                    compile(myFinalSetup)
+                    compile(
+                        setup.copy(
+                            outputDir = outputDir,
+                            outputFile = File(outputDir, setup.outputFile.name)
+                        )
+                    )
                 }
             }
         }
@@ -197,5 +255,6 @@ inline fun <R> time(msg: String, body: () -> R): R {
 }
 
 fun main(args: Array<String>) {
-    WatchDaemon().run2()
+//    WatchDaemon().runRebuild()
+    WatchDaemon().runIncremental()
 }

@@ -38,3 +38,6 @@ build/
 .idea/compiler.xml
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/.name
+
+compiler/watch-daemon/testData/caches
+compiler/watch-daemon/testData/output

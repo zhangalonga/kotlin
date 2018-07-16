@@ -13,6 +13,7 @@ dependencies {
     compile(project(":kotlin-build-common"))
     compile(commonDep("org.fusesource.jansi", "jansi"))
     compile(commonDep("org.jline", "jline"))
+//    compile("io.methvin:directory-watcher:")
     compile(intellijCoreDep()) { includeJars("intellij-core") }
     compile(intellijDep()) { includeIntellijCoreJarDependencies(project) }
 }
