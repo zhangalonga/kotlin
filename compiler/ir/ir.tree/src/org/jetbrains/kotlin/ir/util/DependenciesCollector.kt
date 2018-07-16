@@ -87,6 +87,9 @@ class DependenciesCollector {
     }
 
     private fun getTopLevelDeclaration(descriptor: DeclarationDescriptor): DeclarationDescriptor? {
+        if (descriptor is CallableMemberDescriptor && descriptor.kind == CallableMemberDescriptor.Kind.SYNTHESIZED)
+            // skip synthetic callables
+            return null
         val containingDeclaration = descriptor.containingDeclaration
         return when (containingDeclaration) {
             is PackageFragmentDescriptor -> descriptor
