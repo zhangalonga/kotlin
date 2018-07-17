@@ -12,3 +12,7 @@ interface K2JsSetupConsumer {
 interface K2JsSetupProvider {
     fun provide(): K2JsSetup
 }
+
+interface K2JsResultsConsumer {
+    fun consume()
+}

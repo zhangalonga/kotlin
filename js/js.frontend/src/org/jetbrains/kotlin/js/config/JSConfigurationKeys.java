@@ -61,6 +61,9 @@ public class JSConfigurationKeys {
     public static final CompilerConfigurationKey<Object> SETUP_PROVIDER =
             CompilerConfigurationKey.create("Setup provider");
 
+    public static final CompilerConfigurationKey<Object> TRANSLATION_UNIT_CONSUMER =
+            CompilerConfigurationKey.create("Translation unit consumer");
+
     public static final CompilerConfigurationKey<IncrementalDataProvider> INCREMENTAL_DATA_PROVIDER =
             CompilerConfigurationKey.create("incremental data provider");
 

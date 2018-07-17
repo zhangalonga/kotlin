@@ -243,7 +243,7 @@ abstract class IncrementalCompilerRunner<
             caches.inputsCache.registerOutputForSourceFiles(generatedFiles)
             caches.lookupCache.update(lookupTracker, sourcesToCompile, removedKotlinSources)
             val changesCollector = ChangesCollector()
-            updateCaches(services, caches, generatedFiles, changesCollector)
+            //updateCaches(services, caches, generatedFiles, changesCollector)
 
             if (compilationMode is CompilationMode.Rebuild) break
 
