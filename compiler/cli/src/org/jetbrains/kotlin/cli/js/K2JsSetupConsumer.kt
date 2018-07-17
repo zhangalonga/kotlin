@@ -8,3 +8,7 @@ package org.jetbrains.kotlin.cli.js
 interface K2JsSetupConsumer {
     fun consume(setup: K2JsSetup)
 }
+
+interface K2JsSetupProvider {
+    fun provide(): K2JsSetup
+}

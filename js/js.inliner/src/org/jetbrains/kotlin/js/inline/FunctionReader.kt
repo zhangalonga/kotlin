@@ -36,7 +36,6 @@ import org.jetbrains.kotlin.js.translate.utils.JsDescriptorUtils.getModuleName
 import org.jetbrains.kotlin.resolve.descriptorUtil.isExtension
 import org.jetbrains.kotlin.resolve.inline.InlineStrategy
 import org.jetbrains.kotlin.utils.JsLibraryUtils
-import org.jetbrains.kotlin.utils.sure
 import java.io.File
 import java.io.StringReader
 
@@ -88,61 +87,13 @@ class FunctionReader(
                 ?.let { Regex("\\s*$it\\s*\\(\\s*").toPattern() }
     }
 
-    private val moduleNameToInfo by lazy {
-        val result = HashMultimap.create<String, ModuleInfo>()
-
-        JsLibraryUtils.traverseJsLibraries(config.libraries.map(::File)) { (content, path, sourceMapContent, file) ->
-            var current = 0
-
-            while (true) {
-                var index = content.indexOf(DEFINE_MODULE_FIND_PATTERN, current)
-                if (index < 0) break
-
-                current = index + 1
-                index = rewindToIdentifierStart(content, index)
-                val preciseMatcher = DEFINE_MODULE_PATTERN.matcher(offset(content, index))
-                if (!preciseMatcher.lookingAt()) continue
-
-                val moduleName = preciseMatcher.group(3)
-                val moduleVariable = preciseMatcher.group(4)
-                val kotlinVariable = preciseMatcher.group(1)
-
-                val matcher = SPECIAL_FUNCTION_PATTERN.matcher(content)
-                val specialFunctions = mutableMapOf<String, SpecialFunction>()
-                while (matcher.find()) {
-                    if (matcher.group(2) == kotlinVariable) {
-                        specialFunctions[matcher.group(1)] = specialFunctionsByName[matcher.group(3)]!!
-                    }
-                }
-
-                val sourceMap = sourceMapContent?.let {
-                    val sourceMapResult = SourceMapParser.parse(StringReader(it))
-                    when (sourceMapResult) {
-                        is SourceMapSuccess -> sourceMapResult.value
-                        is SourceMapError -> {
-                            reporter.warning("Error parsing source map file for $path: ${sourceMapResult.message}")
-                            null
-                        }
-                    }
-                }
-
-                val moduleInfo = ModuleInfo(
-                        filePath = path,
-                        fileContent = content,
-                        moduleVariable = moduleVariable,
-                        kotlinVariable = kotlinVariable,
-                        specialFunctions = specialFunctions,
-                        offsetToSourceMappingProvider = { OffsetToSourceMapping(content) },
-                        sourceMap = sourceMap,
-                        outputDir = file?.parentFile
-                )
-
-                result.put(moduleName, moduleInfo)
-            }
+    private val moduleNameToInfo: HashMultimap<String, FunctionReader.ModuleInfo>
+        get() {
+            return config.cache.getOrPut("moduleNameToInfo") {
+                buildModleNameToInfo(config, reporter)
+            } as HashMultimap<String, ModuleInfo>
         }
 
-        result
-    }
 
     private val moduleNameMap: Map<String, JsExpression>
     private val shouldRemapPathToRelativeForm = config.shouldGenerateRelativePathsInSourceMap()
@@ -157,25 +108,6 @@ class FunctionReader(
     // translation and rely on it here.
     private fun buildModuleNameMap(fragments: List<JsProgramFragment>): Map<String, JsExpression> {
         return fragments.flatMap { it.inlineModuleMap.entries }.associate { (k, v) -> k to v }
-    }
-
-    private fun rewindToIdentifierStart(text: String, index: Int): Int {
-        var result = index
-        while (result > 0 && Character.isJavaIdentifierPart(text[result - 1])) {
-            --result
-        }
-        return result
-    }
-
-    private fun offset(text: String, offset: Int) = object : CharSequence {
-        override val length: Int
-            get() = text.length - offset
-
-        override fun get(index: Int) = text[index + offset]
-
-        override fun subSequence(startIndex: Int, endIndex: Int) = text.subSequence(startIndex + offset, endIndex + offset)
-
-        override fun toString() = text.substring(offset)
     }
 
     private val emptyFunctionWrapper = FunctionWithWrapper(JsFunction(object : JsScope("") {}, ""), null)
@@ -410,4 +342,79 @@ private class ShallowSubSequence(private val underlying: CharSequence, private v
 
     override fun subSequence(startIndex: Int, endIndex: Int): CharSequence =
             ShallowSubSequence(underlying, start + startIndex, start + endIndex)
+}
+
+fun buildModleNameToInfo(jsConfig: JsConfig, reporter: JsConfig.Reporter): HashMultimap<String, FunctionReader.ModuleInfo> {
+    val result = HashMultimap.create<String, FunctionReader.ModuleInfo>()
+
+    JsLibraryUtils.traverseJsLibraries(jsConfig.libraries.map(::File)) { (content, path, sourceMapContent, file) ->
+        var current = 0
+
+        while (true) {
+            var index = content.indexOf(DEFINE_MODULE_FIND_PATTERN, current)
+            if (index < 0) break
+
+            current = index + 1
+            index = rewindToIdentifierStart(content, index)
+            val preciseMatcher = DEFINE_MODULE_PATTERN.matcher(offset(content, index))
+            if (!preciseMatcher.lookingAt()) continue
+
+            val moduleName = preciseMatcher.group(3)
+            val moduleVariable = preciseMatcher.group(4)
+            val kotlinVariable = preciseMatcher.group(1)
+
+            val matcher = SPECIAL_FUNCTION_PATTERN.matcher(content)
+            val specialFunctions = mutableMapOf<String, SpecialFunction>()
+            while (matcher.find()) {
+                if (matcher.group(2) == kotlinVariable) {
+                    specialFunctions[matcher.group(1)] = specialFunctionsByName[matcher.group(3)]!!
+                }
+            }
+
+            val sourceMap = sourceMapContent?.let {
+                val sourceMapResult = SourceMapParser.parse(StringReader(it))
+                when (sourceMapResult) {
+                    is SourceMapSuccess -> sourceMapResult.value
+                    is SourceMapError -> {
+                        reporter.warning("Error parsing source map file for $path: ${sourceMapResult.message}")
+                        null
+                    }
+                }
+            }
+
+            val moduleInfo = FunctionReader.ModuleInfo(
+                filePath = path,
+                fileContent = content,
+                moduleVariable = moduleVariable,
+                kotlinVariable = kotlinVariable,
+                specialFunctions = specialFunctions,
+                offsetToSourceMappingProvider = { OffsetToSourceMapping(content) },
+                sourceMap = sourceMap,
+                outputDir = file?.parentFile
+            )
+
+            result.put(moduleName, moduleInfo)
+        }
+    }
+
+    return result
+}
+
+private fun rewindToIdentifierStart(text: String, index: Int): Int {
+    var result = index
+    while (result > 0 && Character.isJavaIdentifierPart(text[result - 1])) {
+        --result
+    }
+    return result
+}
+
+private fun offset(text: String, offset: Int) = object : CharSequence {
+    override val length: Int
+        get() = text.length - offset
+
+    override fun get(index: Int) = text[index + offset]
+
+    override fun subSequence(startIndex: Int, endIndex: Int) = text.subSequence(startIndex + offset, endIndex + offset)
+
+    override fun toString() = text.substring(offset)
 }

@@ -102,10 +102,10 @@ abstract class IncrementalCompilerRunner<
             if (!caches.close(flush = true)) throw RuntimeException("Could not flush caches")
 
             return exitCode
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
+            throw e
             // todo: warn?
-            rebuild { "Possible cache corruption. Rebuilding. $e" }
+//            rebuild { "Possible cache corruption. Rebuilding. $e" }
         }
     }
 

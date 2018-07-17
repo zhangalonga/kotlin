@@ -22,11 +22,14 @@ import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.js.K2JSCompiler
+import org.jetbrains.kotlin.cli.js.K2JsSetup
+import org.jetbrains.kotlin.cli.js.K2JsSetupProvider
 import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.incremental.js.*
+import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.name.FqName
 import java.io.File
 
@@ -59,7 +62,7 @@ inline fun <R> withJsIC(fn: ()->R): R {
     }
 }
 
-class IncrementalJsCompilerRunner(
+open class IncrementalJsCompilerRunner(
         workingDir: File,
         cacheVersions: List<CacheVersion>,
         reporter: ICReporter
@@ -140,7 +143,10 @@ class IncrementalJsCompilerRunner(
             generatedFiles: List<GeneratedFile>,
             changesCollector: ChangesCollector
     ) {
-        val incrementalResults = services.get(IncrementalResultsConsumer::class.java) as IncrementalResultsConsumerImpl
+        val setupProvider = services.get(K2JsSetupProvider::class.java)
+        val incrementalResults = (if (setupProvider != null)
+            (setupProvider.provide() as K2JsSetup.Valid).configuration[JSConfigurationKeys.INCREMENTAL_RESULTS_CONSUMER]
+        else services[IncrementalResultsConsumer::class.java]) as IncrementalResultsConsumerImpl
 
         val jsCache = caches.platformCache
         jsCache.header = incrementalResults.headerMetadata

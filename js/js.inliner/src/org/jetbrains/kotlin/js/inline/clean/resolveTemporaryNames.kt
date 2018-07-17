@@ -43,7 +43,7 @@ fun JsNode.resolveTemporaryNames() {
 }
 
 private fun JsNode.resolveNames(): Map<JsName, JsName> {
-    val rootScope = computeScopes().liftUsedNames()
+    val rootScope = computeScopes()//.liftUsedNames()
     val replacements = mutableMapOf<JsName, JsName>()
     fun traverse(scope: Scope) {
         // Don't clash with non-temporary names declared in current scope. It's for rare cases like `_` or `Kotlin` names,

@@ -44,6 +44,7 @@ import org.jetbrains.kotlin.utils.KotlinJavascriptMetadataUtils;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.jetbrains.kotlin.config.CommonConfigurationKeysKt.getLanguageVersionSettings;
 import static org.jetbrains.kotlin.utils.PathUtil.getKotlinPathsForDistDirectory;
@@ -59,7 +60,7 @@ public class JsConfig {
 
     private final Project project;
     private final CompilerConfiguration configuration;
-    private final LockBasedStorageManager storageManager = new LockBasedStorageManager();
+    public final LockBasedStorageManager storageManager = new LockBasedStorageManager();
 
     private final List<KotlinJavascriptMetadata> metadata = new SmartList<>();
     private final List<KotlinJavascriptMetadata> friends = new SmartList<>();
@@ -71,6 +72,8 @@ public class JsConfig {
     private List<JsModuleDescriptor<ModuleDescriptorImpl>> friendModuleDescriptors = null;
 
     private boolean initialized = false;
+
+    public final ConcurrentHashMap<Object, Object> cache = new ConcurrentHashMap<>();
 
     @Nullable
     private final List<JsModuleDescriptor<KotlinJavaScriptLibraryParts>> metadataCache;

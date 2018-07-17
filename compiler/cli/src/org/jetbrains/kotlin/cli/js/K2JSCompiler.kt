@@ -40,13 +40,18 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
         rootDisposable: Disposable,
         paths: KotlinPaths?
     ): ExitCode {
-        val setup = K2JsSetup(arguments, configuration, rootDisposable, paths)
+        val setupProvider = configuration[JSConfigurationKeys.SETUP_PROVIDER]
+        
+        val setup = if (setupProvider == null) {
+            val setup = K2JsSetup(arguments, configuration, rootDisposable, paths)
 
-        val setupConsumer = configuration[JSConfigurationKeys.SETUP_CONSUMER]
-        return if (setupConsumer != null) {
-            (setupConsumer as K2JsSetupConsumer).consume(setup)
-            ExitCode.OK
-        } else when (setup) {
+            val setupConsumer = configuration[JSConfigurationKeys.SETUP_CONSUMER]
+            if (setupConsumer != null) (setupConsumer as K2JsSetupConsumer).consume(setup)
+
+            setup
+        } else (setupProvider as K2JsSetupProvider).provide()
+
+        return when (setup) {
             is K2JsSetup.DoNothing -> ExitCode.OK
             is K2JsSetup.Invalid -> setup.exitCode
             is K2JsSetup.Valid -> setup.doExecute()

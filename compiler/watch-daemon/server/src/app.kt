@@ -17,12 +17,11 @@ import org.jetbrains.kotlin.cli.common.messages.GroupingMessageCollector
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
-import org.jetbrains.kotlin.cli.js.K2JSCompiler
-import org.jetbrains.kotlin.cli.js.K2JsSetup
-import org.jetbrains.kotlin.cli.js.K2JsSetupConsumer
-import org.jetbrains.kotlin.cli.js.doExecute
+import org.jetbrains.kotlin.cli.js.*
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.incremental.*
+import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
+import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 import javax.swing.SwingUtilities
@@ -84,6 +83,7 @@ class WatchDaemon() {
                     }
 
                     val exitCode = execJsIncrementalCompiler(
+                        project,
                         allFiles,
 //                        ChangedFiles.Unknown(),
                         ChangedFiles.Known(modified.toList(), listOf()),
@@ -135,6 +135,7 @@ class WatchDaemon() {
     }
 
     private fun execJsIncrementalCompiler(
+        project: JsProject,
         allKotlinFiles: List<File>,
         changedFiles: ChangedFiles,
         workingDir: File,
@@ -148,8 +149,31 @@ class WatchDaemon() {
         }
 
         val versions = commonCacheVersions(workingDir)
-        val compiler = IncrementalJsCompilerRunner(workingDir, versions, reporter)
-        return compiler.compile(allKotlinFiles, args, compilerMessageCollector, changedFiles)
+
+        val compilerRunner = object : IncrementalJsCompilerRunner(workingDir, versions, reporter) {
+            override fun makeServices(
+                args: K2JSCompilerArguments,
+                lookupTracker: LookupTracker,
+                expectActualTracker: ExpectActualTracker,
+                caches: IncrementalJsCachesManager,
+                compilationMode: CompilationMode
+            ): Services.Builder = super.makeServices(args, lookupTracker, expectActualTracker, caches, compilationMode).also {
+                val setup = project.setup
+                if (setup != null) {
+                    it.register(K2JsSetupProvider::class.java, object : K2JsSetupProvider {
+                        override fun provide(): K2JsSetup = setup
+                    })
+                } else {
+                    it.register(K2JsSetupConsumer::class.java, object : K2JsSetupConsumer {
+                        override fun consume(setup: K2JsSetup) {
+                            project.setup = setup
+                        }
+                    })
+                }
+            }
+        }
+
+        return compilerRunner.compile(allKotlinFiles, args, compilerMessageCollector, changedFiles)
     }
 
     fun runRebuild() {

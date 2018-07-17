@@ -1,0 +1,37 @@
+incremental compilation of circlet app-web. time in seconds
+total time:  8.749...10.189 on hot daemon.
+
+7.506 js hotspost that probably can be optimized:
+	5.68 probably bug:
+		5.683 org.jetbrains.kotlin.js.inline.clean.ResolveTemporaryNamesKt#liftUsedNames
+
+	0.97 cache i/o:
+		0.417 org.jetbrains.kotlin.serialization.js.ast.JsAstDeserializer.deserialize
+		0.238 org.jetbrains.kotlin.serialization.js.KotlinJavascriptSerializationUtil.serializeMetadata
+		0.236 org.jetbrains.kotlin.utils.JsLibraryUtils.traverseJsLibraries
+		0.043 org.jetbrains.kotlin.incremental.js.IncrementalDataProviderFromCache.getCompiledPackageParts
+		0.020 org.jetbrains.kotlin.serialization.js.KotlinJavascriptSerializationUtil.readDescriptors
+
+		// don't write output to hdd (webpack will store it in memory)
+		0.023 org.jetbrains.kotlin.cli.common.output.outputUtils.OutputUtilsKt.writeAll
+
+	0.10 cache enviroment, configuration, library checks:
+		0.067 TopDownAnalyzerFacadeForJS.kt:46 org.jetbrains.kotlin.js.config.JsConfig.init
+		0.039 org.jetbrains.kotlin.cli.js.K2JsSetupKt.K2JsSetup
+
+	0.74 don't regenerate whole output:
+		0.208 org.jetbrains.kotlin.js.inline.clean.ResolveTemporaryNamesKt.resolveTemporaryNames
+		0.190 org.jetbrains.kotlin.js.facade.TranslationResult$Success.getCode
+		0.141 org.jetbrains.kotlin.js.translate.general.Translation.mayBeGenerateTests
+		0.114 org.jetbrains.kotlin.js.inline.clean.RemoveDuplicateImportsKt.removeDuplicateImports
+		0.087 org.jetbrains.kotlin.js.inline.clean.RemoveUnusedImportsKt.removeUnusedImports
+
+interesting facts:
+	0.020 resolve bodies
+	0.019 check redeclarations
+
+
+5.683+
+0.417+0.238+0.236+0.043+0.020+0.023+
+0.067+0.039+
+0.208+0.190+0.141+0.114+0.087

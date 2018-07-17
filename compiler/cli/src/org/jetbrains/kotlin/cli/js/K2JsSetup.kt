@@ -381,6 +381,11 @@ fun setupK2JsPlatformSpecificArgumentsAndServices(
         configuration.put(JSConfigurationKeys.SETUP_CONSUMER, setupConsumer)
     }
 
+    val setupProvider = services[K2JsSetupProvider::class.java]
+    if (setupProvider != null) {
+        configuration.put(JSConfigurationKeys.SETUP_PROVIDER, setupProvider)
+    }
+
     val incrementalDataProvider = services[IncrementalDataProvider::class.java]
     if (incrementalDataProvider != null) {
         configuration.put(JSConfigurationKeys.INCREMENTAL_DATA_PROVIDER, incrementalDataProvider)

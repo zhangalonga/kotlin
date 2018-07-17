@@ -19,7 +19,7 @@ class JsProject(
     val deps = mutableListOf<JsProject>()
     val libs = mutableListOf<File>()
 
-    lateinit var setup: K2JsSetup.Valid
+    var setup: K2JsSetup? = null
 
     override fun toString() = "JsProject($name)"
 }
