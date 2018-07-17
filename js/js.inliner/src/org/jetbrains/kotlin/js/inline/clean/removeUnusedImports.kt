@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.js.inline.clean
 
 import org.jetbrains.kotlin.js.backend.ast.*
+import org.jetbrains.kotlin.js.backend.ast.metadata.alive
 import org.jetbrains.kotlin.js.backend.ast.metadata.imported
 
 fun removeUnusedImports(root: JsNode) {
@@ -25,7 +26,7 @@ fun removeUnusedImports(root: JsNode) {
     NodeRemover(JsVars::class.java) { statement ->
         if (statement.vars.size == 1) {
             val name = statement.vars[0].name
-            name.imported && name !in collector.usedImports
+            name.imported && name !in collector.usedImports && !name.alive
         }
         else {
             false

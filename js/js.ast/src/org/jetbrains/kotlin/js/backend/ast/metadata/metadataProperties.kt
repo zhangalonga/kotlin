@@ -119,6 +119,8 @@ var JsFunction.isInlineableCoroutineBody by MetadataProperty(default = false)
 
 var JsName.imported by MetadataProperty(default = false)
 
+var JsName.alive by MetadataProperty(default = false)
+
 var JsFunction.coroutineMetadata: CoroutineMetadata? by MetadataProperty(default = null)
 
 var JsExpression.range: Pair<RangeType, RangeKind>? by MetadataProperty(default = null)
