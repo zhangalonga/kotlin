@@ -32,6 +32,8 @@ import org.jetbrains.kotlin.descriptors.VariableDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingContextUtils.variableDescriptorForDeclaration
+import org.jetbrains.kotlin.util.ImmutableHashMap
+import org.jetbrains.kotlin.util.ImmutableMap
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 private typealias ImmutableSet<T> = javaslang.collection.Set<T>

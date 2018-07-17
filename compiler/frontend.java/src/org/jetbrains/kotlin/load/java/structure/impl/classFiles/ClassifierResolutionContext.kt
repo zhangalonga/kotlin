@@ -17,53 +17,51 @@
 package org.jetbrains.kotlin.load.java.structure.impl.classFiles
 
 import com.intellij.util.containers.ContainerUtil
-import gnu.trove.THashMap
 import org.jetbrains.kotlin.load.java.structure.JavaClass
 import org.jetbrains.kotlin.load.java.structure.JavaClassifier
 import org.jetbrains.kotlin.load.java.structure.JavaTypeParameter
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.util.ImmutableHashMap
+import org.jetbrains.kotlin.util.ImmutableMap
+import org.jetbrains.kotlin.util.getOrNull
 import org.jetbrains.org.objectweb.asm.Type
 
 typealias ClassIdToJavaClass = (ClassId) -> JavaClass?
 
 class ClassifierResolutionContext private constructor(
-        private val classesByQName: ClassIdToJavaClass,
-            // Note that this data is fully mutable and its correctness is based on the assumption
-            // that nobody starts resolving classifier until type parameters and inner classes are initialized.
-            // Currently it's implemented through laziness in the PlainJavaClassifierType.
-        private var typeParameters: MutableMap<String, JavaTypeParameter>?,
-        private var innerClasses: MutableMap<String, InnerClassInfo>?
+    private val classesByQName: ClassIdToJavaClass,
+    // Note that this data is fully mutable and its correctness is based on the assumption
+    // that nobody starts resolving classifier until type parameters and inner classes are initialized.
+    // Currently it's implemented through laziness in the PlainJavaClassifierType.
+    private var typeParameters: ImmutableMap<String, JavaTypeParameter>,
+    private var innerClasses: ImmutableMap<String, InnerClassInfo>
 ) {
-    constructor(classesByQName: ClassIdToJavaClass) : this(classesByQName, null, null)
+    constructor(classesByQName: ClassIdToJavaClass) : this(classesByQName, ImmutableHashMap.empty(), ImmutableHashMap.empty())
 
     internal data class Result(val classifier: JavaClassifier?, val qualifiedName: String)
 
     private class InnerClassInfo(val outerInternalName: String, val simpleName: String)
 
     internal fun addInnerClass(innerInternalName: String, outerInternalName: String, simpleName: String) {
-        if (innerClasses == null) {
-            innerClasses = THashMap()
-        }
-
-        innerClasses!!.put(innerInternalName, InnerClassInfo(outerInternalName, simpleName))
+        innerClasses = innerClasses.put(innerInternalName, InnerClassInfo(outerInternalName, simpleName))
     }
 
     internal fun addTypeParameters(newTypeParameters: Collection<JavaTypeParameter>) {
         if (newTypeParameters.isEmpty()) return
-        if (typeParameters == null) {
-            typeParameters = THashMap()
-        }
 
-        newTypeParameters.associateByTo(typeParameters!!) { it.name.identifier }
+        typeParameters =
+                newTypeParameters
+                    .fold(typeParameters) { acc, typeParameter ->
+                        acc.put(typeParameter.name.identifier, typeParameter)
+                    }
     }
 
     internal fun resolveClass(classId: ClassId) = Result(classesByQName(classId), classId.asSingleFqName().asString())
-    internal fun resolveTypeParameter(name: String) = Result(typeParameters?.get(name), name)
+    internal fun resolveTypeParameter(name: String) = Result(typeParameters.getOrNull(name), name)
 
-    internal fun copyForMember() =
-            ClassifierResolutionContext(classesByQName, typeParameters?.let(::THashMap), innerClasses?.let(::THashMap))
+    internal fun copyForMember() = ClassifierResolutionContext(classesByQName, typeParameters, innerClasses)
 
     // See com.intellij.psi.impl.compiled.StubBuildingVisitor.createMapping(byte[])
     internal fun mapInternalNameToClassId(internalName: String): ClassId {
@@ -79,7 +77,7 @@ class ClassifierResolutionContext private constructor(
         }
 
         if ('$' in internalName) {
-            val innerClassInfo = innerClasses?.get(internalName) ?: return mapInternalNameToClassIdNaively(internalName)
+            val innerClassInfo = innerClasses.getOrNull(internalName) ?: return mapInternalNameToClassIdNaively(internalName)
             if (Name.isValidIdentifier(innerClassInfo.simpleName)) {
                 val outerClassId = mapInternalNameToClassId(innerClassInfo.outerInternalName)
                 return outerClassId.createNestedClassId(Name.identifier(innerClassInfo.simpleName))

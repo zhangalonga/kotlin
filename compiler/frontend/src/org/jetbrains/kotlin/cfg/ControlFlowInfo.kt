@@ -18,9 +18,8 @@ package org.jetbrains.kotlin.cfg
 
 import javaslang.Tuple2
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
-
-typealias ImmutableMap<K, V> = javaslang.collection.Map<K, V>
-typealias ImmutableHashMap<K, V> = javaslang.collection.HashMap<K, V>
+import org.jetbrains.kotlin.util.ImmutableHashMap
+import org.jetbrains.kotlin.util.ImmutableMap
 
 abstract class ControlFlowInfo<S : ControlFlowInfo<S, D>, D : Any>
 internal constructor(
