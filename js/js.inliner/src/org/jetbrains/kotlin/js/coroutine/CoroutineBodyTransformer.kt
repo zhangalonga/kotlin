@@ -292,6 +292,8 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
             }
         }
 
+        tryStack.removeAt(tryStack.lastIndex)
+
         // Handle finally node
         if (finallyNode != null) {
             currentBlock = finallyBlock
@@ -299,8 +301,6 @@ class CoroutineBodyTransformer(private val context: CoroutineTransformationConte
             generateFinallyExit()
             hasFinallyBlocks = true
         }
-
-        tryStack.removeAt(tryStack.lastIndex)
 
         currentBlock = successor
     }
