@@ -1,17 +1,6 @@
 /*
- * Copyright 2010-2017 JetBrains s.r.o.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.cli.common.arguments
@@ -29,10 +18,6 @@ abstract class CommonCompilerArguments : CommonToolArguments() {
         private val serialVersionUID = 0L
 
         const val PLUGIN_OPTION_FORMAT = "plugin:<pluginId>:<optionName>=<value>"
-
-        const val WARN = "warn"
-        const val ERROR = "error"
-        const val ENABLE = "enable"
     }
 
     @get:Transient
@@ -102,13 +87,6 @@ abstract class CommonCompilerArguments : CommonToolArguments() {
         description = "Path to the kotlin-compiler.jar or directory where IntelliJ configuration files can be found"
     )
     var intellijPluginRoot: String? by FreezableVar(null)
-
-    @Argument(
-        value = "-Xcoroutines",
-        valueDescription = "{enable|warn|error}",
-        description = "Enable coroutines or report warnings or errors on declarations and use sites of 'suspend' modifier"
-    )
-    var coroutinesState: String? by FreezableVar(WARN)
 
     @Argument(
         value = "-Xnew-inference",
@@ -189,17 +167,6 @@ abstract class CommonCompilerArguments : CommonToolArguments() {
         HashMap<LanguageFeature, LanguageFeature.State>().apply {
             if (multiPlatform) {
                 put(LanguageFeature.MultiPlatformProjects, LanguageFeature.State.ENABLED)
-            }
-
-            when (coroutinesState) {
-                CommonCompilerArguments.ERROR -> put(LanguageFeature.Coroutines, LanguageFeature.State.ENABLED_WITH_ERROR)
-                CommonCompilerArguments.ENABLE -> put(LanguageFeature.Coroutines, LanguageFeature.State.ENABLED)
-                CommonCompilerArguments.WARN -> {
-                }
-                else -> {
-                    val message = "Invalid value of -Xcoroutines (should be: enable, warn or error): " + coroutinesState
-                    collector.report(CompilerMessageSeverity.ERROR, message, null)
-                }
             }
 
             if (newInference) {

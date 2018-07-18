@@ -4,8 +4,6 @@ where advanced options include:
   -Xfriend-modules-disabled  Disable internal declaration export
   -Xtyped-arrays             Translate primitive arrays to JS typed arrays
   -Xallow-kotlin-package     Allow compiling code in package 'kotlin' and allow not requiring kotlin.stdlib in module-info
-  -Xcoroutines={enable|warn|error}
-                             Enable coroutines or report warnings or errors on declarations and use sites of 'suspend' modifier
   -Xdump-perf=<path>         Dump detailed performance statistics to the specified file
   -Xeffect-system            Enable experimental language feature: effect system
   -Xexperimental=<fq.name>   Enable and propagate usages of experimental API for marker annotation with the given fully qualified name

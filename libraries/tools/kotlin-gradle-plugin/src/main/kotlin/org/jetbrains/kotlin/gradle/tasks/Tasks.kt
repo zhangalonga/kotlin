@@ -260,14 +260,6 @@ abstract class AbstractKotlinCompile<T : CommonCompilerArguments>() : AbstractKo
     internal abstract fun callCompiler(args: T, sourceRoots: SourceRoots, changedFiles: ChangedFiles)
 
     override fun setupCompilerArgs(args: T, defaultsOnly: Boolean) {
-        args.coroutinesState = when (coroutines) {
-            Coroutines.ENABLE -> CommonCompilerArguments.ENABLE
-            Coroutines.WARN -> CommonCompilerArguments.WARN
-            Coroutines.ERROR -> CommonCompilerArguments.ERROR
-        }
-
-        logger.kotlinDebug { "args.coroutinesState=${args.coroutinesState}" }
-
         if (project.logger.isDebugEnabled) {
             args.verbose = true
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
  * that can be found in the license/LICENSE.txt file.
  */
 
@@ -505,19 +505,6 @@ public class KotlinCompilerConfigurableTab implements SearchableConfigurable, Co
         commonCompilerArguments.setSuppressWarnings(!reportWarningsCheckBox.isSelected());
         KotlinFacetSettingsKt.setLanguageVersionView(commonCompilerArguments, getSelectedLanguageVersionView());
         KotlinFacetSettingsKt.setApiVersionView(commonCompilerArguments, getSelectedAPIVersionView());
-
-        switch ((LanguageFeature.State) coroutineSupportComboBox.getSelectedItem()) {
-            case ENABLED:
-                commonCompilerArguments.setCoroutinesState(CommonCompilerArguments.ENABLE);
-                break;
-            case ENABLED_WITH_WARNING:
-                commonCompilerArguments.setCoroutinesState(CommonCompilerArguments.WARN);
-                break;
-            case ENABLED_WITH_ERROR:
-            case DISABLED:
-                commonCompilerArguments.setCoroutinesState(CommonCompilerArguments.ERROR);
-                break;
-        }
 
         compilerSettings.setAdditionalArguments(additionalArgsOptionsField.getText());
         compilerSettings.setScriptTemplates(scriptTemplatesField.getText());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
  * that can be found in the license/LICENSE.txt file.
  */
 
@@ -47,13 +47,6 @@ sealed class ChangeCoroutineSupportFix(
                 if (!checkUpdateRuntime(project, LanguageFeature.Coroutines.sinceApiVersion)) return
             }
 
-            KotlinCommonCompilerArgumentsHolder.getInstance(project).update {
-                coroutinesState = when (coroutineSupport) {
-                    LanguageFeature.State.ENABLED -> CommonCompilerArguments.ENABLE
-                    LanguageFeature.State.ENABLED_WITH_WARNING -> CommonCompilerArguments.WARN
-                    LanguageFeature.State.ENABLED_WITH_ERROR, LanguageFeature.State.DISABLED -> CommonCompilerArguments.ERROR
-                }
-            }
             ProjectRootManagerEx.getInstanceEx(project).makeRootsChange({}, false, true)
         }
 

@@ -1,17 +1,6 @@
 /*
- * Copyright 2010-2016 JetBrains s.r.o.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.config
@@ -49,15 +38,7 @@ sealed class TargetPlatformKind<out Version : TargetPlatformVersion>(
 
 object CoroutineSupport {
     @JvmStatic
-    fun byCompilerArguments(arguments: CommonCompilerArguments?): LanguageFeature.State =
-            byCompilerArgumentsOrNull(arguments) ?: LanguageFeature.Coroutines.defaultState
-
-    fun byCompilerArgumentsOrNull(arguments: CommonCompilerArguments?): LanguageFeature.State? = when (arguments?.coroutinesState) {
-        CommonCompilerArguments.ENABLE -> LanguageFeature.State.ENABLED
-        CommonCompilerArguments.WARN -> LanguageFeature.State.ENABLED_WITH_WARNING
-        CommonCompilerArguments.ERROR -> LanguageFeature.State.ENABLED_WITH_ERROR
-        else -> null
-    }
+    fun byCompilerArguments(arguments: CommonCompilerArguments?): LanguageFeature.State = LanguageFeature.State.ENABLED
 
     fun byCompilerArgument(argument: String): LanguageFeature.State =
             LanguageFeature.State.values().find { getCompilerArgument(it).equals(argument, ignoreCase = true) }
@@ -178,19 +159,7 @@ class KotlinFacetSettings {
             }
         }
 
-    var coroutineSupport: LanguageFeature.State
-        get() {
-            val languageVersion = languageLevel ?: return LanguageFeature.Coroutines.defaultState
-            if (languageVersion < LanguageFeature.Coroutines.sinceVersion!!) return LanguageFeature.State.DISABLED
-            return CoroutineSupport.byCompilerArguments(compilerArguments)
-        }
-        set(value) {
-            compilerArguments!!.coroutinesState = when (value) {
-                LanguageFeature.State.ENABLED -> CommonCompilerArguments.ENABLE
-                LanguageFeature.State.ENABLED_WITH_WARNING -> CommonCompilerArguments.WARN
-                LanguageFeature.State.ENABLED_WITH_ERROR, LanguageFeature.State.DISABLED -> CommonCompilerArguments.ERROR
-            }
-        }
+    var coroutineSupport: LanguageFeature.State = LanguageFeature.State.ENABLED
 
     var implementedModuleNames: List<String> = emptyList()
 
