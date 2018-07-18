@@ -74,6 +74,9 @@ fun <T : IrElement> IrStatementsBuilder<T>.defineTemporaryVar(value: IrExpressio
 fun IrBuilderWithScope.irExprBody(value: IrExpression) =
     IrExpressionBodyImpl(startOffset, endOffset, value)
 
+fun IrBuilderWithScope.irWhen(type: IrType, branches: List<IrBranch>) =
+    IrWhenImpl(startOffset, endOffset, type, null, branches)
+
 fun IrBuilderWithScope.irReturn(value: IrExpression) =
     IrReturnImpl(
         startOffset, endOffset,
@@ -95,6 +98,9 @@ fun IrBuilderWithScope.irFalse() = irBoolean(false)
 fun IrBuilderWithScope.irReturnTrue() = irReturn(irTrue())
 fun IrBuilderWithScope.irReturnFalse() = irReturn(irFalse())
 fun IrBuilderWithScope.irReturnUnit() = irReturn(irUnit())
+
+fun IrBuilderWithScope.irBranch(condition: IrExpression, result: IrExpression) =
+    IrBranchImpl(startOffset, endOffset, condition, result)
 
 fun IrBuilderWithScope.irElseBranch(expression: IrExpression) =
     IrElseBranchImpl(startOffset, endOffset, irTrue(), expression)
@@ -154,13 +160,16 @@ fun IrBuilderWithScope.irEqualsNull(argument: IrExpression) =
         argument, irNull()
     )
 
+fun IrBuilderWithScope.irEquals(arg1: IrExpression, arg2: IrExpression) =
+    primitiveOp2(
+        startOffset, endOffset, context.irBuiltIns.eqeqSymbol, IrStatementOrigin.EXCLEQ,
+        arg1, arg2
+    )
+
 fun IrBuilderWithScope.irNotEquals(arg1: IrExpression, arg2: IrExpression) =
     primitiveOp1(
         startOffset, endOffset, context.irBuiltIns.booleanNotSymbol, IrStatementOrigin.EXCLEQ,
-        primitiveOp2(
-            startOffset, endOffset, context.irBuiltIns.eqeqSymbol, IrStatementOrigin.EXCLEQ,
-            arg1, arg2
-        )
+        irEquals(arg1, arg2)
     )
 
 fun IrBuilderWithScope.irGet(type: IrType, receiver: IrExpression, getterSymbol: IrFunctionSymbol): IrCall =

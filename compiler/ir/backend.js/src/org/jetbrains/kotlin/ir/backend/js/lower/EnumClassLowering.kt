@@ -86,13 +86,35 @@ class EnumClassTransformer(val context: JsIrBackendContext, private val irClass:
         // Create entry instance getters. These are used to lower `IrGetEnumValue`.
         val entryGetInstanceFuns = createGetEntryInstanceFuns(initEntryInstancesFun, entryInstances)
 
-        // TODO: Create values()
-        // TODO: Create valueOf()
+        // Create body for `values` and `valueOf` functions
+        lowerSyntheticFunctions()
 
         // Remove IrEnumEntry nodes from class declarations. Replace them with corresponding class declarations (if they have them).
         replaceIrEntriesWithCorrespondingClasses()
 
         return listOf(irClass) + entryInstances + listOf(entryInstancesInitializedVar, initEntryInstancesFun) + entryGetInstanceFuns
+    }
+
+    private fun createEnumValueOfBody(): IrBody {
+        val valueOfFun = findFunctionDescriptorForMemberWithSyntheticBodyKind(IrSyntheticBodyKind.ENUM_VALUEOF)
+        val nameParameter = valueOfFun.valueParameters[0]
+        val entryInstanceToFunction = context.enumEntryToGetInstanceFunction
+
+        return context.createIrBuilder(valueOfFun.symbol).run {
+            irBlockBody {
+                +irReturn(
+                    irWhen(
+                        irClass.defaultType,
+                        enumEntries.map {
+                            val getInstance = entryInstanceToFunction[it.symbol]!!
+                            irBranch(
+                                irEquals(irString(it.name.identifier), irGet(nameParameter)), irCall(getInstance)
+                            )
+                        } + irElseBranch(irCall(context.irBuiltIns.throwIseSymbol))
+                    )
+                )
+            }
+        }
     }
 
     private fun lowerEnumConstructorsSignature() {
@@ -144,6 +166,17 @@ class EnumClassTransformer(val context: JsIrBackendContext, private val irClass:
         irClass.declarations.transformFlat {
             listOfNotNull(if (it is IrEnumEntry) it.correspondingClass else it)
         }
+    }
+
+    private fun lowerSyntheticFunctions() {
+        irClass.transformChildrenVoid(object : IrElementTransformerVoid() {
+            override fun visitSyntheticBody(body: IrSyntheticBody): IrBody {
+                return when (body.kind) {
+                    IrSyntheticBodyKind.ENUM_VALUES -> builder.irBlockBody { } // TODO: Implement
+                    IrSyntheticBodyKind.ENUM_VALUEOF -> createEnumValueOfBody()
+                }
+            }
+        })
     }
 
     private fun createGetEntryInstanceFuns(
@@ -279,6 +312,14 @@ class EnumClassTransformer(val context: JsIrBackendContext, private val irClass:
         loweredConstructorDescriptor.returnType = constructorDescriptor.returnType
         return IrConstructorSymbolImpl(loweredConstructorDescriptor)
     }
+
+    private fun findFunctionDescriptorForMemberWithSyntheticBodyKind(kind: IrSyntheticBodyKind): IrFunction =
+        irClass.declarations.asSequence().filterIsInstance<IrFunction>()
+            .first {
+                it.body.let { body ->
+                    body is IrSyntheticBody && body.kind == kind
+                }
+            }
 
     private fun buildFunction(
         name: String,
