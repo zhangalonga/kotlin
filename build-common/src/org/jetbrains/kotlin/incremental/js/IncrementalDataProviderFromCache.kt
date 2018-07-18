@@ -12,6 +12,7 @@ class IncrementalDataProviderFromCache(private val cache: IncrementalJsCache) : 
     override val headerMetadata: ByteArray
         get() = cache.header
 
-    override val compiledPackageParts: Map<File, TranslationResultValue>
-        get() = cache.nonDirtyPackageParts()
+    override val compiledPackageParts: Map<File, TranslationResultValue> by lazy {
+        cache.nonDirtyPackageParts()
+    }
 }

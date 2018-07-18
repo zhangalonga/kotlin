@@ -101,7 +101,7 @@ abstract class TranslationResult protected constructor(val diagnostics: Diagnost
             val jsFile = SimpleOutputFile(sourceFiles, outputFile.name, prefix + code + postfix)
             val outputFiles = arrayListOf<OutputFile>(jsFile)
 
-            if (config.configuration.getBoolean(JSConfigurationKeys.META_INFO)) {
+            if (false && config.configuration.getBoolean(JSConfigurationKeys.META_INFO)) {
                 val metaFileName = KotlinJavascriptMetadataUtils.replaceSuffix(outputFile.name)
                 val moduleDescription = JsModuleDescriptor(
                     name = config.moduleId,

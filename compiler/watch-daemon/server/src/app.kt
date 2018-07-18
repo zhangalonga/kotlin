@@ -22,6 +22,8 @@ import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.incremental.*
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
+import org.jetbrains.kotlin.incremental.js.IncrementalDataProvider
+import org.jetbrains.kotlin.incremental.js.IncrementalDataProviderFromCache
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 import javax.swing.SwingUtilities
@@ -51,9 +53,21 @@ class WatchDaemon() {
         fileWatcher.start()
         fileWatcher.takeDirtyRoots()
 
+        val initIters = 100
+        var i = 0
         while (true) {
             fileWatcher.markDirty(File("/Users/jetbrains/circlet/app/app-web/src/main/kotlin/circlet/api/Routing.kt"))
             processDirty(fileWatcher.takeDirtyRoots())
+            i++
+            if (i > initIters) {
+                time("sleeping 5 secs...") {
+                    (1..5).forEach { sec ->
+                        print(" $sec, ")
+                        Thread.sleep(1000)
+                    }
+                }
+                println()
+            }
         }
 
 //        watch(fileWatcher)
@@ -151,6 +165,12 @@ class WatchDaemon() {
         val versions = commonCacheVersions(workingDir)
 
         val compilerRunner = object : IncrementalJsCompilerRunner(workingDir, versions, reporter) {
+            override fun createCacheManager(args: K2JSCompilerArguments): IncrementalJsCachesManager {
+                return project.cacheManager ?: super.createCacheManager(args).also {
+                    project.cacheManager = it
+                }
+            }
+
             override fun makeServices(
                 args: K2JSCompilerArguments,
                 lookupTracker: LookupTracker,
@@ -158,6 +178,16 @@ class WatchDaemon() {
                 caches: IncrementalJsCachesManager,
                 compilationMode: CompilationMode
             ): Services.Builder = super.makeServices(args, lookupTracker, expectActualTracker, caches, compilationMode).also {
+                val incrementalDataProvider =
+                    project.incrementalDataProvider ?: IncrementalDataProviderFromCache(caches.platformCache).also { new ->
+                        project.incrementalDataProvider = new
+                    }
+
+                it.register(
+                    IncrementalDataProvider::class.java,
+                    incrementalDataProvider
+                )
+
                 val setup = project.setup
                 if (setup != null) {
                     it.register(K2JsSetupProvider::class.java, object : K2JsSetupProvider {

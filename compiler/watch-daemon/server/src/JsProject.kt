@@ -7,6 +7,10 @@ package org.jetbrains.kotlin.daemon
 
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.js.K2JsSetup
+import org.jetbrains.kotlin.incremental.IncrementalCachesManager
+import org.jetbrains.kotlin.incremental.IncrementalJsCachesManager
+import org.jetbrains.kotlin.incremental.js.IncrementalDataProviderFromCache
+import org.jetbrains.kotlin.js.resolve.JsPlatform
 import java.io.File
 
 class JsProject(
@@ -20,6 +24,8 @@ class JsProject(
     val libs = mutableListOf<File>()
 
     var setup: K2JsSetup? = null
+    var incrementalDataProvider: IncrementalDataProviderFromCache? = null
+    var cacheManager: IncrementalJsCachesManager? = null
 
     override fun toString() = "JsProject($name)"
 }

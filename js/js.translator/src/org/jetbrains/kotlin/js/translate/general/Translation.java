@@ -324,10 +324,10 @@ public final class Translation {
             }
         }
 
-        JsProgramFragment testFragment = mayBeGenerateTests(config, bindingTrace, moduleDescriptor, sourceFilePathResolver);
-        fragments.add(testFragment);
-        newFragments.add(testFragment);
-        merger.addFragment(testFragment);
+        //JsProgramFragment testFragment = mayBeGenerateTests(config, bindingTrace, moduleDescriptor, sourceFilePathResolver);
+        //fragments.add(testFragment);
+        //newFragments.add(testFragment);
+        //merger.addFragment(testFragment);
         rootFunction.getParameters().add(new JsParameter(internalModuleName));
 
         if (mainCallParameters.shouldBeGenerated()) {
