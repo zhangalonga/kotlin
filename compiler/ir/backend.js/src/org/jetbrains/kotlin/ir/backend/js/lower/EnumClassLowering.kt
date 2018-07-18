@@ -225,11 +225,14 @@ class EnumClassTransformer(val context: JsIrBackendContext, private val irClass:
             var constructor = expression.symbol.owner
             val constructorWasTransformed = constructor.symbol in loweredEnumConstructors
 
+            // Enum entry class constructors are not transformed
             if (constructorWasTransformed)
                 constructor = loweredEnumConstructors[constructor.symbol]!!
 
             return buildConstructorCall(constructor).apply {
                 var valueArgIdx = 0
+
+                // Enum entry class constructors already delegate name and ordinal parameters in their body
                 if (constructorWasTransformed) {
                     putValueArgument(valueArgIdx++, entry.getNameExpression())
                     putValueArgument(valueArgIdx++, entry.getOrdinalExpression())
