@@ -1,0 +1,283 @@
+/*
+ * Copyright 2010-2018 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+buildscript {
+   apply from: "$rootDir/gradle/kotlinGradlePlugin.gradle"
+   apply plugin: 'project-report'
+
+   dependencies {
+       classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.0"
+   }
+}
+
+String protobufVersion = '2.6.1'
+apply plugin: "com.google.protobuf"
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: org.jetbrains.kotlin.NativeInteropPlugin
+
+// (gets applied to this project and all its subprojects)
+allprojects {
+    repositories {
+        maven { url kotlinCompilerRepo }
+    }
+}
+
+sourceSets {
+    compiler {
+        proto.srcDir 'compiler/ir/backend.native/src/'
+        java {
+            srcDir 'compiler/ir/backend.native/src/'
+            srcDir 'build/renamed/source/proto/compiler/java'
+        }
+        kotlin {
+            srcDir 'compiler/ir/backend.native/src/'
+        }
+        resources.srcDir 'compiler/ir/backend.native/resources/'
+    }
+    cli_bc {
+        java.srcDir 'cli.bc/src'
+        kotlin.srcDir 'cli.bc/src'
+    }
+    bc_frontend {
+        java.srcDir 'bc.frontend/src'
+        kotlin.srcDir 'bc.frontend/src'
+    }
+}
+
+compileCompilerKotlin {
+    dependsOn('renamePackage')
+    // The protobuf plugin specifies this dependency for java by itself,
+    // but not for Kotlin.
+    dependsOn('generateCompilerProto')
+}
+
+compileCompilerJava {
+    doFirst {
+        delete 'build/generated'
+    }
+    dependsOn('renamePackage')
+}
+
+task renamePackage(type: Copy) {
+    dependsOn('generateCompilerProto')
+    from 'build/generated/source/proto/compiler/java'
+    into 'build/renamed/source/proto/compiler/java'
+    filter {line -> line.replaceAll("com.google.protobuf", "org.jetbrains.kotlin.protobuf")}
+    outputs.dir('build/renamed')
+}
+
+kotlinNativeInterop {
+    llvm {
+        dependsOn ":llvmDebugInfoC:debugInfoStaticLibrary"
+        defFile 'llvm.def'
+        if (!project.parent.convention.plugins.platformInfo.isWindows())
+            compilerOpts "-fPIC"
+        compilerOpts "-I$llvmDir/include", "-I${project(':llvmDebugInfoC').projectDir}/src/main/include"
+        linkerOpts "-L$llvmDir/lib", "-L${project(':llvmDebugInfoC').buildDir}/libs/debugInfo/static"
+    }
+
+    hash { // TODO: copy-pasted from ':common:compileHash'
+        if (!project.parent.convention.plugins.platformInfo.isWindows()) {
+            compilerOpts '-fPIC'
+            linkerOpts '-fPIC'
+        }
+        linker 'clang++'
+        linkOutputs ":common:${hostName}Hash"
+
+        headers fileTree('../common/src/hash/headers') {
+          include '**/*.h'
+          include '**/*.hpp'
+        }
+
+        pkg 'org.jetbrains.kotlin.backend.konan.hash'
+    }
+}
+
+
+configurations {
+    kotlin_compiler_jar
+    kotlin_stdlib_jar
+    kotlin_reflect_jar
+    kotlin_script_runtime_jar
+    kotlin_common_stdlib_src
+
+    cli_bcRuntime {
+        extendsFrom compilerRuntime
+        extendsFrom kotlin_script_runtime_jar
+    }
+
+    cli_bc {
+        extendsFrom cli_bcRuntime
+    }
+}
+
+dependencies {
+    kotlin_compiler_jar "$kotlinCompilerModule@jar"
+    kotlin_stdlib_jar "$kotlinStdLibModule@jar"
+    kotlin_reflect_jar "$kotlinReflectModule@jar"
+    kotlin_script_runtime_jar "$kotlinScriptRuntimeModule@jar"
+    kotlin_common_stdlib_src kotlinCommonStdlibModule
+
+    compilerCompile "com.google.protobuf:protobuf-java:${protobufVersion}"
+
+    compilerCompile kotlinCompilerModule
+    compilerCompile kotlinNativeInterop['llvm'].configuration
+    compilerCompile kotlinNativeInterop['hash'].configuration
+    compilerCompile "org.jetbrains.kotlin:kotlin-native-shared:$konanVersion"
+
+    cli_bcCompile kotlinCompilerModule
+    cli_bcCompile "org.jetbrains.kotlin:kotlin-native-shared:$konanVersion"
+    cli_bcCompile sourceSets.compiler.output
+
+    bc_frontendCompile kotlinCompilerModule
+
+    cli_bc sourceSets.cli_bc.output
+}
+
+
+classes.dependsOn 'compilerClasses','cli_bcClasses','bc_frontendClasses'
+
+
+// These are just a couple of aliases
+task stdlib(dependsOn: "${hostName}Stdlib")
+task start(dependsOn: "${hostName}Start")
+
+def commonSrc = file('build/stdlib')
+
+task unzipStdlibSources(type: Copy) {
+    from (zipTree(configurations.kotlin_common_stdlib_src.singleFile)) {
+        include 'generated/**/*.kt'
+        include 'kotlin/**/*.kt'
+    }
+    destinationDir commonSrc
+}
+
+// These files are built before the 'dist' is complete,
+// so we provide custom values for
+// konan.home, --runtime, -Djava.library.path etc
+
+targetList.each { target ->
+    def konanJvmArgs = ["-ea", "-Xmx3G",
+    "-Dkonan.home=${rootProject.projectDir}",
+    "-Djava.library.path=${project.buildDir}/nativelibs/$hostName",
+    "-Dfile.encoding=UTF-8"]
+
+    def defaultArgs = ['-nopack', '-nostdlib', '-nodefaultlibs', '-ea' ]
+    if (target != "wasm32") defaultArgs += '-g'
+    def konanArgs = [*defaultArgs,
+                     '-target', target,
+                     '--runtime', project(':runtime').file("build/${target}/runtime.bc"),
+                     *project.globalBuildArgs]
+
+    task("${target}Stdlib", type: JavaExec) {
+        main = 'org.jetbrains.kotlin.cli.bc.K2NativeKt'
+        classpath = project.configurations.cli_bc
+        jvmArgs = konanJvmArgs
+        args = [*konanArgs,
+                '-output', project(':runtime').file("build/${target}Stdlib"),
+                '-produce', 'library', '-module_name', 'stdlib', '-XXLanguage:+AllowContractsForCustomFunctions',
+                '-Xmulti-platform', '-Xuse-experimental=kotlin.Experimental',
+                commonSrc.absolutePath,
+                project(':Interop:Runtime').file('src/main/kotlin'),
+                project(':Interop:Runtime').file('src/native/kotlin'),
+                project(':Interop:JsRuntime').file('src/main/kotlin'),
+                project(':runtime').file('src/main/kotlin')]
+        inputs.dir(project(':runtime').file('src/main/kotlin'))
+        inputs.dir(project(':Interop:Runtime').file('src/main/kotlin'))
+        inputs.dir(project(':Interop:Runtime').file('src/native/kotlin'))
+        inputs.dir(project(':Interop:JsRuntime').file('src/main/kotlin'))
+        inputs.dir(commonSrc)
+        outputs.dir(project(':runtime').file("build/${target}Stdlib"))
+
+        dependsOn 'unzipStdlibSources'
+        dependsOn ":runtime:${target}Runtime"
+    }
+
+    task("${target}Start", type: JavaExec) {
+        main = 'org.jetbrains.kotlin.cli.bc.K2NativeKt'
+        classpath = project.configurations.cli_bc
+        jvmArgs = konanJvmArgs
+        args = [*konanArgs, '-produce', 'bitcode',
+                '-output', project(':runtime').file("build/${target}Start"),
+                '-library', project(':runtime').file("build/${target}Stdlib"),
+                project(':runtime').file('src/launcher/kotlin')]
+
+        inputs.dir(project(':runtime').file('src/launcher/kotlin'))
+        outputs.file(project(':runtime').file("build/${target}Start.bc"))
+
+        dependsOn ":runtime:${target}Runtime", "${target}Stdlib"
+    }
+}
+
+task run {
+    doLast {
+    logger.quiet("Run the outer project 'demo' target to compile the test source." )
+    }
+}
+
+jar {
+    from sourceSets.cli_bc.output,
+         sourceSets.compiler.output,
+         sourceSets.hashInteropStubs.output,
+         sourceSets.llvmInteropStubs.output
+
+    dependsOn ':runtime:hostRuntime', 'external_jars'
+}
+
+def externalJars = ['compiler', 'stdlib', 'reflect', 'script_runtime']
+
+externalJars.each { arg ->
+    def jar = arg.replace('_', '-') // :(
+    task ("${arg}Copy", type:Copy) {
+        from configurations.getByName("kotlin_${arg}_jar") {
+            include "kotlin-${jar}*.jar"
+            rename "kotlin-${jar}(.*).jar", "kotlin-${jar}.jar"
+
+            into 'build/external_jars'
+        }
+    }
+}
+
+task external_jars(type: Copy) {
+    dependsOn externalJars.collect{"${it}Copy"}
+
+    from configurations.compilerCompile {
+
+        include "protobuf-java-${protobufVersion}.jar"
+
+        into 'build/external_jars'
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+}
+
+task debugCompiler(type: JavaExec) {
+    dependsOn ':dist'
+    main = 'org.jetbrains.kotlin.cli.bc.K2NativeKt'
+    classpath = project.fileTree("${distDir.canonicalPath}/konan/lib/") {
+        include '*.jar'
+    }
+    jvmArgs "-Dkonan.home=${distDir.canonicalPath}",
+            "-Djava.library.path=${distDir.canonicalPath}/konan/nativelib"
+    enableAssertions = true
+    args = findProperty("konan.debug.args").toString().tokenize() ?: []
+}
+

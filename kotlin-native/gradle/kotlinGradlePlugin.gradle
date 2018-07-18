@@ -1,0 +1,13 @@
+if (!hasProperty('buildKotlinVersion')) {
+    throw new GradleException('Please ensure the "buildKotlinVersion" property is defined before applying this script.')
+}
+
+project.buildscript.repositories {
+    maven {
+        url = 'https://cache-redirector.jetbrains.com/maven-central'
+    }
+}
+
+project.buildscript.dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$buildKotlinVersion"
+}

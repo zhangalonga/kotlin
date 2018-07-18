@@ -1,0 +1,7 @@
+apply plugin: 'konan'
+
+konan.targets = ['iphone', 'iphone_sim']
+
+konanArtifacts {
+    program('app')
+}

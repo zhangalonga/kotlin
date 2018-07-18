@@ -1,0 +1,2890 @@
+/*
+ * Copyright 2010-2017 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import groovy.json.JsonOutput
+import org.jetbrains.kotlin.*
+import org.jetbrains.kotlin.konan.target.KonanTarget
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://cache-redirector.jetbrains.com/maven-central'
+        }
+        maven {
+            url kotlinCompilerRepo
+        }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:$gradlePluginVersion"
+    }
+    ext.useCustomDist = project.hasProperty("konan.home")
+    if (!useCustomDist) {
+        ext.setProperty("konan.home", distDir.absolutePath)
+    }
+}
+
+apply plugin: NativeInteropPlugin
+apply plugin: 'konan'
+
+configurations {
+    cli_bc
+    update_tests
+}
+
+repositories {
+    ivy {
+        ivyPattern      'http://teamcity.jetbrains.com/guestAuth/repository/download/[module]/[revision]/teamcity-ivy.xml'
+        artifactPattern 'http://teamcity.jetbrains.com/guestAuth/repository/download/[module]/[revision]/[artifact](.[ext])'
+    }
+}
+
+dependencies {
+    cli_bc project(path: ':backend.native', configuration: 'cli_bc')
+    update_tests (group: 'org',  name: 'Kotlin_120_Compiler', version: testDataVersion) {
+        artifact {
+            name = 'internal/kotlin-test-data'
+            type = 'zip'
+        }
+    }
+}
+
+ext.testOutputRoot = rootProject.file("test.output").absolutePath
+ext.externalTestsDir = project.file("external")
+ext.externalStdlibTestsDir = project.file("stdlib_external")
+externalTestsDir.mkdirs()
+
+ext.platformManager = project.rootProject.platformManager
+ext.target = platformManager.targetManager(project.testTarget).target
+
+// Add executor to run tests depending on a target
+project.convention.plugins.executor = ExecutorServiceKt.create(project)
+
+allprojects {
+    // Root directories for test output (logs, compiled files, statistics etc). Only single path must be in each set.
+    sourceSets {
+        // backend.native/tests
+        testOutputLocal {
+            output.dir(rootProject.file("$testOutputRoot/local"))
+        }
+
+        // backend.native/tests/external
+        testOutputExternal {
+            output.dir(rootProject.file("$testOutputRoot/external"))
+        }
+
+        // backend.native/tests/stdlib_external
+        testOutputStdlib {
+            output.dir(rootProject.file("$testOutputRoot/stdlib"))
+        }
+
+        // backend.native/tests/framework
+        testOutputFramework {
+            output.dir(rootProject.file("$testOutputRoot/framework"))
+        }
+    }
+}
+
+konanArtifacts {
+    library('testLibrary') {
+        if (!useCustomDist) {
+            dependsOn ':dist'
+        }
+        srcDir 'testLibrary'
+    }
+}
+
+task installTestLibrary(type: KlibInstall) {
+    dependsOn compileKonanTestLibraryHost
+    klib = konanArtifacts.testLibrary.getArtifactByTarget('host')
+    repo = rootProject.file("${project.property("konan.home")}/klib/common")
+}
+
+// TODO: use lastSuccessful teamcity build.
+task update_external_tests() {
+    doLast {
+        // Unzip.
+        delete temporaryDir
+        copy {
+            configurations.update_tests.asFileTree.each {
+                from(zipTree(it)) {
+                    include 'compiler/**'
+                }
+            }
+            into(temporaryDir)
+        }
+
+        // Copy only used tests into the test directory.
+        externalTestsDir.mkdirs()
+        delete("${externalTestsDir.canonicalPath}/codegen")
+        delete("${externalTestsDir.canonicalPath}/compileKotlinAgainstKotlin")
+
+        copy {
+            from temporaryDir.absolutePath + "/compiler"
+            into(externalTestsDir)
+            include 'codegen/box/**'
+            include 'codegen/boxInline/**'
+            include 'compileKotlinAgainstKotlin/**'
+        }
+
+        //clean tmp dir.
+        delete temporaryDir
+    }
+}
+
+clean {
+    doLast {
+        delete(rootProject.file(testOutputRoot))
+    }
+}
+
+def tasksOf(Closure<Task> filter) {
+    String prefix = project.findProperty("prefix")
+    project.tasks.withType(KonanTest)
+            .matching { filter(it) && it.enabled && (prefix != null ? it.name.startsWith(prefix) : true) }
+}
+
+run {
+    def tasks = tasksOf { it instanceof KonanTest && it.inDevelopersRun }
+    dependsOn(tasks)
+
+    // Add framework tests
+    dependsOn(project.tasks.withType(FrameworkTest))
+}
+
+// Collect results in one json.
+task resultsTask() {
+    doLast {
+        Map<String, Map<String, RunExternalTestGroup.TestResult>> results = [:]
+        def statistics = new RunExternalTestGroup.Statistics()
+        tasks.withType(RunExternalTestGroup).matching { it.state.executed }.each {
+            results.put(it.name, it.results)
+            statistics.add(it.statistics)
+        }
+
+        def output = ["statistics": statistics, "tests": results]
+        def json = JsonOutput.toJson(output)
+        def reportFile = new File(sourceSets.testOutputExternal.output.getDirs().getSingleFile(), "results.json")
+        reportFile.write(JsonOutput.prettyPrint(json))
+        println("DONE.\n\n" +
+                "TOTAL: $statistics.total\n" +
+                "PASSED: $statistics.passed\n" +
+                "FAILED: $statistics.failed\n" +
+                "ERROR: $statistics.error\n" +
+                "SKIPPED: $statistics.skipped")
+    }
+}
+
+def createTestTasks(File testRoot, Class<Task> taskType, Closure taskConfiguration) {
+    testRoot.eachDirRecurse {
+        // Skip build directory and directories without *.kt files.
+        if (it.name == "build" || it.listFiles().count { it.name.endsWith(".kt") && it.isFile() } == 0) {
+            return
+        }
+
+        def taskDirectory = project.relativePath(it)
+        def taskName = taskDirectory.replaceAll("[-/\\\\]", '_')
+
+        def task = project.task(taskName, type: taskType) {
+            groupDirectory = taskDirectory
+            finalizedBy resultsTask
+        }
+        taskConfiguration(task)
+    }
+}
+
+task run_external () {
+    // Create tasks for external tests.
+    createTestTasks(externalTestsDir, RunExternalTestGroup) { }
+
+    // Set up dependencies.
+    dependsOn(clean)
+    dependsOn(tasksOf { it instanceof RunExternalTestGroup || it instanceof RunStdlibTest })
+}
+
+task daily() {
+    dependsOn(run_external)
+}
+
+
+task slackReport(type:Reporter) {
+    reportHome = rootProject.file("test.output").absoluteFile
+}
+
+task sum (type:RunKonanTest) {
+    source = "codegen/function/sum.kt"
+}
+
+task method_call(type: RunKonanTest) {
+    source = "codegen/object/method_call.kt"
+}
+
+task fields(type: RunKonanTest) {
+    source = "codegen/object/fields.kt"
+}
+
+
+task fields1(type: RunKonanTest) {
+    source = "codegen/object/fields1.kt"
+}
+
+task fields2(type: RunKonanTest) {
+    goldValue =
+            "Set global = 1\n" +
+            "Set member = 42\n" +
+            "Get member = 42\n" +
+            "Set global = 42\n" +
+            "Get global = 42\n" +
+            "Set member = 42\n"
+
+    source = "codegen/object/fields2.kt"
+}
+
+// This test checks object layout can't be done in
+// RunKonanTest paradigm
+//task constructor(type: UnitKonanTest) {
+//    source = "codegen/object/constructor.kt"
+//}
+
+task objectInitialization(type: RunKonanTest) {
+    source = "codegen/object/initialization.kt"
+}
+
+task objectInitialization1(type: RunKonanTest) {
+    goldValue = "init\nfield\nconstructor1\ninit\nfield\nconstructor1\nconstructor2\n"
+    source = "codegen/object/initialization1.kt"
+}
+
+task object_globalInitializer(type: RunStandaloneKonanTest) {
+    source = "codegen/object/globalInitializer.kt"
+}
+
+task check_type(type: RunKonanTest) {
+    goldValue = "true\nfalse\ntrue\ntrue\ntrue\ntrue\n"
+    source = "codegen/basics/check_type.kt"
+}
+
+task safe_cast(type: RunKonanTest) {
+    goldValue = "safe_cast_positive: true\n" +
+            "safe_cast_negative: true\n"
+    source = "codegen/basics/safe_cast.kt"
+}
+
+task typealias1(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/basics/typealias1.kt"
+}
+
+task aritmetic(type: RunKonanTest) {
+    source = "codegen/function/arithmetic.kt"
+}
+
+task sum1(type: RunKonanTest) {
+    source = "codegen/function/sum_foo_bar.kt"
+
+}
+
+task sum2(type: RunKonanTest) {
+    source = "codegen/function/sum_imm.kt"
+}
+
+task sum_func(type: RunKonanTest) {
+    source = "codegen/function/sum_func.kt"
+}
+
+task sum_mixed(type: RunKonanTest) {
+    source = "codegen/function/sum_mixed.kt"
+}
+
+task sum_illy(type: RunKonanTest) {
+    source = "codegen/function/sum_silly.kt"
+}
+
+task function_defaults(type: RunKonanTest) {
+    source = "codegen/function/defaults.kt"
+}
+
+task function_defaults1(type: RunKonanTest) {
+    source = "codegen/function/defaults1.kt"
+}
+
+task function_defaults2(type: RunKonanTest) {
+    source = "codegen/function/defaults2.kt"
+}
+
+task function_defaults3(type: RunKonanTest) {
+    source = "codegen/function/defaults3.kt"
+}
+
+task function_defaults4(type: RunKonanTest) {
+    goldValue = "43\n"
+    source = "codegen/function/defaults4.kt"
+}
+
+task function_defaults5(type: RunKonanTest) {
+    goldValue = "5\n6\n"
+    source = "codegen/function/defaults5.kt"
+}
+
+task function_defaults6(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/function/defaults6.kt"
+}
+
+task function_defaults7(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/function/defaults7.kt"
+}
+
+task function_defaults8(type: RunKonanTest) {
+    goldValue = "2\n"
+    source = "codegen/function/defaults8.kt"
+}
+
+task function_defaults9(type: RunKonanTest) {
+    goldValue = "1\n"
+    source = "codegen/function/defaults9.kt"
+}
+
+task function_defaults10(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/function/defaults10.kt"
+}
+
+task function_defaults_from_fake_override(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/function/defaultsFromFakeOverride.kt"
+}
+
+task function_defaults_with_vararg1(type: RunKonanTest) {
+    goldValue = "Hello , Correct!\nHello World, Correct!\n , Correct!\n"
+    source = "codegen/function/defaultsWithVarArg1.kt"
+}
+
+task function_defaults_with_vararg2(type: RunKonanTest) {
+    goldValue = "1\n2\n42\n"
+    source = "codegen/function/defaultsWithVarArg2.kt"
+}
+
+task sum_3const(type: RunKonanTest) {
+    source = "codegen/function/sum_3const.kt"
+}
+
+task codegen_controlflow_for_loops(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops.kt"
+    goldValue = "01234\n0123\n43210\n\n024\n02\n420\n\n036\n03\n630\n\n024\n02\n420\n\n"
+}
+
+task codegen_controlflow_for_loops_types(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops_types.kt"
+    goldValue = "01234\n01234\n01234\n01234\n01234\n01234\n01234\n01234\n01234\n01234\n01234\n01234\n01234\n01234\n" +
+            "01234\n01234\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n0123\n" +
+            "0123\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n43210\n" +
+            "43210\n43210\nabcd\nabc\ndcba\n024\n024\n024\n024\n024\n024\n024\n024\n024\n024\n024\n024\n024\n024\n" +
+            "024\n024\n02\n02\n02\n02\n02\n02\n02\n02\n02\n02\n02\n02\n02\n02\n02\n02\n420\n420\n420\n420\n420\n420\n" +
+            "420\n420\n420\n420\n420\n420\n420\n420\n420\n420\nac\nac\ndb\n"
+}
+
+task codegen_controlflow_for_loops_overflow(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops_overflow.kt"
+    goldValue = "2147483646 2147483647 \n2147483646 \n-2147483647 -2147483648 \n1073741827 \n"
+}
+
+task codegen_controlflow_for_loops_errors(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Uses exceptions.
+    source = "codegen/controlflow/for_loops_errors.kt"
+    goldValue = "OK\n"
+}
+
+task codegen_controlflow_for_loops_empty_range(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops_empty_range.kt"
+    goldValue = "OK\n"
+}
+
+task codegen_controlflow_for_loops_nested(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops_nested.kt"
+    goldValue = "00 01 02 10 11 12 20 21 22 \n" +
+            "00 01 10 11 20 21 \n" +
+            "00 01 10 11 20 21 \n" +
+            "00 01 \n" +
+            "00 02 10 12 20 22 \n" +
+            "00 02 10 12 20 22 \n" +
+            "00 10 20 \n"
+}
+
+task codegen_controlflow_for_loops_coroutines(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops_coroutines.kt"
+    goldValue = "before: 0 after: 0\n" +
+            "before: 2 after: 2\n" +
+            "before: 4 after: 4\n" +
+            "before: 6 after: 6\n" +
+            "Got: 0 2 4 6\n"
+}
+
+task codegen_controlflow_for_loops_let_with_nullable(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops_let_with_nullable.kt"
+    goldValue = "012345\n012345\n024\n01234\n01234\n024\n543210\n543210\n531\n" +
+                "012345\n012345\n024\n01234\n01234\n024\n543210\n543210\n531\n" +
+                "abcdef\nabcdef\nace\nabcde\nabcde\nace\nfedcba\nfedcba\nfdb\n"
+}
+
+task codegen_controlflow_for_loops_call_order(type: RunKonanTest) {
+    source = "codegen/controlflow/for_loops_call_order.kt"
+    goldValue = "1234\n1234\n2134\n"
+}
+
+task local_variable(type: RunKonanTest) {
+    source = "codegen/basics/local_variable.kt"
+}
+
+task canonical_name(type: RunKonanTest) {
+    goldValue = "A:foo\nA:qux\n"
+    source = "codegen/basics/canonical_name.kt"
+}
+
+task cast_simple(type: RunKonanTest) {
+    source = "codegen/basics/cast_simple.kt"
+}
+
+task cast_null(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Ok\n"
+    source = "codegen/basics/cast_null.kt"
+}
+
+task unchecked_cast1(type: RunKonanTest) {
+    goldValue = "17\n17\n42\n42\n"
+    source = "codegen/basics/unchecked_cast1.kt"
+}
+
+task unchecked_cast2(type: RunKonanTest) {
+    disabled = true
+    goldValue = "Ok\n"
+    source = "codegen/basics/unchecked_cast2.kt"
+}
+
+task unchecked_cast3(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Ok\n"
+    source = "codegen/basics/unchecked_cast3.kt"
+}
+
+task null_check(type: RunKonanTest) {
+    source = "codegen/basics/null_check.kt"
+}
+
+task array_to_any(type: RunKonanTest) {
+    source = "codegen/basics/array_to_any.kt"
+}
+
+task runtime_basic_exit(type: RunStandaloneKonanTest) {
+    source = "runtime/basic/exit.kt"
+    expectedExitStatus = 42
+}
+
+task runtime_random(type: RunKonanTest) {
+    source = "runtime/basic/random.kt"
+}
+
+task runtime_random_bound(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Uses exceptions.
+    source = "runtime/basic/random_bound.kt"
+}
+
+task runtime_worker_random(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Uses workers.
+    source = "runtime/basic/worker_random.kt"
+}
+
+task hello0(type: RunKonanTest) {
+    goldValue = "Hello, world!\n"
+    source = "runtime/basic/hello0.kt"
+}
+
+task hello1(type: RunStandaloneKonanTest) {
+    goldValue = "Hello World"
+    testData = "Hello World\n"
+    source = "runtime/basic/hello1.kt"
+}
+
+task hello2(type: RunStandaloneKonanTest) {
+    goldValue = "you entered 'Hello World'"
+    testData = "Hello World\n"
+    source = "runtime/basic/hello2.kt"
+}
+
+task hello3(type: RunKonanTest) {
+    goldValue = "239\ntrue\n3.14159\nA\n"
+    source = "runtime/basic/hello3.kt"
+}
+
+task hello4(type: RunKonanTest) {
+    goldValue = "Hello\nПока\n"
+    source = "runtime/basic/hello4.kt"
+}
+
+task enumEquals(type: RunKonanTest) {
+    goldValue = "true\nfalse\nfalse\n"
+    source = "runtime/basic/enum_equals.kt"
+}
+
+task entry0(type: RunStandaloneKonanTest) {
+    goldValue = "Hello.\n"
+    source = "runtime/basic/entry0.kt"
+    flags = ["-entry", "runtime.basic.entry0.main"]
+}
+
+task entry1(type: RunStandaloneKonanTest) {
+    goldValue = "Hello.\n"
+    source = "runtime/basic/entry1.kt"
+    flags = ["-entry", "foo"]
+}
+
+task entry2(type: LinkKonanTest) {
+    goldValue = "Hello.\n"
+    source = "runtime/basic/entry2.kt"
+    lib = "runtime/basic/libentry2.kt"
+    flags = ["-entry", "foo"] 
+}
+
+task readline0(type: RunStandaloneKonanTest) {
+    goldValue = "41"
+    testData = "41\r\n"
+    source = "runtime/basic/readline0.kt"
+}
+
+task readline1(type: RunStandaloneKonanTest) {
+    goldValue = ""
+    testData = "\n"
+    source = "runtime/basic/readline1.kt"
+}
+
+task tostring0(type: RunKonanTest) {
+    goldValue = "127\n-1\n239\nA\nЁ\nト\n1122334455\n112233445566778899\n3.14159265358\n1.0E27\n1.0E-300\ntrue\nfalse\n"
+    source = "runtime/basic/tostring0.kt"
+}
+
+task tostring1(type: RunKonanTest) {
+    goldValue = "ello\n"
+    source = "runtime/basic/tostring1.kt"
+}
+
+task tostring2(type: RunKonanTest) {
+    goldValue = "H e l l o \nHello\n"
+    source = "runtime/basic/tostring2.kt"
+}
+
+task tostring3(type: RunKonanTest) {
+    goldValue = "-128\n127\n-32768\n32767\n" +
+            "-2147483648\n2147483647\n-9223372036854775808\n9223372036854775807\n" +
+            "1.4E-45\n3.4028235E38\n-Infinity\nInfinity\n" +
+            "NaN\n" +
+            "4.9E-324\n1.7976931348623157E308\n-Infinity\nInfinity\n" +
+            "NaN\n"
+    source = "runtime/basic/tostring3.kt"
+}
+
+task empty_substring(type: RunKonanTest) {
+    goldValue = "\n"
+    source = "runtime/basic/empty_substring.kt"
+}
+
+task worker0(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "Got Input processed\nOK\n"
+    source = "runtime/workers/worker0.kt"
+}
+
+task worker1(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "OK\n"
+    source = "runtime/workers/worker1.kt"
+}
+
+task worker2(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "OK\n"
+    source = "runtime/workers/worker2.kt"
+}
+
+task worker3(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "OK\n"
+    source = "runtime/workers/worker3.kt"
+}
+
+task worker4(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "Got 42\nOK\n"
+    source = "runtime/workers/worker4.kt"
+}
+
+task worker5(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "Got 3\nOK\n"
+    source = "runtime/workers/worker5.kt"
+}
+
+task worker6(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "Got 42\nOK\n"
+    source = "runtime/workers/worker6.kt"
+}
+
+task worker7(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "Input\nGot kotlin.Unit\nOK\n"
+    source = "runtime/workers/worker7.kt"
+}
+
+task worker8(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "SharedData(string=Hello, int=10, member=SharedDataMember(double=0.1))\nGot kotlin.Unit\nOK\n"
+    source = "runtime/workers/worker8.kt"
+}
+
+task worker9(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "zzz\n42\nOK\n"
+    source = "runtime/workers/worker9.kt"
+}
+
+task freeze0(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No workers on WASM.
+    goldValue = "frozen bit is true\n" +
+            "Worker: SharedData(string=Hello, int=10, member=SharedDataMember(double=0.1))\n" +
+            "Main: SharedData(string=Hello, int=10, member=SharedDataMember(double=0.1))\n" +
+            "OK\n"
+    source = "runtime/workers/freeze0.kt"
+}
+
+task freeze1(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No exceptions on WASM.
+    goldValue = "OK, cannot mutate frozen\n"
+    source = "runtime/workers/freeze1.kt"
+}
+
+task freeze_stress(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No exceptions on WASM.
+    goldValue = "OK\n"
+    source = "runtime/workers/freeze_stress.kt"
+}
+
+task freeze2(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No exceptions on WASM.
+    goldValue =
+            "Worker 1: Hello world\n" + "Worker2: 42\n" +
+            "Worker3: 239.0\n" + "Worker4: a\n" + "OK\n"
+    source = "runtime/workers/freeze2.kt"
+}
+
+task freeze3(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No exceptions on WASM.
+    goldValue = "OK\n"
+    source = "runtime/workers/freeze3.kt"
+}
+
+task freeze4(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No exceptions on WASM.
+    goldValue = "OK\n"
+    source = "runtime/workers/freeze4.kt"
+}
+
+task atomic0(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "35\n" + "20\n" + "OK\n"
+    source = "runtime/workers/atomic0.kt"
+}
+
+task lazy0(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "OK\n"
+    source = "runtime/workers/lazy0.kt"
+}
+
+task enumIdentity(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // Workers need pthreads.
+    goldValue = "true\n"
+    source = "runtime/workers/enum_identity.kt"
+}
+
+task superFunCall(type: RunKonanTest) {
+    goldValue = "<fun:C><fun:C1>\n<fun:C><fun:C3>\n"
+    source = "codegen/basics/superFunCall.kt"
+}
+
+task superGetterCall(type: RunKonanTest) {
+    goldValue = "<prop:C><prop:C1>\n<prop:C><prop:C3>\n"
+    source = "codegen/basics/superGetterCall.kt"
+}
+
+task superSetterCall(type: RunKonanTest) {
+    goldValue = "<prop:C1><prop:C>zzz\n<prop:C3><prop:C>zzz\n"
+    source = "codegen/basics/superSetterCall.kt"
+}
+
+task enum0(type: RunKonanTest) {
+    goldValue = "VALUE\n"
+    source = "codegen/enum/test0.kt"
+}
+
+task enum1(type: RunKonanTest) {
+    goldValue = "z12\n"
+    source = "codegen/enum/test1.kt"
+}
+
+task enum_valueOf(type: RunKonanTest) {
+    goldValue = "E1\nE2\nE3\nE1\nE2\nE3\n"
+    source = "codegen/enum/valueOf.kt"
+}
+
+task enum_values(type: RunKonanTest) {
+    goldValue = "E3\nE1\nE2\nE3\nE1\nE2\n"
+    source = "codegen/enum/values.kt"
+}
+
+task enum_vCallNoEntryClass(type: RunKonanTest) {
+    goldValue = "('z3', 3)\n"
+    source = "codegen/enum/vCallNoEntryClass.kt"
+}
+
+task enum_vCallWithEntryClass(type: RunKonanTest) {
+    goldValue = "z1z2\n"
+    source = "codegen/enum/vCallWithEntryClass.kt"
+}
+
+task enum_companionObject(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/enum/companionObject.kt"
+}
+
+task enum_interfaceCallNoEntryClass(type: RunKonanTest) {
+    goldValue = "('z3', 3)\n('z3', 3)\n"
+    source = "codegen/enum/interfaceCallNoEntryClass.kt"
+}
+
+task enum_interfaceCallWithEntryClass(type: RunKonanTest) {
+    goldValue = "z1z2\nz1z2\n"
+    source = "codegen/enum/interfaceCallWithEntryClass.kt"
+}
+
+task enum_linkTest(type: LinkKonanTest) {
+    goldValue = "42\n117\n-1\n"
+    source = "codegen/enum/linkTest_main.kt"
+    lib = "codegen/enum/linkTest_lib.kt"
+}
+
+task enum_varargParam(type: RunKonanTest) {
+    goldValue = "3\n"
+    source = "codegen/enum/varargParam.kt"
+}
+
+task enum_nested(type: RunKonanTest) {
+    goldValue = "A\nC\n"
+    source = "codegen/enum/nested.kt"
+}
+
+task enum_isFrozen(type: RunKonanTest) {
+    goldValue = "true\n"
+    source = "codegen/enum/isFrozen.kt"
+}
+
+task enum_loop(type: RunKonanTest) {
+    goldValue = "Z\nZ\n"
+    source = "codegen/enum/loop.kt"
+}
+
+task enum_reorderedArguments(type: RunKonanTest) {
+    source = "codegen/enum/reorderedArguments.kt"
+}
+
+task switchLowering(type: RunKonanTest) {
+    goldValue = "EnumA.A\nok\nok\nok\nok\nok\n"
+    source = "codegen/enum/switchLowering.kt"
+}
+
+task enum_lambdaInDefault(type: RunKonanTest) {
+    goldValue = "Q\n"
+    source = "codegen/enum/lambdaInDefault.kt"
+}
+
+task mangling(type: LinkKonanTest) {
+    goldValue = 
+        "Int direct [1, 2, 3, 4]\n" +
+        "out Number direct [9, 10, 11, 12]\n" +
+        "star direct [5, 6, 7, 8]\n" +
+        "Int param [1, 2, 3, 4]\n" +
+        "out Number param [9, 10, 11, 12]\n" +
+        "star param [5, 6, 7, 8]\n" +
+        "no constructors {}\n" +
+        "single constructor some string\n" +
+        "two constructors 17\n"
+    source = "mangling/mangling.kt"
+    lib = "mangling/manglinglib.kt"
+}
+
+task innerClass_simple(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/innerClass/simple.kt"
+}
+
+task innerClass_getOuterVal(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/innerClass/getOuterVal.kt"
+}
+
+task innerClass_generic(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/innerClass/generic.kt"
+}
+
+task innerClass_doubleInner(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/innerClass/doubleInner.kt"
+}
+
+task innerClass_qualifiedThis(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/innerClass/qualifiedThis.kt"
+}
+
+task innerClass_superOuter(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/innerClass/superOuter.kt"
+}
+
+task innerClass_noPrimaryConstructor(type: RunKonanTest) {
+    goldValue = "OK\nOK\n"
+    source = "codegen/innerClass/noPrimaryConstructor.kt"
+}
+
+task innerClass_secondaryConstructor(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/innerClass/secondaryConstructor.kt"
+}
+
+task localClass_localHierarchy(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/localClass/localHierarchy.kt"
+}
+
+task localClass_objectExpressionInProperty(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/localClass/objectExpressionInProperty.kt"
+}
+
+task localClass_objectExpressionInInitializer(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/localClass/objectExpressionInInitializer.kt"
+}
+
+task localClass_innerWithCapture(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/localClass/innerWithCapture.kt"
+}
+
+task localClass_innerTakesCapturedFromOuter(type: RunKonanTest) {
+    goldValue = "0\n1\n"
+    source = "codegen/localClass/innerTakesCapturedFromOuter.kt"
+}
+
+task localClass_virtualCallFromConstructor(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/localClass/virtualCallFromConstructor.kt"
+}
+
+task localClass_noPrimaryConstructor(type: RunKonanTest) {
+    goldValue = "OKOK\n"
+    source = "codegen/localClass/noPrimaryConstructor.kt"
+}
+
+task localClass_localFunctionCallFromLocalClass(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/localClass/localFunctionCallFromLocalClass.kt"
+}
+
+task localClass_localFunctionInLocalClass(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/localClass/localFunctionInLocalClass.kt"
+}
+
+task localClass_tryCatch(type: RunKonanTest) {
+    goldValue = ""
+    source = "codegen/localClass/tryCatch.kt"
+}
+
+task function_localFunction(type : RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/function/localFunction.kt"
+}
+
+task function_localFunction2(type : RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/function/localFunction2.kt"
+}
+
+task function_localFunction3(type : RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/function/localFunction3.kt"
+}
+
+task initializers_correctOrder1(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/initializers/correctOrder1.kt"
+}
+
+task initializers_correctOrder2(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/initializers/correctOrder2.kt"
+}
+
+task bridges_test0(type: RunKonanTest) {
+    goldValue = "42\n42\n"
+    source = "codegen/bridges/test0.kt"
+}
+
+task bridges_test1(type: RunKonanTest) {
+    goldValue = "1042\n"
+    source = "codegen/bridges/test1.kt"
+}
+
+task bridges_test2(type: RunKonanTest) {
+    goldValue = "42\n42\n"
+    source = "codegen/bridges/test2.kt"
+}
+
+task bridges_test3(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/bridges/test3.kt"
+}
+
+task bridges_test4(type: RunKonanTest) {
+    goldValue = "42\n42\n"
+    source = "codegen/bridges/test4.kt"
+}
+
+task bridges_test5(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/bridges/test5.kt"
+}
+
+task bridges_test6(type: RunKonanTest) {
+    goldValue = "42\n42\n42\n42\n42\n"
+    source = "codegen/bridges/test6.kt"
+}
+
+task bridges_test7(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/bridges/test7.kt"
+}
+
+task bridges_test8(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/bridges/test8.kt"
+}
+
+task bridges_test9(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/bridges/test9.kt"
+}
+
+task bridges_test10(type: RunKonanTest) {
+    goldValue = "42\n42\n"
+    source = "codegen/bridges/test10.kt"
+}
+
+task bridges_test11(type: RunKonanTest) {
+    goldValue = "42\n42\n42\n"
+    source = "codegen/bridges/test11.kt"
+}
+
+task bridges_test12(type: RunKonanTest) {
+    goldValue = "B: 42\nC: 42\n"
+    source = "codegen/bridges/test12.kt"
+}
+
+task bridges_test13(type: RunKonanTest) {
+    goldValue = "42\n42\n"
+    source = "codegen/bridges/test13.kt"
+}
+
+task bridges_test14(type: RunKonanTest) {
+    goldValue = "42\n56\n42\n56\n56\n42\n156\n142\n"
+    source = "codegen/bridges/test14.kt"
+}
+
+task bridges_test15(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/bridges/test15.kt"
+}
+
+task bridges_test16(type: RunKonanTest) {
+    goldValue = "OK\nOK\n"
+    source = "codegen/bridges/test16.kt"
+}
+
+task bridges_test17(type: RunKonanTest) {
+    goldValue = "42\n42\n42\n42\n"
+    source = "codegen/bridges/test17.kt"
+}
+
+task bridges_test18(type: RunKonanTest) {
+    goldValue = "kotlin.Unit\n"
+    source = "codegen/bridges/test18.kt"
+}
+
+task bridges_linkTest(type: LinkKonanTest) {
+    goldValue = "42\n42\n42\n"
+    source = "codegen/bridges/linkTest_main.kt"
+    lib = "codegen/bridges/linkTest_lib.kt"
+}
+
+task bridges_linkTest2(type: LinkKonanTest) {
+    goldValue = "true\n"
+    source = "codegen/bridges/linkTest2_main.kt"
+    lib = "codegen/bridges/linkTest2_lib.kt"
+}
+
+task bridges_special(type: RunKonanTest) {
+    goldValue = "Ok\n"
+    source = "codegen/bridges/special.kt"
+}
+
+task returnTypeSignature(type: RunKonanTest) {
+    source = "codegen/bridges/returnTypeSignature.kt"
+}
+
+task classDelegation_method(type: RunKonanTest) {
+    goldValue = "OKOK\n"
+    source = "codegen/classDelegation/method.kt"
+}
+
+task classDelegation_property(type: RunKonanTest) {
+    goldValue = "4242\n"
+    source = "codegen/classDelegation/property.kt"
+}
+
+task classDelegation_generic(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/classDelegation/generic.kt"
+}
+
+task classDelegation_withBridge(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/classDelegation/withBridge.kt"
+}
+
+task delegatedProperty_simpleVal(type: RunKonanTest) {
+    goldValue = "x\n42\n"
+    source = "codegen/delegatedProperty/simpleVal.kt"
+}
+
+task delegatedProperty_simpleVar(type: RunKonanTest) {
+    goldValue = "get x\n42\nset x\nget x\n117\n"
+    source = "codegen/delegatedProperty/simpleVar.kt"
+}
+
+task delegatedProperty_packageLevel(type: RunKonanTest) {
+    goldValue = "x\n42\n"
+    source = "codegen/delegatedProperty/packageLevel.kt"
+}
+
+task delegatedProperty_local(type: RunKonanTest) {
+    goldValue = "x\n42\n"
+    source = "codegen/delegatedProperty/local.kt"
+}
+
+task delegatedProperty_delegatedOverride(type: LinkKonanTest) {
+    goldValue = "156\nx\n117\n42\n"
+    source = "codegen/delegatedProperty/delegatedOverride_main.kt"
+    lib = "codegen/delegatedProperty/delegatedOverride_lib.kt"
+}
+
+task delegatedProperty_lazy(type: RunKonanTest) {
+    goldValue = "computed!\nHello\nHello\n"
+    source = "codegen/delegatedProperty/lazy.kt"
+}
+
+task delegatedProperty_observable(type: RunKonanTest) {
+    goldValue = "<no name> -> first\nfirst -> second\n"
+    source = "codegen/delegatedProperty/observable.kt"
+}
+
+task delegatedProperty_map(type: RunKonanTest) {
+    goldValue = "John Doe\n25\n"
+    source = "codegen/delegatedProperty/map.kt"
+}
+
+task propertyCallableReference_valClass(type: RunKonanTest) {
+    goldValue = "42\n117\n"
+    source = "codegen/propertyCallableReference/valClass.kt"
+}
+
+task propertyCallableReference_valModule(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/propertyCallableReference/valModule.kt"
+}
+
+task propertyCallableReference_varClass(type: RunKonanTest) {
+    goldValue = "117\n117\n42\n42\n"
+    source = "codegen/propertyCallableReference/varClass.kt"
+}
+
+task propertyCallableReference_varModule(type: RunKonanTest) {
+    goldValue = "117\n117\n"
+    source = "codegen/propertyCallableReference/varModule.kt"
+}
+
+task propertyCallableReference_valExtension(type: RunKonanTest) {
+    goldValue = "42\n117\n"
+    source = "codegen/propertyCallableReference/valExtension.kt"
+}
+
+task propertyCallableReference_varExtension(type: RunKonanTest) {
+    goldValue = "117\n117\n42\n42\n"
+    source = "codegen/propertyCallableReference/varExtension.kt"
+}
+
+task propertyCallableReference_linkTest(type: LinkKonanTest) {
+    goldValue = "42\n117\n"
+    source = "codegen/propertyCallableReference/linkTest_main.kt"
+    lib = "codegen/propertyCallableReference/linkTest_lib.kt"
+}
+
+task propertyCallableReference_dynamicReceiver(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/propertyCallableReference/dynamicReceiver.kt"
+}
+
+task lateinit_initialized(type: RunKonanTest) {
+    goldValue = "zzz\n"
+    source = "codegen/lateinit/initialized.kt"
+}
+
+task lateinit_notInitialized(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "OK\n"
+    source = "codegen/lateinit/notInitialized.kt"
+}
+
+task lateinit_inBaseClass(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/lateinit/inBaseClass.kt"
+}
+
+task lateinit_localInitialized(type: RunKonanTest) {
+    goldValue = "zzz\n"
+    source = "codegen/lateinit/localInitialized.kt"
+}
+
+task lateinit_localNotInitialized(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "OK\n"
+    source = "codegen/lateinit/localNotInitialized.kt"
+}
+
+task lateinit_localCapturedInitialized(type: RunKonanTest) {
+    goldValue = "zzz\n"
+    source = "codegen/lateinit/localCapturedInitialized.kt"
+}
+
+task lateinit_localCapturedNotInitialized(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "OK\n"
+    source = "codegen/lateinit/localCapturedNotInitialized.kt"
+}
+
+task lateinit_isInitialized(type: RunKonanTest) {
+    goldValue = "false\ntrue\n"
+    source = "codegen/lateinit/isInitialized.kt"
+}
+
+task lateinit_globalIsInitialized(type: RunKonanTest) {
+    goldValue = "false\ntrue\n"
+    source = "codegen/lateinit/globalIsInitialized.kt"
+}
+
+task lateinit_innerIsInitialized(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/lateinit/innerIsInitialized.kt"
+}
+
+task kclass0(type: RunKonanTest) {
+    source = "codegen/kclass/kclass0.kt"
+}
+
+task kclass1(type: RunKonanTest) {
+    goldValue = "OK :D\n"
+    source = "codegen/kclass/kclass1.kt"
+}
+
+task coroutines_simple(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/coroutines/simple.kt"
+}
+
+task coroutines_degenerate1(type: RunKonanTest) {
+    goldValue = "s1\n"
+    source = "codegen/coroutines/degenerate1.kt"
+}
+
+task coroutines_degenerate2(type: RunKonanTest) {
+    goldValue = "s2\ns1\n"
+    source = "codegen/coroutines/degenerate2.kt"
+}
+
+task coroutines_withReceiver(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/coroutines/withReceiver.kt"
+}
+
+task coroutines_correctOrder1(type: RunKonanTest) {
+    goldValue = "f1\ns1\nf2\n160\n"
+    source = "codegen/coroutines/correctOrder1.kt"
+}
+
+task coroutines_controlFlow_if1(type: RunKonanTest) {
+    goldValue = "f1\ns1\nf3\n84\n"
+    source = "codegen/coroutines/controlFlow_if1.kt"
+}
+
+task coroutines_controlFlow_if2(type: RunKonanTest) {
+    goldValue = "f1\ns1\nf2\n43\n"
+    source = "codegen/coroutines/controlFlow_if2.kt"
+}
+
+task coroutines_controlFlow_finally1(type: RunKonanTest) {
+    goldValue = "f1\ns1\n117\n"
+    source = "codegen/coroutines/controlFlow_finally1.kt"
+}
+
+task coroutines_controlFlow_finally2(type: RunKonanTest) {
+    goldValue = "f1\ns1\n117\n"
+    source = "codegen/coroutines/controlFlow_finally2.kt"
+}
+
+task coroutines_controlFlow_finally3(type: RunKonanTest) {
+    goldValue = "f1\ns1\n117\n"
+    source = "codegen/coroutines/controlFlow_finally3.kt"
+}
+
+task coroutines_controlFlow_finally4(type: RunKonanTest) {
+    goldValue = "s1\nfinally\n42\n"
+    source = "codegen/coroutines/controlFlow_finally4.kt"
+}
+
+task coroutines_controlFlow_finally5(type: RunKonanTest) {
+    goldValue = "s1\nf2\nfinally\n1\n"
+    source = "codegen/coroutines/controlFlow_finally5.kt"
+}
+
+task coroutines_controlFlow_finally6(type: RunKonanTest) {
+    goldValue = "s1\nfinally\nerror\n0\n"
+    source = "codegen/coroutines/controlFlow_finally6.kt"
+}
+
+task coroutines_controlFlow_finally7(type: RunKonanTest) {
+    goldValue = "s1\nf2\nfinally1\ns2\nfinally2\n42\n"
+    source = "codegen/coroutines/controlFlow_finally7.kt"
+}
+
+task coroutines_controlFlow_inline1(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/coroutines/controlFlow_inline1.kt"
+}
+
+task coroutines_controlFlow_inline2(type: RunKonanTest) {
+    goldValue = "s1\n42\n"
+    source = "codegen/coroutines/controlFlow_inline2.kt"
+}
+
+task coroutines_controlFlow_inline3(type: RunKonanTest) {
+    goldValue = "f1\ns1\n42\n"
+    source = "codegen/coroutines/controlFlow_inline3.kt"
+}
+
+task coroutines_controlFlow_tryCatch1(type: RunKonanTest) {
+    goldValue = "s1\n42\n"
+    source = "codegen/coroutines/controlFlow_tryCatch1.kt"
+}
+
+task coroutines_controlFlow_tryCatch2(type: RunKonanTest) {
+    goldValue = "s1\n42\n"
+    source = "codegen/coroutines/controlFlow_tryCatch2.kt"
+}
+
+task coroutines_controlFlow_tryCatch3(type: RunKonanTest) {
+    goldValue = "s2\nf2\n1\n"
+    source = "codegen/coroutines/controlFlow_tryCatch3.kt"
+}
+
+task coroutines_controlFlow_tryCatch4(type: RunKonanTest) {
+    goldValue = "s2\nf2\n1\n"
+    source = "codegen/coroutines/controlFlow_tryCatch4.kt"
+}
+
+task coroutines_controlFlow_tryCatch5(type: RunKonanTest) {
+    goldValue = "s2\ns1\nError\n42\n"
+    source = "codegen/coroutines/controlFlow_tryCatch5.kt"
+}
+
+task coroutines_controlFlow_while1(type: RunKonanTest) {
+    goldValue = "s3\ns3\ns3\ns3\n3\n"
+    source = "codegen/coroutines/controlFlow_while1.kt"
+}
+
+task coroutines_controlFlow_while2(type: RunKonanTest) {
+    goldValue = "s3\ns3\ns3\n3\n"
+    source = "codegen/coroutines/controlFlow_while2.kt"
+}
+
+task coroutines_returnsUnit1(type: RunKonanTest) {
+    goldValue = "117\ns1\n0\n"
+    source = "codegen/coroutines/returnsUnit1.kt"
+}
+
+task coroutines_coroutineContext1(type: RunKonanTest) {
+    goldValue = "EmptyCoroutineContext\n"
+    source = "codegen/coroutines/coroutineContext1.kt"
+}
+
+task coroutines_coroutineContext2(type: RunKonanTest) {
+    goldValue = "EmptyCoroutineContext\n"
+    source = "codegen/coroutines/coroutineContext2.kt"
+}
+
+task coroutines_anonymousObject(type: RunKonanTest) {
+    goldValue = "zzz\n"
+    source = "codegen/coroutines/anonymousObject.kt"
+}
+
+task AbstractMutableCollection(type: RunKonanTest) {
+    expectedExitStatus = 0
+    source = "runtime/collections/AbstractMutableCollection.kt"
+}
+
+task BitSet(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    expectedExitStatus = 0
+    source = "runtime/collections/BitSet.kt"
+}
+
+task array0(type: RunKonanTest) {
+    goldValue = "5\n6\n7\n8\n9\n10\n11\n12\n13\n"
+    source = "runtime/collections/array0.kt"
+}
+
+task array1(type: RunKonanTest) {
+    goldValue = "4 2\n1-1\n69\n38\n"
+    source = "runtime/collections/array1.kt"
+}
+
+task array2(type: RunKonanTest) {
+    goldValue = "0\n2\n4\n6\n8\n40\n"
+    source = "runtime/collections/array2.kt"
+}
+
+task array3(type: RunKonanTest) {
+    goldValue = "1 2 3 7 8 9 -128 -1 \n1 2 3 7 8 9 -128 -1 \n"
+    source = "runtime/collections/array3.kt"
+}
+
+task typed_array0(type: RunKonanTest) {
+    // MIPS target is big-endian.
+    disabled = (project.testTarget == 'linux_mips32')
+    goldValue = "OK\n"
+    source = "runtime/collections/typed_array0.kt"
+}
+
+task typed_array1(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32')  // No exceptions on WASM.
+    goldValue = "OK\n"
+    source = "runtime/collections/typed_array1.kt"
+}
+
+
+task sort0(type: RunKonanTest) {
+    goldValue = "[a, b, x]\n[-1, 0, 42, 239, 100500]\n"
+    source = "runtime/collections/sort0.kt"
+}
+
+task sort1(type: RunKonanTest) {
+    goldValue = "[a, b, x]\n[-1, 0, 42, 239, 100500]\n"
+    source = "runtime/collections/sort1.kt"
+}
+
+task if_else(type: RunKonanTest) {
+    source = "codegen/branching/if_else.kt"
+}
+
+task when2(type: RunKonanTest) {
+    source = "codegen/branching/when2.kt"
+}
+
+task when5(type: RunKonanTest) {
+    source = "codegen/branching/when5.kt"
+}
+
+task when6(type: RunKonanTest) {
+    source = "codegen/branching/when6.kt"
+}
+
+task when7(type: RunKonanTest) {
+    source = "codegen/branching/when7.kt"
+}
+
+task when8(type: RunKonanTest) {
+    source = "codegen/branching/when8.kt"
+    goldValue = "true\n"
+}
+
+task when9(type: RunKonanTest) {
+    goldValue = "Ok\n"
+    source = "codegen/branching/when9.kt"
+}
+
+task when_through(type: RunKonanTest) {
+    source = "codegen/branching/when_through.kt"
+}
+
+task advanced_when2(type: RunKonanTest) {
+    source = "codegen/branching/advanced_when2.kt"
+}
+
+task advanced_when5(type: RunKonanTest) {
+    source = "codegen/branching/advanced_when5.kt"
+}
+
+task when_with_try1(type: RunKonanTest) {
+    goldValue = "null\nnull\n42\n"
+    source = "codegen/branching/when_with_try1.kt"
+}
+
+task bool_yes(type: RunKonanTest) {
+    source = "codegen/function/boolean.kt"
+}
+
+task named(type: RunKonanTest) {
+    source = "codegen/function/named.kt"
+}
+
+
+task plus_eq(type: RunKonanTest) {
+    source = "codegen/function/plus_eq.kt"
+}
+
+task minus_eq(type: RunKonanTest) {
+    source = "codegen/function/minus_eq.kt"
+}
+
+task eqeq(type: RunKonanTest) {
+    source = "codegen/function/eqeq.kt"
+}
+
+task cycle(type: RunKonanTest) {
+    source = "codegen/cycles/cycle.kt"
+}
+
+task cycle_do(type: RunKonanTest) {
+    source = "codegen/cycles/cycle_do.kt"
+}
+
+task cycle_for(type: RunKonanTest) {
+    source = "codegen/cycles/cycle_for.kt"
+}
+
+task abstract_super(type: RunKonanTest) {
+    source = "datagen/rtti/abstract_super.kt"
+}
+
+task vtable1(type: RunKonanTest) {
+    source = "datagen/rtti/vtable1.kt"
+}
+
+task vtable_any(type: RunKonanTest) {
+    source = "datagen/rtti/vtable_any.kt"
+    goldValue = "[1]\n[2]\n[3]\n[4]\n"
+}
+
+task strdedup1(type: RunKonanTest) {
+    goldValue = "true\ntrue\n"
+    source = "datagen/literals/strdedup1.kt"
+}
+
+task strdedup2(type: RunKonanTest) {
+    // TODO: string deduplication across several components seems to require
+    // linking them as bitcode modules before translating to machine code.
+    disabled = true
+
+    goldValue = "true\ntrue\n"
+    source = "datagen/literals/strdedup2.kt"
+}
+
+task empty_string(type: RunKonanTest) {
+    goldValue = "\n"
+    source = "datagen/literals/empty_string.kt"
+}
+
+task intrinsic(type: RunKonanTest) {
+    source = "codegen/function/intrinsic.kt"
+}
+
+/*
+    Disabled until we extract the classes that should be
+    always present from stdlib into a separate binary.
+
+task link(type: LinkKonanTest) {
+    goldValue = "0\n"
+    source = "link/src/bar.kt"
+    lib = "link/lib"
+}(
+*/
+
+task link_omit_unused(type: LinkKonanTest) {
+    goldValue = "Hello\n"
+    source = "link/omit/hello.kt"
+    lib = "link/omit/lib.kt"
+}
+
+task link_default_libs(type: RunStandaloneKonanTest) {
+    if (!useCustomDist) {
+        dependsOn ':distPlatformLibs'
+    }
+    disabled = (project.testTarget == 'wasm32') // there will be no posix.klib for wasm
+    goldValue = "sizet = 0\n"
+    source = "link/default/default.kt"
+}
+
+task link_testLib_explicitly(type: RunStandaloneKonanTest) {
+    // there are no testLibrary for cross targets yet.
+    disabled = (project.testTarget != null && project.testTarget != project.hostName) 
+
+    dependsOn 'installTestLibrary'
+    goldValue = "This is a side effect of a test library linked into the binary.\nYou should not be seeing this.\n\nHello\n"
+    source = "link/omit/hello.kt"
+    // We force library inclusion, so need to see the warning banner.
+    flags = ['-l', 'testLibrary'] 
+
+}
+
+task no_purge_for_dependencies(type: LinkKonanTest) {
+    if (!useCustomDist) {
+        dependsOn ':distPlatformLibs'
+    }
+    disabled = (project.testTarget == 'wasm32') // there will be no posix.klib for wasm
+    goldValue = "linked library\nand symbols from posix available: 17; 1.0\n"
+    source = "link/purge1/prog.kt"
+    lib = "link/purge1/lib.kt"
+}
+
+task for0(type: RunKonanTest) {
+    goldValue = "2\n3\n4\n"
+    source = "runtime/basic/for0.kt"
+}
+
+task throw0(type: RunKonanTest) {
+    goldValue = "Done\n"
+    source = "runtime/basic/throw0.kt"
+}
+
+task statements0(type: RunKonanTest) {
+    goldValue = "239\n238\n30\n29\n"
+    source = "runtime/basic/statements0.kt"
+}
+
+task boxing0(type: RunKonanTest) {
+    goldValue = "17\n"
+    source = "codegen/boxing/boxing0.kt"
+}
+
+task boxing1(type: RunKonanTest) {
+    goldValue = "1\nfalse\nHello\n"
+    source = "codegen/boxing/boxing1.kt"
+}
+
+task boxing2(type: RunKonanTest) {
+    goldValue = "1\ntrue\nother\n"
+    source = "codegen/boxing/boxing2.kt"
+}
+
+task boxing3(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/boxing/boxing3.kt"
+}
+
+task boxing4(type: RunKonanTest) {
+    goldValue = "16\n"
+    source = "codegen/boxing/boxing4.kt"
+}
+
+task boxing5(type: RunKonanTest) {
+    goldValue = "16\n42\n"
+    source = "codegen/boxing/boxing5.kt"
+}
+
+task boxing6(type: RunKonanTest) {
+    goldValue = "42\n16\n"
+    source = "codegen/boxing/boxing6.kt"
+}
+
+task boxing7(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "1\n0\n"
+    source = "codegen/boxing/boxing7.kt"
+}
+
+task boxing8(type: RunKonanTest) {
+    goldValue = "1\nnull\ntrue\nHello\n"
+    source = "codegen/boxing/boxing8.kt"
+}
+
+task boxing9(type: RunKonanTest) {
+    goldValue = "1\nnull\ntrue\nHello\n2\nnull\ntrue\nHello\n3\n"
+    source = "codegen/boxing/boxing9.kt"
+}
+
+task boxing10(type: RunKonanTest) {
+    goldValue = "Ok\n"
+    source = "codegen/boxing/boxing10.kt"
+}
+
+task boxing11(type: RunKonanTest) {
+    goldValue = "17\n42\n"
+    source = "codegen/boxing/boxing11.kt"
+}
+
+task boxing12(type: RunKonanTest) {
+    goldValue = "18\n"
+    source = "codegen/boxing/boxing12.kt"
+}
+
+task boxing13(type: RunKonanTest) {
+    goldValue = "false\nfalse\ntrue\ntrue\nfalse\nfalse\n"
+    source = "codegen/boxing/boxing13.kt"
+}
+
+task boxing14(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/boxing/boxing14.kt"
+}
+
+task boxing15(type: RunKonanTest) {
+    goldValue = "17\n"
+    source = "codegen/boxing/boxing15.kt"
+}
+
+task boxCache0(type: RunKonanTest) {
+    goldValue = "2\n256\n256\n256\n256\n256\n"
+    source = "codegen/boxing/box_cache0.kt"
+}
+
+task interface0(type: RunKonanTest) {
+    goldValue = "PASSED\n"
+    source = "runtime/basic/interface0.kt"
+}
+
+task hash0(type: RunKonanTest) {
+    goldValue = "239\n0\n97\n1065353216\n1072693248\n1\n0\ntrue\ntrue\n"
+    source = "runtime/basic/hash0.kt"
+}
+
+task ieee754(type: RunKonanTest) {
+    goldValue = "Infinity 2147483647 -1 -1\n" +
+            "3.4028235E38\n" +
+            "NAN2SHORT:: 0\n" +
+            "MAX2SHORT:: -1\n" +
+            "2147483647 -1\n" +
+            "FLOAT:: Infinity   INT:: 2147483647\n" +
+            "FLOAT:: 1.7014117E38   INT:: 2147483647\n" +
+            "FLOAT:: 3.4028235E38   INT:: 2147483647\n" +
+            "FLOAT:: 3.14   INT:: 3\n" +
+            "FLOAT:: NaN   INT:: 0\n" +
+            "FLOAT:: -33333.125   INT:: -33333\n" +
+            "FLOAT:: 1.4E-45   INT:: 0\n" +
+            "FLOAT:: -Infinity   INT:: -2147483648\n" +
+            "FLOAT:: -1.2   INT:: -1\n" +
+            "FLOAT:: -12.6   INT:: -12\n" +
+            "FLOAT:: 2.3   INT:: 2\n" +
+            "OK\n"
+    source = "runtime/basic/ieee754.kt"
+}
+
+task array_list1(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "runtime/collections/array_list1.kt"
+}
+
+task array_list2(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // uses exceptions
+    goldValue = "OK\n"
+    source = "runtime/collections/array_list2.kt"
+}
+
+task hash_map0(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "runtime/collections/hash_map0.kt"
+}
+
+task hash_set0(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "runtime/collections/hash_set0.kt"
+}
+
+task listof0(type: RunKonanTest) {
+    goldValue = "abc\n[a, b, c, d]\n[n, s, a]\n"
+    source = "runtime/collections/listof0.kt"
+}
+
+task listof1(type: RunKonanTest) {
+    goldValue = "true\n[a, b, c]\n"
+    source = "datagen/literals/listof1.kt"
+}
+
+
+task moderately_large_array(type: RunKonanTest) {
+    goldValue = "0\n"
+    source = "runtime/collections/moderately_large_array.kt"
+}
+
+task moderately_large_array1(type: RunKonanTest) {
+    goldValue = "-45392\n"
+    source = "runtime/collections/moderately_large_array1.kt"
+}
+
+task string_builder0(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "OK\n"
+    source = "runtime/text/string_builder0.kt"
+}
+
+task string_builder1(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "HelloKotlin\n42\n0.1\ntrue\n\n"
+    source = "runtime/text/string_builder1.kt"
+}
+
+task string0(type: RunKonanTest) {
+    goldValue = "true\ntrue\nПРИВЕТ\nпривет\nПока\ntrue\n"
+    source = "runtime/text/string0.kt"
+}
+
+task parse0(type: RunKonanTest) {
+    goldValue = "false\n" +
+            "true\n" +
+            "-1\n" +
+            "10\n" +
+            "170\n" +
+            "30\n" +
+            "4294967295\n" +
+            "bad format\n" +
+            "0.5\n" +
+            "2.39\n"
+    source = "runtime/text/parse0.kt"
+}
+
+task to_string0(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "runtime/text/to_string0.kt"
+}
+
+task trim(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions
+    goldValue = "OK\n"
+    source = "runtime/text/trim.kt"
+}
+
+task chars0(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    source = "runtime/text/chars0.kt"
+    expectedExitStatus = 0
+}
+
+task indexof(type: RunKonanTest) {
+    source = "runtime/text/indexof.kt"
+}
+
+task utf8(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Hello\nПривет\n\uD800\uDC00\n\n\uFFFD\uFFFD\n\uFFFD12\n\uFFFD12\n12\uFFFD\n\uD83D\uDE25\n"
+    source = "runtime/text/utf8.kt"
+}
+
+task catch1(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Before\nCaught Throwable\nDone\n"
+    source = "runtime/exceptions/catch1.kt"
+}
+
+task catch2(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Before\nCaught Error\nDone\n"
+    source = "runtime/exceptions/catch2.kt"
+}
+
+task catch7(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Error happens\n"
+    source = "runtime/exceptions/catch7.kt"
+}
+
+task extend_exception(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "runtime/exceptions/extend0.kt"
+}
+
+task runtime_math_exceptions(type: RunKonanTest) {
+    disabled = (project.testTarget == 'wasm32')
+    source = "stdlib_external/numbers/MathExceptionTest.kt"
+}
+
+task runtime_math(type: RunKonanTest) {
+    source = "stdlib_external/numbers/MathTest.kt"
+}
+
+task runtime_math_harmony(type: RunKonanTest) {
+    source = "stdlib_external/numbers/HarmonyMathTests.kt"
+}
+
+task catch3(type: RunKonanTest) {
+    goldValue = "Before\nCaught Throwable\nDone\n"
+    source = "codegen/try/catch3.kt"
+}
+
+task catch4(type: RunKonanTest) {
+    goldValue = "Before\nCaught Error\nDone\n"
+    source = "codegen/try/catch4.kt"
+}
+
+task catch5(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Before\nCaught Error\nDone\n"
+    source = "codegen/try/catch5.kt"
+}
+
+task catch6(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Before\nCaught Error\nDone\n"
+    source = "codegen/try/catch6.kt"
+}
+
+task catch8(type: RunKonanTest) {
+    goldValue = "Error happens\n"
+    source = "codegen/try/catch8.kt"
+}
+
+task finally1(type: RunKonanTest) {
+    goldValue = "Try\nFinally\nDone\n"
+    source = "codegen/try/finally1.kt"
+}
+
+task finally2(type: RunKonanTest) {
+    goldValue = "Try\nCaught Error\nFinally\nDone\n"
+    source = "codegen/try/finally2.kt"
+}
+
+task finally3(type: RunKonanTest) {
+    goldValue = "Try\nFinally\nCaught Error\nDone\n"
+    source = "codegen/try/finally3.kt"
+}
+
+task finally4(type: RunKonanTest) {
+    goldValue = "Try\nCatch\nFinally\nCaught Exception\nDone\n"
+    source = "codegen/try/finally4.kt"
+}
+
+task finally5(type: RunKonanTest) {
+    goldValue = "Done\nFinally\n0\n"
+    source = "codegen/try/finally5.kt"
+}
+
+task finally6(type: RunKonanTest) {
+    goldValue = "Done\nFinally\n1\n"
+    source = "codegen/try/finally6.kt"
+}
+
+task finally7(type: RunKonanTest) {
+    goldValue = "Done\nFinally\n1\n"
+    source = "codegen/try/finally7.kt"
+}
+
+task finally8(type: RunKonanTest) {
+    goldValue = "Finally 1\nFinally 2\n42\n"
+    source = "codegen/try/finally8.kt"
+}
+
+task finally9(type: RunKonanTest) {
+    goldValue = "Finally 1\nFinally 2\nAfter\n"
+    source = "codegen/try/finally9.kt"
+}
+
+task finally10(type: RunKonanTest) {
+    goldValue = "Finally\nAfter\n"
+    source = "codegen/try/finally10.kt"
+}
+
+task finally11(type: RunKonanTest) {
+    goldValue = "Finally\nCatch 2\nDone\n"
+    source = "codegen/try/finally11.kt"
+}
+
+task finally_returnsDifferentTypes(type: RunKonanTest) {
+    goldValue = "zzz\n42\n"
+    source = "codegen/try/returnsDifferentTypes.kt"
+}
+
+task scope1(type: RunKonanTest) {
+    goldValue = "1\n"
+    source = "codegen/dataflow/scope1.kt"
+}
+
+task uninitialized_val(type: RunKonanTest) {
+    goldValue = "1\n2\n"
+    source = "codegen/dataflow/uninitialized_val.kt"
+}
+
+task try1(type: RunKonanTest) {
+    goldValue = "5\n"
+    source = "codegen/try/try1.kt"
+}
+
+task try2(type: RunKonanTest) {
+    goldValue = "6\n"
+    source = "codegen/try/try2.kt"
+}
+
+task try3(type: RunKonanTest) {
+    goldValue = "6\n"
+    source = "codegen/try/try3.kt"
+}
+
+task try4(type: RunKonanTest) {
+    goldValue = "Try\n5\n"
+    source = "codegen/try/try4.kt"
+}
+
+task unreachable1(type: RunKonanTest) {
+    goldValue = "1\n"
+    source = "codegen/controlflow/unreachable1.kt"
+}
+
+task break_continue(type: RunKonanTest) {
+    goldValue = "foo@l1\nfoo@l2\nfoo@l2\nfoo@l2\nbar@l1\nbar@l2\nbar@l2\nbar@l2\nqux@t1\nqux@l2\nqux@l2\nqux@l2\n"
+    source = "codegen/controlflow/break.kt"
+}
+
+task break1(type: RunKonanTest) {
+    goldValue = "Body\nDone\n"
+    source = "codegen/controlflow/break1.kt"
+}
+
+task range0(type: RunKonanTest) {
+    goldValue = "123\nabcd\n"
+    source = "runtime/collections/range0.kt"
+}
+
+task args0(type: RunStandaloneKonanTest) {
+    arguments = ["AAA", "BB", "C"]
+    goldValue = "AAA\nBB\nC\n"
+    source = "runtime/basic/args0.kt"
+}
+
+task spread_operator_0(type: RunKonanTest) {
+    goldValue = "[K, o, t, l, i, n,  , i, s,  , c, o, o, l,  , l, a, n, g, u, a, g, e]\n"
+    source = "codegen/basics/spread_operator_0.kt"
+}
+
+task main_exception(type: RunKonanTest) {
+    // TODO: cannot currently check the output because the exact stacktrace strings are unpredictable.
+    // goldValue = "Uncaught exception from Kotlin's main: Throwable\n"
+    expectedExitStatus = 1
+    source = "runtime/basic/main_exception.kt"
+}
+
+task runtime_basic_standard(type: RunKonanTest) {
+    source = "runtime/basic/standard.kt"
+}
+
+task runtime_basic_assert_failed(type: RunStandaloneKonanTest) {
+    expectedExitStatus = 1
+    source = "runtime/basic/assert_failed.kt"
+}
+
+task runtime_basic_assert_passed(type: RunStandaloneKonanTest) {
+    expectedExitStatus = 0
+    source = "runtime/basic/assert_passed.kt"
+}
+
+task runtime_basic_assert_disabled(type: RunStandaloneKonanTest) {
+    expectedExitStatus = 0
+    enableKonanAssertions = false
+    source = "runtime/basic/assert_failed.kt"
+}
+
+task initializers0(type: RunKonanTest) {
+    goldValue = "main\n" +
+            "B::constructor(1)\n" +
+            "A::companion\n" +
+            "A::companion::foo\n" +
+            "A::companion::foo\n" +
+            "B::constructor(0)\n" +
+            "B::constructor()\n" +
+            "A::Obj\n" +
+            "A::AObj::foo\n" +
+            "A::AObj::foo\n"
+    source = "runtime/basic/initializers0.kt"
+}
+
+
+task initializers1(type: RunKonanTest) {
+    goldValue = "Init Test\n" +
+                "Done\n"
+    disabled = true
+    source = "runtime/basic/initializers1.kt"
+}
+
+
+task concatenation(type: RunKonanTest) {
+    goldValue = "Hello world 1 2\nHello, a\nHello, b\n"
+    source = "codegen/basics/concatenation.kt"
+}
+
+task lambda1(type: RunKonanTest) {
+    goldValue = "lambda\n"
+    source = "codegen/lambda/lambda1.kt"
+}
+
+task lambda2(type: RunKonanTest) {
+    arguments = ["arg0"]
+    goldValue = "arg0\n"
+    source = "codegen/lambda/lambda2.kt"
+}
+
+task lambda3(type: RunKonanTest) {
+    goldValue = "lambda\n"
+    source = "codegen/lambda/lambda3.kt"
+}
+
+task lambda4(type: RunKonanTest) {
+    goldValue = "1\n2\n3\n3\n4\n"
+    source = "codegen/lambda/lambda4.kt"
+}
+
+task lambda5(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/lambda/lambda5.kt"
+}
+
+task lambda6(type: RunKonanTest) {
+    goldValue = "42\ncaptured\n"
+    source = "codegen/lambda/lambda6.kt"
+}
+
+task lambda7(type: RunKonanTest) {
+    goldValue = "43\n"
+    source = "codegen/lambda/lambda7.kt"
+}
+
+task lambda8(type: RunKonanTest) {
+    goldValue = "first\n0\nsecond\n0\nfirst\n1\nsecond\n1\n"
+    source = "codegen/lambda/lambda8.kt"
+}
+
+task lambda9(type: RunKonanTest) {
+    goldValue = "0\n0\n1\n0\n0\n1\n1\n1\n"
+    source = "codegen/lambda/lambda9.kt"
+}
+
+task lambda10(type: RunKonanTest) {
+    goldValue = "original\nchanged\n"
+    source = "codegen/lambda/lambda10.kt"
+}
+
+task lambda11(type: RunKonanTest) {
+    goldValue = "first\nsecond\n"
+    source = "codegen/lambda/lambda11.kt"
+}
+
+task lambda12(type: RunKonanTest) {
+    goldValue = "one\ntwo\n"
+    source = "codegen/lambda/lambda12.kt"
+}
+
+task lambda13(type: RunKonanTest) {
+    goldValue = "foo\n"
+    source = "codegen/lambda/lambda13.kt"
+}
+
+task lambda14(type: RunStandaloneKonanTest) {
+    source = "codegen/lambda/lambda14.kt"
+    flags = ['-tr']
+}
+
+task objectExpression1(type: RunKonanTest) {
+    goldValue = "aabb\n"
+    source = "codegen/objectExpression/expr1.kt"
+}
+
+task objectExpression2(type: RunKonanTest) {
+    goldValue = "a\n"
+    source = "codegen/objectExpression/expr2.kt"
+}
+
+task objectExpression3(type: RunKonanTest) {
+    goldValue = "\n1\n2\n"
+    source = "codegen/objectExpression/expr3.kt"
+}
+
+task initializers2(type: RunStandaloneKonanTest) {
+    goldValue = "init globalValue2\n" +
+                "init globalValue3\n" +
+                "1\n" +
+                "globalValue2\n" +
+                "globalValue3\n"
+
+    source = "runtime/basic/initializers2.kt"
+}
+
+task initializers3(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "runtime/basic/initializers3.kt"
+}
+
+task initializers4(type: RunKonanTest) {
+    goldValue = "1073741824\ntrue\n"
+    source = "runtime/basic/initializers4.kt"
+}
+
+task initializers5(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "runtime/basic/initializers5.kt"
+}
+
+task expression_as_statement(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // uses exceptions.
+    goldValue = "Ok\n"
+    source = "codegen/basics/expression_as_statement.kt"
+}
+
+task memory_var1(type: RunKonanTest) {
+    source = "runtime/memory/var1.kt"
+}
+
+task memory_var2(type: RunKonanTest) {
+    source = "runtime/memory/var2.kt"
+}
+
+task memory_var3(type: RunKonanTest) {
+    source = "runtime/memory/var3.kt"
+}
+
+task memory_var4(type: RunKonanTest) {
+    source = "runtime/memory/var4.kt"
+}
+
+task memory_throw_cleanup(type: RunKonanTest) {
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    goldValue = "Ok\n"
+    source = "runtime/memory/throw_cleanup.kt"
+}
+
+task memory_escape0(type: RunKonanTest) {
+    source = "runtime/memory/escape0.kt"
+}
+
+task memory_escape1(type: RunKonanTest) {
+    goldValue = "zzz\n"
+    source = "runtime/memory/escape1.kt"
+}
+
+task memory_cycles0(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "runtime/memory/cycles0.kt"
+}
+
+task memory_cycles1(type: RunKonanTest) {
+    source = "runtime/memory/cycles1.kt"
+}
+
+task memory_basic0(type: RunKonanTest) {
+    source = "runtime/memory/basic0.kt"
+}
+
+task memory_escape2(type: RunKonanTest) {
+    goldValue = "zzz\n"
+    source = "runtime/memory/escape2.kt"
+}
+
+task memory_weak0(type: RunKonanTest) {
+    goldValue = "Data(s=Hello)\nnull\nOK\n"
+    source = "runtime/memory/weak0.kt"
+}
+
+task memory_weak1(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "runtime/memory/weak1.kt"
+}
+
+task memory_only_gc(type: RunStandaloneKonanTest) {
+    source = "runtime/memory/only_gc.kt"
+}
+
+task mpp1(type: RunStandaloneKonanTest) {
+    source = "codegen/mpp/mpp1.kt"
+    flags = ['-tr', '-Xmulti-platform']
+}
+
+task mpp2(type: LinkKonanTest) {
+    goldValue = "C(arg=42)\ntrue\n1\nh\n"
+    source = "codegen/mpp/mpp2.kt"
+    lib = "codegen/mpp/libmpp2.kt"
+    flags = ['-Xmulti-platform']
+}
+
+task mpp_default_args(type: RunStandaloneKonanTest) {
+    source = "codegen/mpp/mpp_default_args.kt"
+    flags = ['-tr', '-Xmulti-platform']
+}
+
+task unit1(type: RunKonanTest) {
+    goldValue = "First\nkotlin.Unit\n"
+    source = "codegen/basics/unit1.kt"
+}
+
+task unit2(type: RunKonanTest) {
+    goldValue = "kotlin.Unit\n"
+    source = "codegen/basics/unit2.kt"
+}
+
+task unit3(type: RunKonanTest) {
+    goldValue = "kotlin.Unit\n"
+    source = "codegen/basics/unit3.kt"
+}
+
+task unit4(type: RunKonanTest) {
+    goldValue = "Done\n"
+    source = "codegen/basics/unit4.kt"
+}
+
+task inline0(type: RunKonanTest) {
+    goldValue = "84\n"
+    source = "codegen/inline/inline0.kt"
+}
+
+task vararg0(type: RunKonanTest) {
+    source = "lower/vararg.kt"
+}
+
+task vararg_of_literals(type: RunKonanTest) {
+    disabled = true
+    goldValue = "a\na\n"
+    source = "lower/vararg_of_literals.kt"
+}
+
+task tailrec(type: RunKonanTest) {
+    goldValue = "12\n100000000\n" +
+            "8\n" +
+            "1\n" +
+            "3 ...\n2 ...\n1 ...\nready!\n" +
+            "2\n-1\n" +
+            "true\nfalse\n" +
+            "default\n" +
+            "42\n"
+    source = "lower/tailrec.kt"
+}
+
+task inline1(type: RunKonanTest) {
+    goldValue = "Hello world\n"
+    source = "codegen/inline/inline1.kt"
+}
+
+task inline2(type: RunKonanTest) {
+    goldValue = "hello 1 8\n"
+    source = "codegen/inline/inline2.kt"
+}
+
+task inline3(type: RunKonanTest) {
+    goldValue = "5\n"
+    source = "codegen/inline/inline3.kt"
+}
+
+task inline4(type: RunKonanTest) {
+    goldValue = "3\n"
+    source = "codegen/inline/inline4.kt"
+}
+
+task inline5(type: RunKonanTest) {
+    goldValue = "33\n"
+    source = "codegen/inline/inline5.kt"
+}
+
+task inline6(type: RunKonanTest) {
+    goldValue = "hello1\nhello2\nhello3\nhello4\n"
+    source = "codegen/inline/inline6.kt"
+}
+
+task inline7(type: RunKonanTest) {
+    goldValue = "1\n2\n3\n"
+    source = "codegen/inline/inline7.kt"
+}
+
+task inline8(type: RunKonanTest) {
+    goldValue = "8\n"
+    source = "codegen/inline/inline8.kt"
+}
+
+task inline9(type: RunKonanTest) {
+    goldValue = "hello\n6\n"
+    source = "codegen/inline/inline9.kt"
+}
+
+task inline10(type: RunKonanTest) {
+    goldValue = "2\n"
+    source = "codegen/inline/inline10.kt"
+}
+
+task inline13(type: RunKonanTest) {
+    goldValue = "true\n"
+    source = "codegen/inline/inline13.kt"
+}
+
+task inline14(type: RunKonanTest) {
+    goldValue = "9\n"
+    source = "codegen/inline/inline14.kt"
+}
+
+task inline15(type: RunKonanTest) {
+    goldValue = "4\n"
+    source = "codegen/inline/inline15.kt"
+}
+
+task inline16(type: RunKonanTest) {
+    goldValue = "false\n"
+    source = "codegen/inline/inline16.kt"
+}
+
+task inline17(type: RunKonanTest) {
+    goldValue = "[1, 2]\n"
+    source = "codegen/inline/inline17.kt"
+}
+
+task inline18(type: RunKonanTest) {
+    goldValue = "true\n"
+    source = "codegen/inline/inline18.kt"
+}
+
+task inline19(type: RunKonanTest) {
+    goldValue = "6\n"
+    source = "codegen/inline/inline19.kt"
+}
+
+task inline20(type: RunKonanTest) {
+    goldValue = "def\n"
+    source = "codegen/inline/inline20.kt"
+}
+
+task inline21(type: RunKonanTest) {
+    goldValue = "bar\nfoo1\nfoo2\n33\n"
+    source = "codegen/inline/inline21.kt"
+}
+
+task inline22(type: RunKonanTest) {
+    goldValue = "14\n"
+    source = "codegen/inline/inline22.kt"
+}
+
+task inline23(type: RunKonanTest) {
+    goldValue = "33\n"
+    source = "codegen/inline/inline23.kt"
+}
+
+task inline24(type: RunKonanTest) {
+    disabled = true
+    goldValue = "bar\nfoo\n"
+    source = "codegen/inline/inline24.kt"
+}
+
+task inline25(type: RunKonanTest) {
+    goldValue = "Ok\nOk\n"
+    source = "codegen/inline/inline25.kt"
+}
+
+task inline26(type: RunKonanTest) {
+    goldValue = "5\n"
+    source = "codegen/inline/inline26.kt"
+}
+
+task inline_type_substitution_in_fake_override(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/inline/typeSubstitutionInFakeOverride.kt"
+}
+
+task inline_localFunctionInInitializerBlock(type: RunKonanTest) {
+    goldValue = "Ok\n"
+    source = "codegen/inline/localFunctionInInitializerBlock.kt"
+}
+
+task inline_lambdaInDefaultValue(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/inline/lambdaInDefaultValue.kt"
+}
+
+task inline_lambdaAsAny(type: RunKonanTest) {
+    goldValue = "Ok\n"
+    source = "codegen/inline/lambdaAsAny.kt"
+}
+
+task inline_getClass(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/inline/getClass.kt"
+}
+
+task inline_statementAsLastExprInBlock(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/inline/statementAsLastExprInBlock.kt"
+}
+
+task inline_returnLocalClassFromBlock(type: RunKonanTest) {
+    goldValue = "Zzz\n"
+    source = "codegen/inline/returnLocalClassFromBlock.kt"
+}
+
+task inline_changingCapturedLocal(type: RunKonanTest) {
+    goldValue = "OK\n"
+    source = "codegen/inline/changingCapturedLocal.kt"
+}
+
+task inline_defaultArgs(type: RunKonanTest) {
+    goldValue = "42\n"
+    source = "codegen/inline/defaultArgs.kt"
+}
+
+task deserialized_inline0(type: RunKonanTest) {
+    source = "serialization/deserialized_inline0.kt"
+}
+
+task deserialized_listof0(type: RunKonanTest) {
+    source = "serialization/deserialized_listof0.kt"
+}
+
+task deserialized_members(type: LinkKonanTest) {
+    goldValue=
+        "first level\n"+
+        "second level\n"+
+        "third levelxz\n"+
+        "inner first level\n"+
+        "inner second level\n"+
+        "inner third level\n"+
+        "types first level: 13\n"+
+        "types second level cha-cha-cha\n"+
+        "types third level 1.0\n"
+    lib = "serialization/serialize_members.kt"
+    source = "serialization/deserialize_members.kt"
+}
+
+task serialized_catch(type: LinkKonanTest) {
+    source = "serialization/use.kt"
+    lib = "serialization/catch.kt"
+    goldValue = "Gotcha1: XXX\nGotcha2: YYY\n"
+}
+
+task serialized_doWhile(type: LinkKonanTest) {
+    source = "serialization/use.kt"
+    lib = "serialization/do_while.kt"
+    goldValue = "999\n"
+}
+
+task serialized_vararg(type: LinkKonanTest) {
+    source = "serialization/use.kt"
+    lib = "serialization/vararg.kt"
+    goldValue = "17\n19\n23\n29\n31\nsize: 5\n"
+}
+
+task serialized_default_args(type: LinkKonanTest) {
+    source = "serialization/prop.kt"
+    lib = "serialization/default_args.kt"
+    goldValue = "SomeDataClass(first=17, second=666, third=23)\n"
+}
+
+task serialized_no_typemap(type: RunStandaloneKonanTest) {
+    source = "serialization/regression/no_type_map.kt"
+    goldValue = "OK\n"
+}
+
+task serialized_enum_ordinal(type: LinkKonanTest) {
+    source = "serialization/enum_ordinal/main.kt"
+    lib = "serialization/enum_ordinal/library.kt"
+    goldValue = "0\n1\n2\nb\n"
+}
+
+task serialized_char_constant(type: LinkKonanTest) {
+    source = "serialization/use_char_const.kt"
+    lib = "serialization/char_const.kt"
+    goldValue = "Ы\n"
+}
+
+task testing_annotations(type: RunStandaloneKonanTest) {
+    source = "testing/annotations.kt"
+    flags = ['-tr']
+    arguments = ['--ktest_logger=SIMPLE']
+    goldValue = 'Starting testing\nStarting iteration: 1\n' +
+            'Test suite ignored: kotlin.test.tests.IgnoredClass.IgnoredObject\n' +
+            'Test suite ignored: kotlin.test.tests.IgnoredClass\nTest suite ignored: kotlin.test.tests.IgnoredObject\n' +
+            'Starting test suite: kotlin.test.tests.A\nbeforeClass (A.companion)\n' +
+            'Starting test case: test1 (kotlin.test.tests.A)\nbefore (A)\ntest1 (A)\nafter (A)\n' +
+            'Passed: test1 (kotlin.test.tests.A)\nIgnore: ignoredTest (kotlin.test.tests.A)\n' +
+            'afterClass (A.companion)\nTest suite finished: kotlin.test.tests.A\n' +
+            'Starting test suite: kotlin.test.tests.A.O\nbeforeClass (A.object)\n' +
+            'Starting test case: test1 (kotlin.test.tests.A.O)\nbefore (A.object)\n' +
+            'test1 (A.object)\nafter (A.object)\nPassed: test1 (kotlin.test.tests.A.O)\n' +
+            'Ignore: ignoredTest (kotlin.test.tests.A.O)\nafterClass (A.object)\n' +
+            'Test suite finished: kotlin.test.tests.A.O\nStarting test suite: kotlin.test.tests.O\n' +
+            'beforeClass (object)\nStarting test case: test1 (kotlin.test.tests.O)\nbefore (object)\n' +
+            'test1 (object)\nafter (object)\nPassed: test1 (kotlin.test.tests.O)\n' +
+            'Ignore: ignoredTest (kotlin.test.tests.O)\nafterClass (object)\nTest suite finished: kotlin.test.tests.O\n' +
+            'Starting test suite: kotlin.test.tests.AnnotationsKt\nbeforeClass (file)\n' +
+            'Starting test case: test1 (kotlin.test.tests.AnnotationsKt)\nbefore (file)\n' +
+            'test1 (file)\nafter (file)\nPassed: test1 (kotlin.test.tests.AnnotationsKt)\n' +
+            'Ignore: ignoredTest (kotlin.test.tests.AnnotationsKt)\nafterClass (file)\n' +
+            'Test suite finished: kotlin.test.tests.AnnotationsKt\nIteration finished: 1\nTesting finished\n'
+}
+
+task testing_assertions(type: RunStandaloneKonanTest) {
+    source = "testing/assertions.kt"
+    flags = ['-tr']
+    expectedFail = (project.testTarget == 'wasm32') // Uses exceptions.
+    expectedExitStatus = 0
+}
+
+task testing_custom_main(type: RunStandaloneKonanTest) {
+    source = "testing/custom_main.kt"
+    flags = ['-tr', '-e', 'kotlin.test.tests.main']
+    arguments = ['--ktest_logger=SIMPLE', '--ktest_repeat=2']
+    goldValue = 'Custom main\n' +
+            'Starting testing\n' +
+            'Starting iteration: 1\n' +
+            'Starting test suite: kotlin.test.tests.Custom_mainKt\n' +
+            'Starting test case: test (kotlin.test.tests.Custom_mainKt)\n' +
+            'test\n' +
+            'Passed: test (kotlin.test.tests.Custom_mainKt)\n' +
+            'Test suite finished: kotlin.test.tests.Custom_mainKt\n' +
+            'Iteration finished: 1\n' +
+            'Starting iteration: 2\n' +
+            'Starting test suite: kotlin.test.tests.Custom_mainKt\n' +
+            'Starting test case: test (kotlin.test.tests.Custom_mainKt)\n' +
+            'test\n' +
+            'Passed: test (kotlin.test.tests.Custom_mainKt)\n' +
+            'Test suite finished: kotlin.test.tests.Custom_mainKt\n' +
+            'Iteration finished: 2\n' +
+            'Testing finished\n'
+}
+
+// Just check that the driver is able to produce runnable binaries.
+task driver0(type: RunDriverKonanTest) {
+    goldValue = "Hello, world!\n"
+    source = "runtime/basic/driver0.kt"
+}
+
+task driver_opt(type: RunDriverKonanTest) {
+    goldValue = "Hello, world!\n"
+    source = "runtime/basic/driver0.kt"
+    flags = ["-opt"]
+}
+
+// Enable when deserialization for default arguments is fixed.
+task inline_defaultArgs_linkTest(type: LinkKonanTest) {
+    goldValue = "122\n47\n"
+    source = "codegen/inline/defaultArgs_linkTest_main.kt"
+    lib = "codegen/inline/defaultArgs_linkTest_lib.kt"
+}
+
+kotlinNativeInterop {
+    target project.testTarget ?: 'host'
+    flavor 'native'
+
+    sysstat {
+        pkg 'sysstat'
+        headers 'sys/stat.h'
+    }
+
+    cstdlib {
+        pkg 'cstdlib'
+        headers 'stdlib.h'
+    }
+
+    cstdio {
+        defFile 'interop/basics/cstdio.def'
+    }
+
+    sockets {
+        defFile 'interop/basics/sockets.def'
+    }
+
+    bitfields {
+        defFile 'interop/basics/bitfields.def'
+    }
+
+    cglobals {
+        defFile 'interop/basics/cglobals.def'
+    }
+
+    cfunptr {
+        defFile 'interop/basics/cfunptr.def'
+    }
+
+    cmacros {
+        defFile 'interop/basics/cmacros.def'
+    }
+
+    if (isMac()) {
+        objcSmoke {
+            defFile 'interop/objc/objcSmoke.def'
+            headers "$projectDir/interop/objc/smoke.h"
+            linkerOpts "-L$buildDir",  "-lobjcsmoke"
+        }
+    }
+}
+
+task interop0(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') ||  // No interop for wasm yet.
+               (project.testTarget == 'linux_mips32')   ||  //  st_uid of '/' is not equal to 0 when using qemu
+               (project.testTarget == 'linux_mipsel32')
+    goldValue = "0\n0\n"
+    source = "interop/basics/0.kt"
+    interop = 'sysstat'
+}
+
+task interop1(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    goldValue = "257\n-1\n-2\n"
+    source = "interop/basics/1.kt"
+    interop = 'cstdlib'
+}
+
+task interop2(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    goldValue = "Hello\n"
+    source = "interop/basics/2.kt"
+    interop = 'cstdio'
+}
+
+task interop3(type: RunInteropKonanTest) {
+    // We disable this test on Raspberry Pi because
+    // qsort accepts size_t args. So the .kt file
+    // should be different depending on the bitness of the target.
+    // There are plans to provide a solution and turn this
+    // test back on.
+    disabled = (project.testTarget == 'raspberrypi') ||
+               (project.testTarget == 'linux_mips32') ||
+               (project.testTarget == 'linux_mipsel32') ||
+               (project.testTarget == 'wasm32') // No interop for wasm yet.
+    goldValue = "8 9 12 13 14 \n"
+    source = "interop/basics/3.kt"
+    interop = 'cstdlib'
+}
+
+task interop4(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    goldValue = "a b -1 2 3 9223372036854775807 0.1 0.2 1 0\n1 42\n"
+    source = "interop/basics/4.kt"
+    interop = 'cstdio'
+}
+
+task interop_bitfields(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    expectedFail = (project.testTarget == 'linux_mips32') // fails because of big-endiannes
+    source = "interop/basics/bf.kt"
+    interop = 'bitfields'
+}
+
+task interop_funptr(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    expectedFail = (project.testTarget == 'linux_mips32') // fails because of big-endiannes
+    goldValue = "42\n17\n1\n0\n"
+    source = "interop/basics/funptr.kt"
+    interop = 'cfunptr'
+}
+
+task interop_globals(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    source = "interop/basics/globals.kt"
+    interop = 'cglobals'
+}
+
+task interop_macros(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    source = "interop/basics/macros.kt"
+    interop = 'cmacros'
+}
+
+task interop_echo_server(type: RunInteropKonanTest) {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    if (!isMac()) {
+        // Not supported or not tested.
+        disabled = true
+    }
+    run = false
+    source = "interop/basics/echo_server.kt"
+    interop = 'sockets'
+}
+
+if (isMac()) {
+    task interop_opengl_teapot(type: RunStandaloneKonanTest) {
+        if (!useCustomDist) {
+            dependsOn ':distPlatformLibs'
+        }
+        disabled = (project.testTarget == 'wasm32') ||    // No interop for wasm yet.
+                (project.testTarget == 'ios_x64')         // No GLUT in iOS
+        run = false
+        source = "interop/basics/opengl_teapot.kt"
+    }
+
+    task interop_objc_smoke(type: RunInteropKonanTest) {
+        disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+        goldValue = "84\nFoo\nHello, World!\nKotlin says: Hello, everybody!\nHello from Kotlin\n2, 1\n" +
+                "true\ntrue\n" +
+                "Global string\nAnother global string\nnull\nglobal object\n" +
+                "5\n" +
+                "String macro\n" +
+                "CFString macro\n" +
+                "Deallocated\nDeallocated\n"
+
+        source = "interop/objc/smoke.kt"
+        interop = 'objcSmoke'
+
+        doFirst {
+            execKonanClang(project.target) {
+                args "$projectDir/interop/objc/smoke.m"
+                args "-lobjc", '-fobjc-arc'
+                args '-fPIC', '-shared', '-o', "$buildDir/libobjcsmoke.dylib"
+            }
+            if (project.target instanceof KonanTarget.IOS_X64) {
+                UtilsKt.codesign(project, "$buildDir/libobjcsmoke.dylib")
+            }
+        }
+    }
+}
+
+task jsinterop_math(type: RunStandaloneKonanTest) {
+    doFirst {
+        def jsinteropScript = isWindows() ? "jsinterop.bat" : "jsinterop"
+        def jsinterop = "$dist/bin/$jsinteropScript"
+        // TODO: We probably need a NativeInteropPlugin for jsinterop?
+        "$jsinterop -pkg kotlinx.interop.wasm.math -o $buildDir/jsmath -target wasm32".execute().waitFor()
+
+    }
+    dependsOn ':wasm32PlatformLibs'
+    disabled = (project.testTarget != 'wasm32')
+    goldValue = "e = 2.718281828459045, pi = 3.141592653589793, sin(pi) = 1.2246467991473532E-16, sin(pi/2) = 1.0, ln(1) = 0.0, ln(e) = 1.0\n"
+    source = "jsinterop/math.kt"
+    flags = ["-r", "$buildDir", "-l", "jsmath"]
+}
+
+task interop_libiconv(type: RunStandaloneKonanTest) {
+    disabled = (isWindows() || (project.testTarget != null))
+    source = "interop/libiconv.kt"
+    goldValue = "72 72\n101 101\n108 108\n108 108\n111 111\n33 33\n"
+}
+
+task produce_dynamic(type: DynamicKonanTest) {
+    disabled = (project.testTarget != null && project.testTarget != project.hostName)
+    source = "produce_dynamic/simple/hello.kt"
+    cSource = "$projectDir/produce_dynamic/simple/main.c"
+    goldValue = "Hello, dynamic!\n" +
+                "Base.foo\n" +
+                "Base.fooParam: a 1\n" +
+                "Child.fooParam: b 2\n" +
+                "Child.fooParam: c 3\n" +
+                "Impl1.I: d 4 Impl1\n" +
+                "Impl2.I: e 5 Impl2\n" +
+                "String is Kotlin/Native\n" +
+                "RO property is 42\n" +
+                "RW property is 239\n" +
+                "enum100 = 100\n" +
+                "object = 42\n" +
+                "topLevel = 777 3\n"
+}
+
+/**
+ * Get sourceSet's output path as a string
+ */
+static String outputPath(SourceSet set) {
+    return set.output.getDirs().getSingleFile().toString()
+}
+
+if (isMac() && project.testTarget != 'wasm32') {
+    def target = ext.platformManager.targetByName(project.testTarget ?: 'host').name
+
+    task testValuesFramework(type: FrameworkTest) {
+        frameworkName = 'Values'
+        konanArtifacts {
+            framework(frameworkName, targets: [ target ]) {
+                srcDir 'framework/values'
+                baseDir outputPath(sourceSets.testOutputFramework) + "/$frameworkName"
+
+                if (!useCustomDist) {
+                    dependsOn ":${target}CrossDistRuntime", ':commonDistRuntime', ':distCompiler'
+                }
+            }
+        }
+        swiftSources = ['framework/values/values.swift']
+    }
+
+    task testStdlibFramework(type: FrameworkTest) {
+        frameworkName = 'Stdlib'
+        konanArtifacts {
+            framework(frameworkName, targets: [ target ]) {
+                srcDir 'framework/stdlib'
+                baseDir outputPath(sourceSets.testOutputFramework) + "/$frameworkName"
+
+                if (!useCustomDist) {
+                    dependsOn ":${target}CrossDistRuntime", ':commonDistRuntime', ':distCompiler'
+                }
+            }
+        }
+        swiftSources = ['framework/stdlib/stdlib.swift']
+    }
+}
+
+task buildKonanStdlibTests(type: BuildKonanTest) {
+    outputSourceSetName = "testOutputStdlib"
+    compileList = [ "stdlib_external", "testUtils.kt" ]
+}
+
+task runStdlibTests(type: RunStdlibTest) {
+    outputSourceSetName = "testOutputStdlib"
+    // runs all tests and hence source name should be not null
+    source = "stdlib_external/testUtils.kt"
+    useFilter = false
+    runnerLogger = RunKonanTest.Logger.GTEST
+}
+
+task buildKonanTests(type: BuildKonanTest) {
+    compileList = [ "codegen",  "datagen", "lower", "runtime", "serialization"]
+
+    // These tests should not be built into the TestRunner's test executable
+    excludeList = []
+    project.tasks.withType(KonanTest)
+            .matching { ! (it instanceof RunKonanTest) }
+            .each {
+                // add library and source files
+                if (it instanceof LinkKonanTest) {
+                    excludeList += it.lib
+                }
+                if (it.source != null) {
+                    excludeList += it.source
+                }
+            }
+}
