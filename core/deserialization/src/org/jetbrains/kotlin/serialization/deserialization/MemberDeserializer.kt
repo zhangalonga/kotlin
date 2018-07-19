@@ -182,7 +182,7 @@ class MemberDeserializer(private val c: DeserializationContext) {
         function.isExternal = Flags.IS_EXTERNAL_FUNCTION.get(flags)
         function.isInline = Flags.IS_INLINE.get(flags)
         function.isTailrec = Flags.IS_TAILREC.get(flags)
-        function.isSuspend = Flags.IS_SUSPEND.get(flags) && loadAsSuspend(function.versionRequirement)
+        function.isSuspend = Flags.IS_SUSPEND.get(flags) && loadAsSuspend(function.versionRequirements)
         function.isExpect = Flags.IS_EXPECT_FUNCTION.get(flags)
 
         val mapValueForContract =
@@ -194,9 +194,11 @@ class MemberDeserializer(private val c: DeserializationContext) {
         return function
     }
 
-    private fun loadAsSuspend(versionRequirement: VersionRequirement?): Boolean =
+    private fun loadAsSuspend(versionRequirements: List<VersionRequirement>): Boolean =
         if (c.components.configuration.releaseCoroutines) {
-            versionRequirement?.version == VersionRequirement.Version(1, 3)
+            versionRequirements.any {
+                it.version == VersionRequirement.Version(1, 3)
+            }
         } else true
 
     private fun createContinuationParameterIfNeeded(
@@ -205,7 +207,7 @@ class MemberDeserializer(private val c: DeserializationContext) {
         valueParameters: List<ValueParameterDescriptor>,
         flags: Int
     ): ValueParameterDescriptor? =
-        if (!Flags.IS_SUSPEND.get(flags) || loadAsSuspend(functionDescriptor.versionRequirement)) null
+        if (!Flags.IS_SUSPEND.get(flags) || loadAsSuspend(functionDescriptor.versionRequirements)) null
         else ValueParameterDescriptorImpl(
             containingDeclaration = functionDescriptor,
             original = null,

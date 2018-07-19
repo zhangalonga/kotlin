@@ -303,7 +303,9 @@ class DeprecationResolver(
                 result.add(deprecation)
             }
 
-            getDeprecationByVersionRequirement(target)?.let(result::add)
+            for (deprecation in getDeprecationByVersionRequirement(target)) {
+                result.add(deprecation)
+            }
         }
 
         fun addUseSiteTargetedDeprecationIfPresent(annotatedDescriptor: DeclarationDescriptor, useSiteTarget: AnnotationUseSiteTarget?) {
@@ -343,30 +345,33 @@ class DeprecationResolver(
         return result.distinct()
     }
 
-    private fun getDeprecationByVersionRequirement(target: DeclarationDescriptor): DeprecatedByVersionRequirement? {
+    private fun getDeprecationByVersionRequirement(target: DeclarationDescriptor): List<DeprecatedByVersionRequirement> {
         fun createVersion(version: String): MavenComparableVersion? = try {
             MavenComparableVersion(version)
         } catch (e: Exception) {
             null
         }
 
-        val versionRequirement =
-            (target as? DeserializedMemberDescriptor)?.versionRequirement
-                    ?: (target as? DeserializedClassDescriptor)?.versionRequirement
-                    ?: return null
-        val requiredVersion = createVersion(versionRequirement.version.asString())
-        val currentVersion = when (versionRequirement.kind) {
-            ProtoBuf.VersionRequirement.VersionKind.LANGUAGE_VERSION ->
-                MavenComparableVersion(languageVersionSettings.languageVersion.versionString)
-            ProtoBuf.VersionRequirement.VersionKind.API_VERSION ->
-                languageVersionSettings.apiVersion.version
-            ProtoBuf.VersionRequirement.VersionKind.COMPILER_VERSION ->
-                KotlinCompilerVersion.getVersion()?.substringBefore('-')?.let(::createVersion)
-            else -> null
+        val versionRequirements =
+            (target as? DeserializedMemberDescriptor)?.versionRequirements
+                ?: (target as? DeserializedClassDescriptor)?.versionRequirements
+                ?: return emptyList()
+
+        return versionRequirements.mapNotNull { versionRequirement ->
+            val requiredVersion = createVersion(versionRequirement.version.asString())
+            val currentVersion = when (versionRequirement.kind) {
+                ProtoBuf.VersionRequirement.VersionKind.LANGUAGE_VERSION ->
+                    MavenComparableVersion(languageVersionSettings.languageVersion.versionString)
+                ProtoBuf.VersionRequirement.VersionKind.API_VERSION ->
+                    languageVersionSettings.apiVersion.version
+                ProtoBuf.VersionRequirement.VersionKind.COMPILER_VERSION ->
+                    KotlinCompilerVersion.getVersion()?.substringBefore('-')?.let(::createVersion)
+                else -> null
+            }
+            if (currentVersion != null && currentVersion < requiredVersion)
+                DeprecatedByVersionRequirement(versionRequirement, target)
+            else
+                null
         }
-        if (currentVersion != null && currentVersion < requiredVersion) {
-            return DeprecatedByVersionRequirement(versionRequirement, target)
-        }
-        return null
     }
 }
