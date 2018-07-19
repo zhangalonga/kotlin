@@ -409,9 +409,6 @@ internal abstract class AbstractKotlinPlugin(
 
                 // Another Kotlin source set following the other convention, named according to the compilation, not the Java source set:
                 val kotlinSourceSet = project.kotlinExtension.sourceSets.maybeCreate(kotlinCompilation.fullName)
-                kotlinCompilation.javaSourceSet.java.srcDirs(Callable {
-                    kotlinSourceSet.kotlin.srcDirs.filter { it.name == "kotlin" }.mapNotNull { it.parentFile?.resolve("java") }
-                })
                 kotlinCompilation.source(kotlinSourceSet)
             }
         }
