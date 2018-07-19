@@ -97,7 +97,6 @@ open class KotlinTargetConfigurator(
         jar.group = BasePlugin.BUILD_GROUP
         jar.from(mainCompilation.output)
 
-        val jarArtifact = ArchivePublishArtifact(jar)
         val apiElementsConfiguration = project.configurations.getByName(target.apiElementsConfigurationName)
 
         target.disambiguationClassifier?.let { jar.classifier = it }
@@ -129,14 +128,15 @@ open class KotlinTargetConfigurator(
         val testCompilation = target.compilations.getByName(KotlinCompilation.TEST_COMPILATION_NAME) as? KotlinCompilationToRunnableFiles
             ?: return // Otherwise, there is no runtime classpath
 
-        val test = target.project.tasks.create(lowerCamelCaseName(target.targetName, testTaskNameSuffix), Test::class.java).apply {
-            conventionMapping.map("testClassesDirs") { testCompilation.output.classesDirs }
-            conventionMapping.map("classpath") { testCompilation.runtimeDependencyFiles }
-            description = "Runs the unit tests."
-            group = JavaBasePlugin.VERIFICATION_GROUP
+        target.project.tasks.create(lowerCamelCaseName(target.targetName, testTaskNameSuffix), Test::class.java).apply {
+            project.afterEvaluate { // use afterEvaluate to override the JavaPlugin defaults for Test tasks
+                conventionMapping.map("testClassesDirs") { testCompilation.output.classesDirs }
+                conventionMapping.map("classpath") { testCompilation.runtimeDependencyFiles }
+                description = "Runs the unit tests."
+                group = JavaBasePlugin.VERIFICATION_GROUP
+                target.project.tasks.findByName(JavaBasePlugin.CHECK_TASK_NAME)?.dependsOn(this@apply)
+            }
         }
-
-        target.project.tasks.findByName(JavaBasePlugin.CHECK_TASK_NAME)?.dependsOn(test)
     }
 
     private fun configureResourceProcessing(
