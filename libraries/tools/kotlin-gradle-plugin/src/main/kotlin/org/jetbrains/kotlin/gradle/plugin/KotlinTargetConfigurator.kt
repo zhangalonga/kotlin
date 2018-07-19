@@ -10,14 +10,14 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 import org.gradle.api.attributes.Usage
 import org.gradle.api.attributes.Usage.USAGE_ATTRIBUTE
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.artifacts.ArtifactAttributes
-import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
-import org.gradle.api.internal.plugins.DefaultArtifactPublicationSet
 import org.gradle.api.internal.plugins.DslObject
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaBasePlugin
@@ -101,22 +101,27 @@ open class KotlinTargetConfigurator(
 
         target.disambiguationClassifier?.let { jar.classifier = it }
 
-        project.extensions.getByType(DefaultArtifactPublicationSet::class.java).addCandidate(jarArtifact)
+        // Workaround: adding the artifact during configuration seems to interfere with the Java plugin, which results into missing
+        // task dependency 'assemble -> jar' if the Java plugin is applied after this steps
+        project.afterEvaluate {
+            project.artifacts.add(Dependency.ARCHIVES_CONFIGURATION, jar) { jarArtifact ->
+                jarArtifact.builtBy(jar)
+                jarArtifact.type = ArtifactTypeDefinition.JAR_TYPE
 
-        addJar(apiElementsConfiguration, jarArtifact)
+                addJar(apiElementsConfiguration, jarArtifact)
 
-        if (mainCompilation is KotlinCompilationToRunnableFiles) {
-            val runtimeConfiguration = project.configurations.getByName(mainCompilation.deprecatedRuntimeConfigurationName)
-            val runtimeElementsConfiguration = project.configurations.getByName(target.runtimeElementsConfigurationName)
-            addJar(runtimeConfiguration, jarArtifact)
-            addJar(runtimeElementsConfiguration, jarArtifact) // TODO Check Gradle's special split into variants for classes & resources
+                if (mainCompilation is KotlinCompilationToRunnableFiles) {
+                    val runtimeConfiguration = project.configurations.getByName(mainCompilation.deprecatedRuntimeConfigurationName)
+                    val runtimeElementsConfiguration = project.configurations.getByName(target.runtimeElementsConfigurationName)
+                    addJar(runtimeConfiguration, jarArtifact)
+                    addJar(runtimeElementsConfiguration, jarArtifact)
+                    // TODO Check Gradle's special split into variants for classes & resources -- do we need that too?
+                }
+            }
         }
-
-        // TODO ensure this dependency through configurations instead:
-        project.tasks.getByName("assemble").dependsOn(jar)
     }
 
-    private fun addJar(configuration: Configuration, jarArtifact: ArchivePublishArtifact) {
+    private fun addJar(configuration: Configuration, jarArtifact: PublishArtifact) {
         val publications = configuration.outgoing
 
         // Configure an implicit variant
