@@ -197,7 +197,7 @@ class MemberDeserializer(private val c: DeserializationContext) {
     private fun loadAsSuspend(versionRequirements: List<VersionRequirement>): Boolean =
         if (c.components.configuration.releaseCoroutines) {
             versionRequirements.any {
-                it.version == VersionRequirement.Version(1, 3)
+                it.version == VersionRequirement.Version(1, 3) && it.kind == ProtoBuf.VersionRequirement.VersionKind.LANGUAGE_VERSION
             }
         } else true
 
