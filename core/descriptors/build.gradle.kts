@@ -12,7 +12,10 @@ dependencies {
 }
 
 sourceSets {
-    "main" { projectDefault() }
+    "main" {
+        projectDefault()
+        java.srcDirs("$rootDir/core/runtime.jvm/src")
+    }
     "test" {}
 }
 
