@@ -18,6 +18,8 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfTypesAndPredicate
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.CompileTimeConstantUtils
+import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
@@ -33,21 +35,21 @@ class AddThrowsAnnotationIntention : SelfTargetingIntention<KtThrowExpression>(
         if (element.platform != JvmPlatform) return false
         val containingDeclaration = element.getContainingDeclaration() ?: return false
 
-        val type = element.thrownExpression?.resolveToCall()?.resultingDescriptor?.returnType ?: return false
+        val bindingContext = element.analyze(BodyResolveMode.PARTIAL)
+        val type = element.thrownExpression?.getResolvedCall(bindingContext)?.resultingDescriptor?.returnType ?: return false
+
         if ((type.constructor.declarationDescriptor as? DeclarationDescriptorWithVisibility)?.visibility == Visibilities.LOCAL) return false
 
-        val context = element.analyze(BodyResolveMode.PARTIAL)
-
-        val annotationEntry = containingDeclaration.findThrowsAnnotation(context) ?: return true
+        val annotationEntry = containingDeclaration.findThrowsAnnotation(bindingContext) ?: return true
         val valueArguments = annotationEntry.valueArguments
         if (valueArguments.isEmpty()) return true
 
         val argumentExpression = valueArguments.firstOrNull()?.getArgumentExpression()
         if (argumentExpression is KtCallExpression
-            && argumentExpression.calleeExpression?.getCallableDescriptor()?.fqNameSafe != FqName("kotlin.arrayOf")
+            && argumentExpression.calleeExpression?.getCallableDescriptor()?.fqNameSafe != FqName(CompileTimeConstantUtils.ARRAY_OF_NAME)
         ) return false
 
-        return valueArguments.none { it.hasType(type, context) }
+        return valueArguments.none { it.hasType(type, bindingContext) }
     }
 
     override fun applyTo(element: KtThrowExpression, editor: Editor?) {
@@ -118,7 +120,7 @@ private fun ValueArgument.hasType(type: KotlinType, context: BindingContext): Bo
     val argumentExpression = getArgumentExpression()
     val expressions = when (argumentExpression) {
         is KtClassLiteralExpression -> listOf(argumentExpression)
-        is KtCollectionLiteralExpression -> argumentExpression.getInnerExpressions().filterIsInstance(KtClassLiteralExpression::class.java)
+        is KtCollectionLiteralExpression -> argumentExpression.getInnerExpressions().filterIsInstance<KtClassLiteralExpression>()
         is KtCallExpression -> argumentExpression.valueArguments.mapNotNull { it.getArgumentExpression() as? KtClassLiteralExpression }
         else -> emptyList()
     }

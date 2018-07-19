@@ -49,8 +49,10 @@ import static org.jetbrains.kotlin.resolve.DescriptorUtils.isEnumClass;
 
 public class CompileTimeConstantUtils {
 
+    public static String ARRAY_OF_NAME = "kotlin.arrayOf";
+
     private final static Set<String> ARRAY_CALL_NAMES = SetsKt.hashSetOf(
-            "kotlin.arrayOf",
+            ARRAY_OF_NAME,
             "kotlin.doubleArrayOf",
             "kotlin.floatArrayOf",
             "kotlin.longArrayOf",
