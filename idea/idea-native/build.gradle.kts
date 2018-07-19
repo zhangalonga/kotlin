@@ -22,8 +22,10 @@ repositories {
 val kotlinNativeVersion = "0.9-dev-2859"
 
 dependencies {
+//    compile("org.jetbrains.kotlin:kotlin-native-shared")
+    compile(project(":kotlin-native:backend.native"))
     compile(tc("Kotlin_KotlinNative_Master_KotlinNativeLinuxDist:$kotlinNativeVersion:shared.jar"))
-    compile(tc("Kotlin_KotlinNative_Master_KotlinNativeLinuxDist:$kotlinNativeVersion:backend.native.jar"))
+//    compile(tc("Kotlin_KotlinNative_Master_KotlinNativeLinuxDist:$kotlinNativeVersion:backend.native.jar"))
 
     compile(project(":idea"))
     compile(project(":idea:idea-core"))

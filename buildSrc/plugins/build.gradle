@@ -18,8 +18,8 @@ apply plugin: 'groovy'
 
 buildscript {
     ext.rootBuildDirectory = "$rootDir/.."
-    apply from: "$rootBuildDirectory/gradle/loadRootProperties.gradle"
-    apply from: "$rootBuildDirectory/gradle/kotlinGradlePlugin.gradle"
+    apply from: "$rootBuildDirectory/kotlin-native/gradle/loadRootProperties.gradle"
+    apply from: "$rootBuildDirectory/kotlin-native/gradle/kotlinGradlePlugin.gradle"
 }
 
 apply plugin: 'kotlin'

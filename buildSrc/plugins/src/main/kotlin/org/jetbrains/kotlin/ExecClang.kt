@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.konan.file.*
 
 internal class ExecClang(private val project: Project) {
 
-    private val platformManager = project.rootProject.findProperty("platformManager") as PlatformManager
+    private val platformManager = project.rootProject.project("kotlin-native").findProperty("platformManager") as PlatformManager
 
     private fun konanArgs(target: KonanTarget): List<String> {
         return platformManager.platform(target).clang.clangArgsForKonanSources.asList()

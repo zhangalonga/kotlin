@@ -29,35 +29,34 @@ buildscript {
 }
 import org.jetbrains.kotlin.konan.target.ClangArgs
 
-
-model {
-    components {
-        callbacks(NativeLibrarySpec) {
-            sources.c.source {
-                srcDir 'src/callbacks/c'
-                include '**/*.c'
-            }
-            binaries.all {
-                def host = rootProject.ext.hostName
-
-                def hostLibffiDir = rootProject.ext.get("${host}LibffiDir")
-
-                cCompiler.args hostPlatform.clang.hostCompilerArgsForJni
-                cCompiler.args "-I$hostLibffiDir/include"
-
-                linker.args "$hostLibffiDir/lib/libffi.a"
-            }
-        }
-   }
-
-   toolChains {
-     clang(Clang) {
-       eachPlatform {
-         cCompiler.withArguments(ClangArgs.&filterGradleNativeSoftwareFlags)
-       }
-     }
-   }
-}
+//model {
+//    components {
+//        callbacks(NativeLibrarySpec) {
+//            sources.c.source {
+//                srcDir 'src/callbacks/c'
+//                include '**/*.c'
+//            }
+//            binaries.all {
+//                def host = rootProject.project('kotlin-native').ext.hostName
+//
+//                def hostLibffiDir = rootProject.project('kotlin-native').ext.get("${host}LibffiDir")
+//
+//                cCompiler.args hostPlatform.clang.hostCompilerArgsForJni
+//                cCompiler.args "-I$hostLibffiDir/include"
+//
+//                linker.args "$hostLibffiDir/lib/libffi.a"
+//            }
+//        }
+//   }
+//
+//   toolChains {
+//     clang(Clang) {
+//       eachPlatform {
+//         cCompiler.withArguments(ClangArgs.&filterGradleNativeSoftwareFlags)
+//       }
+//     }
+//   }
+//}
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$buildKotlinVersion"
@@ -68,10 +67,10 @@ sourceSets.main.kotlin.srcDirs += "src/jvm/kotlin"
 
 
 task nativelibs(type: Copy) {
-    dependsOn 'callbacksSharedLibrary'
-
-    from "$buildDir/libs/callbacks/shared/"
-    into "$buildDir/nativelibs/"
+//    dependsOn 'callbacksSharedLibrary'
+//
+//    from "$buildDir/libs/callbacks/shared/"
+//    into "$buildDir/nativelibs/"
 }
 
 classes.dependsOn nativelibs

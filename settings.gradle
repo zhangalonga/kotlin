@@ -179,6 +179,21 @@ include ":kotlin-build-common",
         ':kotlin-noarg:plugin-marker',
         ":test-instrumenter"
 
+// native
+include ':kotlin-native:dependencies'
+include ':kotlin-native:backend.native'
+include ':kotlin-native:Interop:Runtime'
+include ':kotlin-native:Interop:StubGenerator'
+include ':kotlin-native:Interop:Indexer'
+include ':kotlin-native:libclangext'
+include ':kotlin-native:llvmDebugInfoC'
+include ':kotlin-native:common'
+include ':kotlin-native:llvmDebugInfoC'
+
+includeBuild 'kotlin-native/shared'
+includeBuild 'kotlin-native/tools/kotlin-native-gradle-plugin'
+
+
 def isIncludeNative = true //todo: add property
 if (isIncludeNative) {
     include ":idea:idea-native",

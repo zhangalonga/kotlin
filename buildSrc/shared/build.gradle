@@ -21,13 +21,17 @@ buildscript {
         buildKotlinVersion = gradleProperties."buildKotlinVersion"
     }
 
-    apply from: '../../gradle/kotlinGradlePlugin.gradle'
+    apply from: '../../kotlin-native/gradle/kotlinGradlePlugin.gradle'
+}
+
+repositories {
+    jcenter()
 }
 
 apply plugin: 'kotlin'
 
 // We reuse the source code from the Project in buildSrc.
-sourceSets.main.kotlin.srcDirs = ["$projectDir/../../shared/src/main/kotlin"]
+sourceSets.main.kotlin.srcDirs = ["$projectDir/../../kotlin-native/shared/src/main/kotlin"]
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$buildKotlinVersion"

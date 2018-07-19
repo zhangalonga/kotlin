@@ -37,7 +37,7 @@ class Distribution(
     }
 
     val konanHome = findKonanHome()
-    val konanSubdir = "$konanHome/konan"
+    val konanSubdir = "$konanHome/kotlin-native/konan"
     val mainPropertyFileName = "$konanSubdir/konan.properties"
 
     private fun propertyFilesFromConfigDir(configDir: String, genericName: String): List<File> {
