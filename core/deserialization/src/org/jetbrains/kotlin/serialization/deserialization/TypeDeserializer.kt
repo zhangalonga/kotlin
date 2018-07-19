@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.serialization.deserialization
 
+import org.jetbrains.kotlin.builtins.DEPRECATED_ANNOTATION_FQ_NAME
 import org.jetbrains.kotlin.builtins.isFunctionType
 import org.jetbrains.kotlin.builtins.isSuspendFunctionType
 import org.jetbrains.kotlin.builtins.transformRuntimeFunctionTypeToSuspendFunction
@@ -171,11 +172,9 @@ class TypeDeserializer(
         // kotlin.suspend is still built with LV=1.2, thus it references old Continuation
         // And otherwise, once stdlib is compiled with 1.3 one may want to stay at LV=1.2
         if (c.containingDeclaration.safeAs<CallableDescriptor>()?.fqNameOrNull() == KOTLIN_SUSPEND_BUILT_IN_FUNCTION_FQ_NAME) {
-            transformRuntimeFunctionTypeToSuspendFunction(functionType, false)?.let { oldSuspend ->
-                if (oldSuspend.isSuspendFunctionType) return oldSuspend
-
-                transformRuntimeFunctionTypeToSuspendFunction(functionType, true)?.let { newSuspend -> return newSuspend }
-            }
+            transformRuntimeFunctionTypeToSuspendFunction(functionType, false)
+                ?.takeIf { !it.annotations.hasAnnotation(DEPRECATED_ANNOTATION_FQ_NAME) }?.let { return it }
+            transformRuntimeFunctionTypeToSuspendFunction(functionType, true)?.let { return it }
         }
 
         transformRuntimeFunctionTypeToSuspendFunction(functionType, isReleaseCoroutines)?.let { return it }
