@@ -85,8 +85,7 @@ enum class LanguageFeature(
 
     Coroutines(
         KOTLIN_1_1, ApiVersion.KOTLIN_1_1,
-        "https://kotlinlang.org/docs/diagnostics/experimental-coroutines",
-        State.ENABLED_WITH_WARNING
+        "https://kotlinlang.org/docs/diagnostics/experimental-coroutines"
     ),
 
     ReadDeserializedContracts(sinceVersion = null, defaultState = State.DISABLED),

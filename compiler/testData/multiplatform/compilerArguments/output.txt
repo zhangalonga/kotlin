@@ -1,3 +1,4 @@
 -- Common --
 Exit code: OK
 Output:
+warning: flag is not supported by this version of the compiler: -Xcoroutines=enable

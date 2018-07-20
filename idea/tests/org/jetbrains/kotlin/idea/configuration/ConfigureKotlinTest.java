@@ -209,7 +209,7 @@ public class ConfigureKotlinTest extends AbstractConfigureKotlinTest {
         assertEquals(TargetPlatformKind.Jvm.Companion.get(JvmTarget.JVM_1_8), settings.getTargetPlatformKind());
         assertEquals("1.1", arguments.getLanguageVersion());
         assertEquals("1.0", arguments.getApiVersion());
-        assertEquals(LanguageFeature.State.ENABLED_WITH_WARNING, CoroutineSupport.byCompilerArguments(arguments));
+        assertEquals(LanguageFeature.State.ENABLED, CoroutineSupport.byCompilerArguments(arguments));
         assertEquals("1.7", arguments.getJvmTarget());
         assertEquals("-version -Xallow-kotlin-package -Xskip-metadata-version-check", settings.getCompilerSettings().getAdditionalArguments());
     }
@@ -224,7 +224,7 @@ public class ConfigureKotlinTest extends AbstractConfigureKotlinTest {
         assertEquals(TargetPlatformKind.JavaScript.INSTANCE, settings.getTargetPlatformKind());
         assertEquals("1.1", arguments.getLanguageVersion());
         assertEquals("1.0", arguments.getApiVersion());
-        assertEquals(LanguageFeature.State.ENABLED_WITH_WARNING, CoroutineSupport.byCompilerArguments(arguments));
+        assertEquals(LanguageFeature.State.ENABLED, CoroutineSupport.byCompilerArguments(arguments));
         assertEquals("amd", arguments.getModuleKind());
         assertEquals("-version -meta-info", settings.getCompilerSettings().getAdditionalArguments());
     }
@@ -254,7 +254,7 @@ public class ConfigureKotlinTest extends AbstractConfigureKotlinTest {
         assertEquals(TargetPlatformKind.JavaScript.INSTANCE, settings.getTargetPlatformKind());
         assertEquals("1.1", arguments.getLanguageVersion());
         assertEquals("1.0", arguments.getApiVersion());
-        assertEquals(LanguageFeature.State.ENABLED_WITH_ERROR, CoroutineSupport.byCompilerArguments(arguments));
+        assertEquals(LanguageFeature.State.ENABLED, CoroutineSupport.byCompilerArguments(arguments));
         assertEquals("amd", arguments.getModuleKind());
         assertEquals("-version -meta-info", settings.getCompilerSettings().getAdditionalArguments());
     }
