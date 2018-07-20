@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.js.backend.ast.metadata.*
 import org.jetbrains.kotlin.js.inline.util.collectFreeVariables
 import org.jetbrains.kotlin.js.inline.util.replaceNames
 import org.jetbrains.kotlin.js.translate.utils.JsAstUtils
+import org.jetbrains.kotlin.js.translate.utils.JsAstUtils.assignment
 import org.jetbrains.kotlin.js.translate.utils.JsAstUtils.pureFqn
 import org.jetbrains.kotlin.js.translate.utils.splitToRanges
 
@@ -399,6 +400,18 @@ fun JsBlock.replaceLocalVariables(context: CoroutineTransformationContext, local
             else {
                 ctx.removeMe()
                 ctx.addPrevious(statements)
+            }
+        }
+
+        override fun endVisit(x: JsCatch, ctx: JsContext<in JsNode>) {
+            if (x.parameter.name in localVariables) {
+                val newExcName = "\$e"
+                val newParam = JsParameter(x.scope.declareFreshName(newExcName))
+                val fieldName = context.getFieldName(x.parameter.name)
+                val assign = assignment(JsNameRef(fieldName, JsThisRef()), newParam.name.makeRef()).makeStmt()
+                val newBody = JsBlock(listOf(assign) + x.body.statements)
+                val newCatch = JsCatch(x.scope, newExcName, newBody).apply { source = x.source }
+                ctx.replaceMe(newCatch)
             }
         }
     }
