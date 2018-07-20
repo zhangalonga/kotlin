@@ -1,12 +1,15 @@
-
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.Project
+import org.gradle.api.internal.file.copy.SingleParentCopySpec
 import java.util.*
 import java.io.File
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.plugins.ide.idea.model.IdeaModel
+import org.jetbrains.gradle.ext.ArtifactType
+import org.jetbrains.gradle.ext.RecursiveArtifact
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+import org.jetbrains.kotlin.pill.*
 import proguard.gradle.ProGuardTask
 
 buildscript {
@@ -46,14 +49,15 @@ plugins {
     `build-scan`
     idea
     id("jps-compatible")
+    id("org.jetbrains.gradle.plugin.idea-ext") version "0.3"
 }
 
 pill {
     excludedDirs(
-        "out",
-        "buildSrc/build",
-        "buildSrc/prepare-deps/android-dx/build",
-        "buildSrc/prepare-deps/intellij-sdk/build"
+            "out",
+            "buildSrc/build",
+            "buildSrc/prepare-deps/android-dx/build",
+            "buildSrc/prepare-deps/intellij-sdk/build"
     )
 }
 
@@ -162,27 +166,27 @@ extra["intellijSeparateSdks"] = intellijSeparateSdks
 
 extra["IntellijCoreDependencies"] =
         listOf("annotations",
-               "asm-all",
-               "guava-21.0",
-               "jdom",
-               "jna",
-               "log4j",
-               "picocontainer",
-               "snappy-in-java-0.5.1",
-               "streamex",
-               "trove4j")
+                "asm-all",
+                "guava-21.0",
+                "jdom",
+                "jna",
+                "log4j",
+                "picocontainer",
+                "snappy-in-java-0.5.1",
+                "streamex",
+                "trove4j")
 
 extra["nativePlatformVariants"] =
         listOf("windows-amd64",
-               "windows-i386",
-               "osx-amd64",
-               "osx-i386",
-               "linux-amd64",
-               "linux-i386",
-               "freebsd-amd64-libcpp",
-               "freebsd-amd64-libstdcpp",
-               "freebsd-i386-libcpp",
-               "freebsd-i386-libstdcpp")
+                "windows-i386",
+                "osx-amd64",
+                "osx-i386",
+                "linux-amd64",
+                "linux-i386",
+                "freebsd-amd64-libcpp",
+                "freebsd-amd64-libstdcpp",
+                "freebsd-i386-libcpp",
+                "freebsd-i386-libstdcpp")
 
 extra["compilerModules"] = arrayOf(
         ":compiler:util",
@@ -273,7 +277,8 @@ fun Task.listConfigurationContents(configName: String) {
 
 val defaultJvmTarget = "1.8"
 val defaultJavaHome = jdkPath(defaultJvmTarget!!)
-val ignoreTestFailures by extra(project.findProperty("ignoreTestFailures")?.toString()?.toBoolean() ?: project.hasProperty("teamcity"))
+val ignoreTestFailures by extra(project.findProperty("ignoreTestFailures")?.toString()?.toBoolean()
+        ?: project.hasProperty("teamcity"))
 
 allprojects {
 
@@ -346,12 +351,17 @@ allprojects {
             configureJvmProject(javaHome!!, jvmTarget!!)
         }
 
-        fun File.toProjectRootRelativePathOrSelf() = (relativeToOrNull(rootDir)?.takeUnless { it.startsWith("..") } ?: this).path
+        fun File.toProjectRootRelativePathOrSelf() = (relativeToOrNull(rootDir)?.takeUnless { it.startsWith("..") }
+                ?: this).path
 
         fun FileCollection.printClassPath(role: String) =
-                println("${project.path} $role classpath:\n  ${joinToString("\n  ") { it.toProjectRootRelativePathOrSelf() } }")
+                println("${project.path} $role classpath:\n  ${joinToString("\n  ") { it.toProjectRootRelativePathOrSelf() }}")
 
-        try { javaPluginConvention() } catch (_: UnknownDomainObjectException) { null }?.let { javaConvention ->
+        try {
+            javaPluginConvention()
+        } catch (_: UnknownDomainObjectException) {
+            null
+        }?.let { javaConvention ->
             task("printCompileClasspath") { doFirst { javaConvention.sourceSets["main"].compileClasspath.printClassPath("compile") } }
             task("printRuntimeClasspath") { doFirst { javaConvention.sourceSets["main"].runtimeClasspath.printClassPath("runtime") } }
             task("printTestCompileClasspath") { doFirst { javaConvention.sourceSets["test"].compileClasspath.printClassPath("test compile") } }
@@ -421,8 +431,8 @@ tasks {
     "jvmCompilerTest" {
         dependsOn("dist")
         dependsOn(":compiler:test",
-                  ":compiler:container:test",
-                  ":compiler:tests-java8:test")
+                ":compiler:container:test",
+                ":compiler:tests-java8:test")
     }
 
     "jsCompilerTest" {
@@ -479,33 +489,33 @@ tasks {
     "idea-plugin-additional-tests" {
         dependsOn("dist")
         dependsOn(":idea:idea-gradle:test",
-                  ":idea:idea-maven:test",
-                  ":j2k:test",
-                  ":eval4j:test")
+                ":idea:idea-maven:test",
+                ":j2k:test",
+                ":eval4j:test")
     }
 
     "idea-plugin-tests" {
         dependsOn("dist")
         dependsOn("idea-plugin-main-tests",
-                  "idea-plugin-additional-tests")
+                "idea-plugin-additional-tests")
     }
 
     "android-ide-tests" {
         dependsOn("dist")
         dependsOn(":plugins:android-extensions-ide:test",
-                  ":idea:idea-android:test",
-                  ":kotlin-annotation-processing:test")
+                ":idea:idea-android:test",
+                ":kotlin-annotation-processing:test")
     }
 
     "plugins-tests" {
         dependsOn("dist")
         dependsOn(":kotlin-annotation-processing:test",
-                  ":kotlin-source-sections-compiler-plugin:test",
-                  ":kotlin-allopen-compiler-plugin:test",
-                  ":kotlin-noarg-compiler-plugin:test",
-                  ":kotlin-sam-with-receiver-compiler-plugin:test",
-                  ":plugins:uast-kotlin:test",
-                  ":kotlin-annotation-processing-gradle:test")
+                ":kotlin-source-sections-compiler-plugin:test",
+                ":kotlin-allopen-compiler-plugin:test",
+                ":kotlin-noarg-compiler-plugin:test",
+                ":kotlin-sam-with-receiver-compiler-plugin:test",
+                ":plugins:uast-kotlin:test",
+                ":kotlin-annotation-processing-gradle:test")
     }
 
 
@@ -639,7 +649,7 @@ fun jdkPathIfFound(version: String): String? {
 }
 
 fun jdkPath(version: String): String = jdkPathIfFound(version)
-        ?: throw GradleException ("Please set environment variable JDK_${version.replace(".", "")} to point to JDK $version installation")
+        ?: throw GradleException("Please set environment variable JDK_${version.replace(".", "")} to point to JDK $version installation")
 
 fun Project.configureJvmProject(javaHome: String, javaVersion: String) {
     tasks.withType<JavaCompile> {
@@ -697,4 +707,117 @@ tasks.create("findShadowJarsInClasspath").doLast {
         project.checkConfig("compileClasspath")
         project.checkConfig("testCompileClasspath")
     }
+}
+
+rootProject.idea {
+    project {
+        (this@project as ExtensionAware).extensions.configure<org.jetbrains.gradle.ext.ProjectSettings>("settings") {
+            ideArtifacts {
+                ideArtifact("dist") {
+                    generateKotlinPluginArtifact(rootProject, this)
+                }
+            }
+        }
+    }
+}
+
+fun RecursiveArtifact.dir(name: String): RecursiveArtifact {
+    val result = this.project.objects.newInstance(RecursiveArtifact::class.java, this.project, name, ArtifactType.DIR)
+            as RecursiveArtifact
+    this.children.add(result)
+    return result
+}
+
+fun generateKotlinPluginArtifact(rootProject: Project, root: RecursiveArtifact) {
+    val ideaModulesByGradleProject = rootProject.idea.project.modules.associateBy { it.project }
+    println(ideaModulesByGradleProject)
+
+    val ideaModulesById = rootProject.idea.project.modules.associateBy { it.project.path }
+
+    val mainIdeaPluginTask = rootProject.tasks.getByName("ideaPlugin")
+    val gradleArtifactDir = File(rootProject.extra["ideaPluginDir"] as File, "lib")
+
+    val ideaPluginTasks = mainIdeaPluginTask.taskDependencies
+            .getDependencies(mainIdeaPluginTask)
+            .filter { it.name == "ideaPlugin" }
+            .filterIsInstance<Copy>()
+
+    // Copy kotlinc directory
+    val ideaPluginDir = root.dir("artifacts").dir("ideaPlugin").dir("Kotlin")
+
+    val ideaPluginLib = ideaPluginDir.dir("lib")
+    val kotlinc = ideaPluginDir.dir("kotlinc")
+    val kotlincLib = kotlinc.dir("lib")
+
+    for (task in ideaPluginTasks) {
+        val spec = task.rootSpec.children.filterIsInstance<SingleParentCopySpec>().singleOrNull()
+                ?: error("Copy spec is not unique in ${rootProject.name}. Available specs: ${task.rootSpec.children}")
+
+        val sourcePaths = spec.sourcePaths
+        for (sourcePath in sourcePaths) {
+            if (sourcePath is ShadowJar) {
+                if (sourcePath.project.path == ":prepare:idea-plugin") {
+                    // kotlin plugin jar
+                    ideaPluginLib.archive(sourcePath.archiveName) {
+                        file(File(rootProject.projectDir, "resources/kotlinManifest.properties"))
+
+                        for (jarFile in sourcePath.project.configurations.getByName("packedJars").resolve()) {
+                            extractedDirectory(jarFile)
+                        }
+
+                        @Suppress("UNCHECKED_CAST")
+                        for (projectPath in sourcePath.project.extra["projectsToShadow"] as List<String>) {
+                            moduleOutput(rootProject.findProject(projectPath)!!.name + "_main")
+                        }
+                    }
+
+                    continue
+                }
+            }
+
+            when (sourcePath) {
+                is org.gradle.jvm.tasks.Jar -> {
+                    ideaPluginLib.archive(sourcePath.project.name + ".jar") {
+                        if (task.project.plugins.hasPlugin(JavaPlugin::class.java)) {
+                            moduleOutput(sourcePath.project.name + "_main")
+                        }
+
+                        val embeddedComponents = sourcePath.project.configurations
+                                .findByName(EmbeddedComponents.CONFIGURATION_NAME)?.resolvedConfiguration
+
+                        if (embeddedComponents != null) {
+                            val configuration = CollectedConfiguration(embeddedComponents, POrderRoot.Scope.COMPILE)
+                            for (dependencyInfo in listOf(configuration).collectDependencies()) {
+                                val dependency = (dependencyInfo as? DependencyInfo.ResolvedDependencyInfo)?.dependency
+                                        ?: continue
+
+                                if (dependency.configuration == "runtimeElements") {
+                                    moduleOutput(dependency.moduleName + "_main")
+                                } else if (dependency.configuration == "tests-jar" || dependency.configuration == "jpsTest") {
+                                    error("Test configurations are not allowed here")
+                                } else {
+                                    for (file in dependency.moduleArtifacts.map { it.file }) {
+                                        extractedDirectory(file)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                is Configuration -> {
+                    require(sourcePath.name == "sideJars") {
+                        "Configurations other than 'sideJars' are not supported"
+                    }
+
+                    for (file in sourcePath.resolve()) {
+                        ideaPluginLib.file(file)
+                    }
+                }
+                else -> error("${task.name} Unexpected task type ${task.javaClass.name}")
+            }
+        }
+    }
+
+    println("----------------------")
+    println(ideaPluginDir.toMap())
 }
