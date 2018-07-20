@@ -2829,6 +2829,19 @@ public final class kotlin/coroutines/experimental/jvm/internal/CoroutineIntrinsi
 	public static final fun normalizeContinuation (Lkotlin/coroutines/experimental/Continuation;)Lkotlin/coroutines/experimental/Continuation;
 }
 
+public final class kotlin/coroutines/experimental/migration/CoroutinesMigrationKt {
+	public static final fun toContinuation (Lkotlin/coroutines/experimental/Continuation;)Lkotlin/coroutines/Continuation;
+	public static final fun toContinuationInterceptor (Lkotlin/coroutines/experimental/ContinuationInterceptor;)Lkotlin/coroutines/ContinuationInterceptor;
+	public static final fun toCoroutineContext (Lkotlin/coroutines/experimental/CoroutineContext;)Lkotlin/coroutines/CoroutineContext;
+	public static final fun toExperimentalContinuation (Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/experimental/Continuation;
+	public static final fun toExperimentalContinuationInterceptor (Lkotlin/coroutines/ContinuationInterceptor;)Lkotlin/coroutines/experimental/ContinuationInterceptor;
+	public static final fun toExperimentalCoroutineContext (Lkotlin/coroutines/CoroutineContext;)Lkotlin/coroutines/experimental/CoroutineContext;
+	public static final fun toExperimentalSuspendFunction (Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function1;
+	public static final fun toExperimentalSuspendFunction (Lkotlin/jvm/functions/Function2;)Lkotlin/jvm/functions/Function2;
+	public static final fun toSuspendFunction (Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function1;
+	public static final fun toSuspendFunction (Lkotlin/jvm/functions/Function2;)Lkotlin/jvm/functions/Function2;
+}
+
 public final class kotlin/coroutines/intrinsics/CoroutineSingletons : java/lang/Enum {
 	public static final field COROUTINE_SUSPENDED Lkotlin/coroutines/intrinsics/CoroutineSingletons;
 	public static final field RESUMED Lkotlin/coroutines/intrinsics/CoroutineSingletons;
