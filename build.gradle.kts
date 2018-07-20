@@ -49,7 +49,6 @@ plugins {
     `build-scan`
     idea
     id("jps-compatible")
-    id("org.jetbrains.gradle.plugin.idea-ext") version "0.3"
 }
 
 pill {
@@ -709,115 +708,14 @@ tasks.create("findShadowJarsInClasspath").doLast {
     }
 }
 
-rootProject.idea {
-    project {
-        (this@project as ExtensionAware).extensions.configure<org.jetbrains.gradle.ext.ProjectSettings>("settings") {
-            ideArtifacts {
-                ideArtifact("dist") {
-                    generateKotlinPluginArtifact(rootProject, this)
-                }
-            }
-        }
-    }
-}
+//rootProject.idea {
+//    project {
+//        (this@project as ExtensionAware).extensions.configure<org.jetbrains.gradle.ext.ProjectSettings>("settings") {
+//            ideArtifacts {
+////                    generateKotlinPluginArtifact(rootProject, this)
+//            }
+//        }
+//    }
+//}
 
-fun RecursiveArtifact.dir(name: String): RecursiveArtifact {
-    val result = this.project.objects.newInstance(RecursiveArtifact::class.java, this.project, name, ArtifactType.DIR)
-            as RecursiveArtifact
-    this.children.add(result)
-    return result
-}
-
-fun generateKotlinPluginArtifact(rootProject: Project, root: RecursiveArtifact) {
-    val ideaModulesByGradleProject = rootProject.idea.project.modules.associateBy { it.project }
-    println(ideaModulesByGradleProject)
-
-    val ideaModulesById = rootProject.idea.project.modules.associateBy { it.project.path }
-
-    val mainIdeaPluginTask = rootProject.tasks.getByName("ideaPlugin")
-    val gradleArtifactDir = File(rootProject.extra["ideaPluginDir"] as File, "lib")
-
-    val ideaPluginTasks = mainIdeaPluginTask.taskDependencies
-            .getDependencies(mainIdeaPluginTask)
-            .filter { it.name == "ideaPlugin" }
-            .filterIsInstance<Copy>()
-
-    // Copy kotlinc directory
-    val ideaPluginDir = root.dir("artifacts").dir("ideaPlugin").dir("Kotlin")
-
-    val ideaPluginLib = ideaPluginDir.dir("lib")
-    val kotlinc = ideaPluginDir.dir("kotlinc")
-    val kotlincLib = kotlinc.dir("lib")
-
-    for (task in ideaPluginTasks) {
-        val spec = task.rootSpec.children.filterIsInstance<SingleParentCopySpec>().singleOrNull()
-                ?: error("Copy spec is not unique in ${rootProject.name}. Available specs: ${task.rootSpec.children}")
-
-        val sourcePaths = spec.sourcePaths
-        for (sourcePath in sourcePaths) {
-            if (sourcePath is ShadowJar) {
-                if (sourcePath.project.path == ":prepare:idea-plugin") {
-                    // kotlin plugin jar
-                    ideaPluginLib.archive(sourcePath.archiveName) {
-                        file(File(rootProject.projectDir, "resources/kotlinManifest.properties"))
-
-                        for (jarFile in sourcePath.project.configurations.getByName("packedJars").resolve()) {
-                            extractedDirectory(jarFile)
-                        }
-
-                        @Suppress("UNCHECKED_CAST")
-                        for (projectPath in sourcePath.project.extra["projectsToShadow"] as List<String>) {
-                            moduleOutput(rootProject.findProject(projectPath)!!.name + "_main")
-                        }
-                    }
-
-                    continue
-                }
-            }
-
-            when (sourcePath) {
-                is org.gradle.jvm.tasks.Jar -> {
-                    ideaPluginLib.archive(sourcePath.project.name + ".jar") {
-                        if (task.project.plugins.hasPlugin(JavaPlugin::class.java)) {
-                            moduleOutput(sourcePath.project.name + "_main")
-                        }
-
-                        val embeddedComponents = sourcePath.project.configurations
-                                .findByName(EmbeddedComponents.CONFIGURATION_NAME)?.resolvedConfiguration
-
-                        if (embeddedComponents != null) {
-                            val configuration = CollectedConfiguration(embeddedComponents, POrderRoot.Scope.COMPILE)
-                            for (dependencyInfo in listOf(configuration).collectDependencies()) {
-                                val dependency = (dependencyInfo as? DependencyInfo.ResolvedDependencyInfo)?.dependency
-                                        ?: continue
-
-                                if (dependency.configuration == "runtimeElements") {
-                                    moduleOutput(dependency.moduleName + "_main")
-                                } else if (dependency.configuration == "tests-jar" || dependency.configuration == "jpsTest") {
-                                    error("Test configurations are not allowed here")
-                                } else {
-                                    for (file in dependency.moduleArtifacts.map { it.file }) {
-                                        extractedDirectory(file)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                is Configuration -> {
-                    require(sourcePath.name == "sideJars") {
-                        "Configurations other than 'sideJars' are not supported"
-                    }
-
-                    for (file in sourcePath.resolve()) {
-                        ideaPluginLib.file(file)
-                    }
-                }
-                else -> error("${task.name} Unexpected task type ${task.javaClass.name}")
-            }
-        }
-    }
-
-    println("----------------------")
-    println(ideaPluginDir.toMap())
-}
+org.jetbrains.kotlin.buildUtils.idea.generateIdeArtifacts(rootProject)
