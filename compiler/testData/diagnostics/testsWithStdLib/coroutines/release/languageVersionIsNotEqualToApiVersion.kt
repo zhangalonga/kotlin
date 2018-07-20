@@ -24,7 +24,7 @@ fun builder(c: <!UNSUPPORTED!>suspend<!> () -> Unit) {}
 }
 
 fun test2() {
-    kotlin.coroutines.experimental.<!UNSUPPORTED!>buildSequence<!><Int> {
+    kotlin.coroutines.experimental.<!DEPRECATION_ERROR, UNSUPPORTED!>buildSequence<!><Int> {
         <!DEPRECATION_ERROR!>yield<!>(1)
     }
     kotlin.sequences.<!UNRESOLVED_REFERENCE!>buildSequence<!><Int> {

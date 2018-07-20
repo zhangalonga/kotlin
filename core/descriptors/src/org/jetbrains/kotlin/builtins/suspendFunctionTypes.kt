@@ -90,11 +90,10 @@ fun transformRuntimeFunctionTypeToSuspendFunction(funType: KotlinType, isRelease
     }
 
     val continuationArgumentType = funType.getValueParameterTypesFromFunctionType().lastOrNull()?.type ?: return null
-    if (!isContinuation(continuationArgumentType.constructor.declarationDescriptor?.fqNameSafe, isReleaseCoroutines)) {
+    val continuationArgumentFqName = continuationArgumentType.constructor.declarationDescriptor?.fqNameSafe
+    if (!isContinuation(continuationArgumentFqName, isReleaseCoroutines)) {
         // Load experimental suspend function type as suspend function type with @Deprecated
-        if (isReleaseCoroutines &&
-            isContinuation(continuationArgumentType.constructor.declarationDescriptor?.fqNameSafe, !isReleaseCoroutines)
-        ) {
+        if (isReleaseCoroutines && isContinuation(continuationArgumentFqName, !isReleaseCoroutines)) {
             val module = funType.constructor.declarationDescriptor.sure { "Cannot get declarationDescriptor for $funType" }.module
             val annotations = AnnotationsImpl.create(
                 funType.annotations.getAllAnnotations() + AnnotationWithTarget(
@@ -154,5 +153,19 @@ fun deprecatedAnnotationDescriptor(module: ModuleDescriptor): AnnotationDescript
             Name.identifier("level") to deprecatedLevelError
         ),
         deprecatedClassDescriptor.source
+    )
+}
+
+fun KotlinType.isExperimentalSuspendFunctionTypeInReleaseEnvironment(): Boolean = isSuspendFunctionTypeOrSubtype &&
+        annotations.hasAnnotation(DEPRECATED_ANNOTATION_FQ_NAME)
+
+fun deprecatedAdditionalAnnotation(module: ModuleDescriptor): Annotations {
+    return AnnotationsImpl.create(
+        listOf(
+            AnnotationWithTarget(
+                deprecatedAnnotationDescriptor(module),
+                null
+            )
+        )
     )
 }

@@ -1,12 +1,12 @@
 suspend fun callRelease() {
-    // TODO: Shall be error
     c()
+    WithTypeParameter<suspend () -> Unit>()
+    returnsSuspend()
+    builder {}
+    withTypeParameter<suspend () -> Unit>()
 
     dummy()
-
     C().dummy()
-
     WithNested.Nested().dummy()
-
     WithInner().Inner().dummy()
 }

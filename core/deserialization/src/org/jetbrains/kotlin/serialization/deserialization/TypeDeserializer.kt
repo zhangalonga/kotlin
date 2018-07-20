@@ -5,10 +5,7 @@
 
 package org.jetbrains.kotlin.serialization.deserialization
 
-import org.jetbrains.kotlin.builtins.DEPRECATED_ANNOTATION_FQ_NAME
-import org.jetbrains.kotlin.builtins.isFunctionType
-import org.jetbrains.kotlin.builtins.isSuspendFunctionType
-import org.jetbrains.kotlin.builtins.transformRuntimeFunctionTypeToSuspendFunction
+import org.jetbrains.kotlin.builtins.*
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithTarget
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
@@ -173,7 +170,7 @@ class TypeDeserializer(
         // And otherwise, once stdlib is compiled with 1.3 one may want to stay at LV=1.2
         if (c.containingDeclaration.safeAs<CallableDescriptor>()?.fqNameOrNull() == KOTLIN_SUSPEND_BUILT_IN_FUNCTION_FQ_NAME) {
             transformRuntimeFunctionTypeToSuspendFunction(functionType, false)
-                ?.takeIf { !it.annotations.hasAnnotation(DEPRECATED_ANNOTATION_FQ_NAME) }?.let { return it }
+                ?.takeIf { !it.isExperimentalSuspendFunctionTypeInReleaseEnvironment() }?.let { return it }
             transformRuntimeFunctionTypeToSuspendFunction(functionType, true)?.let { return it }
         }
 

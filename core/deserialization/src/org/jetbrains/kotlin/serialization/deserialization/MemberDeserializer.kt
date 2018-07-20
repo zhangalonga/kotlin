@@ -5,7 +5,8 @@
 
 package org.jetbrains.kotlin.serialization.deserialization
 
-import org.jetbrains.kotlin.builtins.deprecatedAnnotationDescriptor
+import org.jetbrains.kotlin.builtins.deprecatedAdditionalAnnotation
+import org.jetbrains.kotlin.builtins.isExperimentalSuspendFunctionTypeInReleaseEnvironment
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithTarget
@@ -20,6 +21,8 @@ import org.jetbrains.kotlin.protobuf.MessageLite
 import org.jetbrains.kotlin.resolve.DescriptorFactory
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.*
+import org.jetbrains.kotlin.utils.addToStdlib.safeAs
+import org.jetbrains.kotlin.utils.sure
 
 class MemberDeserializer(private val c: DeserializationContext) {
     private val annotationDeserializer = AnnotationDeserializer(c.components.moduleDescriptor, c.components.notFoundClasses)
@@ -127,6 +130,16 @@ class MemberDeserializer(private val c: DeserializationContext) {
             )
         }
 
+        val experimentalCoroutineInReleaseEnvironment = c.components.configuration.releaseCoroutines && (
+                property.returnType.isExperimentalSuspendFunctionTypeInReleaseEnvironment() ||
+                        property.typeParameters.any { it.defaultType.isExperimentalSuspendFunctionTypeInReleaseEnvironment() }
+                )
+
+        if (experimentalCoroutineInReleaseEnvironment) {
+            return property.newCopyBuilder().setAdditionalAnnotations(deprecatedAdditionalAnnotation(property.module)).build()
+                .sure { "Cannot copy property" }
+        }
+
         property.initialize(getter, setter)
 
         return property
@@ -140,17 +153,7 @@ class MemberDeserializer(private val c: DeserializationContext) {
 
     fun loadFunction(proto: ProtoBuf.Function): SimpleFunctionDescriptor {
         val flags = if (proto.hasFlags()) proto.flags else loadOldFlags(proto.oldFlags)
-        val annotations =
-            if (Flags.IS_SUSPEND.get(flags) && c.components.configuration.releaseCoroutines
-                && VersionRequirement.create(proto, c.nameResolver, c.versionRequirementTable)?.version != VersionRequirement.Version(1, 3)
-            ) {
-                AnnotationsImpl.create(
-                    getAnnotations(proto, flags, AnnotatedCallableKind.FUNCTION).getAllAnnotations() + AnnotationWithTarget(
-                        deprecatedAnnotationDescriptor(c.containingDeclaration.module),
-                        null
-                    )
-                )
-            } else getAnnotations(proto, flags, AnnotatedCallableKind.FUNCTION)
+        val annotations = getAnnotations(proto, flags, AnnotatedCallableKind.FUNCTION)
         val receiverAnnotations = if (proto.hasReceiver())
             getReceiverParameterAnnotations(proto, AnnotatedCallableKind.FUNCTION)
         else Annotations.EMPTY
@@ -161,8 +164,9 @@ class MemberDeserializer(private val c: DeserializationContext) {
         )
         val local = c.childContext(function, proto.typeParameterList)
 
+        val receiverType = proto.receiverType(c.typeTable)?.let { local.typeDeserializer.type(it, receiverAnnotations) }
         function.initialize(
-            proto.receiverType(c.typeTable)?.let { local.typeDeserializer.type(it, receiverAnnotations) },
+            receiverType,
             getDispatchReceiverParameter(),
             local.typeDeserializer.ownTypeParameters,
             local.memberDeserializer.valueParameters(proto.valueParameterList, proto, AnnotatedCallableKind.FUNCTION),
@@ -183,6 +187,23 @@ class MemberDeserializer(private val c: DeserializationContext) {
             c.components.contractDeserializer.deserializeContractFromFunction(proto, function, c.typeTable, c.typeDeserializer)
         if (mapValueForContract != null) {
             function.putInUserDataMap(mapValueForContract.first, mapValueForContract.second)
+        }
+
+        // In order to deprecate functions with experimental suspend function types in declaration, we deserialize these types as
+        // annotated with @Deprecated, which has no effect, but we now can deprecate these functions.
+        val experimentalCoroutineInReleaseEnvironment = c.components.configuration.releaseCoroutines &&
+                if (Flags.IS_SUSPEND.get(flags)) {
+                    VersionRequirement.create(proto, c.nameResolver, c.versionRequirementTable)?.version != VersionRequirement.Version(1, 3)
+                } else {
+                    receiverType?.isExperimentalSuspendFunctionTypeInReleaseEnvironment() == true ||
+                            function.returnType?.isExperimentalSuspendFunctionTypeInReleaseEnvironment() == true ||
+                            function.typeParameters.any { it.upperBounds.any { it.isExperimentalSuspendFunctionTypeInReleaseEnvironment() } } ||
+                            function.valueParameters.any { it.type.isExperimentalSuspendFunctionTypeInReleaseEnvironment() }
+                }
+
+        if (experimentalCoroutineInReleaseEnvironment) {
+            return function.newCopyBuilder().setAdditionalAnnotations(deprecatedAdditionalAnnotation(function.module)).build()
+                .sure { "Cannot create function copy" }
         }
 
         return function
@@ -224,6 +245,17 @@ class MemberDeserializer(private val c: DeserializationContext) {
             ProtoEnumFlags.visibility(Flags.VISIBILITY.get(proto.flags))
         )
         descriptor.returnType = classDescriptor.defaultType
+
+        val experimentalCoroutineInReleaseEnvironment = c.components.configuration.releaseCoroutines && (
+                descriptor.valueParameters.any { it.type.isExperimentalSuspendFunctionTypeInReleaseEnvironment() } ||
+                        descriptor.typeParameters.any { it.upperBounds.any { it.isExperimentalSuspendFunctionTypeInReleaseEnvironment() } }
+                )
+
+        if (experimentalCoroutineInReleaseEnvironment) {
+            return descriptor.newCopyBuilder().setAdditionalAnnotations(deprecatedAdditionalAnnotation(descriptor.module)).build()
+                .safeAs<ClassConstructorDescriptor>().sure { "Cannot copy constructor" }
+        }
+
         return descriptor
     }
 
