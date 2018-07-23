@@ -5,8 +5,6 @@
 
 package org.jetbrains.kotlin.serialization.deserialization
 
-import org.jetbrains.kotlin.builtins.deprecatedAdditionalAnnotation
-import org.jetbrains.kotlin.builtins.isExperimentalSuspendFunctionTypeInReleaseEnvironment
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithTarget
@@ -19,10 +17,7 @@ import org.jetbrains.kotlin.metadata.ProtoBuf
 import org.jetbrains.kotlin.metadata.deserialization.*
 import org.jetbrains.kotlin.protobuf.MessageLite
 import org.jetbrains.kotlin.resolve.DescriptorFactory
-import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.*
-import org.jetbrains.kotlin.utils.addToStdlib.safeAs
-import org.jetbrains.kotlin.utils.sure
 
 class MemberDeserializer(private val c: DeserializationContext) {
     private val annotationDeserializer = AnnotationDeserializer(c.components.moduleDescriptor, c.components.notFoundClasses)
@@ -64,6 +59,11 @@ class MemberDeserializer(private val c: DeserializationContext) {
             getDispatchReceiverParameter(),
             proto.receiverType(c.typeTable)?.let { local.typeDeserializer.type(it, receiverAnnotations) }
         )
+
+        // Calculate isExperimentalCoroutineInReleaseEnvironment for type parameters
+        property.typeParameters.forEach { it.upperBounds }
+
+        property.isExperimentalCoroutineInReleaseEnvironment = local.typeDeserializer.experimentalSuspendFunctionTypeEncountered
 
         val getter = if (hasGetter) {
             val getterFlags = proto.getterFlags
@@ -130,16 +130,6 @@ class MemberDeserializer(private val c: DeserializationContext) {
             )
         }
 
-        val experimentalCoroutineInReleaseEnvironment = c.components.configuration.releaseCoroutines && (
-                property.returnType.isExperimentalSuspendFunctionTypeInReleaseEnvironment() ||
-                        property.typeParameters.any { it.defaultType.isExperimentalSuspendFunctionTypeInReleaseEnvironment() }
-                )
-
-        if (experimentalCoroutineInReleaseEnvironment) {
-            return property.newCopyBuilder().setAdditionalAnnotations(deprecatedAdditionalAnnotation(property.module)).build()
-                .sure { "Cannot copy property" }
-        }
-
         property.initialize(getter, setter)
 
         return property
@@ -183,27 +173,17 @@ class MemberDeserializer(private val c: DeserializationContext) {
         function.isSuspend = Flags.IS_SUSPEND.get(flags)
         function.isExpect = Flags.IS_EXPECT_FUNCTION.get(flags)
 
+        // Calculate isExperimentalCoroutineInReleaseEnvironment for type parameters
+        function.typeParameters.forEach { it.upperBounds }
+
+        function.isExperimentalCoroutineInReleaseEnvironment = local.typeDeserializer.experimentalSuspendFunctionTypeEncountered ||
+                (c.components.configuration.releaseCoroutines && Flags.IS_SUSPEND.get(flags) &&
+                        function.versionRequirement?.version != VersionRequirement.Version(1, 3))
+
         val mapValueForContract =
             c.components.contractDeserializer.deserializeContractFromFunction(proto, function, c.typeTable, c.typeDeserializer)
         if (mapValueForContract != null) {
             function.putInUserDataMap(mapValueForContract.first, mapValueForContract.second)
-        }
-
-        // In order to deprecate functions with experimental suspend function types in declaration, we deserialize these types as
-        // annotated with @Deprecated, which has no effect, but we now can deprecate these functions.
-        val experimentalCoroutineInReleaseEnvironment = c.components.configuration.releaseCoroutines &&
-                if (Flags.IS_SUSPEND.get(flags)) {
-                    VersionRequirement.create(proto, c.nameResolver, c.versionRequirementTable)?.version != VersionRequirement.Version(1, 3)
-                } else {
-                    receiverType?.isExperimentalSuspendFunctionTypeInReleaseEnvironment() == true ||
-                            function.returnType?.isExperimentalSuspendFunctionTypeInReleaseEnvironment() == true ||
-                            function.typeParameters.any { it.upperBounds.any { it.isExperimentalSuspendFunctionTypeInReleaseEnvironment() } } ||
-                            function.valueParameters.any { it.type.isExperimentalSuspendFunctionTypeInReleaseEnvironment() }
-                }
-
-        if (experimentalCoroutineInReleaseEnvironment) {
-            return function.newCopyBuilder().setAdditionalAnnotations(deprecatedAdditionalAnnotation(function.module)).build()
-                .sure { "Cannot create function copy" }
         }
 
         return function
@@ -224,6 +204,11 @@ class MemberDeserializer(private val c: DeserializationContext) {
             local.typeDeserializer.simpleType(proto.underlyingType(c.typeTable)),
             local.typeDeserializer.simpleType(proto.expandedType(c.typeTable))
         )
+
+        // Calculate isExperimentalCoroutineInReleaseEnvironment for type parameters
+        local.typeDeserializer.ownTypeParameters.forEach { it.upperBounds }
+
+        typeAlias.isExperimentalCoroutineInReleaseEnvironment = local.typeDeserializer.experimentalSuspendFunctionTypeEncountered
 
         return typeAlias
     }
@@ -246,15 +231,10 @@ class MemberDeserializer(private val c: DeserializationContext) {
         )
         descriptor.returnType = classDescriptor.defaultType
 
-        val experimentalCoroutineInReleaseEnvironment = c.components.configuration.releaseCoroutines && (
-                descriptor.valueParameters.any { it.type.isExperimentalSuspendFunctionTypeInReleaseEnvironment() } ||
-                        descriptor.typeParameters.any { it.upperBounds.any { it.isExperimentalSuspendFunctionTypeInReleaseEnvironment() } }
-                )
-
-        if (experimentalCoroutineInReleaseEnvironment) {
-            return descriptor.newCopyBuilder().setAdditionalAnnotations(deprecatedAdditionalAnnotation(descriptor.module)).build()
-                .safeAs<ClassConstructorDescriptor>().sure { "Cannot copy constructor" }
-        }
+        // Calculate isExperimentalCoroutineInReleaseEnvironment for type parameters
+        descriptor.typeParameters.forEach { it.upperBounds }
+        descriptor.isExperimentalCoroutineInReleaseEnvironment = local.typeDeserializer.experimentalSuspendFunctionTypeEncountered ||
+                (c.containingDeclaration as? DeserializedClassDescriptor)?.c?.typeDeserializer?.experimentalSuspendFunctionTypeEncountered == true
 
         return descriptor
     }

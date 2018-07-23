@@ -5,25 +5,22 @@
 
 package org.jetbrains.kotlin.builtins
 
-import org.jetbrains.kotlin.descriptors.*
-import org.jetbrains.kotlin.descriptors.annotations.*
+import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.descriptors.SourceElement
+import org.jetbrains.kotlin.descriptors.Visibilities
+import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.EmptyPackageFragmentDescriptor
 import org.jetbrains.kotlin.descriptors.impl.MutableClassDescriptor
 import org.jetbrains.kotlin.descriptors.impl.TypeParameterDescriptorImpl
-import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils
-import org.jetbrains.kotlin.resolve.constants.EnumValue
-import org.jetbrains.kotlin.resolve.constants.StringValue
-import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
-import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.storage.LockBasedStorageManager
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.builtIns
-import org.jetbrains.kotlin.utils.sure
 
 val FAKE_CONTINUATION_CLASS_DESCRIPTOR_EXPERIMENTAL =
     MutableClassDescriptor(
@@ -57,8 +54,6 @@ val FAKE_CONTINUATION_CLASS_DESCRIPTOR_RELEASE =
         createTypeConstructor()
     }
 
-val DEPRECATED_ANNOTATION_FQ_NAME = KotlinBuiltIns.BUILT_INS_PACKAGE_FQ_NAME.child(Name.identifier("Deprecated"))
-
 fun transformSuspendFunctionToRuntimeFunctionType(suspendFunType: KotlinType, isReleaseCoroutines: Boolean): SimpleType {
     assert(suspendFunType.isSuspendFunctionType) {
         "This type should be suspend function type: $suspendFunType"
@@ -84,88 +79,38 @@ fun transformSuspendFunctionToRuntimeFunctionType(suspendFunType: KotlinType, is
     ).makeNullableAsSpecified(suspendFunType.isMarkedNullable)
 }
 
-fun transformRuntimeFunctionTypeToSuspendFunction(funType: KotlinType, isReleaseCoroutines: Boolean): SimpleType? {
+fun transformRuntimeFunctionTypeToSuspendFunction(funType: KotlinType, isReleaseCoroutines: Boolean): Pair<SimpleType?, Boolean> {
     assert(funType.isFunctionType) {
         "This type should be function type: $funType"
     }
 
-    val continuationArgumentType = funType.getValueParameterTypesFromFunctionType().lastOrNull()?.type ?: return null
+    val continuationArgumentType = funType.getValueParameterTypesFromFunctionType().lastOrNull()?.type ?: return null to false
     val continuationArgumentFqName = continuationArgumentType.constructor.declarationDescriptor?.fqNameSafe
-    if (!isContinuation(continuationArgumentFqName, isReleaseCoroutines)) {
-        // Load experimental suspend function type as suspend function type with @Deprecated
-        if (isReleaseCoroutines && isContinuation(continuationArgumentFqName, !isReleaseCoroutines)) {
-            val module = funType.constructor.declarationDescriptor.sure { "Cannot get declarationDescriptor for $funType" }.module
-            val annotations = AnnotationsImpl.create(
-                funType.annotations.getAllAnnotations() + AnnotationWithTarget(
-                    deprecatedAnnotationDescriptor(module),
-                    null
-                )
-            )
-            return createFunctionType(
-                funType.builtIns, annotations,
-                funType.getReceiverTypeFromFunctionType(),
-                funType.getValueParameterTypesFromFunctionType().dropLast(1).map(TypeProjection::getType),
-                // TODO: names
-                null,
-                continuationArgumentType.arguments.single().type,
-                suspendFunction = true
-            ).makeNullableAsSpecified(funType.isMarkedNullable)
-        }
-        return funType as? SimpleType
-    } else if (continuationArgumentType.arguments.size != 1) {
-        return funType as? SimpleType
+    if (continuationArgumentType.arguments.size != 1 ||
+        (!isContinuation(continuationArgumentFqName, isReleaseCoroutines) &&
+                (!isReleaseCoroutines || !isContinuation(continuationArgumentFqName, !isReleaseCoroutines)))
+    ) {
+        return funType as? SimpleType to false
     }
 
     val suspendReturnType = continuationArgumentType.arguments.single().type
 
+    // Load experimental suspend function type as suspend function type
+
     return createFunctionType(
-            funType.builtIns,
-            funType.annotations,
-            funType.getReceiverTypeFromFunctionType(),
-            funType.getValueParameterTypesFromFunctionType().dropLast(1).map(TypeProjection::getType),
-            // TODO: names
-            null,
-            suspendReturnType,
-            suspendFunction = true
-    ).makeNullableAsSpecified(funType.isMarkedNullable)
+        funType.builtIns,
+        funType.annotations,
+        funType.getReceiverTypeFromFunctionType(),
+        funType.getValueParameterTypesFromFunctionType().dropLast(1).map(TypeProjection::getType),
+        // TODO: names
+        null,
+        suspendReturnType,
+        suspendFunction = true
+    ).makeNullableAsSpecified(funType.isMarkedNullable) to
+            (isReleaseCoroutines && isContinuation(continuationArgumentFqName, !isReleaseCoroutines))
 }
 
 fun isContinuation(name: FqName?, isReleaseCoroutines: Boolean): Boolean {
     return if (isReleaseCoroutines) name == DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME_RELEASE
     else name == DescriptorUtils.CONTINUATION_INTERFACE_FQ_NAME_EXPERIMENTAL
-}
-
-fun deprecatedAnnotationDescriptor(module: ModuleDescriptor): AnnotationDescriptor {
-    val deprecatedClassDescriptor = module.resolveClassByFqName(
-        DEPRECATED_ANNOTATION_FQ_NAME,
-        NoLookupLocation.FROM_DESERIALIZATION
-    ).sure { "Cannot get class descriptor for @Deprecated" }
-    val deprecatedLevelClassDescriptor = module.resolveClassByFqName(
-        KotlinBuiltIns.BUILT_INS_PACKAGE_FQ_NAME.child(Name.identifier("DeprecationLevel")),
-        NoLookupLocation.FROM_DESERIALIZATION
-    ).sure { "Cannot get class descriptor for DeprecatedLevel" }
-    val deprecatedLevelError =
-        EnumValue(deprecatedLevelClassDescriptor.classId.sure { "Cannot get classId for DeprecatedLevel" }, Name.identifier("ERROR"))
-    return AnnotationDescriptorImpl(
-        deprecatedClassDescriptor.defaultType,
-        mapOf(
-            Name.identifier("message") to StringValue("experimental coroutine"),
-            Name.identifier("level") to deprecatedLevelError
-        ),
-        deprecatedClassDescriptor.source
-    )
-}
-
-fun KotlinType.isExperimentalSuspendFunctionTypeInReleaseEnvironment(): Boolean = isSuspendFunctionTypeOrSubtype &&
-        annotations.hasAnnotation(DEPRECATED_ANNOTATION_FQ_NAME)
-
-fun deprecatedAdditionalAnnotation(module: ModuleDescriptor): Annotations {
-    return AnnotationsImpl.create(
-        listOf(
-            AnnotationWithTarget(
-                deprecatedAnnotationDescriptor(module),
-                null
-            )
-        )
-    )
 }
