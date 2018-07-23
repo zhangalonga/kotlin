@@ -107,7 +107,7 @@ private data class DeprecatedExperimentalCoroutine(
     override val target: DeclarationDescriptor
 ) : Deprecation {
     override val deprecationLevel: DeprecationLevelValue = DeprecationLevelValue.ERROR
-    override val message: String? = "Experimental coroutine cannot be used with api version 1.3"
+    override val message: String? = "Experimental coroutine cannot be used with API version 1.3"
 }
 
 private data class DeprecatedByVersionRequirement(
