@@ -1,12 +1,15 @@
-package idea
+package org.jetbrains.kotlin.buildUtils.idea
 
 import org.gradle.api.Project
-import org.jetbrains.kotlin.buildUtils.idea.BuildVFile
-import org.jetbrains.kotlin.buildUtils.idea.DistCopy
-import org.jetbrains.kotlin.buildUtils.idea.DistModuleOutput
 
 class DistModelFlattener(val rootProject: Project) {
-    fun BuildVFile.copyFlattenedContentsTo(new: BuildVFile, inJar: Boolean = false) {
+    fun DistVFile.flatten(): DistVFile {
+        val new = DistVFile(parent, name, file)
+        copyFlattenedContentsTo(new)
+        return new
+    }
+
+    private fun DistVFile.copyFlattenedContentsTo(new: DistVFile, inJar: Boolean = false) {
         contents.forEach {
             when (it) {
                 is DistCopy -> {
@@ -36,13 +39,7 @@ class DistModelFlattener(val rootProject: Project) {
         }
     }
 
-    fun BuildVFile.flatten(): BuildVFile {
-        val new = BuildVFile(parent, name, file)
-        copyFlattenedContentsTo(new)
-        return new
-    }
-
-    fun transformJarName(name: String) =
+    private fun transformJarName(name: String) =
             name.replace(Regex("-${java.util.regex.Pattern.quote(rootProject.version.toString())}"), "")
 }
 

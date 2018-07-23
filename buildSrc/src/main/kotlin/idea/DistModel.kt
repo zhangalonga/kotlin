@@ -4,12 +4,12 @@ import java.io.File
 import java.io.PrintWriter
 
 
-class BuildVFile(
-        val parent: BuildVFile?,
+class DistVFile(
+        val parent: DistVFile?,
         val name: String,
         val file: File = File(parent!!.file, name)
 ) {
-    val child = mutableMapOf<String, BuildVFile>()
+    val child = mutableMapOf<String, DistVFile>()
 
     val contents = mutableSetOf<DistContentElement>()
 
@@ -17,9 +17,9 @@ class BuildVFile(
 
     val hasContents: Boolean = file.exists() || contents.isNotEmpty()
 
-    fun relativePath(path: String): BuildVFile {
+    fun relativePath(path: String): DistVFile {
         val pathComponents = path.split(File.separatorChar)
-        return pathComponents.fold(this) { parent: BuildVFile, childName: String ->
+        return pathComponents.fold(this) { parent: DistVFile, childName: String ->
             try {
                 parent.getOrCreateChild(childName)
             } catch (t: Throwable) {
@@ -28,8 +28,8 @@ class BuildVFile(
         }
     }
 
-    fun getOrCreateChild(name: String): BuildVFile = child.getOrPut(name) {
-        BuildVFile(this, name)
+    fun getOrCreateChild(name: String): DistVFile = child.getOrPut(name) {
+        DistVFile(this, name)
     }
 
     fun addContents(contents: DistContentElement) {
@@ -48,11 +48,11 @@ class BuildVFile(
 
 }
 
-sealed class DistContentElement(val targetDir: BuildVFile)
+sealed class DistContentElement(val targetDir: DistVFile)
 
 ///////
 
-class DistCopy(target: BuildVFile, val src: BuildVFile) : DistContentElement(target) {
+class DistCopy(target: DistVFile, val src: DistVFile) : DistContentElement(target) {
     init {
         target.addContents(this)
     }
@@ -60,7 +60,7 @@ class DistCopy(target: BuildVFile, val src: BuildVFile) : DistContentElement(tar
     override fun toString(): String = "COPY OF ${src.file}"
 }
 
-class DistModuleOutput(parent: BuildVFile, val projectId: String) : DistContentElement(parent) {
+class DistModuleOutput(parent: DistVFile, val projectId: String) : DistContentElement(parent) {
     init {
         parent.addContents(this)
     }
