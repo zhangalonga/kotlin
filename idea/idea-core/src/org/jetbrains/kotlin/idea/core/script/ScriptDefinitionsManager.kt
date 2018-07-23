@@ -33,11 +33,7 @@ import org.jetbrains.kotlin.idea.caches.project.SdkInfo
 import org.jetbrains.kotlin.idea.caches.project.getScriptRelatedModuleInfo
 import org.jetbrains.kotlin.idea.util.ProjectRootsUtil.isInContent
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.script.KotlinScriptDefinition
-import org.jetbrains.kotlin.script.KotlinScriptDefinitionFromAnnotatedTemplate
-import org.jetbrains.kotlin.script.LazyScriptDefinitionProvider
-import org.jetbrains.kotlin.script.ScriptDefinitionProvider
-import org.jetbrains.kotlin.script.ScriptTemplatesProvider
+import org.jetbrains.kotlin.script.*
 import org.jetbrains.kotlin.scripting.compiler.plugin.KotlinScriptDefinitionAdapterFromNewAPI
 import org.jetbrains.kotlin.utils.PathUtil
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
@@ -55,7 +51,7 @@ import kotlin.script.experimental.dependencies.DependenciesResolver
 import kotlin.script.experimental.dependencies.ScriptDependencies
 import kotlin.script.experimental.dependencies.asSuccess
 import kotlin.script.experimental.jvm.JvmDependency
-import kotlin.script.experimental.jvm.JvmGetScriptingClass
+import kotlin.script.experimental.jvm.defaultJvmScriptingEnvironment
 import kotlin.script.experimental.location.ScriptExpectedLocation
 import kotlin.script.templates.standard.ScriptTemplateWithArgs
 
@@ -184,8 +180,8 @@ fun loadDefinitionsFromTemplates(
                 }
                 template.annotations.firstIsInstanceOrNull<kotlin.script.experimental.annotations.KotlinScript>() != null -> {
                     val hostEnvironment = ScriptingEnvironment(
-                        ScriptingEnvironmentProperties.configurationDependencies to listOf(JvmDependency(classpath)),
-                        ScriptingEnvironmentProperties.getScriptingClass to JvmGetScriptingClass()
+                        defaultJvmScriptingEnvironment,
+                        ScriptingEnvironmentProperties.configurationDependencies to listOf(JvmDependency(classpath))
                     )
                     KotlinScriptDefinitionAdapterFromNewAPI(
                         createScriptDefinitionFromAnnotatedBaseClass(KotlinType(template), hostEnvironment, KotlinScriptDefinition::class),
