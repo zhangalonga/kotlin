@@ -1,12 +1,9 @@
 package org.jetbrains.kotlin.buildUtils.idea
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import ideaPlugin
+import idea.DistModel
+import idea.DistModelBuildContext
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.internal.file.copy.SingleParentCopySpec
 import org.gradle.api.tasks.Copy
-import org.gradle.jvm.tasks.Jar
 import org.jetbrains.gradle.ext.ArtifactType
 import org.jetbrains.gradle.ext.RecursiveArtifact
 import java.io.File
@@ -14,19 +11,20 @@ import java.io.File
 fun generateIdeArtifacts(rootProject: Project) {
     val model = DistModel(rootProject)
 
-
     val mainDistTask = rootProject.tasks.getByName("dist")
     val distTasks = mainDistTask.taskDependencies
             .getDependencies(mainDistTask)
             .filter { it.name == "dist" }
             .filterIsInstance<Copy>()
 
-    println("----------------- vv DIST vv ------------------------")
-    distTasks.forEach {
-        model.ensureMapped(it)
-    }
-    println("---------------- ^^ DIST ^^ -------------------------")
+    val reportsDir = File("/Users/jetbrains/tasks/jps-build-test/kotlin/buildSrc/src/main/kotlin/idea")
 
+    File(reportsDir, "dist.report.txt").printWriter().use { pw ->
+        val ctx = DistModelBuildContext(null, "ROOT", "dist", pw)
+        distTasks.forEach {
+            model.ensureMapped(it, ctx)
+        }
+    }
 
     val mainIdeaPluginTask = rootProject.tasks.getByName("ideaPlugin")
 
@@ -35,11 +33,12 @@ fun generateIdeArtifacts(rootProject: Project) {
             .filter { it.name == "ideaPlugin" }
             .filterIsInstance<Copy>()
 
-    println("----------------- vv IDEA PLUGIN vv ------------------------")
-    ideaPluginTasks.forEach {
-        model.ensureMapped(it)
+    File(reportsDir, "idea-plugin.report.txt").printWriter().use { pw ->
+        val ctx = DistModelBuildContext(null, "ROOT", "idea-plugin", pw)
+        ideaPluginTasks.forEach {
+            model.ensureMapped(it, ctx)
+        }
     }
-    println("---------------- ^^ IDEA PLUGIN ^^ -------------------------")
 }
 
 operator fun RecursiveArtifact.get(name: String): RecursiveArtifact? =
