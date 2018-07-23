@@ -63,7 +63,8 @@ class MemberDeserializer(private val c: DeserializationContext) {
         // Calculate isExperimentalCoroutineInReleaseEnvironment for type parameters
         property.typeParameters.forEach { it.upperBounds }
 
-        property.isExperimentalCoroutineInReleaseEnvironment = local.typeDeserializer.experimentalSuspendFunctionTypeEncountered
+        property.isExperimentalCoroutineInReleaseEnvironment = local.typeDeserializer.experimentalSuspendFunctionTypeEncountered &&
+                c.components.configuration.releaseCoroutines && property.versionRequirement?.version != VersionRequirement.Version(1, 3)
 
         val getter = if (hasGetter) {
             val getterFlags = proto.getterFlags
@@ -234,7 +235,9 @@ class MemberDeserializer(private val c: DeserializationContext) {
         // Calculate isExperimentalCoroutineInReleaseEnvironment for type parameters
         descriptor.typeParameters.forEach { it.upperBounds }
         descriptor.isExperimentalCoroutineInReleaseEnvironment = local.typeDeserializer.experimentalSuspendFunctionTypeEncountered ||
-                (c.containingDeclaration as? DeserializedClassDescriptor)?.c?.typeDeserializer?.experimentalSuspendFunctionTypeEncountered == true
+                ((c.containingDeclaration as? DeserializedClassDescriptor)?.c?.typeDeserializer?.experimentalSuspendFunctionTypeEncountered == true &&
+                        c.components.configuration.releaseCoroutines &&
+                        descriptor.versionRequirement?.version != VersionRequirement.Version(1, 3))
 
         return descriptor
     }
