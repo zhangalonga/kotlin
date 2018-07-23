@@ -37,7 +37,7 @@ val compilerModules: Array<String> by rootProject.extra
 compilerModules.forEach { evaluationDependsOn(it) }
 
 val compiledModulesSources = compilerModules.map {
-    project(it).javaPluginConvention().sourceSets.getByName("main").allSource
+    files(project(it).javaPluginConvention().sourceSets.getByName("main").allSource.srcDirs)
 }
 
 dependencies {
