@@ -49,6 +49,7 @@ plugins {
     `build-scan`
     idea
     id("jps-compatible")
+    id("org.jetbrains.gradle.plugin.idea-ext")
 }
 
 pill {
@@ -280,7 +281,6 @@ val ignoreTestFailures by extra(project.findProperty("ignoreTestFailures")?.toSt
         ?: project.hasProperty("teamcity"))
 
 allprojects {
-
     jvmTarget = defaultJvmTarget
     javaHome = defaultJavaHome
 
@@ -388,6 +388,10 @@ val ideaPlugin by task<Task> {
     dependsOn(copyCompilerToIdeaPlugin)
     val childIdeaPluginTasks = getTasksByName("ideaPlugin", true) - this@task
     dependsOn(childIdeaPluginTasks)
+}
+
+subprojects {
+    plugins.apply("org.gradle.idea")
 }
 
 tasks {
@@ -708,14 +712,14 @@ tasks.create("findShadowJarsInClasspath").doLast {
     }
 }
 
-//rootProject.idea {
-//    project {
-//        (this@project as ExtensionAware).extensions.configure<org.jetbrains.gradle.ext.ProjectSettings>("settings") {
-//            ideArtifacts {
-////                    generateKotlinPluginArtifact(rootProject, this)
-//            }
-//        }
-//    }
-//}
-
-org.jetbrains.kotlin.buildUtils.idea.generateIdeArtifacts(rootProject)
+afterEvaluate {
+    rootProject.idea {
+        project {
+            (this@project as ExtensionAware).extensions.configure<org.jetbrains.gradle.ext.ProjectSettings>("settings") {
+                ideArtifacts {
+                    org.jetbrains.kotlin.buildUtils.idea.generateIdeArtifacts(rootProject, this)
+                }
+            }
+        }
+    }
+}

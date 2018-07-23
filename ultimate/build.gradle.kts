@@ -4,7 +4,7 @@ import org.gradle.jvm.tasks.Jar
 
 description = "Kotlin IDEA Ultimate plugin"
 
-plugins {
+plugins { idea
     kotlin("jvm")
 }
 

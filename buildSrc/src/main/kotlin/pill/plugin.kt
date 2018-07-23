@@ -79,12 +79,15 @@ class JpsCompatiblePlugin : Plugin<Project> {
 
         if (project == project.rootProject) {
             project.tasks.create("pill") {
-                doLast { pill(project) }
-
-                if (System.getProperty("pill.android.tests", "false") == "true") {
-                    TaskUtils.useAndroidSdk(this)
-                    TaskUtils.useAndroidJar(this)
+                doLast {
+//                    org.jetbrains.kotlin.buildUtils.idea.generateIdeArtifacts(project)
+//                    pill(project)
                 }
+
+//                if (System.getProperty("pill.android.tests", "false") == "true") {
+//                    TaskUtils.useAndroidSdk(this)
+//                    TaskUtils.useAndroidJar(this)
+//                }
             }
 
             project.tasks.create("unpill") {

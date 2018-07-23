@@ -1,5 +1,5 @@
 
-plugins {
+plugins { idea
     kotlin("jvm")
 }
 

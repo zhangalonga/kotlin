@@ -1,389 +1,79 @@
 - ROOT dist
--- FROM COPY TASK :kotlin-compiler:dist
---- INTO $/dist/kotlinc/lib
---- FROM SHADOW JAR $/prepare/compiler/build/libs/kotlin-compiler-1.2-SNAPSHOT-before-proguard.jar
----- FROM COPY TASK :kotlin-compiler:packCompiler
------ FROM CONFIGURATION 
-------  $/compiler/util/build/libs/util-1.2-SNAPSHOT.jar
-------  $/compiler/container/build/libs/container-1.2-SNAPSHOT.jar
-------  $/compiler/resolution/build/libs/resolution-1.2-SNAPSHOT.jar
-------  $/compiler/serialization/build/libs/serialization-1.2-SNAPSHOT.jar
-------  $/compiler/psi/build/libs/psi-1.2-SNAPSHOT.jar
-------  $/compiler/frontend/build/libs/frontend-1.2-SNAPSHOT.jar
-------  $/compiler/frontend.java/build/libs/frontend.java-1.2-SNAPSHOT.jar
-------  $/compiler/frontend.script/build/libs/frontend.script-1.2-SNAPSHOT.jar
-------  $/compiler/cli/cli-common/build/libs/cli-common-1.2-SNAPSHOT.jar
-------  $/compiler/daemon/daemon-common/build/libs/daemon-common-1.2-SNAPSHOT.jar
-------  $/compiler/daemon/build/libs/daemon-1.2-SNAPSHOT.jar
-------  $/compiler/ir/ir.tree/build/libs/ir.tree-1.2-SNAPSHOT.jar
-------  $/compiler/ir/ir.psi2ir/build/libs/ir.psi2ir-1.2-SNAPSHOT.jar
-------  $/compiler/ir/backend.js/build/libs/backend.js-1.2-SNAPSHOT.jar
-------  $/compiler/backend-common/build/libs/backend-common-1.2-SNAPSHOT.jar
-------  $/compiler/backend/build/libs/backend-1.2-SNAPSHOT.jar
-------  $/compiler/plugin-api/build/libs/plugin-api-1.2-SNAPSHOT.jar
-------  $/compiler/light-classes/build/libs/light-classes-1.2-SNAPSHOT.jar
-------  $/compiler/cli/build/libs/cli-1.2-SNAPSHOT.jar
-------  $/compiler/incremental-compilation-impl/build/libs/incremental-compilation-impl-1.2-SNAPSHOT.jar
-------  $/js/js.ast/build/libs/js.ast-1.2-SNAPSHOT.jar
-------  $/js/js.serializer/build/libs/js.serializer-1.2-SNAPSHOT.jar
-------  $/js/js.parser/build/libs/js.parser-1.2-SNAPSHOT.jar
-------  $/js/js.frontend/build/libs/js.frontend-1.2-SNAPSHOT.jar
-------  $/js/js.translator/build/libs/js.translator-1.2-SNAPSHOT.jar
-------  $/js/js.dce/build/libs/js.dce-1.2-SNAPSHOT.jar
-------  $/compiler/build/libs/compiler-1.2-SNAPSHOT.jar
-------  $/build-common/build/libs/kotlin-build-common-1.2-SNAPSHOT.jar
-------  $/core/metadata/build/libs/metadata-1.2-SNAPSHOT.jar
-------  $/core/metadata.jvm/build/libs/metadata.jvm-1.2-SNAPSHOT.jar
-------  $/core/descriptors/build/libs/descriptors-1.2-SNAPSHOT.jar
-------  $/core/descriptors.jvm/build/libs/descriptors.jvm-1.2-SNAPSHOT.jar
-------  $/core/deserialization/build/libs/deserialization-1.2-SNAPSHOT.jar
-------  $/core/util.runtime/build/libs/util.runtime-1.2-SNAPSHOT.jar
-------  $/core/builtins/build/libs/platform-builtins.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jline/jline/3.3.1/d8a30137fe4ee2246b71b3915baac767d348c5bb/jline-3.3.1.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.fusesource.jansi/jansi/1.16/b1aaf0028852164ab6b4057192ccd0ba7dedd3a5/jansi-1.16.jar
-------  $/custom-dependencies/lib/protobuf-java-relocated-2.6.1.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/1.3.9/40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf/jsr305-1.3.9.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/io.javaslang/javaslang/2.0.6/415b0d40db4890849270c2a5cb50050fc6ee7636/javaslang-2.0.6.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core/0.20/5f3fa9b5b2dc9cfc0d9358d5b2cab154d590a564/kotlinx-coroutines-core-0.20.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij-core/intellij-core.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/guava-21.0.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/picocontainer.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/trove4j.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/annotations.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/streamex-0.6.5.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/asm-all.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/snappy-in-java-0.5.1.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/jna.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/lz4-java-1.3.jar
-------  $/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/181.4892.42/intellij/lib/jna-platform.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/io.javaslang/javaslang-match/2.0.6/d57a666939103b659813de52102d3ff0baa8ad5f/javaslang-match-2.0.6.jar
--- FROM COPY TASK :kotlin-daemon-client:dist
---- INTO $/dist/kotlinc/lib
---- FROM SHADOW JAR $/compiler/daemon/daemon-client/build/libs/kotlin-daemon-client-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-daemon-client:shadowJar
------ FROM MODULE OUTPUT 
-------  $/compiler/daemon/daemon-client/build/classes/java/main
-------  $/compiler/daemon/daemon-client/build/classes/kotlin/main
------ FROM CONFIGURATION 
-------  $/compiler/daemon/daemon-common/build/libs/daemon-common-1.2-SNAPSHOT.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform/0.14/48341d68b4456bea76ca952b6d38b877881350f7/native-platform-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-windows-amd64/0.14/bdf519fab10700fadc9953526a07e8104fad1d07/native-platform-windows-amd64-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-windows-i386/0.14/65b00e123554f42ecd0da054a747033be5da608d/native-platform-windows-i386-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-osx-amd64/0.14/5e5c113c32c0bac5cf2dcd3a59e4b021023d86a1/native-platform-osx-amd64-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-osx-i386/0.14/fd86b7eedbf5a0df003cf946f0b0c80c06c103ee/native-platform-osx-i386-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-linux-amd64/0.14/d0ac539a32015e91e309c20e493d220aae88811b/native-platform-linux-amd64-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-linux-i386/0.14/6576c08a9a514a6ae5623e6f8da04502cac23bde/native-platform-linux-i386-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-freebsd-amd64-libcpp/0.14/b45561900830d676e9e0040561e68abe86fbc10e/native-platform-freebsd-amd64-libcpp-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-freebsd-amd64-libstdcpp/0.14/bcc4e58ef4db56052fe9512d2d1265f11dc9242f/native-platform-freebsd-amd64-libstdcpp-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-freebsd-i386-libcpp/0.14/50b15724c82808c2b7fefd9b0b7c6dd977623f35/native-platform-freebsd-i386-libcpp-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-freebsd-i386-libstdcpp/0.14/d98be0a75890523a6a70dc93795101145828a5da/native-platform-freebsd-i386-libstdcpp-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-linux-amd64-ncurses5/0.14/6dece223855317a75c371fb72d826582893351c6/native-platform-linux-amd64-ncurses5-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-linux-amd64-ncurses6/0.14/8effac668ad781893fc33fd86f993c5de559d355/native-platform-linux-amd64-ncurses6-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-linux-i386-ncurses5/0.14/80ec77af683abeaa58ed11b9c2cad2d02837e55f/native-platform-linux-i386-ncurses5-0.14.jar
-------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/net.rubygrapefruit/native-platform-linux-i386-ncurses6/0.14/615dea7e75ca704bba1de9b671652283a9743894/native-platform-linux-i386-ncurses6-0.14.jar
--- FROM COPY TASK :kotlin-reflect:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/reflect/build/libs/kotlin-reflect-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-reflect:sourcesJar
------  $/libraries/reflect/build/core-relocated
------  $/core/reflection.jvm/src
---- FROM JAR $/libraries/reflect/build/libs/kotlin-reflect-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-reflect:result
------  $/libraries/reflect/build/libs/kotlin-reflect-proguard.jar
--- FROM COPY TASK :kotlin-test:kotlin-test-testng:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/kotlin.test/testng/build/libs/kotlin-test-testng-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-testng:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/kotlin.test/testng/build/classes/java/main
-------  $/libraries/kotlin.test/testng/build/classes/kotlin/main
---- FROM JAR $/libraries/kotlin.test/testng/build/libs/kotlin-test-testng-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-testng:sourcesJar
------ FROM SOURCES 
-------  $/libraries/kotlin.test/testng/src/main/kotlin
-------  $/libraries/kotlin.test/testng/src/main/java
--- FROM COPY TASK :kotlin-annotations-android:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/tools/kotlin-annotations-android/build/libs/kotlin-annotations-android-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-annotations-android:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/tools/kotlin-annotations-android/build/classes/java/main
-------  $/libraries/tools/kotlin-annotations-android/build/classes/kotlin/main
--- FROM COPY TASK :prepare:build.version:dist
---- INTO $/dist/kotlinc
--- FROM COPY TASK :kotlin-annotation-processing-runtime:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/kapt3/kapt3-runtime/build/libs/kotlin-annotation-processing-runtime-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-annotation-processing-runtime:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/kapt3/kapt3-runtime/build/classes/java/main
-------  $/plugins/kapt3/kapt3-runtime/build/classes/kotlin/main
--- FROM COPY TASK :plugins:android-extensions-compiler:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/android-extensions/android-extensions-compiler/build/libs/android-extensions-compiler-1.2-SNAPSHOT.jar
----- FROM COPY TASK :plugins:android-extensions-compiler:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/android-extensions/android-extensions-compiler/build/classes/java/main
-------  $/plugins/android-extensions/android-extensions-compiler/build/classes/kotlin/main
------  $/plugins/android-extensions/android-extensions-runtime/build/libs/kotlin-android-extensions-runtime-1.2-SNAPSHOT.jar
--- FROM COPY TASK :kotlin-imports-dumper-compiler-plugin:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/imports-dumper/build/libs/kotlin-imports-dumper-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-imports-dumper-compiler-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/imports-dumper/build/classes/java/main
-------  $/plugins/imports-dumper/build/classes/kotlin/main
------  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime/0.4.2/e343c68c9fa77a190225484c1e03b1485fbb5f1f/kotlinx-serialization-runtime-0.4.2.jar
--- FROM COPY TASK :kotlin-preloader:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/compiler/preloader/build/libs/kotlin-preloader-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-preloader:jar
------ FROM MODULE OUTPUT 
-------  $/compiler/preloader/build/classes/java/main
-------  $/compiler/preloader/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-stdlib-jdk8:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/stdlib/jdk8/build/libs/kotlin-stdlib-jdk8-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-stdlib-jdk8:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/stdlib/jdk8/build/classes/java/main
-------  $/libraries/stdlib/jdk8/build/classes/kotlin/main
---- FROM JAR $/libraries/stdlib/jdk8/build/libs/kotlin-stdlib-jdk8-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-stdlib-jdk8:sourcesJar
------ FROM SOURCES 
-------  $/libraries/stdlib/jdk8/src/main/kotlin
-------  $/libraries/stdlib/jdk8/src/main/java
-------  $/libraries/stdlib/jdk8/src
--- FROM COPY TASK :kotlin-test:kotlin-test-jvm:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/kotlin.test/jvm/build/libs/kotlin-test-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-jvm:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/kotlin.test/jvm/build/classes/java/main
-------  $/libraries/kotlin.test/jvm/build/classes/kotlin/main
---- FROM JAR $/libraries/kotlin.test/jvm/build/libs/kotlin-test-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-jvm:sourcesJar
------ FROM SOURCES 
-------  $/libraries/kotlin.test/jvm/src/main/kotlin
-------  $/libraries/kotlin.test/jvm/src/main/java
--- FROM COPY TASK :kotlin-stdlib-jre8:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/stdlib/jre8/build/libs/kotlin-stdlib-jre8-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-stdlib-jre8:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/stdlib/jre8/build/classes/java/main
-------  $/libraries/stdlib/jre8/build/classes/kotlin/main
---- FROM JAR $/libraries/stdlib/jre8/build/libs/kotlin-stdlib-jre8-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-stdlib-jre8:sourcesJar
------ FROM SOURCES 
-------  $/libraries/stdlib/jre8/src/main/kotlin
-------  $/libraries/stdlib/jre8/src/main/java
-------  $/libraries/stdlib/jre8/src
--- FROM COPY TASK :kotlin-test:kotlin-test-junit5:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/kotlin.test/junit5/build/libs/kotlin-test-junit5-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-junit5:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/kotlin.test/junit5/build/classes/java/main
-------  $/libraries/kotlin.test/junit5/build/classes/kotlin/main
---- FROM JAR $/libraries/kotlin.test/junit5/build/libs/kotlin-test-junit5-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-junit5:sourcesJar
------ FROM SOURCES 
-------  $/libraries/kotlin.test/junit5/src/main/kotlin
-------  $/libraries/kotlin.test/junit5/src/main/java
--- FROM COPY TASK :kotlin-source-sections-compiler-plugin:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/source-sections/source-sections-compiler/build/libs/kotlin-source-sections-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-source-sections-compiler-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/source-sections/source-sections-compiler/build/classes/java/main
-------  $/plugins/source-sections/source-sections-compiler/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-scripting-compiler:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/scripting/scripting-cli/build/libs/kotlin-scripting-compiler-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-compiler:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/scripting/scripting-cli/build/classes/java/main
-------  $/plugins/scripting/scripting-cli/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-annotations-jvm:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/tools/kotlin-annotations-jvm/build/libs/kotlin-annotations-jvm-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-annotations-jvm:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/tools/kotlin-annotations-jvm/build/classes/java/main
-------  $/libraries/tools/kotlin-annotations-jvm/build/classes/kotlin/main
---- FROM JAR $/libraries/tools/kotlin-annotations-jvm/build/libs/kotlin-annotations-jvm-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-annotations-jvm:sourcesJar
------ FROM SOURCES 
-------  $/libraries/tools/kotlin-annotations-jvm/src/main/kotlin
-------  $/libraries/tools/kotlin-annotations-jvm/src/main/java
-------  $/libraries/tools/kotlin-annotations-jvm/src
--- FROM COPY TASK :kotlin-scripting-jvm:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/scripting/jvm/build/libs/kotlin-scripting-jvm-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-jvm:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/scripting/jvm/build/classes/java/main
-------  $/libraries/scripting/jvm/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-script-runtime:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/tools/script-runtime/build/libs/kotlin-script-runtime-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-script-runtime:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/tools/script-runtime/build/classes/java/main
-------  $/libraries/tools/script-runtime/build/classes/kotlin/main
---- FROM JAR $/libraries/tools/script-runtime/build/libs/kotlin-script-runtime-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-script-runtime:sourcesJar
------ FROM SOURCES 
-------  $/libraries/tools/script-runtime/src/main/kotlin
-------  $/libraries/tools/script-runtime/src/main/java
-------  $/core/script.runtime/src
--- FROM COPY TASK :kotlin-android-extensions-runtime:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/android-extensions/android-extensions-runtime/build/libs/kotlin-android-extensions-runtime-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-android-extensions-runtime:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/android-extensions/android-extensions-runtime/build/classes/java/main
-------  $/plugins/android-extensions/android-extensions-runtime/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-scripting-misc:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/scripting/misc/build/libs/kotlin-scripting-misc-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-misc:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/scripting/misc/build/classes/java/main
-------  $/libraries/scripting/misc/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-test:kotlin-test-js:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/kotlin.test/js/build/libs/kotlin-test-js-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-js:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/kotlin.test/js/build/classes/java/main
-------  $/libraries/kotlin.test/js/build/classes/main
---- FROM JAR $/libraries/kotlin.test/js/build/libs/kotlin-test-js-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-js:sourcesJar
------ FROM SOURCES 
-------  $/libraries/kotlin.test/js/src/main/resources
-------  $/libraries/kotlin.test/js/src/main/kotlin
--- FROM COPY TASK :kotlin-ant:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/ant/build/libs/kotlin-ant-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-ant:jar
------ FROM MODULE OUTPUT 
-------  $/ant/build/classes/java/main
-------  $/ant/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-annotation-processing:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/kapt3/kapt3-compiler/build/libs/kotlin-annotation-processing-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-annotation-processing:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/kapt3/kapt3-compiler/build/classes/java/main
-------  $/plugins/kapt3/kapt3-compiler/build/classes/kotlin/main
------  $/plugins/kapt3/kapt3-runtime/build/libs/kotlin-annotation-processing-runtime-1.2-SNAPSHOT.jar
------  $/plugins/kapt3/kapt3-base/build/libs/kotlin-annotation-processing-base-1.2-SNAPSHOT.jar
--- FROM COPY TASK :kotlin-stdlib:jvm-minimal-for-test:dist
---- INTO $/dist
---- FROM JAR $/libraries/stdlib/jvm-minimal-for-test/build/libs/jvm-minimal-for-test-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-stdlib:jvm-minimal-for-test:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/stdlib/jvm-minimal-for-test/build/classes/java/main
-------  $/libraries/stdlib/jvm-minimal-for-test/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-test:kotlin-test-common:dist
---- INTO $/dist/kotlinc/lib
--- FROM COPY TASK :kotlin-test:kotlin-test-junit:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/kotlin.test/junit/build/libs/kotlin-test-junit-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-junit:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/kotlin.test/junit/build/classes/java/main
-------  $/libraries/kotlin.test/junit/build/classes/kotlin/main
---- FROM JAR $/libraries/kotlin.test/junit/build/libs/kotlin-test-junit-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-test:kotlin-test-junit:sourcesJar
------ FROM SOURCES 
-------  $/libraries/kotlin.test/junit/src/main/kotlin
-------  $/libraries/kotlin.test/junit/src/main/java
--- FROM COPY TASK :kotlin-noarg-compiler-plugin:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/noarg/noarg-cli/build/libs/kotlin-noarg-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-noarg-compiler-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/noarg/noarg-cli/build/classes/java/main
-------  $/plugins/noarg/noarg-cli/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-allopen-compiler-plugin:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/allopen/allopen-cli/build/libs/kotlin-allopen-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-allopen-compiler-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/allopen/allopen-cli/build/classes/java/main
-------  $/plugins/allopen/allopen-cli/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-scripting-common:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/scripting/common/build/libs/kotlin-scripting-common-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-common:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/scripting/common/build/classes/java/main
-------  $/libraries/scripting/common/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-runtime:dist
---- INTO $/dist/kotlinc/lib
--- FROM COPY TASK :kotlin-stdlib:dist
---- INTO $/dist/kotlinc/lib
--- FROM COPY TASK :kotlin-stdlib-jdk7:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/stdlib/jdk7/build/libs/kotlin-stdlib-jdk7-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-stdlib-jdk7:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/stdlib/jdk7/build/classes/java/main
-------  $/libraries/stdlib/jdk7/build/classes/kotlin/main
---- FROM JAR $/libraries/stdlib/jdk7/build/libs/kotlin-stdlib-jdk7-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-stdlib-jdk7:sourcesJar
------ FROM SOURCES 
-------  $/libraries/stdlib/jdk7/src/main/kotlin
-------  $/libraries/stdlib/jdk7/src/main/java
-------  $/libraries/stdlib/jdk7/src
--- FROM COPY TASK :kotlin-stdlib-jre7:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/stdlib/jre7/build/libs/kotlin-stdlib-jre7-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-stdlib-jre7:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/stdlib/jre7/build/classes/java/main
-------  $/libraries/stdlib/jre7/build/classes/kotlin/main
---- FROM JAR $/libraries/stdlib/jre7/build/libs/kotlin-stdlib-jre7-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-stdlib-jre7:sourcesJar
------ FROM SOURCES 
-------  $/libraries/stdlib/jre7/src/main/kotlin
-------  $/libraries/stdlib/jre7/src/main/java
-------  $/libraries/stdlib/jre7/src
--- FROM COPY TASK :kotlin-stdlib-common:dist
---- INTO $/dist/kotlinc/lib
--- FROM COPY TASK :kotlin-test:kotlin-test-annotations-common:dist
---- INTO $/dist/kotlinc/lib
--- FROM COPY TASK :kotlin-stdlib-js:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/libraries/stdlib/js/build/libs/kotlin-stdlib-js-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-stdlib-js:mergedJar
------  $/libraries/stdlib/js/build/classes/kotlin.js
------  $/libraries/stdlib/js/build/classes/kotlin.meta.js
------  $/libraries/stdlib/js/build/classes/kotlin.js.map
------ FROM MODULE OUTPUT 
-------  $/libraries/stdlib/js/build/classes/java/main
-------  $/libraries/stdlib/js/build/classes/main
------ FROM MODULE OUTPUT 
-------  $/libraries/stdlib/js/build/classes/java/experimental
-------  $/libraries/stdlib/js/build/classes/experimental
---- FROM JAR $/libraries/stdlib/js/build/libs/dist-kotlin-stdlib-js-sources.jar
----- FROM COPY TASK :kotlin-stdlib-js:distSourcesJar
------  $/libraries/stdlib/js/build/libs/kotlin-stdlib-js-1.2-SNAPSHOT-sources.jar
--- FROM COPY TASK :kotlin-runner:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/compiler/cli/cli-runner/build/libs/kotlin-runner-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-runner:jar
------ FROM MODULE OUTPUT 
-------  $/compiler/cli/cli-runner/build/classes/java/main
-------  $/compiler/cli/cli-runner/build/classes/kotlin/main
 -- FROM COPY TASK :kotlin-sam-with-receiver-compiler-plugin:dist
---- INTO $/dist/kotlinc/lib
---- FROM JAR $/plugins/sam-with-receiver/sam-with-receiver-cli/build/libs/kotlin-sam-with-receiver-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-sam-with-receiver-compiler-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/sam-with-receiver/sam-with-receiver-cli/build/classes/java/main
-------  $/plugins/sam-with-receiver/sam-with-receiver-cli/build/classes/kotlin/main
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-jvm:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-test:kotlin-test-jvm:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib-jre8:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-test:kotlin-test-annotations-common:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib:jvm-minimal-for-test:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-runner:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-misc:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-reflect:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib-common:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-test:kotlin-test-junit:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-test:kotlin-test-junit5:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-test:kotlin-test-common:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-android-extensions-runtime:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-test:kotlin-test-testng:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-annotations-android:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib-jdk8:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-noarg-compiler-plugin:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib-js:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-preloader:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-annotation-processing:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-source-sections-compiler-plugin:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-allopen-compiler-plugin:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-imports-dumper-compiler-plugin:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-runtime:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-common:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-test:kotlin-test-js:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-ant:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :prepare:build.version:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib-jdk7:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :plugins:android-extensions-compiler:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-stdlib-jre7:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-daemon-client:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-annotation-processing-runtime:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-annotations-jvm:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-compiler:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-script-runtime:dist
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-compiler:dist
+--- ALREADY VISITED 

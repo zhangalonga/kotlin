@@ -14,14 +14,17 @@ import org.gradle.api.internal.file.archive.ZipFileTree
 import org.gradle.api.internal.file.collections.DirectoryFileTree
 import org.gradle.api.internal.file.collections.FileTreeAdapter
 import org.gradle.api.internal.file.copy.CopySpecInternal
+import org.gradle.api.internal.file.copy.DefaultCopySpec
 import org.gradle.api.internal.file.copy.SingleParentCopySpec
 import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSetOutput
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.compile.AbstractCompile
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.buildUtils.idea.BuildVFile
 import org.jetbrains.kotlin.buildUtils.idea.DistCopy
-import org.jetbrains.kotlin.buildUtils.idea.DistExtractedCopy
+import org.jetbrains.kotlin.buildUtils.idea.DistModuleOutput
 import java.io.File
 import java.util.concurrent.Callable
 
@@ -29,7 +32,8 @@ class DistModelBuildContext(
         val parent: DistModelBuildContext?,
         val kind: String,
         val title: String,
-        val report: Appendable? = parent?.report
+        val report: Appendable? = parent?.report,
+        val shade: Boolean = parent?.shade ?: false
 ) {
     var distContainer: BuildVFile? = parent?.distContainer
     val depth: Int = if (parent != null) parent.depth + 1 else 0
@@ -57,46 +61,96 @@ class DistModelBuildContext(
     override fun toString() = "$logPrefix $kind $title"
 }
 
-fun DistModelBuildContext?.child(kind: String, title: String = "") =
-        DistModelBuildContext(this, kind, title)
+fun DistModelBuildContext?.child(kind: String, title: String = "", shade: Boolean = false) =
+        DistModelBuildContext(this, kind, title, shade = shade)
 
 class DistModelBuilder(val rootProject: Project) {
     val byCopyTask = mutableSetOf<AbstractCopyTask>()
     val vfsRoot = BuildVFile(null, "<root>", File(""))
-    val unresolved = mutableSetOf<BuildVFile>()
+    val refs = mutableSetOf<BuildVFile>()
+
+    fun checkRefs() {
+        refs.forEach {
+            if (!it.hasContents && it.contents.isEmpty() && it.file.path.contains("/build/")) {
+                println("UNRESOLVED ${it.file}")
+                it.contents.forEach {
+                    println("+ ${it}")
+                }
+            }
+        }
+    }
 
     fun getRelativePath(path: String) = path.replace(rootProject.projectDir.path, "$")
 
     fun requirePath(targetPath: String): BuildVFile {
         val target = vfsRoot.relativePath(targetPath)
         if (!File(targetPath).exists()) {
-            unresolved.add(target)
+            refs.add(target)
         }
         return target
     }
 
-    inline fun DistModelBuildContext.addDistContents(
-            path: String,
-            body: (src: BuildVFile, target: BuildVFile) -> Unit = { src, target -> DistCopy(target, src) }
-    ) {
-        body(requirePath(path), distContainer!!)
-        log("+", getRelativePath(path))
+    fun DistModelBuildContext.setDest(path: String) {
+        distContainer = vfsRoot.relativePath(path)
+        log("INTO", getRelativePath(path))
     }
 
-    fun ensureMapped(copy: AbstractCopyTask, parentContext: DistModelBuildContext?) {
-        val context = parentContext.child("FROM COPY TASK", copy.path)
+    fun visitCompileTask(it: AbstractCompile, parentContext: DistModelBuildContext) {
+        val ctx = parentContext.child("COMPILE", it.path)
+        ctx.setDest(it.destinationDir.path)
+        val dest = ctx.distContainer
+        if (dest != null) {
+            DistModuleOutput(dest, it.project.path)
+        } else {
+            ctx.log("!", "Cann add contents: distContainer is unknown")
+        }
+    }
+
+    inline fun DistModelBuildContext.addDistContents(
+            src: String,
+            body: (src: BuildVFile, target: BuildVFile) -> Unit = { _, _ -> Unit }
+    ) {
+        addDistContents(requirePath(src), body)
+    }
+
+    inline fun DistModelBuildContext.addDistContents(
+            src: BuildVFile,
+            body: (src: BuildVFile, target: BuildVFile) -> Unit = { _, _ -> Unit }
+    ) {
+        val distContainer1 = distContainer
+        if (distContainer1 != null) {
+            val target = distContainer1
+            body(src, target)
+            DistCopy(target, src)
+            log("+", src.file.path)
+        } else {
+            log("!", "Cann add contents: distContainer is unknown")
+        }
+    }
+
+    fun visitCopyTask(
+            copy: AbstractCopyTask,
+            parentContext: DistModelBuildContext?,
+            shade: Boolean = false
+    ): DistModelBuildContext {
+        val context = parentContext.child("FROM COPY TASK", copy.path, shade)
 
         if (byCopyTask.add(copy)) {
             val rootSpec = copy.rootSpec
-            if (copy is Copy) {
-                context.distContainer = vfsRoot.relativePath(copy.destinationDir.path)
-                context.log("INTO", getRelativePath(copy.destinationDir.path))
+
+            when (copy) {
+                is Copy -> {
+                    context.setDest(copy.destinationDir.path)
+                }
+                is AbstractArchiveTask -> context.setDest(copy.archivePath.path)
             }
 
             processCopySpec(rootSpec, context)
         } else {
             context.log("ALREADY VISITED")
         }
+
+        return context
     }
 
     fun processCopySpec(spec: CopySpecInternal, parentContext: DistModelBuildContext) {
@@ -116,15 +170,21 @@ class DistModelBuilder(val rootProject: Project) {
         }
     }
 
-    fun processSourcePath(it: Any, parentContext: DistModelBuildContext) {
+    fun processSourcePath(it: Any?, parentContext: DistModelBuildContext) {
         when {
+            it == null -> Unit
             it is ShadowJar -> parentContext.addDistContents(it.archivePath.path) { src, target ->
-                DistExtractedCopy(target, src)
-                ensureMapped(it, parentContext.child("FROM SHADOW JAR", getRelativePath(it.archivePath.path)))
+                visitCopyTask(
+                        it,
+                        parentContext.child("FROM SHADOW JAR", getRelativePath(it.archivePath.path)),
+                        true
+                )
             }
             it is Jar -> parentContext.addDistContents(it.archivePath.path) { src, target ->
-                DistCopy(target, src)
-                ensureMapped(it, parentContext.child("FROM JAR", getRelativePath(it.archivePath.path)))
+                visitCopyTask(
+                        it,
+                        parentContext.child("FROM JAR", getRelativePath(it.archivePath.path))
+                )
             }
             it is SourceSetOutput -> {
                 val ctx = parentContext.child("FROM MODULE OUTPUT")
@@ -158,7 +218,7 @@ class DistModelBuilder(val rootProject: Project) {
                     }
 
                     override fun visitCollection(fileCollection: FileCollectionInternal?) {
-                        processSourcePath(fileCollection!!, parentContext)
+                        processSourcePath(fileCollection, parentContext)
                     }
                 })
             }
@@ -169,10 +229,12 @@ class DistModelBuilder(val rootProject: Project) {
                 val zipFile = field.get(tree) as File
 
                 parentContext.addDistContents(zipFile.path) { src, target ->
-                    DistExtractedCopy(target, src)
+                    DistCopy(target, src)
                 }
             }
             it is FileCollection -> {
+                parentContext.logUnsupported("FILE COLLECTION", it)
+
                 it.files.forEach {
                     parentContext.addDistContents(it.path)
                 }
@@ -186,8 +248,16 @@ class DistModelBuilder(val rootProject: Project) {
             }
             it is Collection<*> -> {
                 it.forEach {
-                    processSourcePath(it!!, parentContext)
+                    processSourcePath(it, parentContext)
                 }
+            }
+            it is Copy -> {
+                val src = visitCopyTask(it, parentContext).distContainer
+                if (src != null) parentContext.addDistContents(src)
+                else parentContext.log("!", "Cannot copy from another copy task `$it`, destPath is not defined")
+            }
+            it is File -> {
+                parentContext.addDistContents(it.path)
             }
             else -> parentContext.logUnsupported("SOURCE PATH", it)
         }

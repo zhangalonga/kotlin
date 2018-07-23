@@ -1,323 +1,57 @@
 - ROOT idea-plugin
--- FROM COPY TASK :plugins:kapt3-idea:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/kapt3/kapt3-idea/build/libs/kapt3-idea-1.2-SNAPSHOT.jar
----- FROM COPY TASK :plugins:kapt3-idea:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/kapt3/kapt3-idea/build/classes/java/main
-------  $/plugins/kapt3/kapt3-idea/build/classes/kotlin/main
--- FROM COPY TASK :j2k:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/j2k/build/libs/j2k-1.2-SNAPSHOT.jar
----- FROM COPY TASK :j2k:jar
------ FROM MODULE OUTPUT 
-------  $/j2k/build/classes/java/main
-------  $/j2k/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-script-util:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/libraries/tools/kotlin-script-util/build/libs/kotlin-script-util-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-script-util:jar
------ FROM MODULE OUTPUT 
-------  $/libraries/tools/kotlin-script-util/build/classes/java/main
-------  $/libraries/tools/kotlin-script-util/build/classes/kotlin/main
--- FROM COPY TASK :idea:idea-git:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/idea/idea-git/build/libs/idea-git-1.2-SNAPSHOT.jar
----- FROM COPY TASK :idea:idea-git:jar
------ FROM MODULE OUTPUT 
-------  $/idea/idea-git/build/classes/java/main
-------  $/idea/idea-git/build/classes/kotlin/main
--- FROM COPY TASK :plugins:android-extensions-ide:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/android-extensions/android-extensions-idea/build/libs/android-extensions-ide-1.2-SNAPSHOT.jar
----- FROM COPY TASK :plugins:android-extensions-ide:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/android-extensions/android-extensions-idea/build/classes/java/main
-------  $/plugins/android-extensions/android-extensions-idea/build/classes/kotlin/main
--- FROM COPY TASK :plugins:uast-kotlin-idea:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/uast-kotlin-idea/build/libs/uast-kotlin-ide.jar
----- FROM COPY TASK :plugins:uast-kotlin-idea:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/uast-kotlin-idea/build/classes/java/main
-------  $/plugins/uast-kotlin-idea/build/classes/kotlin/main
--- FROM COPY TASK :idea:idea-jps-common:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/idea/idea-jps-common/build/libs/jps-common-ide.jar
----- FROM COPY TASK :idea:idea-jps-common:jar
------ FROM MODULE OUTPUT 
-------  $/idea/idea-jps-common/build/classes/java/main
-------  $/idea/idea-jps-common/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-scripting-idea:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/scripting/scripting-idea/build/libs/kotlin-scripting-idea-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-idea:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/scripting/scripting-idea/build/classes/java/main
-------  $/plugins/scripting/scripting-idea/build/classes/kotlin/main
--- FROM COPY TASK :idea:idea-android-output-parser:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/idea/idea-android/idea-android-output-parser/build/libs/android-output-parser-ide.jar
----- FROM COPY TASK :idea:idea-android-output-parser:jar
------ FROM MODULE OUTPUT 
-------  $/idea/idea-android/idea-android-output-parser/build/classes/java/main
-------  $/idea/idea-android/idea-android-output-parser/build/classes/kotlin/main
--- FROM COPY TASK :allopen-ide-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/allopen/allopen-ide/build/libs/allopen-ide-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :allopen-ide-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/allopen/allopen-ide/build/classes/java/main
-------  $/plugins/allopen/allopen-ide/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-jps-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib/jps
---- FROM SHADOW JAR $/prepare/jps-plugin/build/libs/kotlin-jps-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-jps-plugin:jar
------  $/resources/kotlinManifest.properties
------ FROM CONFIGURATION 
-------  $/build-common/build/libs/kotlin-build-common-1.2-SNAPSHOT.jar
-------  $/compiler/cli/cli-common/build/libs/cli-common-1.2-SNAPSHOT.jar
-------  $/compiler/compiler-runner/build/libs/kotlin-compiler-runner-1.2-SNAPSHOT-original.jar
-------  $/compiler/daemon/daemon-common/build/libs/daemon-common-1.2-SNAPSHOT.jar
-------  $/core/descriptors/build/libs/descriptors-1.2-SNAPSHOT.jar
-------  $/core/descriptors.jvm/build/libs/descriptors.jvm-1.2-SNAPSHOT.jar
-------  $/idea/idea-jps-common/build/libs/jps-common-ide.jar
-------  $/jps-plugin/build/libs/jps-plugin-1.2-SNAPSHOT.jar
-------  $/compiler/preloader/build/libs/kotlin-preloader-1.2-SNAPSHOT.jar
-------  $/compiler/util/build/libs/util-1.2-SNAPSHOT.jar
-------  $/core/util.runtime/build/libs/util.runtime-1.2-SNAPSHOT.jar
-------  $/plugins/android-extensions/android-extensions-jps/build/libs/android-extensions-jps-1.2-SNAPSHOT.jar
-------  $/compiler/daemon/daemon-client/build/libs/kotlin-daemon-client-1.2-SNAPSHOT.jar
--- FROM COPY TASK :idea:kotlin-gradle-tooling:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/idea/kotlin-gradle-tooling/build/libs/kotlin-gradle-tooling-1.2-SNAPSHOT.jar
----- FROM COPY TASK :idea:kotlin-gradle-tooling:jar
------ FROM MODULE OUTPUT 
-------  $/idea/kotlin-gradle-tooling/build/classes/java/main
-------  $/idea/kotlin-gradle-tooling/build/classes/kotlin/main
--- FROM COPY TASK :prepare:idea-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM SHADOW JAR $/prepare/idea-plugin/build/libs/kotlin-plugin.jar
----- FROM COPY TASK :prepare:idea-plugin:shadowJar
------  $/resources/kotlinManifest.properties
------ FROM CONFIGURATION 
-------  $/custom-dependencies/lib/protobuf-java-relocated-2.6.1.jar
-------  $/core/builtins/build/libs/platform-builtins.jar
------ FROM MODULE OUTPUT 
-------  $/plugins/annotation-based-compiler-plugins-ide-support/build/classes/java/main
-------  $/plugins/annotation-based-compiler-plugins-ide-support/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/backend/build/classes/java/main
-------  $/compiler/backend/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/backend-common/build/classes/java/main
-------  $/compiler/backend-common/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/build-common/build/classes/java/main
-------  $/build-common/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/cli/cli-common/build/classes/java/main
-------  $/compiler/cli/cli-common/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/container/build/classes/java/main
-------  $/compiler/container/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/daemon/daemon-common/build/classes/java/main
-------  $/compiler/daemon/daemon-common/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/core/metadata/build/classes/java/main
-------  $/core/metadata/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/core/metadata.jvm/build/classes/java/main
-------  $/core/metadata.jvm/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/core/descriptors/build/classes/java/main
-------  $/core/descriptors/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/core/descriptors.jvm/build/classes/java/main
-------  $/core/descriptors.jvm/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/core/deserialization/build/classes/java/main
-------  $/core/deserialization/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/eval4j/build/classes/java/main
-------  $/eval4j/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/idea/formatter/build/classes/java/main
-------  $/idea/formatter/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/psi/build/classes/java/main
-------  $/compiler/psi/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/frontend/build/classes/java/main
-------  $/compiler/frontend/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/frontend.java/build/classes/java/main
-------  $/compiler/frontend.java/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/frontend.script/build/classes/java/main
-------  $/compiler/frontend.script/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/idea/ide-common/build/classes/java/main
-------  $/idea/ide-common/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/idea/build/classes/main-instrumented
------ FROM MODULE OUTPUT 
-------  $/idea/idea-core/build/classes/java/main
-------  $/idea/idea-core/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/idea/idea-gradle/build/classes/main-instrumented
------ FROM MODULE OUTPUT 
-------  $/compiler/ir/ir.psi2ir/build/classes/java/main
-------  $/compiler/ir/ir.psi2ir/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/ir/ir.tree/build/classes/java/main
-------  $/compiler/ir/ir.tree/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/js/js.ast/build/classes/java/main
-------  $/js/js.ast/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/js/js.frontend/build/classes/java/main
-------  $/js/js.frontend/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/js/js.parser/build/classes/java/main
-------  $/js/js.parser/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/js/js.serializer/build/classes/java/main
-------  $/js/js.serializer/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/light-classes/build/classes/java/main
-------  $/compiler/light-classes/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/plugin-api/build/classes/java/main
-------  $/compiler/plugin-api/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/preloader/build/classes/java/main
-------  $/compiler/preloader/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/resolution/build/classes/java/main
-------  $/compiler/resolution/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/serialization/build/classes/java/main
-------  $/compiler/serialization/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/compiler/util/build/classes/java/main
-------  $/compiler/util/build/classes/kotlin/main
------ FROM MODULE OUTPUT 
-------  $/core/util.runtime/build/classes/java/main
-------  $/core/util.runtime/build/classes/kotlin/main
---- FROM CONFIGURATION 
-----  $/libraries/tools/script-runtime/build/libs/kotlin-script-runtime-1.2-SNAPSHOT.jar
-----  $/libraries/stdlib/jvm/build/libs/kotlin-stdlib-1.2-SNAPSHOT.jar
-----  $/libraries/reflect/build/libs/kotlin-reflect-1.2-SNAPSHOT.jar
-----  $/prepare/compiler-client-embeddable/build/libs/kotlin-compiler-client-embeddable-1.2-SNAPSHOT.jar
-----  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/io.javaslang/javaslang/2.0.6/415b0d40db4890849270c2a5cb50050fc6ee7636/javaslang-2.0.6.jar
-----  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar
-----  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core/0.20/5f3fa9b5b2dc9cfc0d9358d5b2cab154d590a564/kotlinx-coroutines-core-0.20.jar
-----  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-jdk8/0.20/4a65173668974e7ed5b98182596902cdaeb9e6be/kotlinx-coroutines-jdk8-0.20.jar
-----  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains/markdown/0.1.25/f22b57c632b83433112102c9da9a0f8edf946091/markdown-0.1.25.jar
-----  /Users/jetbrains/.gradle/caches/modules-2/files-2.1/io.javaslang/javaslang-match/2.0.6/d57a666939103b659813de52102d3ff0baa8ad5f/javaslang-match-2.0.6.jar
--- FROM COPY TASK :kotlin-scripting-common:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/libraries/scripting/common/build/libs/kotlin-scripting-common-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-common:jar
------ ALREADY VISITED 
---- FROM JAR $/libraries/scripting/common/build/libs/kotlin-scripting-common-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-scripting-common:sourcesJar
------ FROM SOURCES 
-------  $/libraries/scripting/common/resources
-------  $/libraries/scripting/common/src
-------  $/libraries/scripting/common/src/main/kotlin
--- FROM COPY TASK :sam-with-receiver-ide-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/sam-with-receiver/sam-with-receiver-ide/build/libs/sam-with-receiver-ide-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :sam-with-receiver-ide-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/sam-with-receiver/sam-with-receiver-ide/build/classes/java/main
-------  $/plugins/sam-with-receiver/sam-with-receiver-ide/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-noarg-compiler-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/noarg/noarg-cli/build/libs/kotlin-noarg-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-noarg-compiler-plugin:jar
------ ALREADY VISITED 
--- FROM COPY TASK :idea:idea-jvm:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/idea/idea-jvm/build/libs/jvm-ide.jar
----- FROM COPY TASK :idea:idea-jvm:jar
------ FROM MODULE OUTPUT 
-------  $/idea/idea-jvm/build/classes/main-instrumented
--- FROM COPY TASK :plugins:uast-kotlin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/uast-kotlin/build/libs/uast-kotlin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :plugins:uast-kotlin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/uast-kotlin/build/classes/java/main
-------  $/plugins/uast-kotlin/build/classes/kotlin/main
 -- FROM COPY TASK :kotlin-allopen-compiler-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/allopen/allopen-cli/build/libs/kotlin-allopen-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-allopen-compiler-plugin:jar
------ ALREADY VISITED 
--- FROM COPY TASK :kotlin-scripting-jvm:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/libraries/scripting/jvm/build/libs/kotlin-scripting-jvm-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-jvm:jar
------ ALREADY VISITED 
---- FROM JAR $/libraries/scripting/jvm/build/libs/kotlin-scripting-jvm-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-scripting-jvm:sourcesJar
------ FROM SOURCES 
-------  $/libraries/scripting/jvm/resources
-------  $/libraries/scripting/jvm/src
-------  $/libraries/scripting/jvm/src/main/kotlin
--- FROM COPY TASK :idea:idea-android:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/idea/idea-android/build/libs/android-ide.jar
----- FROM COPY TASK :idea:idea-android:jar
------ FROM MODULE OUTPUT 
-------  $/idea/idea-android/build/classes/java/main
-------  $/idea/idea-android/build/classes/kotlin/main
--- FROM COPY TASK :plugins:android-extensions-compiler:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/android-extensions/android-extensions-compiler/build/libs/android-extensions-compiler-1.2-SNAPSHOT.jar
----- FROM COPY TASK :plugins:android-extensions-compiler:jar
------ ALREADY VISITED 
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-jps-plugin:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-noarg-compiler-plugin:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :plugins:android-extensions-ide:ideaPlugin
+--- ALREADY VISITED 
 -- FROM COPY TASK :idea:idea-maven:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/idea/idea-maven/build/libs/maven-ide.jar
----- FROM COPY TASK :idea:idea-maven:jar
------ FROM MODULE OUTPUT 
-------  $/idea/idea-maven/build/classes/java/main
-------  $/idea/idea-maven/build/classes/kotlin/main
+--- ALREADY VISITED 
+-- FROM COPY TASK :plugins:android-extensions-compiler:ideaPlugin
+--- ALREADY VISITED 
 -- FROM COPY TASK :kotlin-sam-with-receiver-compiler-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/sam-with-receiver/sam-with-receiver-cli/build/libs/kotlin-sam-with-receiver-compiler-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-sam-with-receiver-compiler-plugin:jar
------ ALREADY VISITED 
--- FROM COPY TASK :kotlin-daemon-client:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM SHADOW JAR $/compiler/daemon/daemon-client/build/libs/kotlin-daemon-client-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-daemon-client:shadowJar
------ ALREADY VISITED 
--- FROM COPY TASK :noarg-ide-plugin:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/noarg/noarg-ide/build/libs/noarg-ide-plugin-1.2-SNAPSHOT.jar
----- FROM COPY TASK :noarg-ide-plugin:jar
------ FROM MODULE OUTPUT 
-------  $/plugins/noarg/noarg-ide/build/classes/java/main
-------  $/plugins/noarg/noarg-ide/build/classes/kotlin/main
--- FROM COPY TASK :kotlin-scripting-compiler:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/plugins/scripting/scripting-cli/build/libs/kotlin-scripting-compiler-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-compiler:jar
------ ALREADY VISITED 
+--- ALREADY VISITED 
 -- FROM COPY TASK :kotlin-scripting-misc:ideaPlugin
---- INTO $/dist/artifacts/ideaPlugin/Kotlin/lib
---- FROM JAR $/libraries/scripting/misc/build/libs/kotlin-scripting-misc-1.2-SNAPSHOT.jar
----- FROM COPY TASK :kotlin-scripting-misc:jar
------ ALREADY VISITED 
---- FROM JAR $/libraries/scripting/misc/build/libs/kotlin-scripting-misc-1.2-SNAPSHOT-sources.jar
----- FROM COPY TASK :kotlin-scripting-misc:sourcesJar
------ FROM SOURCES 
-------  $/libraries/scripting/misc/resources
-------  $/libraries/scripting/misc/src
-------  $/libraries/scripting/misc/src/main/kotlin
+--- ALREADY VISITED 
+-- FROM COPY TASK :idea:idea-android-output-parser:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :idea:idea-jps-common:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-idea:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-compiler:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :idea:kotlin-gradle-tooling:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :plugins:uast-kotlin-idea:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-script-util:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-common:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :idea:idea-android:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-daemon-client:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :j2k:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :idea:idea-jvm:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :plugins:kapt3-idea:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :noarg-ide-plugin:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :prepare:idea-plugin:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :sam-with-receiver-ide-plugin:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :idea:idea-git:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :kotlin-scripting-jvm:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :plugins:uast-kotlin:ideaPlugin
+--- ALREADY VISITED 
+-- FROM COPY TASK :allopen-ide-plugin:ideaPlugin
+--- ALREADY VISITED 
