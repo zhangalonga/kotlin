@@ -1,6 +1,6 @@
 package org.jetbrains.kotlin.buildUtils.idea
 
-import idea.DistModel
+import idea.DistModelBuilder
 import idea.DistModelBuildContext
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
@@ -9,7 +9,7 @@ import org.jetbrains.gradle.ext.RecursiveArtifact
 import java.io.File
 
 fun generateIdeArtifacts(rootProject: Project) {
-    val model = DistModel(rootProject)
+    val model = DistModelBuilder(rootProject)
 
     val mainDistTask = rootProject.tasks.getByName("dist")
     val distTasks = mainDistTask.taskDependencies

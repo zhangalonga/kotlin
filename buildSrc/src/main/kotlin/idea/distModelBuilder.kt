@@ -19,8 +19,9 @@ import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSetOutput
 import org.gradle.jvm.tasks.Jar
-import org.jetbrains.kotlin.buildUtils.idea.DistContainer
-import org.jetbrains.kotlin.buildUtils.idea.DistElement
+import org.jetbrains.kotlin.buildUtils.idea.BuildVFile
+import org.jetbrains.kotlin.buildUtils.idea.DistCopy
+import org.jetbrains.kotlin.buildUtils.idea.DistExtractedCopy
 import java.io.File
 import java.util.concurrent.Callable
 
@@ -30,6 +31,7 @@ class DistModelBuildContext(
         val title: String,
         val report: Appendable? = parent?.report
 ) {
+    var distContainer: BuildVFile? = parent?.distContainer
     val depth: Int = if (parent != null) parent.depth + 1 else 0
 
     init {
@@ -58,12 +60,28 @@ class DistModelBuildContext(
 fun DistModelBuildContext?.child(kind: String, title: String = "") =
         DistModelBuildContext(this, kind, title)
 
-class DistModel(val rootProject: Project) {
+class DistModelBuilder(val rootProject: Project) {
     val byCopyTask = mutableSetOf<AbstractCopyTask>()
-    val root = DistContainer(null, "<root>")
-    val unresolved = mutableSetOf<DistElement>()
+    val vfsRoot = BuildVFile(null, "<root>", File(""))
+    val unresolved = mutableSetOf<BuildVFile>()
 
     fun getRelativePath(path: String) = path.replace(rootProject.projectDir.path, "$")
+
+    fun requirePath(targetPath: String): BuildVFile {
+        val target = vfsRoot.relativePath(targetPath)
+        if (!File(targetPath).exists()) {
+            unresolved.add(target)
+        }
+        return target
+    }
+
+    inline fun DistModelBuildContext.addDistContents(
+            path: String,
+            body: (src: BuildVFile, target: BuildVFile) -> Unit = { src, target -> DistCopy(target, src) }
+    ) {
+        body(requirePath(path), distContainer!!)
+        log("+", getRelativePath(path))
+    }
 
     fun ensureMapped(copy: AbstractCopyTask, parentContext: DistModelBuildContext?) {
         val context = parentContext.child("FROM COPY TASK", copy.path)
@@ -71,6 +89,7 @@ class DistModel(val rootProject: Project) {
         if (byCopyTask.add(copy)) {
             val rootSpec = copy.rootSpec
             if (copy is Copy) {
+                context.distContainer = vfsRoot.relativePath(copy.destinationDir.path)
                 context.log("INTO", getRelativePath(copy.destinationDir.path))
             }
 
@@ -99,27 +118,33 @@ class DistModel(val rootProject: Project) {
 
     fun processSourcePath(it: Any, parentContext: DistModelBuildContext) {
         when {
-            it is ShadowJar -> ensureMapped(it, parentContext.child("FROM SHADOW JAR", getRelativePath(it.archivePath.path)))
-            it is Jar -> ensureMapped(it, parentContext.child("FROM JAR", getRelativePath(it.archivePath.path)))
+            it is ShadowJar -> parentContext.addDistContents(it.archivePath.path) { src, target ->
+                DistExtractedCopy(target, src)
+                ensureMapped(it, parentContext.child("FROM SHADOW JAR", getRelativePath(it.archivePath.path)))
+            }
+            it is Jar -> parentContext.addDistContents(it.archivePath.path) { src, target ->
+                DistCopy(target, src)
+                ensureMapped(it, parentContext.child("FROM JAR", getRelativePath(it.archivePath.path)))
+            }
             it is SourceSetOutput -> {
                 val ctx = parentContext.child("FROM MODULE OUTPUT")
 
                 it.classesDirs.files.forEach {
-                    ctx.log("", getRelativePath(it.toString()))
+                    ctx.addDistContents(it.path)
                 }
             }
             it is Configuration -> {
                 val ctx = parentContext.child("FROM CONFIGURATION")
 
                 it.resolve().forEach {
-                    ctx.log("", getRelativePath(it.toString()))
+                    ctx.addDistContents(it.path)
                 }
             }
             it is SourceDirectorySet -> {
                 val ctx = parentContext.child("FROM SOURCES")
 
                 it.srcDirs.forEach {
-                    ctx.log("", getRelativePath(it.toString()))
+                    ctx.addDistContents(it.path)
                 }
             }
             it is CompositeFileCollection -> {
@@ -143,17 +168,19 @@ class DistModel(val rootProject: Project) {
                 field.isAccessible = true
                 val zipFile = field.get(tree) as File
 
-                parentContext.log("", getRelativePath(zipFile.path))
+                parentContext.addDistContents(zipFile.path) { src, target ->
+                    DistExtractedCopy(target, src)
+                }
             }
             it is FileCollection -> {
                 it.files.forEach {
-                    parentContext.log("", getRelativePath(it.path))
+                    parentContext.addDistContents(it.path)
                 }
             }
-            it is String || it is GStringImpl -> {
-                parentContext.log("", getRelativePath(it.toString()))
+            it is String || it is GStringImpl -> parentContext.addDistContents(it.toString())
+            it.toString() == "task ':prepare:build.version:writeBuildNumber'" -> {
+                // todo:
             }
-            it.toString() == "task ':prepare:build.version:writeBuildNumber'" -> Unit
             it is Callable<*> -> {
                 processSourcePath(it.call(), parentContext)
             }
