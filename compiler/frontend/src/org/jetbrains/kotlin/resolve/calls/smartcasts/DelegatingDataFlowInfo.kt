@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.resolve.calls.smartcasts.Nullability.NOT_NULL
+import org.jetbrains.kotlin.resolve.calls.smartcasts.Nullability.UNKNOWN
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.checker.NewCapturedTypeConstructor
 import org.jetbrains.kotlin.types.typeUtil.contains
@@ -362,7 +363,10 @@ internal class DelegatingDataFlowInfo private constructor(
                 updatedNullabilityInfo.entries.fold(
                     parent?.completeNullabilityInfo ?: EMPTY_NULLABILITY_INFO
                 ) { result, (dataFlowValue, nullability) ->
-                    result.put(dataFlowValue, nullability)
+                    if (parent != null || nullability != UNKNOWN)
+                        result.put(dataFlowValue, nullability)
+                    else
+                        result
                 }
 
             var resultingTypeInfo = parent?.completeTypeInfo ?: EMPTY_TYPE_INFO
