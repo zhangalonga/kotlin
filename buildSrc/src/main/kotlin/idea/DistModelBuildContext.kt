@@ -39,7 +39,8 @@ class DistModelBuildContext(
     }
 
     override fun toString() = "$logPrefix $kind $title"
+
+    fun child(kind: String, title: String = "", shade: Boolean = false) =
+            DistModelBuildContext(this, kind, title, shade = shade)
 }
 
-fun DistModelBuildContext?.child(kind: String, title: String = "", shade: Boolean = false) =
-        DistModelBuildContext(this, kind, title, shade = shade)

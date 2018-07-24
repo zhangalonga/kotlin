@@ -3,7 +3,6 @@ package org.jetbrains.kotlin.buildUtils.idea
 import IntelliJInstrumentCodeTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import idea.DistModelBuildContext
-import idea.child
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -20,6 +19,7 @@ import org.gradle.api.internal.file.archive.ZipFileTree
 import org.gradle.api.internal.file.collections.DirectoryFileTree
 import org.gradle.api.internal.file.collections.FileTreeAdapter
 import org.gradle.api.internal.file.copy.CopySpecInternal
+import org.gradle.api.internal.file.copy.DestinationRootCopySpec
 import org.gradle.api.internal.file.copy.SingleParentCopySpec
 import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.Copy
@@ -29,100 +29,87 @@ import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.gradle.jvm.tasks.Jar
 import java.io.File
+import java.io.PrintWriter
 import java.util.concurrent.Callable
 
-class DistModelBuilder(val rootProject: Project) {
-    val visited = mutableSetOf<Task>()
+class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
+    val rootCtx = DistModelBuildContext(null, "ROOT", "dist", pw)
+    val visited = mutableMapOf<Task, DistModelBuildContext>()
     val vfsRoot = DistVFile(null, "<root>", File(""))
     val refs = mutableSetOf<DistVFile>()
 
-    fun visitInterumentTask(it: IntelliJInstrumentCodeTask, parentCtx: DistModelBuildContext) {
-        if (visited.add(it)) {
-            // todo:
-            val ctx = parentCtx.child("INSTRUMENT", it.path)
-            ctx.setDest(it.output!!.path)
-            processSourcePath(it.originalClassesDirs, ctx)
-            val dest = ctx.destination
+    fun visitInterumentTask(it: IntelliJInstrumentCodeTask): DistModelBuildContext = visited.getOrPut(it) {
+        // todo:
+        val ctx = rootCtx.child("INSTRUMENT", it.path)
+        ctx.setDest(it.output!!.path)
+        processSourcePath(it.originalClassesDirs, ctx)
+        val dest = ctx.destination
 //            val sourceSet = it.sourceSet
-            if (dest != null) {
-                DistModuleOutput(dest, it.project.path)
-            }
+        if (dest != null) {
+            DistModuleOutput(dest, it.project.path)
         }
+
+        ctx
     }
 
-    fun visitCompileTask(it: AbstractCompile, parentContext: DistModelBuildContext) {
-        if (visited.add(it)) {
-            val ctx = parentContext.child("COMPILE", it.path)
-            ctx.setDest(it.destinationDir.path)
-            val dest = ctx.destination
-            if (dest != null) DistModuleOutput(dest, it.project.path)
-            else ctx.logUnsupported("Cannot add contents: destination is unknown", it)
-        }
+    fun visitCompileTask(it: AbstractCompile): DistModelBuildContext = visited.getOrPut(it) {
+        val ctx = rootCtx.child("COMPILE", it.path)
+        ctx.setDest(it.destinationDir.path)
+        val dest = ctx.destination
+        if (dest != null) DistModuleOutput(dest, it.project.path)
+        else ctx.logUnsupported("Cannot add contents: destination is unknown", it)
+
+        ctx
     }
 
     fun visitCopyTask(
             copy: AbstractCopyTask,
-            parentContext: DistModelBuildContext?,
             shade: Boolean = false
-    ): DistModelBuildContext {
-        val context = parentContext.child("FROM COPY TASK", copy.path, shade)
+    ): DistModelBuildContext = visited.getOrPut(copy) {
+        val context = rootCtx.child("COPY", copy.path, shade)
 
-        if (visited.add(copy)) {
-            val rootSpec = copy.rootSpec
 
-            when (copy) {
-                is Copy -> context.setDest(copy.destinationDir.path)
-                is Sync -> context.setDest(copy.destinationDir.path)
-                is AbstractArchiveTask -> context.setDest(copy.archivePath.path)
-            }
+        val rootSpec = copy.rootSpec
 
-            when (copy) {
-                is ShadowJar -> copy.configurations.forEach {
-                    processSourcePath(it, context)
-                }
-            }
-
-            processCopySpec(rootSpec, context)
-        } else {
-            context.log("ALREADY VISITED")
+        when (copy) {
+            is Copy -> context.setDest(copy.destinationDir.path)
+            is Sync -> context.setDest(copy.destinationDir.path)
+            is AbstractArchiveTask -> context.setDest(copy.archivePath.path)
         }
 
-        return context
+        when (copy) {
+            is ShadowJar -> copy.configurations.forEach {
+                processSourcePath(it, context)
+            }
+        }
+
+        processCopySpec(rootSpec, context)
+
+
+        context
     }
 
-    fun processCopySpec(spec: CopySpecInternal, parentContext: DistModelBuildContext) {
+    fun processCopySpec(spec: CopySpecInternal, ctx: DistModelBuildContext) {
         spec.children.forEach {
             when (it) {
-                is SingleParentCopySpec -> processSingleParentCopySpec(it, parentContext)
-                is CopySpecInternal -> processCopySpec(it, parentContext)
-                else -> parentContext.logUnsupported("CopySpec", spec)
+                is DestinationRootCopySpec -> ctx.child("SUB-INTO", it.destinationDir.path).also { newCtx ->
+                    newCtx.setDest(it.destinationDir.path)
+                    processCopySpec(it, ctx)
+                }
+                is SingleParentCopySpec -> it.sourcePaths.forEach {
+                    processSourcePath(it, ctx)
+                }
+                is CopySpecInternal -> processCopySpec(it, ctx)
+                else -> ctx.logUnsupported("CopySpec", spec)
             }
-        }
-    }
-
-    fun processSingleParentCopySpec(spec: SingleParentCopySpec, parentContext: DistModelBuildContext) {
-        val sourcePaths = spec.sourcePaths
-        sourcePaths.forEach {
-            processSourcePath(it, parentContext)
         }
     }
 
     fun processSourcePath(it: Any?, parentContext: DistModelBuildContext) {
         when {
             it == null -> Unit
-            it is ShadowJar -> parentContext.addCopyOf(it.archivePath.path) { src, target ->
-                visitCopyTask(
-                        it,
-                        parentContext.child("FROM SHADOW JAR", getRelativePath(it.archivePath.path)),
-                        true
-                )
-            }
-            it is Jar -> parentContext.addCopyOf(it.archivePath.path) { src, target ->
-                visitCopyTask(
-                        it,
-                        parentContext.child("FROM JAR", getRelativePath(it.archivePath.path))
-                )
-            }
+            it is ShadowJar -> parentContext.addCopyOf(it.archivePath.path)
+            it is Jar -> parentContext.addCopyOf(it.archivePath.path)
             it is SourceSetOutput -> {
                 val ctx = parentContext.child("FROM MODULE OUTPUT")
 
@@ -191,9 +178,6 @@ class DistModelBuilder(val rootProject: Project) {
                 }
             }
             it is String || it is GStringImpl -> parentContext.addCopyOf(it.toString())
-//            it.toString() == "task ':prepare:build.version:writeBuildNumber'" -> {
-//                // todo:
-//            }
             it is Callable<*> -> {
                 processSourcePath(it.call(), parentContext)
             }
@@ -204,7 +188,7 @@ class DistModelBuilder(val rootProject: Project) {
                 }
             }
             it is Copy -> {
-                val src = visitCopyTask(it, parentContext).destination
+                val src = visitCopyTask(it).destination
                 if (src != null) parentContext.addCopyOf(src)
                 // else it is added to `it`, because destination is inhereted by context
             }
