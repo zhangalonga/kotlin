@@ -52,12 +52,18 @@ sealed class DistContentElement(val targetDir: DistVFile)
 
 ///////
 
-class DistCopy(target: DistVFile, val src: DistVFile) : DistContentElement(target) {
+class DistCopy(
+        target: DistVFile,
+        val src: DistVFile,
+        val customTargetName: String? = null
+) : DistContentElement(target) {
     init {
         target.addContents(this)
     }
 
-    override fun toString(): String = "COPY OF ${src.file}"
+    override fun toString(): String =
+            "COPY OF ${src.file}" +
+                    if (customTargetName != null) " -> $customTargetName" else ""
 }
 
 class DistModuleOutput(parent: DistVFile, val projectId: String) : DistContentElement(parent) {

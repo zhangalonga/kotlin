@@ -1,5 +1,6 @@
 package org.jetbrains.kotlin.buildUtils.idea
 
+import IntelliJInstrumentCodeTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import idea.DistModelBuildContext
 import idea.child
@@ -8,6 +9,8 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileVisitDetails
+import org.gradle.api.file.FileVisitor
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.CompositeFileCollection
 import org.gradle.api.internal.file.FileCollectionInternal
@@ -33,23 +36,18 @@ class DistModelBuilder(val rootProject: Project) {
     val vfsRoot = DistVFile(null, "<root>", File(""))
     val refs = mutableSetOf<DistVFile>()
 
-    fun checkRefs() {
-        refs.forEach {
-            if (!it.hasContents && it.contents.isEmpty() && it.file.path.contains("/build/")) {
-                println("UNRESOLVED ${it.file}")
-                it.contents.forEach {
-                    println("+ ${it}")
-                }
+    fun visitInterumentTask(it: IntelliJInstrumentCodeTask, parentCtx: DistModelBuildContext) {
+        if (visited.add(it)) {
+            // todo:
+            val ctx = parentCtx.child("INSTRUMENT", it.path)
+            ctx.setDest(it.output!!.path)
+            processSourcePath(it.originalClassesDirs, ctx)
+            val dest = ctx.destination
+//            val sourceSet = it.sourceSet
+            if (dest != null) {
+                DistModuleOutput(dest, it.project.path)
             }
         }
-    }
-
-    fun getRelativePath(path: String) = path.replace(rootProject.projectDir.path, "$")
-
-    fun requirePath(targetPath: String): DistVFile {
-        val target = vfsRoot.relativePath(targetPath)
-        if (!File(targetPath).exists()) refs.add(target)
-        return target
     }
 
     fun visitCompileTask(it: AbstractCompile, parentContext: DistModelBuildContext) {
@@ -76,6 +74,12 @@ class DistModelBuilder(val rootProject: Project) {
                 is Copy -> context.setDest(copy.destinationDir.path)
                 is Sync -> context.setDest(copy.destinationDir.path)
                 is AbstractArchiveTask -> context.setDest(copy.archivePath.path)
+            }
+
+            when (copy) {
+                is ShadowJar -> copy.configurations.forEach {
+                    processSourcePath(it, context)
+                }
             }
 
             processCopySpec(rootSpec, context)
@@ -165,19 +169,36 @@ class DistModelBuilder(val rootProject: Project) {
                     DistCopy(target, src)
                 }
             }
+            it is FileTreeInternal -> {
+                // todo: preserve or warn about filtering
+                it.visitTreeOrBackingFile(object : FileVisitor {
+                    override fun visitFile(fileDetails: FileVisitDetails) {
+                        parentContext.addCopyOf(fileDetails.file.path)
+                    }
+
+                    override fun visitDir(dirDetails: FileVisitDetails) {
+                        parentContext.addCopyOf(dirDetails.file.path)
+                    }
+                })
+            }
             it is FileCollection -> {
-                it.files.forEach {
-                    parentContext.addCopyOf(it.path)
+                try {
+                    it.files.forEach {
+                        parentContext.addCopyOf(it.path)
+                    }
+                } catch (t: Throwable) {
+                    parentContext.logUnsupported("FILE COLLECTION (${t.message})", it)
                 }
             }
             it is String || it is GStringImpl -> parentContext.addCopyOf(it.toString())
-            it.toString() == "task ':prepare:build.version:writeBuildNumber'" -> {
-                // todo:
-            }
+//            it.toString() == "task ':prepare:build.version:writeBuildNumber'" -> {
+//                // todo:
+//            }
             it is Callable<*> -> {
                 processSourcePath(it.call(), parentContext)
             }
             it is Collection<*> -> {
+
                 it.forEach {
                     processSourcePath(it, parentContext)
                 }
@@ -185,7 +206,7 @@ class DistModelBuilder(val rootProject: Project) {
             it is Copy -> {
                 val src = visitCopyTask(it, parentContext).destination
                 if (src != null) parentContext.addCopyOf(src)
-                else parentContext.logUnsupported("Cannot copy from another copy task `$it`, destination is not defined")
+                // else it is added to `it`, because destination is inhereted by context
             }
             it is File -> {
                 parentContext.addCopyOf(it.path)
@@ -216,5 +237,24 @@ class DistModelBuilder(val rootProject: Project) {
     fun DistModelBuildContext.setDest(path: String) {
         destination = vfsRoot.relativePath(path)
         log("INTO", getRelativePath(path))
+    }
+
+    fun checkRefs() {
+        refs.forEach {
+            if (!it.hasContents && it.contents.isEmpty() && it.file.path.contains("/build/")) {
+                println("UNRESOLVED ${it.file}")
+                it.contents.forEach {
+                    println("+ ${it}")
+                }
+            }
+        }
+    }
+
+    fun getRelativePath(path: String) = path.replace(rootProject.projectDir.path, "$")
+
+    fun requirePath(targetPath: String): DistVFile {
+        val target = vfsRoot.relativePath(targetPath)
+        if (!File(targetPath).exists()) refs.add(target)
+        return target
     }
 }
