@@ -64,7 +64,7 @@ class ScriptContext(
         }
     }
 
-    fun getImplicitReceiverName(index: Int): String = "\$\$implicitReceiver$index"
+    fun getImplicitReceiverName(index: Int): String = scriptDescriptor.getImplicitReceiverName(index)
 
     fun getImplicitReceiverType(index: Int): Type? {
         val receivers = script.kotlinScriptDefinition.value.implicitReceivers

@@ -33,10 +33,6 @@ class ScriptEnvironmentPropertyDescriptor(
 ) {
     init {
         setType(typeDescriptor.defaultType, emptyList<TypeParameterDescriptorImpl>(), receiver, null as KotlinType?)
-        initialize(
-            makePropertyGetterDescriptor(),
-            if (!isVar) null else makePropertySetterDescriptor()
-        )
     }
 }
 

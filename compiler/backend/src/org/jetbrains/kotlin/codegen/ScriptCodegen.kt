@@ -62,8 +62,9 @@ class ScriptCodegen private constructor(
     override fun generateSyntheticPartsBeforeBody() {
         generatePropertyMetadataArrayFieldIfNeeded(classAsmType)
         scriptContext.scriptDescriptor.scriptEnvironmentProperties.forEach {
-            propertyCodegen.generateGetter(null, it, null)
-            propertyCodegen.generateSetter(null, it, null)
+//            propertyCodegen.
+//            propertyCodegen.generateGetter(null, it, null)
+//            propertyCodegen.generateSetter(null, it, null)
         }
     }
 
@@ -127,6 +128,12 @@ class ScriptCodegen private constructor(
                 field.store(value, iv)
             }
 
+            fun genFieldFromParam(fieldClassType: Type, paramIndex: Int, name: String) {
+                val value = StackValue.local(paramIndex, fieldClassType)
+                val field = StackValue.field(fieldClassType, classType, name, false, StackValue.local(0, classType))
+                field.store(value, iv)
+            }
+
             if (!scriptContext.earlierScripts.isEmpty()) {
                 val scriptsParamIndex = frameMap.enterTemp(AsmUtil.getArrayType(OBJECT_TYPE))
 
@@ -167,21 +174,16 @@ class ScriptCodegen private constructor(
             }
             iv.load(0, classType)
 
-            if (scriptDefinition.implicitReceivers.isNotEmpty()) {
+            scriptDescriptor.implicitReceivers.forEachIndexed() { receiverIndex, receiver ->
                 val receiversParamIndex = frameMap.enterTemp(AsmUtil.getArrayType(OBJECT_TYPE))
-
-                scriptContext.receiverDescriptors.forEachIndexed { receiverIndex, receiver ->
-                    val name = scriptContext.getImplicitReceiverName(receiverIndex)
-                    genFieldFromArrayElement(receiver, receiversParamIndex, receiverIndex, name)
-                }
+                val name = scriptContext.getImplicitReceiverName(receiverIndex)
+                genFieldFromParam(typeMapper.mapClass(receiver), receiversParamIndex, name)
             }
 
-            if (scriptDefinition.environmentVariables.isNotEmpty()) {
-                val envParamIndex = frameMap.enterTemp(AsmTypes.OBJECT_TYPE)
-                val mapType = PropertyCodegen.ScriptEnvPropertyAccessorStrategy.MAP_IFACE_TYPE
-                iv.load(0, classType)
-                iv.load(envParamIndex, mapType)
-                iv.putfield(classType.internalName, PropertyCodegen.ScriptEnvPropertyAccessorStrategy.MAP_FIELD_NAME, mapType.descriptor)
+            scriptDescriptor.scriptEnvironmentProperties.forEach {
+                val fieldClassType = typeMapper.mapType(it)
+                val envVarParamIndex = frameMap.enterTemp(fieldClassType)
+                genFieldFromParam(fieldClassType, envVarParamIndex, it.name.identifier)
             }
 
             val codegen = ExpressionCodegen(mv, frameMap, Type.VOID_TYPE, methodContext, state, this)
@@ -216,12 +218,13 @@ class ScriptCodegen private constructor(
                 null
             )
         }
-        if (scriptContext.scriptDescriptor.scriptEnvironmentProperties.isNotEmpty()) {
+        for (envVarProp in scriptDescriptor.scriptEnvironmentProperties) {
+            val varType = typeMapper.mapType(envVarProp.type)
             classBuilder.newField(
                 NO_ORIGIN,
                 ACC_PUBLIC or ACC_FINAL,
-                PropertyCodegen.ScriptEnvPropertyAccessorStrategy.MAP_FIELD_NAME,
-                PropertyCodegen.ScriptEnvPropertyAccessorStrategy.MAP_IFACE_TYPE.descriptor,
+                envVarProp.name.identifier,
+                varType.descriptor,
                 null,
                 null
             )

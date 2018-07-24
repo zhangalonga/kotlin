@@ -67,6 +67,8 @@ class LazyScriptDescriptor(
 
     override fun getPriority() = priority
 
+    override fun getImplicitReceiverName(index: Int): String = "\$\$implicitReceiver$index"
+
     val scriptDefinition: () -> KotlinScriptDefinition = resolveSession.storageManager.createLazyValue {
         val file = scriptInfo.script.containingKtFile
         getScriptDefinition(file) ?: throw RuntimeException("file ${file.name} is not a script")
