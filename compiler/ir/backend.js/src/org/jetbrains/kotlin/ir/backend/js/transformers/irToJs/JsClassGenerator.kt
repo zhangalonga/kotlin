@@ -6,8 +6,6 @@
 package org.jetbrains.kotlin.ir.backend.js.transformers.irToJs
 
 import org.jetbrains.kotlin.backend.common.onlyIf
-import org.jetbrains.kotlin.builtins.KotlinBuiltIns
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.ir.backend.js.utils.JsGenerationContext
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer
@@ -16,9 +14,9 @@ import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
-import org.jetbrains.kotlin.ir.symbols.impl.IrClassSymbolImpl
 import org.jetbrains.kotlin.ir.types.classifierOrFail
 import org.jetbrains.kotlin.ir.types.isAny
+import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.util.isReal
 import org.jetbrains.kotlin.ir.util.resolveFakeOverride
@@ -29,7 +27,8 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
     private val className = context.getNameForSymbol(irClass.symbol)
     private val classNameRef = className.makeRef()
     private val baseClass = irClass.superTypes.firstOrNull { !it.classifierOrFail.isInterface }
-    private val baseClassName = baseClass?.let { context.getNameForSymbol(it.classifierOrFail) }
+    private val baseClassName = baseClass?.let {
+        context.getNameForType(it) }
     private val classPrototypeRef = prototypeOf(classNameRef)
     private val classBlock = JsGlobalBlock()
     private val classModel = JsClassModel(className, baseClassName)
@@ -83,10 +82,12 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
         // II.prototype.foo = I.prototype.foo
         if (!irClass.isInterface) {
             declaration.resolveFakeOverride()?.let {
-                val implClassDesc = it.descriptor.containingDeclaration as ClassDescriptor
-                if (!KotlinBuiltIns.isAny(implClassDesc)) {
+                val implClassDecl = it.parent as IrClass
+//                val implClassDesc = it.descriptor.containingDeclaration as ClassDescriptor
+//                if (!KotlinBuiltIns.isAny(implClassDesc)) {
+                if (!implClassDecl.defaultType.isAny()) {
                     val implMethodName = context.getNameForSymbol(it.symbol)
-                    val implClassName = context.getNameForSymbol(IrClassSymbolImpl(implClassDesc))
+                    val implClassName = context.getNameForSymbol(implClassDecl.symbol)
 
                     val implClassPrototype = prototypeOf(implClassName.makeRef())
                     val implMemberRef = JsNameRef(implMethodName, implClassPrototype)

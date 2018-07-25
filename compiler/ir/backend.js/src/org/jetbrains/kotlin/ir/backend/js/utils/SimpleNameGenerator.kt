@@ -6,9 +6,13 @@
 package org.jetbrains.kotlin.ir.backend.js.utils
 
 import org.jetbrains.kotlin.descriptors.*
-import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrLoop
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
+import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.util.defaultType
+import org.jetbrains.kotlin.ir.util.render
 import org.jetbrains.kotlin.js.backend.ast.JsName
 import org.jetbrains.kotlin.js.naming.isES5IdentifierPart
 import org.jetbrains.kotlin.js.naming.isES5IdentifierStart
@@ -19,12 +23,84 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.ImplicitClassReceiver
 class SimpleNameGenerator : NameGenerator {
 
     private val nameCache = mutableMapOf<DeclarationDescriptor, JsName>()
+    private val nameCache2 = mutableMapOf<IrDeclaration, JsName>()
     private val loopCache = mutableMapOf<IrLoop, JsName>()
 
-    override fun getNameForSymbol(symbol: IrSymbol, context: JsGenerationContext): JsName = getNameForDescriptor(symbol.descriptor, context)
+//    override fun getNameForSymbol(symbol: IrSymbol, context: JsGenerationContext): JsName = getNameForDescriptor(symbol.descriptor, context)
+    override fun getNameForSymbol(symbol: IrSymbol, context: JsGenerationContext): JsName = getNameForDeclaration(symbol.owner as IrDeclaration, context)
     override fun getNameForLoop(loop: IrLoop, context: JsGenerationContext): JsName? = loop.label?.let {
         loopCache.getOrPut(loop) { context.currentScope.declareFreshName(sanitizeName(loop.label!!)) }
     }
+
+    override fun getNameForType(type: IrType, context: JsGenerationContext): JsName {
+        return context.staticContext.rootScope.declareName(sanitizeName(type.render()))
+    }
+
+    override fun getNameForReceiver(symbol: IrValueSymbol, isExt: Boolean, context: JsGenerationContext): JsName =
+        nameCache2.getOrPut(symbol.owner) {
+            context.currentScope.declareName(if (isExt) Namer.EXTENSION_RECEIVER_NAME else Namer.IMPLICIT_RECEIVER_NAME)
+        }
+
+
+    private fun getNameForDeclaration(declaration: IrDeclaration, context: JsGenerationContext): JsName =
+        nameCache2.getOrPut(declaration) {
+            var nameDeclarator: (String) -> JsName = context.currentScope::declareName
+            val nameBuilder = StringBuilder()
+            when (declaration) {
+//                is ReceiverParameterDescriptor -> {
+//                    when (declaration.value) {
+//                        is ExtensionReceiver -> nameBuilder.append(Namer.EXTENSION_RECEIVER_NAME)
+//                        is ImplicitClassReceiver -> nameBuilder.append(Namer.IMPLICIT_RECEIVER_NAME)
+//                        else -> TODO("name for $descriptor")
+//                    }
+//                }
+                is IrValueParameter -> {
+                    if (declaration.origin == IrDeclarationOrigin.INSTANCE_RECEIVER) nameBuilder.append(Namer.IMPLICIT_RECEIVER_NAME)
+                    else {
+                        val declaredName = declaration.name.asString()
+                        nameBuilder.append(declaredName)
+                        if (declaredName.startsWith("\$")) {
+                            nameBuilder.append('_')
+                            nameBuilder.append(declaration.index)
+                        }
+                    }
+                }
+                is IrField -> {
+                    nameBuilder.append(declaration.name.identifier)
+                    if ((declaration.visibility == Visibilities.PRIVATE || !declaration.isFinal) && declaration.parent is IrDeclaration) {
+//                        nameDeclarator = context.currentScope::declareFreshName
+                        nameBuilder.append('$')
+                        nameBuilder.append(getNameForDeclaration(declaration.parent as IrDeclaration, context))
+                    }
+                }
+//                is PropertyAccessorDescriptor -> {
+//                    when (descriptor) {
+//                        is PropertyGetterDescriptor -> nameBuilder.append(Namer.GETTER_PREFIX)
+//                        is PropertySetterDescriptor -> nameBuilder.append(Namer.SETTER_PREFIX)
+//                    }
+//                    nameBuilder.append(descriptor.correspondingProperty.name.asString())
+//                    if (descriptor.visibility == Visibilities.PRIVATE) {
+//                        nameBuilder.append('$')
+//                        nameBuilder.append(getNameForDescriptor(descriptor.containingDeclaration, context))
+//                    }
+//                }
+                is IrClass -> return getNameForType(declaration.defaultType, context)
+                is IrConstructor -> {
+                    nameBuilder.append(getNameForDeclaration(declaration.parent as IrClass, context))
+                }
+                is IrVariable -> {
+                    nameBuilder.append(declaration.name.identifier)
+                    nameDeclarator = context.currentScope::declareFreshName
+                }
+                is IrFunction -> {
+                    nameBuilder.append(declaration.name.asString())
+                    declaration.typeParameters.forEach { nameBuilder.append("_${it.name.asString()}") }
+                    declaration.valueParameters.forEach { nameBuilder.append("_${it.type.render()}") }
+                }
+
+            }
+            nameDeclarator(sanitizeName(nameBuilder.toString()))
+        }
 
 
     private fun getNameForDescriptor(descriptor: DeclarationDescriptor, context: JsGenerationContext): JsName =
@@ -34,8 +110,10 @@ class SimpleNameGenerator : NameGenerator {
             when (descriptor) {
                 is ReceiverParameterDescriptor -> {
                     when (descriptor.value) {
-                        is ExtensionReceiver -> nameBuilder.append(Namer.EXTENSION_RECEIVER_NAME)
-                        is ImplicitClassReceiver -> nameBuilder.append(Namer.IMPLICIT_RECEIVER_NAME)
+                        is ExtensionReceiver ->
+                            nameBuilder.append(Namer.EXTENSION_RECEIVER_NAME)
+                        is ImplicitClassReceiver ->
+                            nameBuilder.append(Namer.IMPLICIT_RECEIVER_NAME)
                         else -> TODO("name for $descriptor")
                     }
                 }

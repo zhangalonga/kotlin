@@ -138,6 +138,7 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
             }
 
             loweredConstructor.body = blockBody
+            loweredConstructor.parent = irConstructor.parent
             return loweredConstructor
         }
 

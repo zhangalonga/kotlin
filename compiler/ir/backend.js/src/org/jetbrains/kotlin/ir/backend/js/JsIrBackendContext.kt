@@ -17,7 +17,9 @@ import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.backend.js.lower.inline.ModuleIndex
 import org.jetbrains.kotlin.ir.backend.js.utils.OperatorNames
-import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.IrType
@@ -38,7 +40,7 @@ class JsIrBackendContext(
     override val builtIns = module.builtIns
 
     override val sharedVariablesManager =
-        JsSharedVariablesManager(builtIns, KnownPackageFragmentDescriptor(builtIns.builtInsModule, FqName("kotlin.js.internal")))
+        JsSharedVariablesManager(irBuiltIns, KnownPackageFragmentDescriptor(builtIns.builtInsModule, FqName("kotlin.js.internal")))
     override val descriptorsFactory = JsDescriptorsFactory()
     override val reflectionTypes: ReflectionTypes by lazy(LazyThreadSafetyMode.PUBLICATION) {
         // TODO

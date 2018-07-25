@@ -85,7 +85,7 @@ class JsIntrinsicTransformers(backendContext: JsIrBackendContext) {
             }
 
             add(intrinsics.jsToJsType) { call, context ->
-                val typeName = context.getNameForSymbol(call.getTypeArgument(0)!!.classifierOrFail)
+                val typeName = context.getNameForType(call.getTypeArgument(0)!!)
                 typeName.makeRef()
             }
 

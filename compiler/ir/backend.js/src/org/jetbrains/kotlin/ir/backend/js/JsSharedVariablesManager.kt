@@ -7,22 +7,29 @@ package org.jetbrains.kotlin.ir.backend.js
 
 import org.jetbrains.kotlin.backend.common.descriptors.KnownClassDescriptor
 import org.jetbrains.kotlin.backend.common.descriptors.SharedVariablesManager
-import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ClassConstructorDescriptorImpl
-import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
 import org.jetbrains.kotlin.descriptors.impl.PropertyDescriptorImpl
+import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
+import org.jetbrains.kotlin.ir.backend.js.symbols.JsSymbolBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.createValueParameter
+import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrVariable
+import org.jetbrains.kotlin.ir.declarations.impl.IrConstructorImpl
+import org.jetbrains.kotlin.ir.declarations.impl.IrFieldImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrVariableImpl
+import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrGetValue
 import org.jetbrains.kotlin.ir.expressions.IrSetVariable
 import org.jetbrains.kotlin.ir.expressions.impl.*
+import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrFieldSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.createFunctionSymbol
+import org.jetbrains.kotlin.ir.types.toKotlinType
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.types.KotlinType
@@ -30,15 +37,16 @@ import org.jetbrains.kotlin.types.KotlinTypeFactory
 import org.jetbrains.kotlin.types.TypeProjectionImpl
 import org.jetbrains.kotlin.types.Variance
 
-class JsSharedVariablesManager(val builtIns: KotlinBuiltIns, val jsInterinalPackage: PackageFragmentDescriptor) : SharedVariablesManager {
+class JsSharedVariablesManager(val builtIns: IrBuiltIns, val jsInterinalPackage: PackageFragmentDescriptor) : SharedVariablesManager {
 
     override fun declareSharedVariable(originalDeclaration: IrVariable): IrVariable {
         val variableDescriptor = originalDeclaration.descriptor
-        val sharedVariableDescriptor = LocalVariableDescriptor(
-            variableDescriptor.containingDeclaration, variableDescriptor.annotations, variableDescriptor.name,
-            getSharedVariableType(variableDescriptor.type),
-            false, false, variableDescriptor.isLateInit, variableDescriptor.source
-        )
+        val sharedVariableSymbol = JsSymbolBuilder.buildTempVar(originalDeclaration.descriptor.containingDeclaration, originalDeclaration.type, originalDeclaration.name.asString(), originalDeclaration.isVar)
+//        val sharedVariableDescriptor = LocalVariableDescriptor(
+//            variableDescriptor.containingDeclaration, variableDescriptor.annotations, variableDescriptor.name,
+//            getSharedVariableType(variableDescriptor.type),
+//            false, false, variableDescriptor.isLateInit, variableDescriptor.source
+//        )
 
         val valueType = originalDeclaration.type
         val boxConstructor = closureBoxConstructorTypeDescriptor
@@ -63,16 +71,24 @@ class JsSharedVariablesManager(val builtIns: KotlinBuiltIns, val jsInterinalPack
             putValueArgument(0, initializer)
         }
 
+        val closureBoxConstructorTypeDeclaration = IrConstructorImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, JsIrBuilder.SYNTHESIZED_DECLARATION, closureBoxConstructorTypeSymbol).apply {
+            parent = (originalDeclaration.parent as IrDeclaration).parent
+        }
+        val closureBoxFIeldDeclaration = IrFieldImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, JsIrBuilder.SYNTHESIZED_DECLARATION, closureBoxFieldSymbol, builtIns.anyNType).apply {
+            parent = (originalDeclaration.parent as IrDeclaration).parent
+        }
 
         return IrVariableImpl(
             originalDeclaration.startOffset,
             originalDeclaration.endOffset,
             originalDeclaration.origin,
-            sharedVariableDescriptor,
+            sharedVariableSymbol,
             // TODO wrong type ?
             originalDeclaration.type,
             constructorCall
-        )
+        ).apply {
+            parent = originalDeclaration.parent
+        }
     }
 
     override fun defineSharedValue(originalDeclaration: IrVariable, sharedVariableDeclaration: IrVariable) = sharedVariableDeclaration
@@ -112,13 +128,14 @@ class JsSharedVariablesManager(val builtIns: KotlinBuiltIns, val jsInterinalPack
     private val closureBoxConstructorTypeDescriptor = createClosureBoxClassConstructor()
     private val closureBoxFieldDescriptor = createClosureBoxField()
 
-    val closureBoxConstructorTypeSymbol = createFunctionSymbol(closureBoxConstructorTypeDescriptor)
+    val closureBoxConstructorTypeSymbol = createFunctionSymbol(closureBoxConstructorTypeDescriptor) as IrConstructorSymbol
+
     private val closureBoxFieldSymbol = IrFieldSymbolImpl(closureBoxFieldDescriptor)
 
 
     private fun createClosureBoxClass(): ClassDescriptor =
         KnownClassDescriptor.createClassWithTypeParameters(
-            Name.identifier(boxTypeName), jsInterinalPackage, listOf(builtIns.anyType), listOf(
+            Name.identifier(boxTypeName), jsInterinalPackage, listOf(builtIns.anyType.toKotlinType()), listOf(
                 Name.identifier("T")
             )
         )
@@ -174,7 +191,7 @@ class JsSharedVariablesManager(val builtIns: KotlinBuiltIns, val jsInterinalPack
         )
 
 
-        desc.setType(builtIns.anyType, emptyList(), closureBoxTypeDescriptor.thisAsReceiverParameter, null as ReceiverParameterDescriptor?)
+        desc.setType(builtIns.anyType.toKotlinType(), emptyList(), closureBoxTypeDescriptor.thisAsReceiverParameter, null as ReceiverParameterDescriptor?)
         desc.initialize(null, null)
 
         return desc

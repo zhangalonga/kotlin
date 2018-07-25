@@ -37,7 +37,7 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
     private val unitValue = JsIrBuilder.buildGetObjectValue(unitType, context.symbolTable.referenceClass(context.builtIns.unit))
 
     private val unreachableFunction =
-        JsSymbolBuilder.buildSimpleFunction(context.module, Namer.UNREACHABLE_NAME).initialize(returnType = nothingType)
+        JsIrBuilder.buildFunction(JsSymbolBuilder.buildSimpleFunction(context.module, Namer.UNREACHABLE_NAME).initialize(returnType = nothingType), nothingType)
 
     override fun lower(irDeclarationContainer: IrDeclarationContainer) {
         irDeclarationContainer.declarations.transformFlat { declaration ->
@@ -406,11 +406,11 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
 
         override fun visitSetField(expression: IrSetField) = expression.asExpression(unitValue)
 
-        override fun visitBreakContinue(jump: IrBreakContinue) = jump.asExpression(JsIrBuilder.buildCall(unreachableFunction, nothingType))
+        override fun visitBreakContinue(jump: IrBreakContinue) = jump.asExpression(JsIrBuilder.buildCall(unreachableFunction.symbol, nothingType))
 
-        override fun visitThrow(expression: IrThrow) = expression.asExpression(JsIrBuilder.buildCall(unreachableFunction, nothingType))
+        override fun visitThrow(expression: IrThrow) = expression.asExpression(JsIrBuilder.buildCall(unreachableFunction.symbol, nothingType))
 
-        override fun visitReturn(expression: IrReturn) = expression.asExpression(JsIrBuilder.buildCall(unreachableFunction, nothingType))
+        override fun visitReturn(expression: IrReturn) = expression.asExpression(JsIrBuilder.buildCall(unreachableFunction.symbol, nothingType))
 
         override fun visitStringConcatenation(expression: IrStringConcatenation): IrExpression {
             expression.transformChildrenVoid(expressionTransformer)
