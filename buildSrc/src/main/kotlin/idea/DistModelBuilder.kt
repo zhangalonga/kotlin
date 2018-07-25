@@ -2,6 +2,7 @@ package org.jetbrains.kotlin.buildUtils.idea
 
 import IntelliJInstrumentCodeTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import idea.DistCopyDetailsMock
 import idea.DistModelBuildContext
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.Project
@@ -19,6 +20,7 @@ import org.gradle.api.internal.file.archive.ZipFileTree
 import org.gradle.api.internal.file.collections.DirectoryFileTree
 import org.gradle.api.internal.file.collections.FileTreeAdapter
 import org.gradle.api.internal.file.copy.CopySpecInternal
+import org.gradle.api.internal.file.copy.DefaultCopySpec
 import org.gradle.api.internal.file.copy.DestinationRootCopySpec
 import org.gradle.api.internal.file.copy.SingleParentCopySpec
 import org.gradle.api.tasks.AbstractCopyTask
@@ -92,12 +94,27 @@ class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
     fun processCopySpec(spec: CopySpecInternal, ctx: DistModelBuildContext) {
         spec.children.forEach {
             when (it) {
-                is DestinationRootCopySpec -> ctx.child("SUB-INTO", it.destinationDir.path).also { newCtx ->
-                    newCtx.setDest(it.destinationDir.path)
-                    processCopySpec(it, ctx)
+                is DestinationRootCopySpec -> ctx.child("DESTINATION ROOT COPY SPEC") { newCtx ->
+                    newCtx.setDest(getRelativePath(it.destinationDir.path))
+                    processCopySpec(it, newCtx)
                 }
-                is SingleParentCopySpec -> it.sourcePaths.forEach {
-                    processSourcePath(it, ctx)
+                is DefaultCopySpec -> ctx.child("DEFAULT COPY SPEC") { newCtx ->
+                    val buildRootResolver = it.buildRootResolver()
+                    ctx.addCopyActions(buildRootResolver.allCopyActions)
+                    newCtx.setDest(buildRootResolver.destPath.getFile(ctx.destination!!.file).path)
+                    processCopySpec(it, newCtx)
+                    it.includes
+
+                    newCtx.child("SINGE PARENT COPY SPEC") { child ->
+                        it.sourcePaths.forEach {
+                            processSourcePath(it, child)
+                        }
+                    }
+                }
+                is SingleParentCopySpec -> ctx.child("OTHER SINGE PARENT COPY SPEC") { child ->
+                    it.sourcePaths.forEach {
+                        processSourcePath(it, child)
+                    }
                 }
                 is CopySpecInternal -> processCopySpec(it, ctx)
                 else -> ctx.logUnsupported("CopySpec", spec)
@@ -105,97 +122,95 @@ class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
         }
     }
 
-    fun processSourcePath(it: Any?, parentContext: DistModelBuildContext) {
+    fun processSourcePath(it: Any?, ctx: DistModelBuildContext) {
         when {
             it == null -> Unit
-            it is ShadowJar -> parentContext.addCopyOf(it.archivePath.path)
-            it is Jar -> parentContext.addCopyOf(it.archivePath.path)
-            it is SourceSetOutput -> {
-                val ctx = parentContext.child("FROM MODULE OUTPUT")
-
+            it is Jar -> ctx.child("JAR") { child ->
+                child.addCopyOf(it.archivePath.path)
+            }
+            it is SourceSetOutput -> ctx.child("COMPILE") { child ->
                 it.classesDirs.files.forEach {
-                    ctx.addCopyOf(it.path)
+                    child.addCopyOf(it.path)
                 }
             }
             it is Configuration -> {
-                val ctx = parentContext.child("FROM CONFIGURATION")
-
-                it.resolve().forEach {
-                    ctx.addCopyOf(it.path)
+                ctx.child("CONFIGURATION") { child ->
+                    it.resolve().forEach {
+                        child.addCopyOf(it.path)
+                    }
                 }
             }
             it is SourceDirectorySet -> {
-                val ctx = parentContext.child("FROM SOURCES")
-
-                it.srcDirs.forEach {
-                    ctx.addCopyOf(it.path)
+                ctx.child("SOURCES") { child ->
+                    it.srcDirs.forEach {
+                        child.addCopyOf(it.path)
+                    }
                 }
             }
-            it is CompositeFileCollection -> {
+            it is CompositeFileCollection -> ctx.child("COMPOSITE FILE COLLECTION") { child ->
                 it.visitRootElements(object : FileCollectionVisitor {
                     override fun visitDirectoryTree(directoryTree: DirectoryFileTree?) {
-                        parentContext.logUnsupported("DIR TREE", directoryTree)
+                        child.logUnsupported("DIR TREE", directoryTree)
                     }
 
                     override fun visitTree(fileTree: FileTreeInternal?) {
-                        parentContext.logUnsupported("TREE", fileTree)
+                        child.logUnsupported("TREE", fileTree)
                     }
 
                     override fun visitCollection(fileCollection: FileCollectionInternal?) {
-                        processSourcePath(fileCollection, parentContext)
+                        processSourcePath(fileCollection, child)
                     }
                 })
             }
-            it is FileTreeAdapter && it.tree is ZipFileTree -> {
+            it is FileTreeAdapter && it.tree is ZipFileTree -> ctx.child("ZIP FILE TREE ADAPTER") { child ->
                 val tree = it.tree
                 val field = tree.javaClass.declaredFields.find { it.name == "zipFile" }!!
                 field.isAccessible = true
                 val zipFile = field.get(tree) as File
 
-                parentContext.addCopyOf(zipFile.path) { src, target ->
-                    DistCopy(target, src)
-                }
+                child.addCopyOf(zipFile.path)
             }
-            it is FileTreeInternal -> {
+            it is FileTreeInternal -> ctx.child("FILE TREE INTERNAL") { child ->
                 // todo: preserve or warn about filtering
                 it.visitTreeOrBackingFile(object : FileVisitor {
                     override fun visitFile(fileDetails: FileVisitDetails) {
-                        parentContext.addCopyOf(fileDetails.file.path)
+                        child.addCopyOf(fileDetails.file.path)
                     }
 
                     override fun visitDir(dirDetails: FileVisitDetails) {
-                        parentContext.addCopyOf(dirDetails.file.path)
+                        child.addCopyOf(dirDetails.file.path)
                     }
                 })
             }
-            it is FileCollection -> {
+            it is FileCollection -> ctx.child("OTHER FILE COLLECTION") { child ->
                 try {
                     it.files.forEach {
-                        parentContext.addCopyOf(it.path)
+                        child.addCopyOf(it.path)
                     }
                 } catch (t: Throwable) {
-                    parentContext.logUnsupported("FILE COLLECTION (${t.message})", it)
+                    child.logUnsupported("FILE COLLECTION (${t.message})", it)
                 }
             }
-            it is String || it is GStringImpl -> parentContext.addCopyOf(it.toString())
-            it is Callable<*> -> {
-                processSourcePath(it.call(), parentContext)
+            it is String || it is GStringImpl -> ctx.child("STRING") { child ->
+                child.addCopyOf(it.toString())
             }
-            it is Collection<*> -> {
-
+            it is Callable<*> -> ctx.child("CALLABLE") { child ->
+                processSourcePath(it.call(), child)
+            }
+            it is Collection<*> -> ctx.child("COLLECTION") { child ->
                 it.forEach {
-                    processSourcePath(it, parentContext)
+                    processSourcePath(it, child)
                 }
             }
-            it is Copy -> {
+            it is Copy -> ctx.child("COPY OUTPUT") { child ->
                 val src = visitCopyTask(it).destination
-                if (src != null) parentContext.addCopyOf(src)
+                if (src != null) child.addCopyOf(src)
                 // else it is added to `it`, because destination is inhereted by context
             }
-            it is File -> {
-                parentContext.addCopyOf(it.path)
+            it is File -> ctx.child("FILE") { child ->
+                child.addCopyOf(it.path)
             }
-            else -> parentContext.logUnsupported("SOURCE PATH", it)
+            else -> ctx.logUnsupported("SOURCE PATH", it)
         }
     }
 
@@ -206,15 +221,51 @@ class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
         addCopyOf(requirePath(src), body)
     }
 
+    fun DistModelBuildContext.transformName(srcName: String): String? {
+        val detailsMock = DistCopyDetailsMock(srcName)
+        allCopyActions.forEach {
+            try {
+                it.execute(detailsMock)
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
+        }
+        val name1 = detailsMock.relativePath.lastName
+        return if (name1.endsWith(".jar")) transformJarName(name1) else name1
+    }
+
+    // todo: investigate why allCopyActions not working
+    private fun transformJarName(name: String): String {
+        val name1 = name.replace(Regex("-${java.util.regex.Pattern.quote(rootProject.version.toString())}"), "")
+
+        val name2 = when (name1) {
+            "kotlin-runtime-common.jar" -> "kotlin-runtime.jar"
+            "kotlin-compiler-before-proguard.jar" -> "kotlin-compiler.jar"
+            "kotlin-allopen-compiler-plugin.jar" -> "allopen-compiler-plugin.jar"
+            "kotlin-noarg-compiler-plugin.jar" -> "noarg-compiler-plugin.jar"
+            "kotlin-sam-with-receiver-compiler-plugin.jar" -> "sam-with-receiver-compiler-plugin.jar"
+            "kotlin-android-extensions-runtime.jar" -> "android-extensions-runtime.jar"
+            else -> name1
+        }
+
+        val name3 = name2.removePrefix("dist-")
+
+        return name3
+    }
+
+
     inline fun DistModelBuildContext.addCopyOf(
             src: DistVFile,
             body: (src: DistVFile, target: DistVFile) -> Unit = { _, _ -> Unit }
     ) {
+        if (src.file.path.contains("build/tmp")) return
+
         val destination = destination
         if (destination != null) {
             body(src, destination)
-            DistCopy(destination, src)
-            log("+", src.file.path)
+            val customTargetName = transformName(src.name)
+            DistCopy(destination, src, customTargetName)
+            log("+DistCopy", "${getRelativePath(src.file.path)} -> ${getRelativePath(destination.file.path)}/$customTargetName")
         } else logUnsupported("Cannot add copy of `$src`: destination is unknown")
     }
 

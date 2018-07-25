@@ -1,5 +1,7 @@
 package org.jetbrains.kotlin.buildUtils.idea
 
+import org.gradle.api.Action
+import org.gradle.api.file.FileCopyDetails
 import java.io.File
 import java.io.PrintWriter
 
@@ -55,7 +57,8 @@ sealed class DistContentElement(val targetDir: DistVFile)
 class DistCopy(
         target: DistVFile,
         val src: DistVFile,
-        val customTargetName: String? = null
+        val customTargetName: String? = null,
+        val copyActions: Collection<Action<in FileCopyDetails>> = listOf()
 ) : DistContentElement(target) {
     init {
         target.addContents(this)

@@ -52,28 +52,6 @@ fun generateIdeArtifacts(rootProject: Project, ideArtifacts: IdeArtifacts) {
                 src = modelBuilder.requirePath("$projectDir/libraries/reflect/build/libs/kotlin-reflect-shadow.jar")
         )
 
-        // todo: investigate
-        val version = rootProject.version
-        DistCopy(
-                target = modelBuilder.requirePath("$projectDir/dist/kotlinc/lib"),
-                src = modelBuilder.requirePath("$projectDir/libraries/stdlib/runtime/build/libs/kotlin-runtime-$version.jar")
-        )
-        DistCopy(
-                target = modelBuilder.requirePath("$projectDir/dist/kotlinc/lib"),
-                src = modelBuilder.requirePath("$projectDir/libraries/stdlib/runtime/build/libs/kotlin-runtime-$version-sources.jar")
-        )
-        DistCopy(
-                target = modelBuilder.requirePath("$projectDir/dist/kotlinc/lib"),
-                customTargetName = "kotlin-stdlib.jar",
-                src = modelBuilder.requirePath("$projectDir/libraries/stdlib/jvm/build/libs/dist-kotlin-stdlib.jar")
-        )
-        DistCopy(
-                target = modelBuilder.requirePath("$projectDir/dist/kotlinc/lib"),
-                customTargetName = "kotlin-stdlib-sources.jar",
-                src = modelBuilder.requirePath("$projectDir/libraries/stdlib/jvm/build/libs/dist-kotlin-stdlib-sources.jar")
-        )
-
-
         File(reportsDir, "02-vfs.txt").printWriter().use {
             modelBuilder.vfsRoot.printTree(it)
         }
@@ -88,12 +66,7 @@ fun generateIdeArtifacts(rootProject: Project, ideArtifacts: IdeArtifacts) {
                                     .also { it.printTree(report) }
 
                     ideArtifacts.ideArtifact("ideaPlugin") {
-                        directory("kotlinc") {
-                            addFiles(getFlattenned("dist/kotlinc"))
-                        }
-                        directory("lib") {
-                            addFiles(getFlattenned("dist/artifacts/ideaPlugin/Kotlin/lib"))
-                        }
+                        addFiles(getFlattenned("dist/artifacts/ideaPlugin/Kotlin"))
                     }
                 }
             }
