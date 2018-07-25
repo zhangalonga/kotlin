@@ -380,8 +380,8 @@ val dist by task<Copy> {
 
 val copyCompilerToIdeaPlugin by task<Copy> {
     dependsOn(dist)
-    into(ideaPluginDir)
-    from(distDir) { include("kotlinc/**") }
+    into("$ideaPluginDir/kotlinc")
+    from("$distDir/kotlinc")
 }
 
 val ideaPlugin by task<Task> {
