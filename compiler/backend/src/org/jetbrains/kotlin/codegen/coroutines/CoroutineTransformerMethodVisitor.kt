@@ -163,11 +163,6 @@ class CoroutineTransformerMethodVisitor(
         }
     }
 
-    private fun findStartAndEndLabels(methodNode: MethodNode): Pair<LabelNode?, LabelNode?> {
-        return methodNode.instructions.asSequence().find { it is LabelNode } as LabelNode? to
-                methodNode.instructions.asSequence().findLast { it is LabelNode } as LabelNode?
-    }
-
     private fun addContinuationToLvt(methodNode: MethodNode, startLabel: LabelNode, endLabel: LabelNode) {
         methodNode.localVariables.add(
             LocalVariableNode(
@@ -247,7 +242,7 @@ class CoroutineTransformerMethodVisitor(
             it.`var` = continuationIndex
         }
 
-        var startLabel = LabelNode()
+        val startLabel = LabelNode()
 
         methodNode.instructions.insert(withInstructionAdapter {
             val createStateInstance = Label()
