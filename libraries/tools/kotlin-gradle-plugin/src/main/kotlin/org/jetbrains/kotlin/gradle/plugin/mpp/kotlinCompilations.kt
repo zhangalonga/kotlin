@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.gradle.utils.addExtendsFromRelation
 import org.jetbrains.kotlin.gradle.utils.lowerCamelCaseName
 
 internal fun KotlinCompilation.composeName(prefix: String? = null, suffix: String? = null): String {
-    val compilationNamePart = compilationName.takeIf { it != "main" }
+    val compilationNamePart = compilationName.takeIf { it != KotlinCompilation.MAIN_COMPILATION_NAME }
     val targetNamePart = target.disambiguationClassifier
 
     return lowerCamelCaseName(prefix, targetNamePart, compilationNamePart, suffix)
@@ -87,13 +87,26 @@ abstract class AbstractKotlinCompilation(
     }
 
     override val compileDependencyConfigurationName: String
-        get() = lowerCamelCaseName(compilationName.takeIf { it != "main" }.orEmpty(), target.disambiguationClassifier, "compileClasspath")
+        get() = lowerCamelCaseName(
+            target.disambiguationClassifier,
+            compilationName.takeIf { it != KotlinCompilation.MAIN_COMPILATION_NAME }.orEmpty(),
+            "compileClasspath"
+        )
 
     override val compileKotlinTaskName: String
-        get() = lowerCamelCaseName("compile", compilationName.takeIf { it != "main" }.orEmpty(), "Kotlin", target.targetName)
+        get() = lowerCamelCaseName(
+            "compile",
+            compilationName.takeIf { it != KotlinCompilation.MAIN_COMPILATION_NAME },
+            "Kotlin",
+            target.targetName
+        )
 
     override val compileAllTaskName: String
-        get() = lowerCamelCaseName(target.disambiguationClassifier, compilationName.takeIf { it != "main" }.orEmpty(), "classes")
+        get() = lowerCamelCaseName(
+            target.disambiguationClassifier,
+            compilationName.takeIf { it != KotlinCompilation.MAIN_COMPILATION_NAME },
+            "classes"
+        )
 
     override lateinit var compileDependencyFiles: FileCollection
 
@@ -123,7 +136,11 @@ abstract class AbstractKotlinCompilationToRunnableFiles(
     name: String
 ) : AbstractKotlinCompilation(target, name), KotlinCompilationToRunnableFiles {
     override val runtimeDependencyConfigurationName: String
-        get() = lowerCamelCaseName(compilationName, target.disambiguationClassifier, "runtimeClasspath")
+        get() = lowerCamelCaseName(
+            target.disambiguationClassifier,
+            compilationName.takeIf { it != KotlinCompilation.MAIN_COMPILATION_NAME },
+            "runtimeClasspath"
+        )
 
     override lateinit var runtimeDependencyFiles: FileCollection
 }
