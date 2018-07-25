@@ -364,13 +364,16 @@ internal class DelegatingDataFlowInfo private constructor(
                 updatedNullabilityInfo.entries.fold(
                     parent?.completeNullabilityInfo ?: EMPTY_NULLABILITY_INFO
                 ) { result, (dataFlowValue, nullability) ->
-                    result.put(dataFlowValue, nullability)
+                    if (dataFlowValue.immanentNullability != nullability)
+                        result.put(dataFlowValue, nullability)
+                    else
+                        result.remove(dataFlowValue)
                 }
 
             var resultingTypeInfo = parent?.completeTypeInfo ?: EMPTY_TYPE_INFO
 
             valueToClearPreviousTypeInfo?.let {
-                resultingTypeInfo = resultingTypeInfo.put(it, ImmutableLinkedHashSet.empty())
+                resultingTypeInfo = resultingTypeInfo.remove(it)
             }
 
             for ((value, types) in updatedTypeInfo) {
@@ -381,7 +384,7 @@ internal class DelegatingDataFlowInfo private constructor(
             }
 
             if (resultingNullabilityInfo.isEmpty && resultingTypeInfo.isEmpty) return DataFlowInfo.EMPTY
-            if (resultingNullabilityInfo === parent?.completeNullabilityInfo && resultingTypeInfo == parent.completeTypeInfo) {
+            if (resultingNullabilityInfo === parent?.completeNullabilityInfo && resultingTypeInfo === parent.completeTypeInfo) {
                 return parent
             }
 
