@@ -12,7 +12,26 @@ fun generateIdeArtifacts(rootProject: Project, ideArtifacts: IdeArtifacts) {
     val projectDir = rootProject.projectDir
 
     File(reportsDir, "01-visitor.report.txt").printWriter().use { visitorReport ->
-        val modelBuilder = DistModelBuilder(rootProject, visitorReport)
+        val modelBuilder = object: DistModelBuilder(rootProject, visitorReport) {
+            // todo: investigate why allCopyActions not working
+            override fun transformJarName(name: String): String {
+                val name1 = name.replace(Regex("-${java.util.regex.Pattern.quote(rootProject.version.toString())}"), "")
+
+                val name2 = when (name1) {
+                    "kotlin-runtime-common.jar" -> "kotlin-runtime.jar"
+                    "kotlin-compiler-before-proguard.jar" -> "kotlin-compiler.jar"
+                    "kotlin-allopen-compiler-plugin.jar" -> "allopen-compiler-plugin.jar"
+                    "kotlin-noarg-compiler-plugin.jar" -> "noarg-compiler-plugin.jar"
+                    "kotlin-sam-with-receiver-compiler-plugin.jar" -> "sam-with-receiver-compiler-plugin.jar"
+                    "kotlin-android-extensions-runtime.jar" -> "android-extensions-runtime.jar"
+                    else -> name1
+                }
+
+                val name3 = name2.removePrefix("dist-")
+
+                return name3
+            }
+        }
 
         fun visitAllTasks(project: Project) {
             project.tasks.forEach {

@@ -34,7 +34,7 @@ import java.io.File
 import java.io.PrintWriter
 import java.util.concurrent.Callable
 
-class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
+open class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
     val rootCtx = DistModelBuildContext(null, "ROOT", "dist", pw)
     val visited = mutableMapOf<Task, DistModelBuildContext>()
     val vfsRoot = DistVFile(null, "<root>", File(""))
@@ -149,12 +149,16 @@ class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
             }
             it is CompositeFileCollection -> ctx.child("COMPOSITE FILE COLLECTION") { child ->
                 it.visitRootElements(object : FileCollectionVisitor {
-                    override fun visitDirectoryTree(directoryTree: DirectoryFileTree?) {
-                        child.logUnsupported("DIR TREE", directoryTree)
+                    override fun visitDirectoryTree(directoryTree: DirectoryFileTree) {
+                        child.child("DIR TREE") {
+                            it.addCopyOf(directoryTree.dir.path)
+                        }
                     }
 
-                    override fun visitTree(fileTree: FileTreeInternal?) {
-                        child.logUnsupported("TREE", fileTree)
+                    override fun visitTree(fileTree: FileTreeInternal) {
+                        child.child("TREE") {
+                            processSourcePath(fileTree, it)
+                        }
                     }
 
                     override fun visitCollection(fileCollection: FileCollectionInternal?) {
@@ -222,12 +226,13 @@ class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
     }
 
     fun DistModelBuildContext.transformName(srcName: String): String? {
-        val detailsMock = DistCopyDetailsMock(srcName)
+        val detailsMock = DistCopyDetailsMock(this, srcName)
         allCopyActions.forEach {
+            detailsMock.lastAction = it
             try {
                 it.execute(detailsMock)
-            } catch (t: Throwable) {
-                t.printStackTrace()
+            } catch (t: DistCopyDetailsMock.E) {
+                // skip
             }
         }
         val name1 = detailsMock.relativePath.lastName
@@ -235,24 +240,7 @@ class DistModelBuilder(val rootProject: Project, pw: PrintWriter) {
     }
 
     // todo: investigate why allCopyActions not working
-    private fun transformJarName(name: String): String {
-        val name1 = name.replace(Regex("-${java.util.regex.Pattern.quote(rootProject.version.toString())}"), "")
-
-        val name2 = when (name1) {
-            "kotlin-runtime-common.jar" -> "kotlin-runtime.jar"
-            "kotlin-compiler-before-proguard.jar" -> "kotlin-compiler.jar"
-            "kotlin-allopen-compiler-plugin.jar" -> "allopen-compiler-plugin.jar"
-            "kotlin-noarg-compiler-plugin.jar" -> "noarg-compiler-plugin.jar"
-            "kotlin-sam-with-receiver-compiler-plugin.jar" -> "sam-with-receiver-compiler-plugin.jar"
-            "kotlin-android-extensions-runtime.jar" -> "android-extensions-runtime.jar"
-            else -> name1
-        }
-
-        val name3 = name2.removePrefix("dist-")
-
-        return name3
-    }
-
+    open fun transformJarName(name: String): String = name
 
     inline fun DistModelBuildContext.addCopyOf(
             src: DistVFile,

@@ -1,6 +1,7 @@
 package idea
 
 import groovy.lang.Closure
+import org.gradle.api.Action
 import org.gradle.api.Transformer
 import org.gradle.api.file.ContentFilterable
 import org.gradle.api.file.DuplicatesStrategy
@@ -11,77 +12,88 @@ import java.io.FilterReader
 import java.io.InputStream
 import java.io.OutputStream
 
-class DistCopyDetailsMock(srcName: String) : FileCopyDetails {
+class DistCopyDetailsMock(val context: DistModelBuildContext, srcName: String) : FileCopyDetails {
     private var relativePath = RelativePath(true, srcName)
+    lateinit var lastAction: Action<in FileCopyDetails>
+
+    class E : Exception() {
+        // skip stack trace filling
+        override fun fillInStackTrace(): Throwable = this
+    }
+
+    fun logUnsupported(methodName: String): Nothing {
+        context.logUnsupported("COPY ACTION FileCopyDetails mock: $methodName", lastAction)
+        throw E()
+    }
 
     override fun setDuplicatesStrategy(strategy: DuplicatesStrategy?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("setDuplicatesStrategy")
     }
 
     override fun getSourcePath(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getSourcePath")
     }
 
     override fun getName(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getName")
     }
 
     override fun getSize(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getSize")
     }
 
     override fun getRelativePath(): RelativePath = relativePath
 
     override fun getRelativeSourcePath(): RelativePath {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getRelativeSourcePath")
     }
 
     override fun expand(properties: MutableMap<String, *>?): ContentFilterable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("expand")
     }
 
     override fun getMode(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getMode")
     }
 
     override fun getSourceName(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getSourceName")
     }
 
     override fun filter(properties: MutableMap<String, *>?, filterType: Class<out FilterReader>?): ContentFilterable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("filter")
     }
 
     override fun filter(filterType: Class<out FilterReader>?): ContentFilterable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("filter")
     }
 
     override fun filter(closure: Closure<*>?): ContentFilterable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("filter")
     }
 
     override fun filter(transformer: Transformer<String, String>?): ContentFilterable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("filter")
     }
 
     override fun getFile(): File {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getFile")
     }
 
     override fun setMode(mode: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("setMode")
     }
 
     override fun copyTo(output: OutputStream?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("copyTo")
     }
 
     override fun copyTo(target: File?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("copyTo")
     }
 
     override fun open(): InputStream {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("open")
     }
 
     override fun setRelativePath(path: RelativePath?) {
@@ -91,31 +103,31 @@ class DistCopyDetailsMock(srcName: String) : FileCopyDetails {
     }
 
     override fun getPath(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getPath")
     }
 
     override fun isDirectory(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("isDirectory")
     }
 
     override fun getDuplicatesStrategy(): DuplicatesStrategy {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getDuplicatesStrategy")
     }
 
     override fun setName(name: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("setName")
     }
 
     override fun getLastModified(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("getLastModified")
     }
 
     override fun setPath(path: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("setPath")
     }
 
     override fun exclude() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        logUnsupported("exclude")
     }
 
 }
