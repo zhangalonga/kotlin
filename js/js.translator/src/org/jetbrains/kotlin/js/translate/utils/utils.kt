@@ -167,20 +167,13 @@ fun JsFunction.fillCoroutineMetadata(
         .memberScope
         .getContributedVariables(COROUTINE_SUSPENDED_NAME, NoLookupLocation.FROM_BACKEND).first()
 
-    val coroutineBaseClassRef = ReferenceTranslator.translateAsTypeReference(TranslationUtils.getCoroutineBaseClass(context), context).also {
-        (it as JsNameRef).name!!.alive = true
-    }
-    val coroutineSuspendObjectRef = ReferenceTranslator.translateAsValueReference(suspendPropertyDescriptor, context).also {
-        (it as JsNameRef).name!!.alive = true
-    }
-
     fun getCoroutinePropertyName(id: String) =
         context.getNameForDescriptor(TranslationUtils.getCoroutineProperty(context, id))
 
     coroutineMetadata = CoroutineMetadata(
         doResumeName = context.getNameForDescriptor(TranslationUtils.getCoroutineDoResumeFunction(context)),
-        suspendObjectRef = coroutineSuspendObjectRef,
-        baseClassRef = coroutineBaseClassRef,
+        suspendObjectRef = ReferenceTranslator.translateAsValueReference(suspendPropertyDescriptor, context),
+        baseClassRef = ReferenceTranslator.translateAsTypeReference(TranslationUtils.getCoroutineBaseClass(context), context),
         stateName = getCoroutinePropertyName("state"),
         exceptionStateName = getCoroutinePropertyName("exceptionState"),
         finallyPathName = getCoroutinePropertyName("finallyPath"),

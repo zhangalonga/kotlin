@@ -17,7 +17,7 @@
 package org.jetbrains.kotlin.js.inline.clean
 
 import org.jetbrains.kotlin.js.backend.ast.*
-import org.jetbrains.kotlin.js.backend.ast.metadata.alive
+import org.jetbrains.kotlin.js.backend.ast.metadata.coroutineMetadata
 import org.jetbrains.kotlin.js.backend.ast.metadata.imported
 
 fun removeUnusedImports(root: JsNode) {
@@ -26,7 +26,7 @@ fun removeUnusedImports(root: JsNode) {
     NodeRemover(JsVars::class.java) { statement ->
         if (statement.vars.size == 1) {
             val name = statement.vars[0].name
-            name.imported && name !in collector.usedImports && !name.alive
+            name.imported && name !in collector.usedImports
         }
         else {
             false
@@ -43,5 +43,13 @@ private class UsedImportsCollector : RecursiveJsVisitor() {
             usedImports += name
         }
         super.visitNameRef(nameRef)
+    }
+
+    override fun visitFunction(x: JsFunction) {
+        x.coroutineMetadata?.apply {
+            accept(suspendObjectRef)
+            accept(baseClassRef)
+        }
+        super.visitFunction(x)
     }
 }
