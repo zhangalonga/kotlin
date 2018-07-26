@@ -124,7 +124,8 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
         symbolToTransformer.run {
             add(irBuiltIns.eqeqeqSymbol, intrinsics.jsEqeqeq)
             add(irBuiltIns.eqeqSymbol, ::transformEqeqOperator)
-            // TODO: implement it a right way
+
+            // ieee754equals can only be applied in between statically known Floats or Doubles
             add(irBuiltIns.ieee754equalsFunByOperandType, intrinsics.jsEqeqeq)
 
             add(irBuiltIns.booleanNotSymbol, intrinsics.jsNot)
@@ -455,17 +456,19 @@ fun shouldReplaceCompareToWithRuntimeCall(call: IrCall): Boolean {
 /*
  Equality translation table:
 
-|                | JsN  | JsN? | Long | Long? | Bool | Bool? | Other | Other? |
-|----------------|------|------|------|-------|------|-------|-------|--------|
-| JsN            | ===  | ===  | ==   | ==    | ===  | ===   | K.eq  | K.eq   |
-| JsN?           | ===  | ==   | ==   | ==    | ===  | K.eq  | K.eq  | K.eq   |
-| Long           | ==   | ==   | K.eq | K.eq  | ===  | ===   | K.eq  | K.eq   |
-| Long?          | ==   | ==   | K.eq | K.eq  | ===  | K.eq  | K.eq  | K.eq   |
-| Bool           | ===  | ===  | ===  | ===   | ===  | ===   | K.eq  | K.eq   |
-| Bool?          | ===  | K.eq | ===  | K.eq  | ===  | ==    | K.eq  | K.eq   |
-| Other with .eq | .eq  | .eq  | .eq  | .eq   | .eq  | .eq   | .eq   | .eq    |
-| Other w/o .eq  | K.eq | K.eq | K.eq | K.eq  | K.eq | K.eq  | K.eq  | K.eq   |
-| Other?         | K.eq | K.eq | K.eq | K.eq  | K.eq | K.eq  | K.eq  | K.eq   |
+|                | JsN  | JsN? | Long | Long? | Bool | Bool? | String | String? | Other | Other? |
+|----------------|------|------|------|-------|------|-------|--------|---------|-------|--------|
+| JsN            | ===  | ===  | ==   | ==    | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
+| JsN?           | ===  | ==   | ==   | ==    | ===  | K.eq  | ===    | K.eq    | K.eq  | K.eq   |
+| Long           | ==   | ==   | K.eq | K.eq  | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
+| Long?          | ==   | ==   | K.eq | K.eq  | ===  | K.eq  | ===    | K.eq    | K.eq  | K.eq   |
+| Bool           | ===  | ===  | ===  | ===   | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
+| Bool?          | ===  | K.eq | ===  | K.eq  | ===  | ==    | ===    | K.eq    | K.eq  | K.eq   |
+| String         | ===  | ===  | ===  | ===   | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
+| String?        | ===  | K.eq | ===  | K.eq  | ===  | K.eq  | ===    | ==      | K.eq  | K.eq   |
+| Other with .eq | .eq  | .eq  | .eq  | .eq   | .eq  | .eq   | .eq    | .eq     | .eq   | .eq    |
+| Other w/o .eq  | K.eq | K.eq | K.eq | K.eq  | K.eq | K.eq  | K.eq   | K.eq    | K.eq  | K.eq   |
+| Other?         | K.eq | K.eq | K.eq | K.eq  | K.eq | K.eq  | K.eq   | K.eq    | K.eq  | K.eq   |
 
 
 JsNumber -- type lowered to JS Number
@@ -488,6 +491,8 @@ fun translateEquals(lhs: IrType, rhs: IrType): EqualityLoweringType = when {
     lhs.isNullableLong() -> translateEqualsForNullableLong(rhs)
     lhs.isBoolean() -> translateEqualsForBoolean(rhs)
     lhs.isNullableBoolean() -> translateEqualsForNullableBoolean(rhs)
+    lhs.isString() -> translateEqualsForString(rhs)
+    lhs.isNullableString() -> translateEqualsForNullableString(rhs)
     lhs.isNullable() -> RuntimeFunctionCall
     else -> RuntimeOrMethodCall
 }
@@ -496,6 +501,7 @@ fun translateEqualsForJsNumber(rhs: IrType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator
     rhs.isLong() || rhs.isNullableLong() -> EqualityOperator
     rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
+    rhs.isString() || rhs.isNullableString() -> IdentityOperator
     else -> RuntimeFunctionCall
 }
 
@@ -503,7 +509,7 @@ fun translateEqualsForNullableJsNumber(rhs: IrType): EqualityLoweringType = when
     rhs.isJsNumber() -> IdentityOperator
     rhs.isNullableJsNumber() -> EqualityOperator
     rhs.isLong() || rhs.isNullableLong() -> EqualityOperator
-    rhs.isBoolean() -> IdentityOperator
+    rhs.isBoolean() || rhs.isString() -> IdentityOperator
     else -> RuntimeFunctionCall
 }
 
@@ -511,6 +517,7 @@ fun translateEqualsForLong(rhs: IrType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> EqualityOperator
     rhs.isLong() || rhs.isNullableLong() -> RuntimeFunctionCall
     rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
+    rhs.isString() || rhs.isNullableString() -> IdentityOperator
     else -> RuntimeFunctionCall
 }
 
@@ -518,6 +525,7 @@ fun translateEqualsForNullableLong(rhs: IrType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> EqualityOperator
     rhs.isLong() || rhs.isNullableLong() -> RuntimeFunctionCall
     rhs.isBoolean() -> IdentityOperator
+    rhs.isString() -> IdentityOperator
     else -> RuntimeFunctionCall
 }
 
@@ -525,6 +533,7 @@ fun translateEqualsForBoolean(rhs: IrType): EqualityLoweringType = when {
     rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator
     rhs.isLong() || rhs.isNullableLong() -> IdentityOperator
     rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
+    rhs.isString() || rhs.isNullableString() -> IdentityOperator
     else -> RuntimeFunctionCall
 }
 
@@ -535,8 +544,30 @@ fun translateEqualsForNullableBoolean(rhs: IrType): EqualityLoweringType = when 
     rhs.isNullableLong() -> RuntimeFunctionCall
     rhs.isBoolean() -> IdentityOperator
     rhs.isNullableBoolean() -> EqualityOperator
+    rhs.isString() -> IdentityOperator
     else -> RuntimeFunctionCall
 }
+
+fun translateEqualsForString(rhs: IrType): EqualityLoweringType = when {
+    rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator
+    rhs.isLong() || rhs.isNullableLong() -> IdentityOperator
+    rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
+    rhs.isString() || rhs.isNullableString() -> IdentityOperator
+    else -> RuntimeFunctionCall
+}
+
+fun translateEqualsForNullableString(rhs: IrType): EqualityLoweringType = when {
+    rhs.isJsNumber() -> IdentityOperator
+    rhs.isNullableJsNumber() -> RuntimeFunctionCall
+    rhs.isLong() -> IdentityOperator
+    rhs.isNullableLong() -> RuntimeFunctionCall
+    rhs.isBoolean() -> IdentityOperator
+    rhs.isNullableBoolean() -> RuntimeFunctionCall
+    rhs.isString() -> IdentityOperator
+    rhs.isNullableString() -> EqualityOperator
+    else -> RuntimeFunctionCall
+}
+
 
 
 private fun IrType.isNullableJsNumber(): Boolean = isNullablePrimitiveType() && !isNullableLong() && !isNullableChar()
