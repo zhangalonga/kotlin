@@ -20,12 +20,13 @@ suspend fun <R> notInlined(
     block: suspend () -> R
 ): R = block()
 
-// MODULE: main(lib)
+// MODULE: main(lib, support)
 // FILE: main.kt
 // WITH_COROUTINES
 // WITH_RUNTIME
 // COMMON_COROUTINES_TEST
 
+import helpers.*
 import COROUTINES_PACKAGE.*
 import COROUTINES_PACKAGE.intrinsics.*
 
@@ -35,12 +36,6 @@ suspend fun test() {
     inlined {
         result = "OK"
     }
-}
-
-open class EmptyContinuation(override val context: CoroutineContext = EmptyCoroutineContext) : Continuation<Any?> {
-    companion object : EmptyContinuation()
-    override fun resume(data: Any?) {}
-    override fun resumeWithException(exception: Throwable) { throw exception }
 }
 
 fun builder(c: suspend () -> Unit) {
