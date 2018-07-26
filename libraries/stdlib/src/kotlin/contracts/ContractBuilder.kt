@@ -3,14 +3,14 @@
  * that can be found in the license/LICENSE.txt file.
  */
 
-package kotlin.internal.contracts
+package kotlin.contracts
 
 import kotlin.internal.ContractsDsl
 import kotlin.internal.InlineOnly
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal interface ContractBuilder {
+interface ContractBuilder {
     @ContractsDsl fun returns(): Returns
     @ContractsDsl fun returns(value: Any?): Returns
     @ContractsDsl fun returnsNotNull(): ReturnsNotNull
@@ -19,7 +19,7 @@ internal interface ContractBuilder {
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal enum class InvocationKind {
+enum class InvocationKind {
     @ContractsDsl AT_MOST_ONCE,
     @ContractsDsl AT_LEAST_ONCE,
     @ContractsDsl EXACTLY_ONCE,
@@ -29,4 +29,4 @@ internal enum class InvocationKind {
 @ContractsDsl
 @InlineOnly
 @SinceKotlin("1.2")
-internal inline fun contract(builder: ContractBuilder.() -> Unit) { }
+inline fun contract(builder: ContractBuilder.() -> Unit) { }

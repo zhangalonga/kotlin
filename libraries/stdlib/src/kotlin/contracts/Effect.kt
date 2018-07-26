@@ -3,21 +3,21 @@
  * that can be found in the license/LICENSE.txt file.
  */
 
-package kotlin.internal.contracts
+package kotlin.contracts
 
 import kotlin.internal.ContractsDsl
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal interface Effect
+interface Effect
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal interface ConditionalEffect : Effect
+interface ConditionalEffect : Effect
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal interface SimpleEffect {
+interface SimpleEffect {
     @ContractsDsl
     infix fun implies(booleanExpression: Boolean): ConditionalEffect
 }
@@ -25,12 +25,12 @@ internal interface SimpleEffect {
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal interface Returns : SimpleEffect
+interface Returns : SimpleEffect
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal interface ReturnsNotNull : SimpleEffect
+interface ReturnsNotNull : SimpleEffect
 
 @ContractsDsl
 @SinceKotlin("1.2")
-internal interface CallsInPlace : SimpleEffect
+interface CallsInPlace : SimpleEffect
