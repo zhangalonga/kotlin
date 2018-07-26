@@ -152,6 +152,47 @@ class CoroutineTransformerMethodVisitor(
 
         dropSuspensionMarkers(methodNode, suspensionPoints)
         methodNode.removeEmptyCatchBlocks()
+        fixCoercedLocalVariablesStartLabel(methodNode)
+    }
+
+    // Fix startLabel for primitives.
+    // In like val a = suspendReturnsInt()
+    // `a` is coerced from Object to int, and coercion happens before scopeStart's mark:
+    //  LL
+    //   LINENUMBER ...
+    //   ...
+    //   ISTORE N
+    //  LM
+    //   /* no lineNumber here */
+    //   ...
+    //  LOCALVARIABLE name LM LK N
+    // Thus, move linenumber to correct label
+    private fun fixCoercedLocalVariablesStartLabel(methodNode: MethodNode) {
+        val primitives = methodNode.localVariables.filter { AsmUtil.isPrimitive(Type.getType(it.desc)) }.toMutableSet()
+        if (primitives.isEmpty()) return
+        for (primitive in primitives) {
+            val store = primitive.start.previous
+            if (store is VarInsnNode && store.`var` == primitive.index) {
+                val checkcast = store.previous ?: continue
+                val label = findLabelOfInsn(checkcast) ?: continue
+                val lineNumber = label.next as? LineNumberNode ?: continue
+                var tmp: AbstractInsnNode? = primitive.start
+                while (tmp != null && (tmp.next is LabelNode || tmp.next.opcode == Opcodes.NOP)) {
+                    tmp = tmp.next
+                }
+                val finalLabel = findLabelOfInsn(tmp)
+                methodNode.instructions.remove(lineNumber)
+                methodNode.instructions.insert(finalLabel, LineNumberNode(lineNumber.line, finalLabel))
+            }
+        }
+    }
+
+    private fun findLabelOfInsn(insn: AbstractInsnNode?): LabelNode? {
+        var current = insn
+        while (current != null && current !is LabelNode) {
+            current = current.previous
+        }
+        return current as LabelNode?
     }
 
     private fun removeFakeContinuationConstructorCall(methodNode: MethodNode) {
