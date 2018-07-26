@@ -73,6 +73,10 @@ public class KtVisitorVoid extends KtVisitor<Void, Void> {
         super.visitScript(script, null);
     }
 
+    public void visitScriptBody(@NotNull KtScriptBody scriptBody) {
+        super.visitScriptBody(scriptBody, null);
+    }
+
     public void visitImportAlias(@NotNull KtImportAlias importAlias) {
         super.visitImportAlias(importAlias, null);
     }
@@ -517,6 +521,12 @@ public class KtVisitorVoid extends KtVisitor<Void, Void> {
     @Override
     public final Void visitScript(@NotNull KtScript script, Void data) {
         visitScript(script);
+        return null;
+    }
+
+    @Override
+    public final Void visitScriptBody(@NotNull KtScriptBody scriptBody, Void data) {
+        visitScriptBody(scriptBody);
         return null;
     }
 

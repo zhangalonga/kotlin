@@ -74,7 +74,7 @@ public class KtProperty extends KtTypeParameterListOwnerStub<KotlinPropertyStub>
     public boolean isMember() {
         PsiElement parent = getParent();
         return parent instanceof KtClassOrObject || parent instanceof KtClassBody ||
-               parent instanceof KtBlockExpression && parent.getParent() instanceof KtScript;
+               parent instanceof KtBlockExpression && parent.getParent() instanceof KtScriptBody;
     }
 
     public boolean isTopLevel() {

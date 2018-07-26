@@ -31,8 +31,11 @@ class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContaine
             ?: throw NullPointerException("Should not parse a script without definition: " + containingKtFile.virtualFile.path)
     }
 
+    val body: KtScriptBody
+        get() = findNotNullChildByClass(KtScriptBody::class.java)
+
     val blockExpression: KtBlockExpression
-        get() = findNotNullChildByClass(KtBlockExpression::class.java)
+        get() = PsiTreeUtil.getChildOfType(body, KtBlockExpression::class.java)!!
 
     constructor(node: ASTNode) : super(node)
 
@@ -43,7 +46,16 @@ class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContaine
 
     override fun getName(): String? = fqName.shortName().asString()
 
-    override fun getDeclarations(): List<KtDeclaration> = PsiTreeUtil.getChildrenOfTypeAsList(blockExpression, KtDeclaration::class.java)
+    override fun getDeclarations(): List<KtDeclaration> =
+        PsiTreeUtil.getChildrenOfTypeAsList(blockExpression, KtDeclaration::class.java) + body
 
     override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitScript(this, data)
+
+    companion object {
+
+        fun getParentScript(declaration: KtDeclaration, precalculatedParent: KtDeclaration? = null /* optimization */): KtScript? {
+            val parent = precalculatedParent ?: KtStubbedPsiUtil.getContainingDeclaration(declaration)
+            return parent?.let { KtStubbedPsiUtil.getContainingDeclaration(it) } as? KtScript
+        }
+    }
 }

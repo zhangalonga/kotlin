@@ -85,7 +85,7 @@ open class LazyDeclarationResolver @Deprecated("") constructor(
         location: LookupLocation
     ): ClassDescriptor =
         findClassDescriptorIfAny(classObjectOrScript, location)
-                ?: (absentDescriptorHandler.diagnoseDescriptorNotFound(classObjectOrScript) as ClassDescriptor)
+            ?: (absentDescriptorHandler.diagnoseDescriptorNotFound(classObjectOrScript) as ClassDescriptor)
 
     fun resolveToDescriptor(declaration: KtDeclaration): DeclarationDescriptor =
         resolveToDescriptor(declaration, /*track =*/true) ?: absentDescriptorHandler.diagnoseDescriptorNotFound(declaration)
@@ -104,7 +104,7 @@ open class LazyDeclarationResolver @Deprecated("") constructor(
 
             override fun visitTypeParameter(parameter: KtTypeParameter, data: Nothing?): DeclarationDescriptor? {
                 val ownerElement = PsiTreeUtil.getParentOfType(parameter, KtTypeParameterListOwner::class.java)
-                        ?: error("Owner not found for type parameter: " + parameter.text)
+                    ?: error("Owner not found for type parameter: " + parameter.text)
                 val ownerDescriptor = resolveToDescriptor(ownerElement, /*track =*/false) ?: return null
 
                 val typeParameters: List<TypeParameterDescriptor>
@@ -116,7 +116,7 @@ open class LazyDeclarationResolver @Deprecated("") constructor(
 
                 val name = parameter.nameAsSafeName
                 return typeParameters.firstOrNull { it.name == name }
-                        ?: throw IllegalStateException("Type parameter $name not found for $ownerDescriptor")
+                    ?: throw IllegalStateException("Type parameter $name not found for $ownerDescriptor")
             }
 
             override fun visitNamedFunction(function: KtNamedFunction, data: Nothing?): DeclarationDescriptor? {
@@ -143,7 +143,7 @@ open class LazyDeclarationResolver @Deprecated("") constructor(
                             }
                             else -> {
                                 val constructor = classDescriptor.unsubstitutedPrimaryConstructor
-                                        ?: error("There are constructor parameters found, so a constructor should also exist")
+                                    ?: error("There are constructor parameters found, so a constructor should also exist")
                                 constructor.valueParameters
                                 bindingContext.get(BindingContext.VALUE_PARAMETER, parameter)
                             }
@@ -203,6 +203,13 @@ open class LazyDeclarationResolver @Deprecated("") constructor(
             override fun visitScript(script: KtScript, data: Nothing?): DeclarationDescriptor =
                 getScriptDescriptor(script, lookupLocationFor(script, true))
 
+            override fun visitScriptBody(scriptBody: KtScriptBody, data: Nothing?): DeclarationDescriptor? {
+                val location = lookupLocationFor(scriptBody, false)
+                val scopeForDeclaration = getMemberScopeDeclaredIn(scriptBody, location)
+                scopeForDeclaration.getContributedFunctions(scriptBody.nameAsSafeName, location)
+                return bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, scriptBody)
+            }
+
             override fun visitKtElement(element: KtElement, data: Nothing?): DeclarationDescriptor? {
                 throw IllegalArgumentException(
                     "Unsupported declaration type: " + element + " " +
@@ -226,6 +233,11 @@ open class LazyDeclarationResolver @Deprecated("") constructor(
             return when (parentDeclaration) {
                 is KtClassOrObject -> getClassDescriptor(parentDeclaration, location).unsubstitutedMemberScope
                 is KtScript -> getScriptDescriptor(parentDeclaration, location).unsubstitutedMemberScope
+                is KtScriptBody ->
+                    getScriptDescriptor(
+                        KtStubbedPsiUtil.getContainingDeclaration(parentDeclaration) as KtScript,
+                        location
+                    ).unsubstitutedMemberScope
                 else -> throw IllegalStateException(
                     "Don't call this method for local declarations: " + declaration + "\n" +
                             declaration.getElementTextWithContext()

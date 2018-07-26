@@ -56,6 +56,7 @@ abstract class AbstractPsiBasedDeclarationProvider(storageManager: StorageManage
                     val scriptInfo = KtScriptInfo(declaration)
                     classesAndObjects.put(scriptInfo.script.nameAsName, scriptInfo)
                 }
+                is KtScriptBody -> {}
                 is KtDestructuringDeclaration -> {
                     for (entry in declaration.entries) {
                         val name = entry.nameAsName.safeNameForLazyResolve()

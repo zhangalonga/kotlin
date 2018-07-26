@@ -19,13 +19,18 @@ package org.jetbrains.kotlin.resolve.lazy.descriptors
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ClassConstructorDescriptorImpl
+import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
+import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.SCRIPT_BODY_METHOD_NAME
+import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
 import org.jetbrains.kotlin.resolve.lazy.declarations.ClassMemberDeclarationProvider
-import org.jetbrains.kotlin.types.*
+import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.KotlinTypeFactory
 import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 
 class LazyScriptClassMemberScope(
@@ -78,6 +83,23 @@ class LazyScriptClassMemberScope(
         }
     }
 
+    private val scriptBodyFunction: () -> SimpleFunctionDescriptor? = resolveSession.storageManager.createNullableLazyValue {
+        val bodyDescr = SimpleFunctionDescriptorImpl.create(
+            scriptDescriptor, Annotations.EMPTY, Name.special("<scriptBody>"), CallableMemberDescriptor.Kind.DECLARATION,
+            scriptDescriptor.source
+        )
+        bodyDescr.initialize(
+            null, null, // receiver
+            emptyList(), // type params
+            emptyList(), // value params - TODO
+            scriptDescriptor.builtIns.array.defaultType, // return type
+            Modality.FINAL,
+            Visibilities.PRIVATE
+        )
+        resolveSession.trace.record(BindingContext.FUNCTION, scriptDescriptor.scriptInfo.script.body, bodyDescr)
+        bodyDescr
+    }
+
     override fun resolvePrimaryConstructor(): ClassConstructorDescriptor? {
         val constructor = scriptPrimaryConstructor()
                 ?: ClassConstructorDescriptorImpl.create(
@@ -91,6 +113,12 @@ class LazyScriptClassMemberScope(
                 )
         setDeferredReturnType(constructor)
         return constructor
+    }
+
+    override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> {
+        val bodyFn = if (name.isSpecial && name.asString() == SCRIPT_BODY_METHOD_NAME) scriptBodyFunction() else null
+        val baseFns = super.getContributedFunctions(name, location)
+        return if (bodyFn == null) baseFns else baseFns + bodyFn
     }
 
     override fun createPropertiesFromPrimaryConstructorParameters(name: Name, result: MutableSet<PropertyDescriptor>) {

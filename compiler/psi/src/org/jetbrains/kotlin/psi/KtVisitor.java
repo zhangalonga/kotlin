@@ -78,6 +78,10 @@ public class KtVisitor<R, D> extends PsiElementVisitor {
         return visitDeclaration(script, data);
     }
 
+    public R visitScriptBody(@NotNull KtScriptBody scriptBody, D data) {
+        return visitDeclaration(scriptBody, data);
+    }
+
     public R visitImportAlias(@NotNull KtImportAlias importAlias, D data) {
         return visitKtElement(importAlias, data);
     }

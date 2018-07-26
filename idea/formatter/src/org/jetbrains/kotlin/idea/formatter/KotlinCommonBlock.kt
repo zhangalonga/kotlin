@@ -214,7 +214,7 @@ abstract class KotlinCommonBlock(
         val childType = child.elementType
 
         if (childParent?.treeParent != null) {
-            if (childParent.elementType === KtNodeTypes.BLOCK && childParent.treeParent.elementType === KtNodeTypes.SCRIPT) {
+            if (childParent.elementType === KtNodeTypes.BLOCK && childParent.treeParent.elementType === KtNodeTypes.SCRIPT_BODY) {
                 return Indent.getNoneIndent()
             }
         }
@@ -261,7 +261,7 @@ abstract class KotlinCommonBlock(
     fun getChildAttributes(newChildIndex: Int): ChildAttributes {
         val type = node.elementType
 
-        if (node.elementType == KtNodeTypes.BLOCK && node.treeParent.elementType == KtNodeTypes.SCRIPT) {
+        if (node.elementType == KtNodeTypes.BLOCK && node.treeParent.elementType == KtNodeTypes.SCRIPT_BODY) {
             return ChildAttributes(Indent.getNoneIndent(), null)
         }
 

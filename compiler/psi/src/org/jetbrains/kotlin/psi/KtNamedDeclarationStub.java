@@ -143,7 +143,7 @@ public abstract class KtNamedDeclarationStub<T extends KotlinStubWithFqName<?>> 
 
         PsiElement parent = getParent();
         PsiElement grandParent = parent != null ? parent.getParent() : null;
-        if (parent instanceof KtBlockExpression && grandParent instanceof KtScript) {
+        if (parent instanceof KtBlockExpression && grandParent instanceof KtScriptBody) {
             return new LocalSearchScope(getContainingFile());
         }
 

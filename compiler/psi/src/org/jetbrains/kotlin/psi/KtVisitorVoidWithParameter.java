@@ -66,6 +66,10 @@ public class KtVisitorVoidWithParameter<P> extends KtVisitor<Void, P> {
         super.visitScript(script, data);
     }
 
+    public void visitScriptBodyVoid(@NotNull KtScriptBody scriptBody, P data) {
+        super.visitScriptBody(scriptBody, data);
+    }
+
     public void visitImportDirectiveVoid(@NotNull KtImportDirective importDirective, P data) {
         super.visitImportDirective(importDirective, data);
     }
@@ -480,6 +484,12 @@ public class KtVisitorVoidWithParameter<P> extends KtVisitor<Void, P> {
     @Override
     public final Void visitScript(@NotNull KtScript script, P data) {
         visitScriptVoid(script, data);
+        return null;
+    }
+
+    @Override
+    public final Void visitScriptBody(@NotNull KtScriptBody scriptBody, P data) {
+        visitScriptBodyVoid(scriptBody, data);
         return null;
     }
 

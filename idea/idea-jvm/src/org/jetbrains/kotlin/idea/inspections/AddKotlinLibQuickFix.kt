@@ -65,7 +65,7 @@ class AddScriptRuntimeQuickFix(element: KtElement) : AddKotlinLibQuickFix(elemen
     companion object : KotlinSingleIntentionActionFactory() {
         override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtElement>? {
             val ktScript = Errors.MISSING_SCRIPT_BASE_CLASS.cast(diagnostic).psiElement as? KtScript ?: return null
-            val templateClassName = ktScript.kotlinScriptDefinition.value.template.qualifiedName ?: return null
+            val templateClassName = ktScript.kotlinScriptDefinition.template.qualifiedName ?: return null
 
             if (templateClassName.startsWith("kotlin.script.templates.standard")) {
                 return diagnostic.createIntentionForFirstParentOfType(::AddScriptRuntimeQuickFix)

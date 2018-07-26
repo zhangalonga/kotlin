@@ -91,6 +91,9 @@ class LazyTopDownAnalyzer(
                     registerDeclarations(script.declarations)
                 }
 
+                override fun visitScriptBody(scriptBody: KtScriptBody) {
+                }
+
                 override fun visitKtFile(file: KtFile) {
                     filePreprocessor.preprocessFile(file)
                     registerDeclarations(file.declarations)

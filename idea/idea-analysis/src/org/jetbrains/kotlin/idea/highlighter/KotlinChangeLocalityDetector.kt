@@ -25,7 +25,7 @@ class KotlinChangeLocalityDetector : ChangeLocalityDetector {
     override fun getChangeHighlightingDirtyScopeFor(element: PsiElement): PsiElement? {
         val parent = element.parent
         if (element is KtBlockExpression && parent is KtNamedFunction && parent.name != null) {
-            if (parent.parents.all { it is KtClassBody || it is KtClassOrObject || it is KtFile || it is KtScript }) {
+            if (parent.parents.all { it is KtClassBody || it is KtClassOrObject || it is KtFile || it is KtScriptBody }) {
                 return parent
             }
         }

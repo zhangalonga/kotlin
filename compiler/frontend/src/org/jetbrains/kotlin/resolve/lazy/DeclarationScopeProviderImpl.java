@@ -80,8 +80,9 @@ public class DeclarationScopeProviderImpl implements DeclarationScopeProvider {
             return parentClassDescriptor.getScopeForMemberDeclarationResolution();
         }
         //TODO: this is not how it works for classes and for exact parity we can try to use the code above
-        if (parentDeclaration instanceof KtScript) {
-            LazyScriptDescriptor scriptDescriptor = (LazyScriptDescriptor) lazyDeclarationResolver.resolveToDescriptor(parentDeclaration);
+        if (parentDeclaration instanceof KtScriptBody) {
+            KtDeclaration scriptDeclaration = KtStubbedPsiUtil.getContainingDeclaration(parentDeclaration);
+            LazyScriptDescriptor scriptDescriptor = (LazyScriptDescriptor) lazyDeclarationResolver.resolveToDescriptor(scriptDeclaration);
             return scriptDescriptor.getScopeForInitializerResolution();
         }
 

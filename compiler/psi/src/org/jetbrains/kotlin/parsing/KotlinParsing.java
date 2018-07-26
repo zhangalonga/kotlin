@@ -169,6 +169,8 @@ public class KotlinParsing extends AbstractKotlinParsing {
 
         PsiBuilder.Marker scriptMarker = mark();
 
+        PsiBuilder.Marker scriptBodyFunMarker = mark();
+
         PsiBuilder.Marker blockMarker = mark();
 
         myExpressionParsing.parseStatements(/*isScriptTopLevel = */true);
@@ -177,6 +179,9 @@ public class KotlinParsing extends AbstractKotlinParsing {
 
         blockMarker.done(BLOCK);
         blockMarker.setCustomEdgeTokenBinders(PRECEDING_ALL_BINDER, TRAILING_ALL_BINDER);
+
+        scriptBodyFunMarker.done(SCRIPT_BODY);
+        scriptBodyFunMarker.setCustomEdgeTokenBinders(PRECEDING_ALL_BINDER, TRAILING_ALL_BINDER);
 
         scriptMarker.done(SCRIPT);
         scriptMarker.setCustomEdgeTokenBinders(PRECEDING_ALL_BINDER, TRAILING_ALL_BINDER);

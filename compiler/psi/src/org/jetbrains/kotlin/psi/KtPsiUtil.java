@@ -249,7 +249,7 @@ public class KtPsiUtil {
     @Nullable
     public static KtScript getScript(@NotNull KtDeclaration namedDeclaration) {
         PsiElement parent = namedDeclaration.getParent();
-        if (parent != null && parent.getParent() instanceof KtScript) {
+        if (parent != null && parent.getParent() instanceof KtScriptBody) {
             return (KtScript) parent.getParent();
         }
         else {
@@ -790,7 +790,7 @@ public class KtPsiUtil {
         boolean isNonLocalCallable = isNonLocalCallable(declaration);
         while (current != null) {
             PsiElement parent = PsiTreeUtil.getStubOrPsiParent(current);
-            if (parent instanceof KtScript) return null;
+            if (parent instanceof KtScriptBody) return null;
             if (current instanceof KtAnonymousInitializer) {
                 return ((KtAnonymousInitializer) current).getBody();
             }
