@@ -33,7 +33,7 @@ class KotlinFunctionStubImpl(
     private val hasBlockBody: Boolean,
     private val hasBody: Boolean,
     private val hasTypeParameterListBeforeFunctionName: Boolean,
-    private val hasContract: Boolean
+    private val mayHaveContract: Boolean
 ) : KotlinStubBaseImpl<KtNamedFunction>(parent, KtStubElementTypes.FUNCTION), KotlinFunctionStub {
     init {
         if (isTopLevel && fqName == null) {
@@ -49,5 +49,5 @@ class KotlinFunctionStubImpl(
     override fun hasBlockBody() = hasBlockBody
     override fun hasBody() = hasBody
     override fun hasTypeParameterListBeforeFunctionName() = hasTypeParameterListBeforeFunctionName
-    override fun mayHaveContract(): Boolean = hasContract
+    override fun mayHaveContract(): Boolean = mayHaveContract
 }
