@@ -28,8 +28,8 @@ import kotlin.concurrent.write
 import kotlin.script.experimental.dependencies.ScriptDependencies
 
 class CliScriptDependenciesProvider(
-        private val project: Project,
-        private val scriptDefinitionProvider: ScriptDefinitionProvider
+    private val project: Project,
+    private val scriptDefinitionProvider: ScriptDefinitionProvider
 ) : ScriptDependenciesProvider {
 
     private val cacheLock = ReentrantReadWriteLock()
@@ -60,8 +60,7 @@ class CliScriptDependenciesProvider(
                     cache.put(path, deps)
                 }
                 deps
-            }
-            else null
+            } else null
         }
     }
 }
