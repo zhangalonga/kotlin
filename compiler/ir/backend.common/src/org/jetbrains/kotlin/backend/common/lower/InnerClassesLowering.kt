@@ -78,6 +78,7 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
                     fieldSymbol,
                     irClass.defaultType
                     ).also {
+                    it.parent = irClass
                     outerThisField = it
                 }
             )

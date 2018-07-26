@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.ir.backend.js.lower
 
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
-import org.jetbrains.kotlin.backend.common.bridges.Bridge
 import org.jetbrains.kotlin.backend.common.bridges.FunctionHandle
 import org.jetbrains.kotlin.backend.common.bridges.generateBridges
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
@@ -126,9 +125,10 @@ class BridgesConstruction(val context: JsIrBackendContext) : ClassLoweringPass {
         )
 
         // TODO: Support offsets for debug info
-        val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.DEFINED, bridgeDescriptorForIrFunction)
+        val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.BRIDGE, bridgeDescriptorForIrFunction)
         irFunction.createParameterDeclarations()
         irFunction.returnType = bridge.returnType
+        irFunction.parent = delegateTo.parent
 
         // TODO: Add type casts
         context.createIrBuilder(irFunction.symbol).irBlockBody(irFunction) {

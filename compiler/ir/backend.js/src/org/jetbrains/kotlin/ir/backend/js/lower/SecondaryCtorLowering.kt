@@ -7,7 +7,6 @@ package org.jetbrains.kotlin.ir.backend.js.lower
 
 import org.jetbrains.kotlin.backend.common.DeclarationContainerLoweringPass
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
-import org.jetbrains.kotlin.descriptors.impl.LazyClassReceiverParameterDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
@@ -25,7 +24,6 @@ import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
-import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.transformFlat
@@ -208,7 +206,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
             // TODO: figure out the reason why symbol is not bound
             if (expression.symbol.isBound) {
 
-                val target = expression.symbol.owner as IrFunction
+                val target = expression.symbol.owner
 
                 if (target is IrConstructor) {
                     if (!target.descriptor.isPrimary) {
@@ -239,11 +237,13 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
             val newCall = redirectCall(expression, ctor.delegate)
 
             val readThis = if (fromPrimary) {
+                val thisKlass = expression.symbol.owner.parent as IrClass
+                val thisSymbol = thisKlass.thisReceiver!!.symbol
                 IrGetValueImpl(
                     expression.startOffset,
                     expression.endOffset,
                     expression.type,
-                    IrValueParameterSymbolImpl(LazyClassReceiverParameterDescriptor(target.descriptor.containingDeclaration))
+                    thisSymbol
                 )
             } else {
                 IrGetValueImpl(expression.startOffset, expression.endOffset, expression.type, ownerFunc.valueParameters.last().symbol)

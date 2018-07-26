@@ -38,8 +38,8 @@ fun translateFunction(declaration: IrFunction, name: JsName?, context: JsGenerat
     val functionScope = JsFunctionScope(context.currentScope, "scope for ${name ?: "annon"}")
     val functionContext = context.newDeclaration(functionScope, declaration)
 
-    declaration.dispatchReceiverParameter?.let { functionContext.getNameForReceiver(it.symbol, false) }
-    declaration.extensionReceiverParameter?.let { functionContext.getNameForReceiver(it.symbol, true) }
+//    declaration.dispatchReceiverParameter?.let { functionContext.getNameForReceiver(it.symbol, false) }
+//    declaration.extensionReceiverParameter?.let { functionContext.getNameForReceiver(it.symbol, true) }
 
     val functionParams = declaration.valueParameters.map { functionContext.getNameForSymbol(it.symbol) }
     val body = declaration.body?.accept(IrElementToJsStatementTransformer(), functionContext) as? JsBlock ?: JsBlock()
