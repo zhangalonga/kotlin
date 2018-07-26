@@ -182,7 +182,8 @@ compileKotlin {
                 "-Xmultifile-parts-inherit",
                 "-Xnormalize-constructor-calls=enable",
                 "-module-name", "kotlin-stdlib",
-                "-Xuse-experimental=kotlin.Experimental"
+                "-Xuse-experimental=kotlin.Experimental",
+                "-Xuse-experimental=kotlin.internal.ContractsDsl"
         ]
     }
 }
@@ -211,7 +212,8 @@ compileCoroutinesKotlin {
                 "-version",
                 "-Xallow-kotlin-package",
                 "-Xmultifile-parts-inherit",
-                "-module-name", "kotlin-stdlib-coroutines"
+                "-module-name", "kotlin-stdlib-coroutines",
+                "-Xuse-experimental=kotlin.internal.ContractsDsl"
         ]
     }
 }
@@ -224,7 +226,7 @@ compileCoroutinesTestKotlin {
                 "-version",
                 "-Xallow-kotlin-package",
                 "-Xmultifile-parts-inherit",
-                "-module-name", "kotlin-stdlib-coroutines"
+                "-module-name", "kotlin-stdlib-coroutines",
         ]
     }
 }

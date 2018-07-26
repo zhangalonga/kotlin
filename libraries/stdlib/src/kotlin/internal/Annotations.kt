@@ -106,6 +106,7 @@ internal enum class RequireKotlinVersionKind {
 /**
  * Specifies that this declaration is a part of special DSL, used for constructing function's contract.
  */
+@Experimental
 @Retention(AnnotationRetention.BINARY)
 @SinceKotlin("1.2")
 internal annotation class ContractsDsl
