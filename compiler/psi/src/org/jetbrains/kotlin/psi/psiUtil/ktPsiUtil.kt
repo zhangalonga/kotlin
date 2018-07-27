@@ -293,20 +293,20 @@ inline fun <reified T : KtElement, R> flatMapDescendantsOfTypeVisitor(
 
 // ----------- Contracts -------------------------------------------------------------------------------------------------------------------
 
-fun isContractPresentPsiCheck(element: KtElement): Boolean {
-    val contractAllowedHere = element is KtNamedFunction &&
-            element.isTopLevel &&
-            element.hasBlockBody() &&
-            !element.hasModifier(KtTokens.OPERATOR_KEYWORD)
+fun KtElement.isContractPresentPsiCheck(): Boolean {
+    val contractAllowedHere = this is KtNamedFunction &&
+            isTopLevel &&
+            hasBlockBody() &&
+            !hasModifier(KtTokens.OPERATOR_KEYWORD)
     if (!contractAllowedHere) return false
 
-    val firstExpression = ((element as? KtFunction)?.bodyExpression as? KtBlockExpression)?.statements?.firstOrNull() ?: return false
+    val firstExpression = ((this as? KtFunction)?.bodyExpression as? KtBlockExpression)?.statements?.firstOrNull() ?: return false
 
-    return isContractDescriptionCallPsiCheck(firstExpression)
+    return firstExpression.isContractDescriptionCallPsiCheck()
 }
 
-fun isContractDescriptionCallPsiCheck(expression: KtExpression): Boolean =
-    expression is KtCallExpression && expression.calleeExpression?.text == "contract"
+fun KtExpression.isContractDescriptionCallPsiCheck(): Boolean =
+    this is KtCallExpression && calleeExpression?.text == "contract"
 
 
 // ----------- Other -----------------------------------------------------------------------------------------------------------------------

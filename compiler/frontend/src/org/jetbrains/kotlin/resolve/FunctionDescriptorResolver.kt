@@ -242,7 +242,7 @@ class FunctionDescriptorResolver(
                 // We need to enable contracts if we're compiling "kotlin"-package to be able to ship contracts in stdlib in 1.2
                 languageVersionSettings.getFlag(AnalysisFlag.allowKotlinPackage)
 
-        if (!isContractsEnabled || !isContractPresentPsiCheck(function)) return emptyContract
+        if (!isContractsEnabled || !function.isContractPresentPsiCheck()) return emptyContract
 
         return provideByDeferredForceResolve
     }
