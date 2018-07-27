@@ -149,11 +149,13 @@ open class KotlinPlatformImplementationPluginBase(platformName: String) : Kotlin
         project.kotlinExtension.sourceSets
 
     protected open fun addCommonSourceSetToPlatformSourceSet(commonSourceSet: Named, platformProject: Project) {
-        val platformTask = platformProject.tasks
-            .filterIsInstance<AbstractKotlinCompile<*>>()
-            .firstOrNull { it.sourceSetName == commonSourceSet.name }
+        platformProject.whenEvaluated { // At the point when the source set in the platform module is created, the task does not exist
+            val platformTask = platformProject.tasks
+                .filterIsInstance<AbstractKotlinCompile<*>>()
+                .single { it.sourceSetName == commonSourceSet.name }
 
-        platformTask?.source(getKotlinSourceDirectorySetSafe(commonSourceSet))
+            platformTask.source(getKotlinSourceDirectorySetSafe(commonSourceSet))
+        }
     }
 
     private fun getKotlinSourceSetsSafe(project: Project): NamedDomainObjectCollection<out Named> {
