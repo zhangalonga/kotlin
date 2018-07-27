@@ -23,6 +23,5 @@ class ProbablyContractedCallableNamesImpl(project: Project) : ProbablyContracted
         false
     )
 
-    override fun functionNames(): Collection<String> = functionNames.value
-
+    override fun isProbablyContractedCallableName(name: String): Boolean = name in functionNames.value
 }

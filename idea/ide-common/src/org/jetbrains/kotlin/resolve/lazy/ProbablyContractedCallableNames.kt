@@ -9,7 +9,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 
 interface ProbablyContractedCallableNames {
-    fun functionNames(): Collection<String>
+    fun isProbablyContractedCallableName(name: String): Boolean
 
     companion object {
         fun getInstance(project: Project): ProbablyContractedCallableNames =

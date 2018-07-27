@@ -175,7 +175,7 @@ class PartialBodyResolveFilter(
                 super.visitCallExpression(expression)
 
                 val nameReference = expression.calleeExpression as? KtNameReferenceExpression ?: return
-                if (nameReference.getReferencedName() !in globalProbablyContractedCallableNames.functionNames()) return
+                if (!globalProbablyContractedCallableNames.isProbablyContractedCallableName(nameReference.getReferencedName())) return
 
                 val mentionedSmartCastName = expression.findMentionedName(filter)
 
