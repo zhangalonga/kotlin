@@ -1,17 +1,16 @@
 // IGNORE_BACKEND: JS, JS_IR
 // NO_CHECK_LAMBDA_INLINING
 // FILE: test.kt
-// COMMON_COROUTINES_TEST
+// LANGUAGE_VERSION: 1.3
 
 inline suspend fun foo(x: suspend () -> String) = x()
 
 // FILE: box.kt
 // WITH_RUNTIME
 // WITH_COROUTINES
-// COMMON_COROUTINES_TEST
 
-import COROUTINES_PACKAGE.*
-import COROUTINES_PACKAGE.intrinsics.*
+import kotlin.coroutines.*
+import kotlin.coroutines.intrinsics.*
 
 fun builder(c: suspend () -> Unit) {
     c.startCoroutine(object: helpers.ContinuationAdapter<Unit>() {

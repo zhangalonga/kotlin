@@ -1,11 +1,11 @@
 // IGNORE_BACKEND: JS, JS_IR
 
-// COMMON_COROUTINES_TEST
+// LANGUAGE_VERSION: 1.3
 // WITH_RUNTIME
 // WITH_COROUTINES
 
 import helpers.*
-import COROUTINES_PACKAGE.*
+import kotlin.coroutines.*
 
 var result = ""
 

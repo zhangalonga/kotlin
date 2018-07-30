@@ -2,14 +2,14 @@
 // IGNORE_BACKEND: JS, NATIVE, JS_IR
 // IGNORE_LIGHT_ANALYSIS
 
-// LANGUAGE_VERSION: 1.2
+// LANGUAGE_VERSION: 1.3
 // WITH_RUNTIME
 // WITH_COROUTINES
 
 import kotlin.test.assertEquals
 import kotlin.jvm.internal.FunctionBase
 import helpers.*
-import kotlin.coroutines.experimental.*
+import kotlin.coroutines.*
 
 suspend fun builder(c: suspend () -> Unit) {
     c.startCoroutine(EmptyContinuation)

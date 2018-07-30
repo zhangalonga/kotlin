@@ -1,5 +1,5 @@
 // IGNORE_BACKEND: JS, NATIVE
-// COMMON_COROUTINES_TEST
+// LANGUAGE_VERSION: 1.3
 
 fun box(): String {
     suspend fun bar() {}
