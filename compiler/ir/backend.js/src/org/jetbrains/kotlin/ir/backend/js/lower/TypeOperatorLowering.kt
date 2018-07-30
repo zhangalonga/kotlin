@@ -11,9 +11,11 @@ import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrArithBuilder
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
-import org.jetbrains.kotlin.ir.backend.js.symbols.JsSymbolBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.isReified
-import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
+import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperatorCall
@@ -43,7 +45,7 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
 
     private val isInterfaceSymbol get() = context.intrinsics.isInterfaceSymbol
     private val isArraySymbol get() = context.intrinsics.isArraySymbol
-//    private val isCharSymbol get() = context.intrinsics.isCharSymbol
+    //    private val isCharSymbol get() = context.intrinsics.isCharSymbol
     private val isObjectSymbol get() = context.intrinsics.isObjectSymbol
 
     private val instanceOfIntrinsicSymbol = context.intrinsics.jsInstanceOf.symbol
@@ -60,30 +62,30 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
 
     override fun lower(irFile: IrFile) {
         // TODO: get rid of descriptors
-        irFile.transformChildren(object : IrElementTransformer<IrDeclaration?> {
-            override fun visitFunction(declaration: IrFunction, data: IrDeclaration?) =
+        irFile.transformChildren(object : IrElementTransformer<IrDeclarationParent> {
+            override fun visitFunction(declaration: IrFunction, data: IrDeclarationParent) =
                 super.visitFunction(declaration, declaration)
 
-            override fun visitClass(declaration: IrClass, data: IrDeclaration?): IrStatement {
+            override fun visitClass(declaration: IrClass, data: IrDeclarationParent): IrStatement {
                 return super.visitClass(declaration, declaration)
             }
 
-            override fun visitTypeOperator(expression: IrTypeOperatorCall, data: IrDeclaration?): IrExpression {
+            override fun visitTypeOperator(expression: IrTypeOperatorCall, data: IrDeclarationParent): IrExpression {
                 super.visitTypeOperator(expression, data)
 
                 return when (expression.operator) {
                     IrTypeOperator.IMPLICIT_CAST -> lowerImplicitCast(expression)
                     IrTypeOperator.IMPLICIT_COERCION_TO_UNIT -> lowerCoercionToUnit(expression)
-                    IrTypeOperator.IMPLICIT_INTEGER_COERCION -> lowerIntegerCoercion(expression, data!!)
-                    IrTypeOperator.IMPLICIT_NOTNULL -> lowerImplicitNotNull(expression, data!!)
-                    IrTypeOperator.INSTANCEOF -> lowerInstanceOf(expression, data!!, false)
-                    IrTypeOperator.NOT_INSTANCEOF -> lowerInstanceOf(expression, data!!, true)
-                    IrTypeOperator.CAST -> lowerCast(expression, data!!, false)
-                    IrTypeOperator.SAFE_CAST -> lowerCast(expression, data!!, true)
+                    IrTypeOperator.IMPLICIT_INTEGER_COERCION -> lowerIntegerCoercion(expression, data)
+                    IrTypeOperator.IMPLICIT_NOTNULL -> lowerImplicitNotNull(expression, data)
+                    IrTypeOperator.INSTANCEOF -> lowerInstanceOf(expression, data, false)
+                    IrTypeOperator.NOT_INSTANCEOF -> lowerInstanceOf(expression, data, true)
+                    IrTypeOperator.CAST -> lowerCast(expression, data, false)
+                    IrTypeOperator.SAFE_CAST -> lowerCast(expression, data, true)
                 }
             }
 
-            private fun lowerImplicitNotNull(expression: IrTypeOperatorCall, declaration: IrDeclaration): IrExpression {
+            private fun lowerImplicitNotNull(expression: IrTypeOperatorCall, declaration: IrDeclarationParent): IrExpression {
                 assert(expression.operator == IrTypeOperator.IMPLICIT_NOTNULL)
                 assert(expression.typeOperand.isNullable() xor expression.argument.type.isNullable())
 
@@ -99,7 +101,7 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
 
             private fun lowerCast(
                 expression: IrTypeOperatorCall,
-                declaration: IrDeclaration,
+                declaration: IrDeclarationParent,
                 isSafe: Boolean
             ): IrExpression {
                 assert(expression.operator == IrTypeOperator.CAST || expression.operator == IrTypeOperator.SAFE_CAST)
@@ -143,7 +145,7 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
 
             fun lowerInstanceOf(
                 expression: IrTypeOperatorCall,
-                declaration: IrDeclaration,
+                declaration: IrDeclarationParent,
                 inverted: Boolean
             ): IrExpression {
                 assert(expression.operator == IrTypeOperator.INSTANCEOF || expression.operator == IrTypeOperator.NOT_INSTANCEOF)
@@ -169,12 +171,14 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
                 putValueArgument(1, litNull)
             }
 
-            private fun cacheValue(value: IrExpression, newStatements: MutableList<IrStatement>, declaration: IrDeclaration): IrExpression {
-                val varSymbol = JsSymbolBuilder.buildTempVar((declaration as IrSymbolOwner).symbol, value.type, mutable = false)
-                newStatements += JsIrBuilder.buildVar(varSymbol, value, value.type).apply {
-                    parent = declaration as IrDeclarationParent
-                }
-                return JsIrBuilder.buildGetValue(varSymbol)
+            private fun cacheValue(
+                value: IrExpression,
+                newStatements: MutableList<IrStatement>,
+                declaration: IrDeclarationParent
+            ): IrExpression {
+                val varDeclaration = JsIrBuilder.buildVar(value.type, initializer = value).apply { parent = declaration }
+                newStatements += varDeclaration
+                return JsIrBuilder.buildGetValue(varDeclaration.symbol)
             }
 
             private fun generateTypeCheck(argument: IrExpression, toType: IrType): IrExpression {
@@ -275,7 +279,7 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
                 return expression.run { IrCompositeImpl(startOffset, endOffset, unit, null, listOf(argument, unitValue)) }
             }
 
-            private fun lowerIntegerCoercion(expression: IrTypeOperatorCall, declaration: IrDeclaration): IrExpression {
+            private fun lowerIntegerCoercion(expression: IrTypeOperatorCall, declaration: IrDeclarationParent): IrExpression {
                 assert(expression.operator === IrTypeOperator.IMPLICIT_INTEGER_COERCION)
                 assert(expression.argument.type.isInt())
 
@@ -302,6 +306,6 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FileLoweringPass {
 
                 return expression.run { IrCompositeImpl(startOffset, endOffset, toType, null, newStatements) }
             }
-        }, null)
+        }, irFile)
     }
 }

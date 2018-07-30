@@ -6,8 +6,6 @@
 package org.jetbrains.kotlin.ir.backend.js.lower
 
 import org.jetbrains.kotlin.backend.common.DeclarationContainerLoweringPass
-import org.jetbrains.kotlin.backend.common.descriptors.WrappedSimpleFunctionDescriptor
-import org.jetbrains.kotlin.backend.common.descriptors.WrappedValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
@@ -15,7 +13,6 @@ import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
@@ -24,15 +21,13 @@ import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
-import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
-import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.transformFlat
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
-import org.jetbrains.kotlin.name.Name
 
 class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransformerVoid(), DeclarationContainerLoweringPass {
 
@@ -121,45 +116,34 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
         name: String,
         type: IrType
     ): IrSimpleFunction {
-        val thisDescriptor = object : WrappedValueParameterDescriptor() {
-            override fun isVar() = false
-            override fun isConst() = false
-        }
 
-        val thisSymbol = IrValueParameterSymbolImpl(thisDescriptor)
-        val thisParam = JsIrBuilder.buildValueParameter(thisSymbol, "\$this", declaration.valueParameters.size, type)
-            .also { thisDescriptor.bind(it) }
+        val thisParam = JsIrBuilder.buildValueParameter("\$this", declaration.valueParameters.size, type)
+        val functionName = "${name}_\$Init\$"
 
-        val functionName = Name.identifier("${name}_\$Init\$")
-
-        val descriptor = object : WrappedSimpleFunctionDescriptor() {}
-
-        val functionSymbol = IrSimpleFunctionSymbolImpl(descriptor)
-        val functionDeclaration = IrFunctionImpl(
-            declaration.startOffset,
-            declaration.endOffset,
-            declaration.origin,
-            functionSymbol,
+        return JsIrBuilder.buildFunction(
             functionName,
             declaration.visibility,
             Modality.FINAL,
             declaration.isInline,
-            declaration.isExternal,
-            false,
-            false
+            declaration.isExternal
         ).also {
-            descriptor.bind(it)
-        }
+            thisParam.run { parent = it }
+            val retStmt = JsIrBuilder.buildReturn(it.symbol, JsIrBuilder.buildGetValue(thisParam.symbol), context.irBuiltIns.nothingType)
+            val statements = (declaration.body!!.deepCopyWithSymbols(it) as IrStatementContainer).statements
 
-        return functionDeclaration.apply {
-            val retStmt = JsIrBuilder.buildReturn(functionSymbol, JsIrBuilder.buildGetValue(thisSymbol), context.irBuiltIns.nothingType)
-            val statements = (declaration.body as IrStatementContainer).statements
+            val newValueParameters = declaration.valueParameters.map { p ->
+                val np = JsIrBuilder.buildValueParameter(p.name.identifier, p.index, p.type)
+                np.parent = it
+                np
+            }
 
-            valueParameters += (declaration.valueParameters + thisParam)
-            typeParameters += declaration.typeParameters
-            parent = declaration.parent
-            body = JsIrBuilder.buildBlockBody(statements + retStmt).apply {
-                transformChildrenVoid(ThisUsageReplaceTransformer(functionSymbol, thisSymbol))
+            it.valueParameters += (newValueParameters + thisParam)
+            it.typeParameters += declaration.typeParameters
+            it.returnType = type
+            it.parent = declaration.parent
+
+            it.body = JsIrBuilder.buildBlockBody(statements + retStmt).apply {
+                transformChildrenVoid(ThisUsageReplaceTransformer(it.symbol, thisParam.symbol))
             }
         }
     }
@@ -171,37 +155,27 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
         type: IrType
     ): IrSimpleFunction {
 
-        val functionDescriptor = object : WrappedSimpleFunctionDescriptor() {}
-        val functionSymbol = IrSimpleFunctionSymbolImpl(functionDescriptor)
-        val functionName = Name.identifier("${name}_\$Create\$")
+        val functionName = "${name}_\$Create\$"
 
-        return IrFunctionImpl(
-            declaration.startOffset,
-            declaration.endOffset,
-            declaration.origin,
-            functionSymbol,
+        return JsIrBuilder.buildFunction(
             functionName,
             declaration.visibility,
             Modality.FINAL,
             declaration.isInline,
-            declaration.isExternal,
-            false,
-            false
+            declaration.isExternal
         ).also {
-            functionDescriptor.bind(it)
-
-            it.valueParameters += declaration.valueParameters
+            it.valueParameters += declaration.valueParameters.map { p ->
+                val np = JsIrBuilder.buildValueParameter(p.name.identifier, p.index, p.type)
+                np.parent = it
+                np
+            }
             it.typeParameters += declaration.typeParameters
             it.parent = declaration.parent
 
             it.returnType = type
 
             val createFunctionIntrinsic = context.intrinsics.jsObjectCreate
-            val irCreateCall = JsIrBuilder.buildCall(
-                createFunctionIntrinsic.symbol,
-                type,
-                listOf(type)
-            )
+            val irCreateCall = JsIrBuilder.buildCall(createFunctionIntrinsic.symbol, type, listOf(type))
             val irDelegateCall = JsIrBuilder.buildCall(ctorImpl.symbol, type).also { call ->
                 for (i in 0 until it.valueParameters.size) {
                     call.putValueArgument(i, JsIrBuilder.buildGetValue(it.valueParameters[i].symbol))
@@ -211,7 +185,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
 
 //                typeParameters.mapIndexed { i, t -> ctorImpl.typeParameters[i].descriptor ->  }
             }
-            val irReturn = JsIrBuilder.buildReturn(functionSymbol, irDelegateCall, context.irBuiltIns.nothingType)
+            val irReturn = JsIrBuilder.buildReturn(it.symbol, irDelegateCall, context.irBuiltIns.nothingType)
 
 
             it.body = JsIrBuilder.buildBlockBody(listOf(irReturn))

@@ -5,15 +5,24 @@
 
 package org.jetbrains.kotlin.ir.backend.js.ir
 
+import org.jetbrains.kotlin.backend.common.descriptors.WrappedSimpleFunctionDescriptor
+import org.jetbrains.kotlin.backend.common.descriptors.WrappedValueParameterDescriptor
+import org.jetbrains.kotlin.backend.common.descriptors.WrappedVariableDescriptor
+import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.descriptors.Visibilities
+import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOriginImpl
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrValueParameterImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrVariableImpl
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.*
+import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
+import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
+import org.jetbrains.kotlin.ir.symbols.impl.IrVariableSymbolImpl
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.name.Name
 
@@ -46,24 +55,54 @@ object JsIrBuilder {
     fun buildValueParameter(symbol: IrValueParameterSymbol, type: IrType? = null) =
         IrValueParameterImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol, type ?: symbol.owner.type, null)
 
-    fun buildValueParameter(symbol: IrValueParameterSymbol, name: String? = null, index: Int, type: IrType) =
-        IrValueParameterImpl(
+    fun buildValueParameter(name: String = "tmp", index: Int, type: IrType): IrValueParameter {
+        val descriptor = WrappedValueParameterDescriptor()
+        return IrValueParameterImpl(
             UNDEFINED_OFFSET,
             UNDEFINED_OFFSET,
             SYNTHESIZED_DECLARATION,
-            symbol,
-            Name.identifier(name ?: "tmp"),
+            IrValueParameterSymbolImpl(descriptor),
+            Name.identifier(name),
             index,
             type,
             null,
             false,
             false
-        )
+        ).also {
+            descriptor.bind(it)
+        }
+    }
 
     fun buildFunction(symbol: IrSimpleFunctionSymbol, returnType: IrType) =
         IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol).apply {
             this.returnType = returnType
         }
+
+    fun buildFunction(
+        name: String,
+        visibility: Visibility = Visibilities.PUBLIC,
+        modality: Modality = Modality.FINAL,
+        isInline: Boolean = false,
+        isExternal: Boolean = false,
+        isTailrec: Boolean = false,
+        isSuspend: Boolean = false,
+        origin: IrDeclarationOrigin = SYNTHESIZED_DECLARATION
+    ): IrSimpleFunction {
+        val descriptor = WrappedSimpleFunctionDescriptor()
+        return IrFunctionImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            SYNTHESIZED_DECLARATION,
+            IrSimpleFunctionSymbolImpl(descriptor),
+            Name.identifier(name),
+            visibility,
+            modality,
+            isInline,
+            isExternal,
+            isTailrec,
+            isSuspend
+        ).also { descriptor.bind(it) }
+    }
 
     fun buildGetObjectValue(type: IrType, classSymbol: IrClassSymbol) =
         IrGetObjectValueImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, classSymbol)
@@ -95,6 +134,31 @@ object JsIrBuilder {
     fun buildVar(symbol: IrVariableSymbol, initializer: IrExpression? = null, type: IrType? = null) =
         IrVariableImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol, type ?: symbol.owner.type)
             .apply { this.initializer = initializer }
+
+    fun buildVar(
+        type: IrType,
+        name: String = "tmp",
+        isVar: Boolean = false,
+        isConst: Boolean = false,
+        isLateinit: Boolean = false,
+        initializer: IrExpression? = null
+    ): IrVariable {
+        val descriptor = WrappedVariableDescriptor()
+        return IrVariableImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            SYNTHESIZED_DECLARATION,
+            IrVariableSymbolImpl(descriptor),
+            Name.identifier(name),
+            type,
+            isVar,
+            isConst,
+            isLateinit
+        ).also {
+            descriptor.bind(it)
+            it.initializer = initializer
+        }
+    }
 
     fun buildBreak(type: IrType, loop: IrLoop) = IrBreakImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, loop)
     fun buildContinue(type: IrType, loop: IrLoop) = IrContinueImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, loop)

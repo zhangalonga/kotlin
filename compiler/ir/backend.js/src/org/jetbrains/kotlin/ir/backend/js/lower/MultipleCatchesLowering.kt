@@ -8,18 +8,19 @@ package org.jetbrains.kotlin.ir.backend.js.lower
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.utils.commonSupertype
 import org.jetbrains.kotlin.backend.common.utils.isSubtypeOf
-import org.jetbrains.kotlin.descriptors.VariableDescriptor
+import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
-import org.jetbrains.kotlin.ir.backend.js.symbols.JsSymbolBuilder
-import org.jetbrains.kotlin.ir.declarations.IrDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
 import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrBranchImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrCatchImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrElseBranchImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrTryImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
+import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.IrDynamicType
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classifierOrNull
@@ -55,21 +56,21 @@ class MultipleCatchesLowering(val context: JsIrBackendContext) : FileLoweringPas
     val nothingType = context.irBuiltIns.nothingType
 
     override fun lower(irFile: IrFile) {
-        irFile.transformChildren(object : IrElementTransformer<IrDeclaration?> {
+        irFile.transformChildren(object : IrElementTransformer<IrDeclarationParent> {
 
-            override fun visitDeclaration(declaration: IrDeclaration, data: IrDeclaration?) =
-                super.visitDeclaration(declaration, declaration)
+            override fun visitFunction(declaration: IrFunction, data: IrDeclarationParent): IrStatement {
+                return super.visitFunction(declaration, declaration)
+            }
 
-            override fun visitTry(aTry: IrTry, data: IrDeclaration?): IrExpression {
+            override fun visitTry(aTry: IrTry, data: IrDeclarationParent): IrExpression {
                 aTry.transformChildren(this, data)
 
                 if (aTry.catches.isEmpty()) return aTry.apply { assert(finallyExpression != null) }
 
                 val commonType = mergeTypes(aTry.catches.map { it.catchParameter.type })
 
-                val pendingExceptionSymbol = JsSymbolBuilder.buildVar(data!!.descriptor, commonType, "\$pending\$", false)
-                val pendingExceptionDeclaration = JsIrBuilder.buildVar(pendingExceptionSymbol, type = commonType)
-                val pendingException = JsIrBuilder.buildGetValue(pendingExceptionSymbol)
+                val pendingExceptionDeclaration = JsIrBuilder.buildVar(commonType, "\$pending\$").apply { parent = data }
+                val pendingException = JsIrBuilder.buildGetValue(pendingExceptionDeclaration.symbol)
 
                 val branches = mutableListOf<IrBranch>()
 
@@ -77,14 +78,14 @@ class MultipleCatchesLowering(val context: JsIrBackendContext) : FileLoweringPas
                     assert(!catch.catchParameter.isVar) { "caught exception parameter has to immutable" }
                     val type = catch.catchParameter.type
                     val typeSymbol = type.classifierOrNull
-                    val catchBody = catch.result.transform(object : IrElementTransformer<VariableDescriptor> {
-                        override fun visitGetValue(expression: IrGetValue, data: VariableDescriptor) =
-                            if (typeSymbol != null && expression.descriptor == data)
+                    val catchBody = catch.result.transform(object : IrElementTransformer<IrValueSymbol> {
+                        override fun visitGetValue(expression: IrGetValue, data: IrValueSymbol) =
+                            if (typeSymbol != null && expression.symbol == data)
                                 // TODO how is it good to generate implicit cast for each access?
                                 buildImplicitCast(pendingException, type, typeSymbol)
                             else
                                 expression
-                    }, catch.parameter)
+                    }, catch.catchParameter.symbol)
 
                     if (type is IrDynamicType) {
                         branches += IrElseBranchImpl(catch.startOffset, catch.endOffset, litTrue, catchBody)
@@ -120,6 +121,6 @@ class MultipleCatchesLowering(val context: JsIrBackendContext) : FileLoweringPas
                 assert(it.isSubtypeOf(context.irBuiltIns.throwableType) || it is IrDynamicType)
             }
 
-        }, null)
+        }, irFile)
     }
 }

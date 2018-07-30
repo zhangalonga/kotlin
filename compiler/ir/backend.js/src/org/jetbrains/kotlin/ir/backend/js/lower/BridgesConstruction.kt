@@ -26,16 +26,15 @@ import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
-import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
+import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.isStatic
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.builders.irReturn
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
 import org.jetbrains.kotlin.ir.types.toKotlinType
-import org.jetbrains.kotlin.ir.util.createParameterDeclarations
+import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.util.isReal
 import org.jetbrains.kotlin.ir.util.parentAsClass
@@ -124,28 +123,47 @@ class BridgesConstruction(val context: JsIrBackendContext) : ClassLoweringPass {
             bridge.descriptor.returnType, Modality.OPEN, function.visibility
         )
 
+        val irFunction2 = JsIrBuilder.buildFunction(
+            bridge.name.identifier,
+            bridge.visibility,
+            bridge.modality,
+            bridge.isInline,
+            bridge.isExternal,
+            bridge.isTailrec,
+            bridge.isSuspend,
+            IrDeclarationOrigin.BRIDGE
+        ).apply {
+            dispatchReceiverParameter = bridge.dispatchReceiverParameter
+            extensionReceiverParameter = bridge.extensionReceiverParameter
+            typeParameters += bridge.typeParameters
+            valueParameters += bridge.valueParameters.map { it.deepCopyWithSymbols(this) }
+            annotations += bridge.annotations
+            returnType = bridge.returnType
+            parent = delegateTo.parent
+        }
+
         // TODO: Support offsets for debug info
-        val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.BRIDGE, bridgeDescriptorForIrFunction)
-        irFunction.createParameterDeclarations()
-        irFunction.returnType = bridge.returnType
-        irFunction.parent = delegateTo.parent
+//        val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.BRIDGE, bridgeDescriptorForIrFunction)
+//        irFunction.createParameterDeclarations()
+//        irFunction.returnType = bridge.returnType
+//        irFunction.parent = delegateTo.parent
 
         // TODO: Add type casts
-        context.createIrBuilder(irFunction.symbol).irBlockBody(irFunction) {
+        context.createIrBuilder(irFunction2.symbol).irBlockBody(irFunction2) {
             val call = irCall(delegateTo.symbol)
-            call.dispatchReceiver = irGet(irFunction.dispatchReceiverParameter!!)
-            irFunction.extensionReceiverParameter?.let {
+            call.dispatchReceiver = irGet(irFunction2.dispatchReceiverParameter!!)
+            irFunction2.extensionReceiverParameter?.let {
                 call.extensionReceiver = irGet(it)
             }
-            irFunction.valueParameters.mapIndexed { i, valueParameter ->
+            irFunction2.valueParameters.mapIndexed { i, valueParameter ->
                 call.putValueArgument(i, irGet(valueParameter))
             }
             +irReturn(call)
         }.apply {
-            irFunction.body = this
+            irFunction2.body = this
         }
 
-        return irFunction
+        return irFunction2
     }
 }
 

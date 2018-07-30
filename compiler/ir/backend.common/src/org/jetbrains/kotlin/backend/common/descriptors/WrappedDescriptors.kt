@@ -7,10 +7,7 @@ package org.jetbrains.kotlin.backend.common.descriptors
 
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.ir.declarations.IrDeclaration
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.types.toKotlinType
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.constants.ConstantValue
@@ -18,16 +15,16 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeSubstitutor
 
 
-interface DescriptorWrapper<T : IrDeclaration> : DeclarationDescriptor {
+abstract class DescriptorWrapper<T : IrDeclaration> : DeclarationDescriptor {
 
-    val owner: T
-    fun bind(declaration: T)
+    lateinit var owner: T
+    fun bind(declaration: T) { owner = declaration }
 
     override fun getOriginal() = this
 
 }
 
-abstract class WrappedCallableDescriptor<T: IrDeclaration>: CallableDescriptor, DescriptorWrapper<T> {
+abstract class WrappedCallableDescriptor<T : IrDeclaration>: CallableDescriptor, DescriptorWrapper<T>() {
     override fun getOriginal() = this
 
     override fun substitute(substitutor: TypeSubstitutor): CallableDescriptor {
@@ -86,17 +83,14 @@ abstract class WrappedCallableDescriptor<T: IrDeclaration>: CallableDescriptor, 
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 }
 
-abstract class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallableDescriptor<IrValueParameter>() {
-    lateinit var _owner: IrValueParameter
-    override val owner get() = _owner
-    override fun bind(declaration: IrValueParameter) {
-        _owner = declaration
-    }
+class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallableDescriptor<IrValueParameter>() {
 
     override val index get() = owner.index
     override val isCrossinline get() = owner.isCrossinline
     override val isNoinline get() = owner.isNoinline
     override val varargElementType get() = owner.varargElementType?.toKotlinType()
+    override fun isConst() = false
+    override fun isVar() = false
 
     override fun getContainingDeclaration() = (owner.parent as IrFunction).descriptor
     override fun getType() = owner.type.toKotlinType()
@@ -122,13 +116,31 @@ abstract class WrappedValueParameterDescriptor : ValueParameterDescriptor, Wrapp
     }
 }
 
-abstract class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallableDescriptor<IrSimpleFunction>() {
-    lateinit var _owner: IrSimpleFunction
-    override val owner get() = _owner
-    override fun bind(declaration: IrSimpleFunction) {
-        _owner = declaration
+class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescriptor<IrVariable>() {
+
+    override fun getContainingDeclaration() = (owner.parent as IrFunction).descriptor
+    override fun getType() = owner.type.toKotlinType()
+    override fun getName() = owner.name
+    override fun isConst() = owner.isConst
+    override fun isVar() = owner.isVar
+    override fun isLateInit() = owner.isLateinit
+
+    override fun getCompileTimeInitializer(): ConstantValue<*>? {
+        TODO("")
     }
 
+    override fun getOverriddenDescriptors(): Collection<VariableDescriptor> {
+        TODO("Not Implemented")
+    }
+
+    override fun getOriginal() = this
+
+    override fun substitute(substitutor: TypeSubstitutor): VariableDescriptor {
+        TODO("")
+    }
+}
+
+class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallableDescriptor<IrSimpleFunction>() {
     override fun getOverriddenDescriptors() = owner.overriddenSymbols.map { it.descriptor }
     override fun getContainingDeclaration() = (owner.parent as IrDeclaration).descriptor
     override fun getModality() = owner.modality
