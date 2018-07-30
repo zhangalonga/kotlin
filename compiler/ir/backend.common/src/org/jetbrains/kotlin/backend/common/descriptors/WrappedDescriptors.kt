@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.ir.types.toKotlinType
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.constants.ConstantValue
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.SimpleType
+import org.jetbrains.kotlin.types.TypeConstructor
 import org.jetbrains.kotlin.types.TypeSubstitutor
 
 
@@ -116,6 +118,36 @@ class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallabl
     }
 }
 
+class WrappedTypeParameterDescriptor: TypeParameterDescriptor, WrappedCallableDescriptor<IrTypeParameter>() {
+    override fun getName() = owner.name
+
+    override fun isReified(): Boolean {
+        return false
+//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getVariance() = owner.variance
+
+    override fun getUpperBounds() = owner.superTypes.map { it.toKotlinType() }
+
+    override fun getTypeConstructor(): TypeConstructor {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getOriginal() = this
+
+    override fun getIndex() = owner.index
+
+    override fun isCapturedFromOuterDeclaration() = false
+
+    override fun getDefaultType(): SimpleType {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getContainingDeclaration() = (owner.parent as IrDeclaration).descriptor
+
+}
+
 class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescriptor<IrVariable>() {
 
     override fun getContainingDeclaration() = (owner.parent as IrFunction).descriptor
@@ -201,3 +233,83 @@ class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallabl
     }
 }
 
+class WrappedClassConstructorDescriptor: ClassConstructorDescriptor, WrappedCallableDescriptor<IrConstructor>() {
+    override fun getContainingDeclaration() = (owner.parent as IrClass).descriptor
+
+    override fun getTypeParameters() = owner.typeParameters.map { it.descriptor }
+    override fun getValueParameters() = owner.valueParameters.map { it.descriptor as ValueParameterDescriptor }.toMutableList()
+
+    override fun getOriginal() = this
+
+    override fun substitute(substitutor: TypeSubstitutor): ClassConstructorDescriptor {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun copy(
+        newOwner: DeclarationDescriptor,
+        modality: Modality,
+        visibility: Visibility,
+        kind: CallableMemberDescriptor.Kind,
+        copyOverrides: Boolean
+    ): ClassConstructorDescriptor {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getModality() = Modality.FINAL
+
+
+    override fun setOverriddenDescriptors(overriddenDescriptors: MutableCollection<out CallableMemberDescriptor>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getKind(): CallableMemberDescriptor.Kind {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getConstructedClass() = (owner.parent as IrClass).descriptor
+
+    override fun getName() = owner.name
+
+    override fun getOverriddenDescriptors(): MutableCollection<out FunctionDescriptor> = mutableListOf()
+
+    override fun getInitialSignatureDescriptor(): FunctionDescriptor? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun isHiddenToOvercomeSignatureClash(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun isOperator() = false
+
+    override fun isInline() = owner.isInline
+
+    override fun isHiddenForResolutionEverywhereBesideSupercalls(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getReturnType() = owner.returnType.toKotlinType()
+
+    override fun isPrimary() = owner.isPrimary
+
+    override fun isExpect() = false
+
+    override fun isTailrec() = false
+
+    override fun isActual() = false
+
+    override fun isInfix() = false
+
+    override fun isSuspend() = false
+
+    override fun <V : Any?> getUserData(key: FunctionDescriptor.UserDataKey<V>?): V? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun isExternal() = owner.isExternal
+
+    override fun newCopyBuilder(): FunctionDescriptor.CopyBuilder<out FunctionDescriptor> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+}

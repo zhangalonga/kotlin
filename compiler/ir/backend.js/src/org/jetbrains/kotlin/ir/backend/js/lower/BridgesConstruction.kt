@@ -21,11 +21,8 @@ import org.jetbrains.kotlin.backend.common.bridges.FunctionHandle
 import org.jetbrains.kotlin.backend.common.bridges.generateBridges
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
 import org.jetbrains.kotlin.backend.common.lower.irBlockBody
-import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
-import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.isStatic
@@ -34,7 +31,6 @@ import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.builders.irReturn
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.types.toKotlinType
-import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.util.isReal
 import org.jetbrains.kotlin.ir.util.parentAsClass
@@ -106,64 +102,55 @@ class BridgesConstruction(val context: JsIrBackendContext) : ClassLoweringPass {
         bridge: IrSimpleFunction,
         delegateTo: IrSimpleFunction
     ): IrFunction {
-        val containingClass = function.parentAsClass.descriptor
+        val newDispatchReceiver = bridge.dispatchReceiverParameter?.run {
+            JsIrBuilder.buildValueParameter(name, index, type)
+        }
 
-        val bridgeDescriptorForIrFunction = SimpleFunctionDescriptorImpl.create(
-            containingClass,
-            Annotations.EMPTY,
-            bridge.name,
-            CallableMemberDescriptor.Kind.SYNTHESIZED,
-            function.descriptor.source)
+        val newExtensionReceiver = bridge.extensionReceiverParameter?.run {
+            JsIrBuilder.buildValueParameter(name, index, type)
+        }
 
-        // TODO: should copy modality
-        bridgeDescriptorForIrFunction.initialize(
-            bridge.descriptor.extensionReceiverParameter?.returnType, containingClass.thisAsReceiverParameter,
-            bridge.descriptor.typeParameters,
-            bridge.descriptor.valueParameters.map { it.copy(bridgeDescriptorForIrFunction, it.name, it.index) },
-            bridge.descriptor.returnType, Modality.OPEN, function.visibility
-        )
-
-        val irFunction2 = JsIrBuilder.buildFunction(
+        // TODO: Support offsets for debug info
+        val irFunction = JsIrBuilder.buildFunction(
             bridge.name.identifier,
             bridge.visibility,
-            bridge.modality,
+            bridge.modality, // TODO: should copy modality?
             bridge.isInline,
             bridge.isExternal,
             bridge.isTailrec,
             bridge.isSuspend,
             IrDeclarationOrigin.BRIDGE
         ).apply {
-            dispatchReceiverParameter = bridge.dispatchReceiverParameter
-            extensionReceiverParameter = bridge.extensionReceiverParameter
+
+            dispatchReceiverParameter = newDispatchReceiver?.also { it.parent = this }
+            extensionReceiverParameter = newExtensionReceiver?.also { it.parent = this }
             typeParameters += bridge.typeParameters
-            valueParameters += bridge.valueParameters.map { it.deepCopyWithSymbols(this) }
+            valueParameters += bridge.valueParameters.map { p ->
+                JsIrBuilder.buildValueParameter(p.name, p.index, p.type).also {
+                    it.parent = this
+                }
+            }
             annotations += bridge.annotations
             returnType = bridge.returnType
             parent = delegateTo.parent
         }
 
-        // TODO: Support offsets for debug info
-//        val irFunction = IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, IrDeclarationOrigin.BRIDGE, bridgeDescriptorForIrFunction)
-//        irFunction.createParameterDeclarations()
-//        irFunction.returnType = bridge.returnType
-//        irFunction.parent = delegateTo.parent
-
         // TODO: Add type casts
-        context.createIrBuilder(irFunction2.symbol).irBlockBody(irFunction2) {
+        context.createIrBuilder(irFunction.symbol).irBlockBody(irFunction) {
             val call = irCall(delegateTo.symbol)
-            call.dispatchReceiver = irGet(irFunction2.dispatchReceiverParameter!!)
-            irFunction2.extensionReceiverParameter?.let {
+            call.dispatchReceiver = irGet(irFunction.dispatchReceiverParameter!!)
+            irFunction.extensionReceiverParameter?.let {
                 call.extensionReceiver = irGet(it)
             }
-            irFunction2.valueParameters.mapIndexed { i, valueParameter ->
+            irFunction.valueParameters.mapIndexed { i, valueParameter ->
                 call.putValueArgument(i, irGet(valueParameter))
             }
             +irReturn(call)
         }.apply {
-            irFunction2.body = this
+            irFunction.body = this
         }
 
-        return irFunction2
+        return irFunction
     }
 }
 
@@ -197,6 +184,7 @@ class FunctionAndSignature(val function: IrSimpleFunction) {
 
     private val signature = Signature(
         function.name,
+        // TODO: should kotlinTypes be used here?
         function.extensionReceiverParameter?.type?.toKotlinType()?.toString(),
         function.valueParameters.map { it.type.toKotlinType()?.toString() }
     )

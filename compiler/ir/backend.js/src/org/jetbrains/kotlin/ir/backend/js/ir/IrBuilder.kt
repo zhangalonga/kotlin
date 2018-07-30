@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.ir.backend.js.ir
 
 import org.jetbrains.kotlin.backend.common.descriptors.WrappedSimpleFunctionDescriptor
+import org.jetbrains.kotlin.backend.common.descriptors.WrappedTypeParameterDescriptor
 import org.jetbrains.kotlin.backend.common.descriptors.WrappedValueParameterDescriptor
 import org.jetbrains.kotlin.backend.common.descriptors.WrappedVariableDescriptor
 import org.jetbrains.kotlin.descriptors.Modality
@@ -15,16 +16,19 @@ import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
+import org.jetbrains.kotlin.ir.declarations.impl.IrTypeParameterImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrValueParameterImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrVariableImpl
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
+import org.jetbrains.kotlin.ir.symbols.impl.IrTypeParameterSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrVariableSymbolImpl
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.Variance
 
 object JsIrBuilder {
 
@@ -55,19 +59,36 @@ object JsIrBuilder {
     fun buildValueParameter(symbol: IrValueParameterSymbol, type: IrType? = null) =
         IrValueParameterImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol, type ?: symbol.owner.type, null)
 
-    fun buildValueParameter(name: String = "tmp", index: Int, type: IrType): IrValueParameter {
+    fun buildValueParameter(name: String = "tmp", index: Int, type: IrType) = buildValueParameter(Name.identifier(name), index, type)
+
+    fun buildValueParameter(name: Name, index: Int, type: IrType): IrValueParameter {
         val descriptor = WrappedValueParameterDescriptor()
         return IrValueParameterImpl(
             UNDEFINED_OFFSET,
             UNDEFINED_OFFSET,
             SYNTHESIZED_DECLARATION,
             IrValueParameterSymbolImpl(descriptor),
-            Name.identifier(name),
+            name,
             index,
             type,
             null,
             false,
             false
+        ).also {
+            descriptor.bind(it)
+        }
+    }
+
+    fun buildTypeParameter(name: Name, index: Int, variance: Variance = Variance.INVARIANT): IrTypeParameter {
+        val descriptor = WrappedTypeParameterDescriptor()
+        return IrTypeParameterImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            SYNTHESIZED_DECLARATION,
+            IrTypeParameterSymbolImpl(descriptor),
+            name,
+            index,
+            variance
         ).also {
             descriptor.bind(it)
         }
@@ -197,3 +218,24 @@ object JsIrBuilder {
     fun buildInt(type: IrType, v: Int) = IrConstImpl.int(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, v)
     fun buildString(type: IrType, s: String) = IrConstImpl.string(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, s)
 }
+
+
+fun IrFunction.copyParameterDeclarationsFrom(from: IrFunction) {
+
+    fun IrValueParameter.copyTo(f: IrFunction, shift: Int = 0): IrValueParameter {
+        return JsIrBuilder.buildValueParameter(name, index + shift, type).also { it.parent = f }
+    }
+    fun IrTypeParameter.copyTo(f: IrFunction): IrTypeParameter {
+        return JsIrBuilder.buildTypeParameter(name, index, variance).also { it.parent = f }
+    }
+
+    dispatchReceiverParameter = from.dispatchReceiverParameter?.copyTo(this)
+    extensionReceiverParameter = from.extensionReceiverParameter?.copyTo(this)
+
+    val shift = valueParameters.size
+    valueParameters += from.valueParameters.map { it.copyTo(this, shift) }
+
+    assert(typeParameters.isEmpty())
+    from.typeParameters.mapTo(typeParameters) {it.copyTo(this) }
+}
+

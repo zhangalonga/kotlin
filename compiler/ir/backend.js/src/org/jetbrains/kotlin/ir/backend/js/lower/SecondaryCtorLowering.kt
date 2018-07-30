@@ -132,7 +132,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
             val statements = (declaration.body!!.deepCopyWithSymbols(it) as IrStatementContainer).statements
 
             val newValueParameters = declaration.valueParameters.map { p ->
-                val np = JsIrBuilder.buildValueParameter(p.name.identifier, p.index, p.type)
+                val np = JsIrBuilder.buildValueParameter(p.name, p.index, p.type)
                 np.parent = it
                 np
             }
@@ -165,7 +165,7 @@ class SecondaryCtorLowering(val context: JsIrBackendContext) : IrElementTransfor
             declaration.isExternal
         ).also {
             it.valueParameters += declaration.valueParameters.map { p ->
-                val np = JsIrBuilder.buildValueParameter(p.name.identifier, p.index, p.type)
+                val np = JsIrBuilder.buildValueParameter(p.name, p.index, p.type)
                 np.parent = it
                 np
             }
