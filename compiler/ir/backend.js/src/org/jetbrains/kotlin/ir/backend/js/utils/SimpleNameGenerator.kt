@@ -32,21 +32,9 @@ class SimpleNameGenerator : NameGenerator {
     }
 
     override fun getNameForType(type: IrType, context: JsGenerationContext): JsName {
-        var classifier = type.classifierOrFail
-        if (!classifier.isBound) classifier = context.staticContext.backendContext.symbolTable.referenceClassifier(classifier.descriptor)
+        val classifier = type.classifierOrFail.run { reference(context.staticContext.backendContext.symbolTable) }
         return getNameForDeclaration(classifier.owner as IrDeclaration, context)
-//        return when(classifier) {
-//            is IrClassSymbol -> getNameForDeclaration(classifier.owner, context)
-//            is IrTypeParameterSymbol -> getNameForDeclaration(classifier.owner, context)
-//            else -> TODO("")
-//        }
-//        return context.staticContext.rootScope.declareName(sanitizeName(type.render()))
     }
-
-//    override fun getNameForReceiver(symbol: IrValueSymbol, isExt: Boolean, context: JsGenerationContext): JsName =
-//        nameCache2.getOrPut(symbol.owner) {
-//            context.currentScope.declareName(if (isExt) Namer.EXTENSION_RECEIVER_NAME else Namer.IMPLICIT_RECEIVER_NAME)
-//        }
 
 
     private fun getNameForDeclaration(declaration: IrDeclaration, context: JsGenerationContext): JsName =
@@ -54,15 +42,9 @@ class SimpleNameGenerator : NameGenerator {
             var nameDeclarator: (String) -> JsName = context.currentScope::declareName
             val nameBuilder = StringBuilder()
             when (declaration) {
-//                is ReceiverParameterDescriptor -> {
-//                    when (declaration.value) {
-//                        is ExtensionReceiver -> nameBuilder.append(Namer.EXTENSION_RECEIVER_NAME)
-//                        is ImplicitClassReceiver -> nameBuilder.append(Namer.IMPLICIT_RECEIVER_NAME)
-//                        else -> TODO("name for $descriptor")
-//                    }
-//                }
                 is IrValueParameter -> {
-                    if (declaration.origin == IrDeclarationOrigin.INSTANCE_RECEIVER || declaration == context.currentFunction?.dispatchReceiverParameter)
+                    if (declaration.origin == IrDeclarationOrigin.INSTANCE_RECEIVER ||
+                        declaration == context.currentFunction?.dispatchReceiverParameter)
                         nameBuilder.append(Namer.IMPLICIT_RECEIVER_NAME)
                     else if (declaration == context.currentFunction?.extensionReceiverParameter) {
                         nameBuilder.append(Namer.EXTENSION_RECEIVER_NAME)
@@ -70,22 +52,19 @@ class SimpleNameGenerator : NameGenerator {
                         val declaredName = declaration.name.asString()
                         nameBuilder.append(declaredName)
                         if (declaredName.startsWith("\$")) {
-                            nameBuilder.append('_')
+                            nameBuilder.append('.')
                             nameBuilder.append(declaration.index)
                         }
                     }
                 }
                 is IrField -> {
                     nameBuilder.append(declaration.name.identifier)
-                    if (/*declaration.visibility == Visibilities.PRIVATE && */declaration.parent is IrDeclaration) {
-//                        nameDeclarator = context.currentScope::declareFreshName
-                        nameBuilder.append('$')
+                    if (declaration.parent is IrDeclaration) {
+                        nameBuilder.append('.')
                         nameBuilder.append(getNameForDeclaration(declaration.parent as IrDeclaration, context))
                     }
                 }
                 is IrClass -> {
-//                    val typeName = getNameForType(declaration.defaultType, context)
-
                     if (declaration.isCompanion) {
                         nameBuilder.append(getNameForDeclaration(declaration.parent as IrDeclaration, context))
                         nameBuilder.append('.')
@@ -93,7 +72,7 @@ class SimpleNameGenerator : NameGenerator {
 
                     nameBuilder.append(declaration.name.asString())
 
-                    if (declaration.kind == ClassKind.OBJECT) {
+                    if (declaration.kind == ClassKind.OBJECT || declaration.name.isSpecial) {
                         nameDeclarator = context.staticContext.rootScope::declareFreshName
                     }
                 }
@@ -105,26 +84,9 @@ class SimpleNameGenerator : NameGenerator {
                     nameDeclarator = context.currentScope::declareFreshName
                 }
                 is IrSimpleFunction -> {
-                    val correspondingProperty = declaration.correspondingProperty
-//                    if (correspondingProperty != null) {
-//                        when (declaration) {
-//                            correspondingProperty.getter -> nameBuilder.append(Namer.GETTER_PREFIX)
-//                            correspondingProperty.setter -> nameBuilder.append(Namer.SETTER_PREFIX)
-//                            else -> TODO("LLL")
-//                        }
-//                        if (correspondingProperty.backingField != null) {
-//                            nameBuilder.append(getNameForDeclaration(correspondingProperty.backingField!!, context))
-//                        } else {
-//                            nameBuilder.append(correspondingProperty.name)
-//                        }
-//                    } else {
-//                    if (declaration.origin != IrDeclarationOrigin.BRIDGE && declaration.overriddenSymbols.isNotEmpty())
-//                        return@getOrPut getNameForSymbol(declaration.overriddenSymbols.first(), context)
-
                     nameBuilder.append(declaration.name.asString())
                     declaration.typeParameters.forEach { nameBuilder.append("_${it.name.asString()}") }
                     declaration.valueParameters.forEach { nameBuilder.append("_${it.type.render()}") }
-//                    }
                 }
 
             }

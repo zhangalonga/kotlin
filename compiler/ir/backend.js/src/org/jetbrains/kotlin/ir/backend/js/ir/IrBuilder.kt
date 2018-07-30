@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.name.Name
 
 object JsIrBuilder {
 
@@ -44,6 +45,20 @@ object JsIrBuilder {
 
     fun buildValueParameter(symbol: IrValueParameterSymbol, type: IrType? = null) =
         IrValueParameterImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol, type ?: symbol.owner.type, null)
+
+    fun buildValueParameter(symbol: IrValueParameterSymbol, name: String? = null, index: Int, type: IrType) =
+        IrValueParameterImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            SYNTHESIZED_DECLARATION,
+            symbol,
+            Name.identifier(name ?: "tmp"),
+            index,
+            type,
+            null,
+            false,
+            false
+        )
 
     fun buildFunction(symbol: IrSimpleFunctionSymbol, returnType: IrType) =
         IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol).apply {
