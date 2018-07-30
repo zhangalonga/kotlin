@@ -45,7 +45,7 @@ import kotlin.script.dependencies.Environment
 import kotlin.script.dependencies.ScriptContents
 import kotlin.script.experimental.api.KotlinType
 import kotlin.script.experimental.api.ScriptingEnvironment
-import kotlin.script.experimental.api.ScriptingEnvironmentProperties
+import kotlin.script.experimental.api.configurationDependencies
 import kotlin.script.experimental.definitions.createScriptDefinitionFromAnnotatedBaseClass
 import kotlin.script.experimental.dependencies.DependenciesResolver
 import kotlin.script.experimental.dependencies.ScriptDependencies
@@ -179,10 +179,10 @@ fun loadDefinitionsFromTemplates(
                     )
                 }
                 template.annotations.firstIsInstanceOrNull<kotlin.script.experimental.annotations.KotlinScript>() != null -> {
-                    val hostEnvironment = ScriptingEnvironment(
-                        defaultJvmScriptingEnvironment,
-                        ScriptingEnvironmentProperties.configurationDependencies to listOf(JvmDependency(classpath))
-                    )
+                    val hostEnvironment = ScriptingEnvironment.create {
+                        include(defaultJvmScriptingEnvironment)
+                        configurationDependencies(JvmDependency(classpath))
+                    }
                     KotlinScriptDefinitionAdapterFromNewAPI(
                         createScriptDefinitionFromAnnotatedBaseClass(KotlinType(template), hostEnvironment, KotlinScriptDefinition::class),
                         hostEnvironment
