@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public class CompilerConfigurationKey<T> {
-    Key<T> ideaKey;
+    public Key<T> ideaKey;
 
     public CompilerConfigurationKey(@NotNull @NonNls String name) {
         ideaKey = Key.create(name);

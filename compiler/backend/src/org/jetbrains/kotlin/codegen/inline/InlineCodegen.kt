@@ -555,7 +555,7 @@ abstract class InlineCodegen<out T : BaseExpressionCodegen>(
             assert(callableDescriptor is DeserializedCallableMemberDescriptor) { "Not a deserialized function or proper: " + callableDescriptor }
 
             val containingClasses =
-                KotlinTypeMapper.getContainingClassesForDeserializedCallable(callableDescriptor as DeserializedCallableMemberDescriptor)
+                state.typeMapper.getContainingClassesForDeserializedCallable(callableDescriptor as DeserializedCallableMemberDescriptor)
 
             val containerId = containingClasses.implClassId
 

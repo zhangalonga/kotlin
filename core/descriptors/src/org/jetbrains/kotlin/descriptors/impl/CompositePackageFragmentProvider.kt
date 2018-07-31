@@ -23,7 +23,7 @@ import java.util.*
 import org.jetbrains.kotlin.name.Name
 
 class CompositePackageFragmentProvider(// can be modified from outside
-        private val providers: List<PackageFragmentProvider>) : PackageFragmentProvider {
+        val providers: List<PackageFragmentProvider>) : PackageFragmentProvider {
 
     override fun getPackageFragments(fqName: FqName): List<PackageFragmentDescriptor> {
         val result = ArrayList<PackageFragmentDescriptor>()

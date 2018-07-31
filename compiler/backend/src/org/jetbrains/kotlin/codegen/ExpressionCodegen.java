@@ -2286,6 +2286,15 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
 
         Callable callable = resolveToCallable(fd, superCallTarget != null, resolvedCall);
 
+        if (typeMapper.isVerbose) {
+            System.out.println("#");
+            System.out.println("# callee: " + (call.getCalleeExpression() == null ? "null" : call.getCalleeExpression().getText()));
+            System.out.println("# callable: " + callable + " (" + callable.getClass() + ")");
+            System.out.println("# resolved descriptor: " + resolvedCall.getResultingDescriptor());
+            System.out.println("# descriptor's module: " + DescriptorUtils.getContainingModule(resolvedCall.getResultingDescriptor()));
+            System.out.println("#");
+        }
+
         return callable.invokeMethodWithArguments(resolvedCall, receiver, this);
     }
 
@@ -2341,6 +2350,9 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
     @NotNull
     Callable resolveToCallable(@NotNull FunctionDescriptor fd, boolean superCall, @NotNull ResolvedCall resolvedCall) {
         IntrinsicMethod intrinsic = state.getIntrinsics().getIntrinsic(fd);
+        if (typeMapper.isVerbose) {
+            System.out.println("# intrinsic for " + fd + ": " + intrinsic);
+        }
         if (intrinsic != null) {
             return intrinsic.toCallable(fd, superCall, resolvedCall, this);
         }

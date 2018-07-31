@@ -188,7 +188,9 @@ class GenerationState private constructor(
         this.moduleName,
         isJvm8Target,
         configuration.languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)
-    )
+    ).apply {
+        setExtra(this@GenerationState.configuration, this@GenerationState.module)
+    }
     val intrinsics: IntrinsicMethods = run {
         val shouldUseConsistentEquals = languageVersionSettings.supportsFeature(LanguageFeature.ThrowNpeOnExplicitEqualsForBoxedNull) &&
                 !configuration.getBoolean(JVMConfigurationKeys.NO_EXCEPTION_ON_EXPLICIT_EQUALS_FOR_BOXED_NULL)

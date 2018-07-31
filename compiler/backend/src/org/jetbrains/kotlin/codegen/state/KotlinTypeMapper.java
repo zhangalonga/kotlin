@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.codegen.state;
 
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import kotlin.Pair;
@@ -24,10 +25,11 @@ import org.jetbrains.kotlin.codegen.coroutines.CoroutineCodegenUtilKt;
 import org.jetbrains.kotlin.codegen.signature.AsmTypeFactory;
 import org.jetbrains.kotlin.codegen.signature.BothSignatureWriter;
 import org.jetbrains.kotlin.codegen.signature.JvmSignatureWriter;
+import org.jetbrains.kotlin.config.CompilerConfiguration;
+import org.jetbrains.kotlin.config.ContentRoot;
+import org.jetbrains.kotlin.config.JVMConfigurationKeys;
 import org.jetbrains.kotlin.descriptors.*;
-import org.jetbrains.kotlin.descriptors.impl.LocalVariableAccessorDescriptor;
-import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor;
-import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor;
+import org.jetbrains.kotlin.descriptors.impl.*;
 import org.jetbrains.kotlin.fileClasses.JvmFileClassInfo;
 import org.jetbrains.kotlin.fileClasses.JvmFileClassUtil;
 import org.jetbrains.kotlin.load.java.BuiltinMethodsWithSpecialGenericSignature;
@@ -87,6 +89,58 @@ public class KotlinTypeMapper {
     private final String moduleName;
     private final boolean isJvm8Target;
     private final boolean isReleaseCoroutines;
+
+    public CompilerConfiguration configuration;
+    public boolean isVerbose;
+    public ModuleDescriptor module;
+
+    public void setExtra(CompilerConfiguration configuration, ModuleDescriptor module) {
+        this.configuration = configuration;
+        this.isVerbose = configuration.getBoolean(JVMConfigurationKeys.VERBOSE);
+        this.module = module;
+
+        System.out.println("# configuration:");
+        for (Map.Entry<Key, Object> entry : configuration.map.entrySet()) {
+            Key key = entry.getKey();
+            Object value = entry.getValue();
+            if (key == JVMConfigurationKeys.CONTENT_ROOTS.ideaKey) {
+                System.out.println("#    " + key + ":");
+                for (ContentRoot root : (List<ContentRoot>) value) {
+                    System.out.println("#        " + root);
+                }
+            } else {
+                System.out.println("#    " + key + ": " + value);
+            }
+        }
+
+        System.out.println("# module: " + renderModule(module));
+        for (ModuleDescriptor dependency : module.getAllDependencyModules()) {
+            System.out.println("#    dependency: " + renderModule(dependency));
+            if (dependency != module) {
+                for (ModuleDescriptor other : dependency.getAllDependencyModules()) {
+                    System.out.println("#        dependency: " + renderModule(other));
+                }
+            }
+        }
+    }
+
+    private static String renderModule(ModuleDescriptor module) {
+        return module + "; " + renderPfp(((ModuleDescriptorImpl) module).getPackageFragmentProvider());
+    }
+
+    private static String renderPfp(PackageFragmentProvider pfp) {
+        StringBuilder sb = new StringBuilder();
+        if (pfp instanceof CompositePackageFragmentProvider) {
+            sb.append("[");
+            for (PackageFragmentProvider provider : ((CompositePackageFragmentProvider) pfp).getProviders()) {
+                sb.append(renderPfp(provider)).append(", ");
+            }
+            sb.append("]");
+        } else {
+            sb.append(pfp);
+        }
+        return sb.toString();
+    }
 
     private final TypeMappingConfiguration<Type> typeMappingConfiguration = new TypeMappingConfiguration<Type>() {
         @NotNull
@@ -218,7 +272,7 @@ public class KotlinTypeMapper {
     }
 
     @NotNull
-    private static String internalNameForPackageMemberOwner(@NotNull CallableMemberDescriptor descriptor, boolean publicFacade) {
+    private String internalNameForPackageMemberOwner(@NotNull CallableMemberDescriptor descriptor, boolean publicFacade) {
         boolean isAccessor = descriptor instanceof AccessorForCallableDescriptor;
         if (isAccessor) {
             descriptor = ((AccessorForCallableDescriptor) descriptor).getCalleeDescriptor();
@@ -297,7 +351,7 @@ public class KotlinTypeMapper {
     }
 
     @NotNull
-    public static ContainingClassesInfo getContainingClassesForDeserializedCallable(
+    public ContainingClassesInfo getContainingClassesForDeserializedCallable(
             @NotNull DeserializedCallableMemberDescriptor deserializedDescriptor
     ) {
         DeclarationDescriptor parentDeclaration = deserializedDescriptor.getContainingDeclaration();
@@ -342,7 +396,7 @@ public class KotlinTypeMapper {
     }
 
     @Nullable
-    private static String getPackageMemberOwnerInternalName(@NotNull DeserializedCallableMemberDescriptor descriptor, boolean publicFacade) {
+    private String getPackageMemberOwnerInternalName(@NotNull DeserializedCallableMemberDescriptor descriptor, boolean publicFacade) {
         DeclarationDescriptor containingDeclaration = descriptor.getContainingDeclaration();
         assert containingDeclaration instanceof PackageFragmentDescriptor : "Not a top-level member: " + descriptor;
 
@@ -359,9 +413,17 @@ public class KotlinTypeMapper {
     private static final ClassId FAKE_CLASS_ID_FOR_BUILTINS = ClassId.topLevel(new FqName("kotlin.KotlinPackage"));
 
     @Nullable
-    private static ContainingClassesInfo getPackageMemberContainingClassesInfo(@NotNull DeserializedCallableMemberDescriptor descriptor) {
+    private ContainingClassesInfo getPackageMemberContainingClassesInfo(@NotNull DeserializedCallableMemberDescriptor descriptor) {
         DeclarationDescriptor containingDeclaration = descriptor.getContainingDeclaration();
         if (containingDeclaration instanceof BuiltInsPackageFragment) {
+            if (isVerbose) {
+                System.out.println("# FAKE_CLASS_ID_FOR_BUILTINS is used for: " + descriptor);
+                System.out.println("# stack trace:");
+                StackTraceElement[] st = new Exception().getStackTrace();
+                for (int i = 0; i < 20 && i < st.length; i++) {
+                    System.out.println("#    " + st[i]);
+                }
+            }
             return new ContainingClassesInfo(FAKE_CLASS_ID_FOR_BUILTINS, FAKE_CLASS_ID_FOR_BUILTINS);
         }
 
@@ -1075,7 +1137,7 @@ public class KotlinTypeMapper {
     }
 
     @Nullable
-    private static String getPartSimpleNameForMangling(@NotNull CallableMemberDescriptor descriptor) {
+    private String getPartSimpleNameForMangling(@NotNull CallableMemberDescriptor descriptor) {
         KtFile containingFile = DescriptorToSourceUtils.getContainingFile(descriptor);
         if (containingFile != null) {
             JvmFileClassInfo fileClassInfo = JvmFileClassUtil.getFileClassInfoNoResolve(containingFile);

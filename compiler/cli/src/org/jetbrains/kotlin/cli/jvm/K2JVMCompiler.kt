@@ -125,6 +125,10 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
             }
         }
 
+        if (arguments.verbose) {
+            configuration.put(JVMConfigurationKeys.VERBOSE, true)
+        }
+
         configuration.put(JVMConfigurationKeys.PARAMETERS_METADATA, arguments.javaParameters)
 
         putAdvancedOptions(configuration, arguments)
