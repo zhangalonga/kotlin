@@ -1,5 +1,6 @@
+// !LANGUAGE: +ReleaseCoroutines
+// !API_VERSION: 1.3
 // IGNORE_BACKEND: JS, NATIVE
-// LANGUAGE_VERSION: 1.3
 
 fun box(): String {
     suspend fun bar() {}

@@ -1,7 +1,8 @@
+// !LANGUAGE: +ReleaseCoroutines
+// !API_VERSION: 1.3
 // IGNORE_BACKEND: JS, JS_IR
 // NO_CHECK_LAMBDA_INLINING
 // FILE: test.kt
-// LANGUAGE_VERSION: 1.3
 
 inline suspend fun foo(x: suspend () -> String) = x()
 
