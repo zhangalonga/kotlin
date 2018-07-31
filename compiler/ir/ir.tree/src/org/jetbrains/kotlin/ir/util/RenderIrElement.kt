@@ -143,11 +143,12 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
 
     override fun visitTypeAlias(declaration: IrTypeAlias, data: Nothing?): String =
         "TYPEALIAS ${declaration.renderOriginIfNonTrivial()}${declaration.descriptor.ref()} " +
-                "type=${declaration.descriptor.underlyingType.render()}"
+                "type=${declaration.descriptor.underlyingType.render()} visibility:${declaration.visibility}"
 
     override fun visitVariable(declaration: IrVariable, data: Nothing?): String =
         "VAR ${declaration.renderOriginIfNonTrivial()}" +
-                "name:${declaration.name} type:${declaration.type.render()} flags:${declaration.renderVariableFlags()}"
+                "name:${declaration.name} type:${declaration.type.render()} visibility:${declaration.visibility} " +
+                "flags:${declaration.renderVariableFlags()}"
 
     private fun IrVariable.renderVariableFlags(): String =
         renderFlagsList(
@@ -157,15 +158,15 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
         )
 
     override fun visitEnumEntry(declaration: IrEnumEntry, data: Nothing?): String =
-        "ENUM_ENTRY ${declaration.renderOriginIfNonTrivial()}name:${declaration.name}"
+        "ENUM_ENTRY ${declaration.renderOriginIfNonTrivial()}name:${declaration.name} visibility:${declaration.visibility}"
 
     override fun visitAnonymousInitializer(declaration: IrAnonymousInitializer, data: Nothing?): String =
-        "ANONYMOUS_INITIALIZER ${declaration.descriptor.ref()}"
+        "ANONYMOUS_INITIALIZER ${declaration.descriptor.ref()} visibility:${declaration.visibility}"
 
     override fun visitTypeParameter(declaration: IrTypeParameter, data: Nothing?): String =
         declaration.run {
             "TYPE_PARAMETER ${renderOriginIfNonTrivial()}" +
-                    "name:$name index:$index variance:$variance " +
+                    "name:$name index:$index variance:$variance visibility:$visibility " +
                     "superTypes:[${superTypes.joinToString(separator = "; ") { it.render() }}]"
         }
 
@@ -176,6 +177,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
                     (if (index >= 0) "index:$index " else "") +
                     "type:${type.render()} " +
                     (varargElementType?.let { "varargElementType:${it.render()} " } ?: "") +
+                    "visibility:$visibility " +
                     "flags:${renderValueParameterFlags()}"
         }
 
@@ -189,7 +191,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
     override fun visitLocalDelegatedProperty(declaration: IrLocalDelegatedProperty, data: Nothing?): String =
         declaration.run {
             "LOCAL_DELEGATED_PROPERTY ${declaration.renderOriginIfNonTrivial()}" +
-                    "name:$name type:${type.render()} flags:${renderLocalDelegatedPropertyFlags()}"
+                    "name:$name type:${type.render()} visibility:$visibility flags:${renderLocalDelegatedPropertyFlags()}"
         }
 
     private fun IrLocalDelegatedProperty.renderLocalDelegatedPropertyFlags() =
@@ -334,7 +336,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
         "CATCH parameter=${aCatch.parameter.ref()}"
 
     override fun visitErrorDeclaration(declaration: IrErrorDeclaration, data: Nothing?): String =
-        "ERROR_DECL ${declaration.descriptor::class.java.simpleName} ${declaration.descriptor.ref()}"
+        "ERROR_DECL ${declaration.descriptor::class.java.simpleName} ${declaration.descriptor.ref()} visibility:${declaration.visibility}"
 
     override fun visitErrorExpression(expression: IrErrorExpression, data: Nothing?): String =
         "ERROR_EXPR '${expression.description}' type=${expression.type.render()}"
