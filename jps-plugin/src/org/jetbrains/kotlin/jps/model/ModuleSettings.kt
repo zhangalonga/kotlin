@@ -5,10 +5,8 @@
 
 package org.jetbrains.kotlin.jps.model
 
-import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor
 import org.jetbrains.jps.model.ex.JpsElementBase
 import org.jetbrains.jps.model.ex.JpsElementChildRoleBase
-import org.jetbrains.jps.model.java.JavaSourceRootType
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
 import org.jetbrains.jps.model.module.JpsModule
 import org.jetbrains.kotlin.cli.common.arguments.*
@@ -22,24 +20,47 @@ val JpsModule.kotlinFacet: JpsKotlinFacetModuleExtension?
 val JpsModule.targetPlatform: TargetPlatformKind<*>?
     get() = kotlinFacet?.settings?.targetPlatformKind
 
-val JpsModule.expectedByModules: List<JpsModule>
-    get() {
-        val kotlinFacetExtension = kotlinFacet
-        val implementedModuleNames = kotlinFacetExtension?.settings?.implementedModuleNames ?: return listOf()
-        if (implementedModuleNames.isEmpty()) return listOf()
+enum class KotlinMppModuleKind {
+    OLD_MODEL_MODULE,
+    NEW_MODEL_SOURCE_SET_HOLDER,
+    NEW_MODEL_COMPILATION_AND_SOURCE_SETS_HOLDER
+}
 
-        val result = ArrayList<JpsModule>(implementedModuleNames.size)
-
-        JpsJavaExtensionService.dependencies(this)
-            .processModules {
-                if (it.name in implementedModuleNames) {
-                    // Note, production sources should be added for both production and tests targets
-                    result.add(it)
-                }
-            }
-
-        return result
+val JpsModule.mppModelKind: KotlinMppModuleKind
+    get() = when {
+        kotlinFacet?.settings?.sourceSetNames?.isEmpty() == false -> KotlinMppModuleKind.NEW_MODEL_COMPILATION_AND_SOURCE_SETS_HOLDER
+        // todo: when this is old module?
+        else -> KotlinMppModuleKind.NEW_MODEL_SOURCE_SET_HOLDER
     }
+
+/**
+ * Modules which is imported from sources sets of the compilation represented by this module.
+ * This module is not included.
+ */
+val JpsModule.sourceSetModules: List<JpsModule>
+    get() = findDependencies(kotlinFacet?.settings?.sourceSetNames)
+
+/**
+ * Legacy. List of modules with `expectedBy` dependency.
+ */
+val JpsModule.expectedByModules: List<JpsModule>
+    get() = findDependencies(kotlinFacet?.settings?.implementedModuleNames)
+
+private fun JpsModule.findDependencies(moduleNames: List<String>?): List<JpsModule> {
+    if (moduleNames == null || moduleNames.isEmpty()) return listOf()
+
+    val result = ArrayList<JpsModule>(moduleNames.size)
+
+    JpsJavaExtensionService.dependencies(this)
+        .processModules {
+            if (it.name in moduleNames) {
+                // Note, production sources should be added for both production and tests targets
+                result.add(it)
+            }
+        }
+
+    return result
+}
 
 val JpsModule.productionOutputFilePath: String?
     get() {
