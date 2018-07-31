@@ -81,7 +81,7 @@ class FunctionDescriptorResolver(
     fun resolveFunctionDescriptor(
         containingDescriptor: DeclarationDescriptor,
         scope: LexicalScope,
-        function: KtNamedFunction,
+        function: KtFunction,
         trace: BindingTrace,
         dataFlowInfo: DataFlowInfo
     ): SimpleFunctionDescriptor {
@@ -96,7 +96,7 @@ class FunctionDescriptorResolver(
     fun resolveFunctionExpressionDescriptor(
         containingDescriptor: DeclarationDescriptor,
         scope: LexicalScope,
-        function: KtNamedFunction,
+        function: KtFunction,
         trace: BindingTrace,
         dataFlowInfo: DataFlowInfo,
         expectedFunctionType: KotlinType
@@ -108,7 +108,7 @@ class FunctionDescriptorResolver(
         functionConstructor: (DeclarationDescriptor, Annotations, Name, CallableMemberDescriptor.Kind, SourceElement) -> SimpleFunctionDescriptorImpl,
         containingDescriptor: DeclarationDescriptor,
         scope: LexicalScope,
-        function: KtNamedFunction,
+        function: KtFunction,
         trace: BindingTrace,
         dataFlowInfo: DataFlowInfo,
         expectedFunctionType: KotlinType
@@ -136,7 +136,7 @@ class FunctionDescriptorResolver(
 
     private fun initializeFunctionReturnTypeBasedOnFunctionBody(
         scope: LexicalScope,
-        function: KtNamedFunction,
+        function: KtFunction,
         functionDescriptor: SimpleFunctionDescriptorImpl,
         trace: BindingTrace,
         dataFlowInfo: DataFlowInfo
