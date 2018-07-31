@@ -135,6 +135,7 @@ import org.jetbrains.kotlin.idea.scratch.AbstractScratchRunActionTest
 import org.jetbrains.kotlin.idea.script.AbstractScriptConfigurationCompletionTest
 import org.jetbrains.kotlin.idea.script.AbstractScriptConfigurationHighlightingTest
 import org.jetbrains.kotlin.idea.script.AbstractScriptConfigurationNavigationTest
+import org.jetbrains.kotlin.idea.script.AbstractScriptConfigurationNavigationTest
 import org.jetbrains.kotlin.idea.slicer.AbstractSlicerTest
 import org.jetbrains.kotlin.idea.structureView.AbstractKotlinFileStructureTest
 import org.jetbrains.kotlin.idea.stubs.AbstractMultiFileHighlightingTest
@@ -751,6 +752,10 @@ fun main(args: Array<String>) {
 
         testClass<AbstractScriptConfigurationCompletionTest> {
             model("script/definition/completion", extension = null, recursive = false)
+        }
+
+        testClass<AbstractScriptDefinitionsOrderTest> {
+            model("script/definition/order", extension = null, recursive = false)
         }
 
         testClass<AbstractNameSuggestionProviderTest> {
