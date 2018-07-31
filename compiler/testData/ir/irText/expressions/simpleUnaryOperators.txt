@@ -1,6 +1,6 @@
 FILE fqName:<root> fileName:/simpleUnaryOperators.kt
   FUN name:test1 visibility:public modality:FINAL <> (x:kotlin.Int) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test1(Int): Int'
         CALL 'unaryMinus(): Int' type=kotlin.Int origin=UMINUS
@@ -10,7 +10,7 @@ FILE fqName:<root> fileName:/simpleUnaryOperators.kt
       RETURN type=kotlin.Nothing from='test2(): Int'
         CONST Int type=kotlin.Int value=-42
   FUN name:test3 visibility:public modality:FINAL <> (x:kotlin.Int) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test3(Int): Int'
         CALL 'unaryPlus(): Int' type=kotlin.Int origin=UPLUS
@@ -20,7 +20,7 @@ FILE fqName:<root> fileName:/simpleUnaryOperators.kt
       RETURN type=kotlin.Nothing from='test4(): Int'
         CONST Int type=kotlin.Int value=42
   FUN name:test5 visibility:public modality:FINAL <> (x:kotlin.Boolean) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Boolean flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Boolean visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test5(Boolean): Boolean'
         CALL 'not(): Boolean' type=kotlin.Boolean origin=EXCL
@@ -29,4 +29,3 @@ FILE fqName:<root> fileName:/simpleUnaryOperators.kt
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test6(): Boolean'
         CONST Boolean type=kotlin.Boolean value=false
-

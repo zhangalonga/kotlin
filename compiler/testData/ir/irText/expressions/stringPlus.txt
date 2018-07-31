@@ -1,15 +1,15 @@
 FILE fqName:<root> fileName:/stringPlus.kt
   FUN name:test1 visibility:public modality:FINAL <> (a:kotlin.String, b:kotlin.Any) returnType:kotlin.String flags:
-    VALUE_PARAMETER name:a index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:b index:1 type:kotlin.Any flags:
+    VALUE_PARAMETER name:a index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:b index:1 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test1(String, Any): String'
         CALL 'plus(Any?): String' type=kotlin.String origin=PLUS
           $this: GET_VAR 'value-parameter a: String' type=kotlin.String origin=null
           other: GET_VAR 'value-parameter b: Any' type=kotlin.Any origin=null
   FUN name:test2 visibility:public modality:FINAL <> (a:kotlin.String, b:kotlin.Int) returnType:kotlin.String flags:
-    VALUE_PARAMETER name:a index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:b index:1 type:kotlin.Int flags:
+    VALUE_PARAMETER name:a index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:b index:1 type:kotlin.Int visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test2(String, Int): String'
         CALL 'plus(Any?): String' type=kotlin.String origin=PLUS
@@ -18,8 +18,8 @@ FILE fqName:<root> fileName:/stringPlus.kt
             other: CONST String type=kotlin.String value=+
           other: GET_VAR 'value-parameter b: Int' type=kotlin.Int origin=null
   FUN name:test3 visibility:public modality:FINAL <> (a:kotlin.String, b:kotlin.Int) returnType:kotlin.String flags:
-    VALUE_PARAMETER name:a index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:b index:1 type:kotlin.Int flags:
+    VALUE_PARAMETER name:a index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:b index:1 type:kotlin.Int visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test3(String, Int): String'
         CALL 'plus(Any?): String' type=kotlin.String origin=PLUS
@@ -31,4 +31,3 @@ FILE fqName:<root> fileName:/stringPlus.kt
               $this: GET_VAR 'value-parameter b: Int' type=kotlin.Int origin=null
               other: CONST Int type=kotlin.Int value=1
           other: GET_VAR 'value-parameter a: String' type=kotlin.String origin=null
-

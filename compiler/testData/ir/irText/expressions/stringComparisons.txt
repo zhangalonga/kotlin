@@ -1,7 +1,7 @@
 FILE fqName:<root> fileName:/stringComparisons.kt
   FUN name:test1 visibility:public modality:FINAL <> (a:kotlin.String, b:kotlin.String) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:a index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:b index:1 type:kotlin.String flags:
+    VALUE_PARAMETER name:a index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:b index:1 type:kotlin.String visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test1(String, String): Boolean'
         CALL 'greater(Int, Int): Boolean' type=kotlin.Boolean origin=GT
@@ -10,8 +10,8 @@ FILE fqName:<root> fileName:/stringComparisons.kt
             other: GET_VAR 'value-parameter b: String' type=kotlin.String origin=null
           arg1: CONST Int type=kotlin.Int value=0
   FUN name:test2 visibility:public modality:FINAL <> (a:kotlin.String, b:kotlin.String) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:a index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:b index:1 type:kotlin.String flags:
+    VALUE_PARAMETER name:a index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:b index:1 type:kotlin.String visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test2(String, String): Boolean'
         CALL 'less(Int, Int): Boolean' type=kotlin.Boolean origin=LT
@@ -20,8 +20,8 @@ FILE fqName:<root> fileName:/stringComparisons.kt
             other: GET_VAR 'value-parameter b: String' type=kotlin.String origin=null
           arg1: CONST Int type=kotlin.Int value=0
   FUN name:test3 visibility:public modality:FINAL <> (a:kotlin.String, b:kotlin.String) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:a index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:b index:1 type:kotlin.String flags:
+    VALUE_PARAMETER name:a index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:b index:1 type:kotlin.String visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test3(String, String): Boolean'
         CALL 'greaterOrEqual(Int, Int): Boolean' type=kotlin.Boolean origin=GTEQ
@@ -30,8 +30,8 @@ FILE fqName:<root> fileName:/stringComparisons.kt
             other: GET_VAR 'value-parameter b: String' type=kotlin.String origin=null
           arg1: CONST Int type=kotlin.Int value=0
   FUN name:test4 visibility:public modality:FINAL <> (a:kotlin.String, b:kotlin.String) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:a index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:b index:1 type:kotlin.String flags:
+    VALUE_PARAMETER name:a index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:b index:1 type:kotlin.String visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test4(String, String): Boolean'
         CALL 'lessOrEqual(Int, Int): Boolean' type=kotlin.Boolean origin=LTEQ
@@ -39,4 +39,3 @@ FILE fqName:<root> fileName:/stringComparisons.kt
             $this: GET_VAR 'value-parameter a: String' type=kotlin.String origin=null
             other: GET_VAR 'value-parameter b: String' type=kotlin.String origin=null
           arg1: CONST Int type=kotlin.Int value=0
-

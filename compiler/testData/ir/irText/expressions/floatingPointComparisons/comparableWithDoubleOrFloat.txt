@@ -1,7 +1,7 @@
 FILE fqName:<root> fileName:/comparableWithDoubleOrFloat.kt
   FUN name:testD visibility:public modality:FINAL <> (x:kotlin.Comparable<kotlin.Double>, y:kotlin.Comparable<kotlin.Double>) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Comparable<kotlin.Double> flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Comparable<kotlin.Double> flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Comparable<kotlin.Double> visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Comparable<kotlin.Double> visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testD(Comparable<Double>, Comparable<Double>): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -28,8 +28,8 @@ FILE fqName:<root> fileName:/comparableWithDoubleOrFloat.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:testF visibility:public modality:FINAL <> (x:kotlin.Comparable<kotlin.Float>, y:kotlin.Comparable<kotlin.Float>) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Comparable<kotlin.Float> flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Comparable<kotlin.Float> flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Comparable<kotlin.Float> visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Comparable<kotlin.Float> visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testF(Comparable<Float>, Comparable<Float>): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -55,4 +55,3 @@ FILE fqName:<root> fileName:/comparableWithDoubleOrFloat.kt
           BRANCH
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
-

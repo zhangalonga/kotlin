@@ -1,67 +1,67 @@
 FILE fqName:<root> fileName:/fakeOverrides.kt
   CLASS INTERFACE name:IFooStr modality:ABSTRACT visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IFooStr flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IFooStr visibility:local flags:
     FUN name:foo visibility:public modality:ABSTRACT <> ($this:IFooStr, x:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:IFooStr flags:
-      VALUE_PARAMETER name:x index:0 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:IFooStr visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.String visibility:local flags:
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS INTERFACE name:IBar modality:ABSTRACT visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IBar flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IBar visibility:local flags:
     PROPERTY name:bar visibility:public modality:ABSTRACT flags:val
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-bar> visibility:public modality:ABSTRACT <> ($this:IBar) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:bar visibility:public modality:ABSTRACT flags:val
-        $this: VALUE_PARAMETER name:<this> type:IBar flags:
+        $this: VALUE_PARAMETER name:<this> type:IBar visibility:local flags:
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS CLASS name:CFoo modality:ABSTRACT visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:CFoo<T> flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:CFoo<T> visibility:local flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
     CONSTRUCTOR visibility:public <> () returnType:CFoo<T> flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='CFoo'
     FUN name:foo visibility:public modality:FINAL <> ($this:CFoo<T>, x:T) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:CFoo<T> flags:
-      VALUE_PARAMETER name:x index:0 type:T flags:
+      $this: VALUE_PARAMETER name:<this> type:CFoo<T> visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:T visibility:local flags:
       BLOCK_BODY
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS CLASS name:Test1 modality:FINAL visibility:public flags: superTypes:[CFoo<kotlin.String>; IFooStr; IBar]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test1 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test1 visibility:local flags:
     CONSTRUCTOR visibility:public <> () returnType:Test1 flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor CFoo()'
@@ -75,7 +75,7 @@ FILE fqName:<root> fileName:/fakeOverrides.kt
         correspondingProperty: PROPERTY name:bar visibility:public modality:OPEN flags:val
         overridden:
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-bar> visibility:public modality:ABSTRACT <> ($this:IBar) returnType:kotlin.Int flags:
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-bar>(): Int'
             GET_FIELD 'bar: Int' type=kotlin.Int origin=null
@@ -84,25 +84,24 @@ FILE fqName:<root> fileName:/fakeOverrides.kt
       overridden:
         FUN name:foo visibility:public modality:FINAL <> ($this:CFoo<T>, x:T) returnType:kotlin.Unit flags:
         FUN name:foo visibility:public modality:ABSTRACT <> ($this:IFooStr, x:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:CFoo<kotlin.String> flags:
-      VALUE_PARAMETER name:x index:0 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:CFoo<kotlin.String> visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.String visibility:local flags:
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:

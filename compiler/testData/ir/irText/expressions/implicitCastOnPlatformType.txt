@@ -4,4 +4,3 @@ FILE fqName:<root> fileName:/implicitCastOnPlatformType.kt
       RETURN type=kotlin.Nothing from='test(): String'
         CALL 'getProperty(String!): String!' type=kotlin.String? origin=null
           key: CONST String type=kotlin.String value=test
-

@@ -1,15 +1,15 @@
 FILE fqName:<root> fileName:/varargsInAnnotationArguments.kt
   CLASS ANNOTATION_CLASS name:A1 modality:FINAL visibility:public flags: superTypes:[kotlin.Annotation]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A1 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A1 visibility:local flags:
     CONSTRUCTOR visibility:public <> (xs:kotlin.IntArray) returnType:A1 flags:primary
-      VALUE_PARAMETER name:xs index:0 type:kotlin.IntArray varargElementType:kotlin.Int flags:vararg
+      VALUE_PARAMETER name:xs index:0 type:kotlin.IntArray varargElementType:kotlin.Int visibility:local flags:vararg
     PROPERTY name:xs visibility:public modality:FINAL flags:val
       FIELD PROPERTY_BACKING_FIELD name:xs type:kotlin.IntArray visibility:public flags:final
         EXPRESSION_BODY
           GET_VAR 'value-parameter vararg xs: Int' type=kotlin.IntArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-xs> visibility:public modality:FINAL <> ($this:A1) returnType:kotlin.IntArray flags:
         correspondingProperty: PROPERTY name:xs visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:A1 flags:
+        $this: VALUE_PARAMETER name:<this> type:A1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-xs>(): IntArray'
             GET_FIELD 'xs: IntArray' type=kotlin.IntArray origin=null
@@ -17,27 +17,27 @@ FILE fqName:<root> fileName:/varargsInAnnotationArguments.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS ANNOTATION_CLASS name:A2 modality:FINAL visibility:public flags: superTypes:[kotlin.Annotation]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A2 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A2 visibility:local flags:
     CONSTRUCTOR visibility:public <> (xs:kotlin.Array<out kotlin.String>) returnType:A2 flags:primary
-      VALUE_PARAMETER name:xs index:0 type:kotlin.Array<out kotlin.String> varargElementType:kotlin.String flags:vararg
+      VALUE_PARAMETER name:xs index:0 type:kotlin.Array<out kotlin.String> varargElementType:kotlin.String visibility:local flags:vararg
     PROPERTY name:xs visibility:public modality:FINAL flags:val
       FIELD PROPERTY_BACKING_FIELD name:xs type:kotlin.Array<out kotlin.String> visibility:public flags:final
         EXPRESSION_BODY
           GET_VAR 'value-parameter vararg xs: String' type=kotlin.Array<out kotlin.String> origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-xs> visibility:public modality:FINAL <> ($this:A2) returnType:kotlin.Array<out kotlin.String> flags:
         correspondingProperty: PROPERTY name:xs visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:A2 flags:
+        $this: VALUE_PARAMETER name:<this> type:A2 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-xs>(): Array<out String>'
             GET_FIELD 'xs: Array<out String>' type=kotlin.Array<out kotlin.String> origin=null
@@ -45,27 +45,27 @@ FILE fqName:<root> fileName:/varargsInAnnotationArguments.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS ANNOTATION_CLASS name:AA modality:FINAL visibility:public flags: superTypes:[kotlin.Annotation]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:AA flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:AA visibility:local flags:
     CONSTRUCTOR visibility:public <> (xs:kotlin.Array<out A1>) returnType:AA flags:primary
-      VALUE_PARAMETER name:xs index:0 type:kotlin.Array<out A1> varargElementType:A1 flags:vararg
+      VALUE_PARAMETER name:xs index:0 type:kotlin.Array<out A1> varargElementType:A1 visibility:local flags:vararg
     PROPERTY name:xs visibility:public modality:FINAL flags:val
       FIELD PROPERTY_BACKING_FIELD name:xs type:kotlin.Array<out A1> visibility:public flags:final
         EXPRESSION_BODY
           GET_VAR 'value-parameter vararg xs: A1' type=kotlin.Array<out A1> origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-xs> visibility:public modality:FINAL <> ($this:AA) returnType:kotlin.Array<out A1> flags:
         correspondingProperty: PROPERTY name:xs visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:AA flags:
+        $this: VALUE_PARAMETER name:<this> type:AA visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-xs>(): Array<out A1>'
             GET_FIELD 'xs: Array<out A1>' type=kotlin.Array<out A1> origin=null
@@ -73,16 +73,16 @@ FILE fqName:<root> fileName:/varargsInAnnotationArguments.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   FUN name:test1 visibility:public modality:FINAL <> () returnType:kotlin.Unit flags:
     annotations:
       CALL 'constructor A1(vararg Int)' type=A1 origin=null

@@ -1,8 +1,8 @@
 FILE fqName:<root> fileName:/localDelegatedProperties.kt
   FUN name:test1 visibility:public modality:FINAL <> () returnType:kotlin.Unit flags:
     BLOCK_BODY
-      LOCAL_DELEGATED_PROPERTY name:x type:kotlin.Int flags:val
-        VAR DELEGATE name:x$delegate type:kotlin.Lazy<kotlin.Int> flags:val
+      LOCAL_DELEGATED_PROPERTY name:x type:kotlin.Int visibility:local flags:val
+        VAR DELEGATE name:x$delegate type:kotlin.Lazy<kotlin.Int> visibility:local flags:val
           CALL 'lazy(() -> Int): Lazy<Int>' type=kotlin.Lazy<kotlin.Int> origin=null
             <T>: kotlin.Int
             initializer: BLOCK type=() -> kotlin.Int origin=LAMBDA
@@ -23,8 +23,8 @@ FILE fqName:<root> fileName:/localDelegatedProperties.kt
         message: CALL '<get-x>(): Int' type=kotlin.Int origin=GET_LOCAL_PROPERTY
   FUN name:test2 visibility:public modality:FINAL <> () returnType:kotlin.Unit flags:
     BLOCK_BODY
-      LOCAL_DELEGATED_PROPERTY name:x type:kotlin.Int flags:var
-        VAR DELEGATE name:x$delegate type:kotlin.collections.HashMap<kotlin.String, kotlin.Int> /* = java.util.HashMap<kotlin.String, kotlin.Int> */ flags:val
+      LOCAL_DELEGATED_PROPERTY name:x type:kotlin.Int visibility:local flags:var
+        VAR DELEGATE name:x$delegate type:kotlin.collections.HashMap<kotlin.String, kotlin.Int> /* = java.util.HashMap<kotlin.String, kotlin.Int> */ visibility:local flags:val
           CALL 'hashMapOf(): HashMap<String, Int> /* = HashMap<String, Int> */' type=kotlin.collections.HashMap<kotlin.String, kotlin.Int> /* = java.util.HashMap<kotlin.String, kotlin.Int> */ origin=null
             <K>: kotlin.String
             <V>: kotlin.Int
@@ -38,7 +38,7 @@ FILE fqName:<root> fileName:/localDelegatedProperties.kt
                 thisRef: CONST Null type=kotlin.Nothing? value=null
                 property: LOCAL_DELEGATED_PROPERTY_REFERENCE 'x: Int' delegate='`x$delegate`: HashMap<String, Int> /* = HashMap<String, Int> */' getter='<get-x>(): Int' setter='<set-x>(Int): Unit' type=kotlin.reflect.KMutableProperty0<kotlin.Int> origin=PROPERTY_REFERENCE_FOR_DELEGATE
         FUN DELEGATED_PROPERTY_ACCESSOR name:<set-x> visibility:local modality:FINAL <> (value:kotlin.Int) returnType:kotlin.Unit flags:
-          VALUE_PARAMETER name:value index:0 type:kotlin.Int flags:
+          VALUE_PARAMETER name:value index:0 type:kotlin.Int visibility:local flags:
           BLOCK_BODY
             RETURN type=kotlin.Nothing from='<set-x>(Int): Unit'
               CALL 'setValue(Any?, KProperty<*>, Int) on MutableMap<in String, in Int>: Unit' type=kotlin.Unit origin=null
@@ -52,7 +52,7 @@ FILE fqName:<root> fileName:/localDelegatedProperties.kt
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         typeOperand: CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:Unit modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
         BLOCK type=kotlin.Int origin=POSTFIX_INCR
-          VAR IR_TEMPORARY_VARIABLE name:tmp0 type:kotlin.Int flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0 type:kotlin.Int visibility:local flags:val
             CALL '<get-x>(): Int' type=kotlin.Int origin=POSTFIX_INCR
           CALL '<set-x>(Int): Unit' type=kotlin.Unit origin=POSTFIX_INCR
             value: CALL 'inc(): Int' type=kotlin.Int origin=POSTFIX_INCR
@@ -62,4 +62,3 @@ FILE fqName:<root> fileName:/localDelegatedProperties.kt
         value: CALL 'plus(Int): Int' type=kotlin.Int origin=PLUSEQ
           $this: CALL '<get-x>(): Int' type=kotlin.Int origin=PLUSEQ
           other: CONST Int type=kotlin.Int value=1
-

@@ -1,16 +1,16 @@
 FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
   CLASS CLASS name:Test1 modality:FINAL visibility:public flags:data superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test1 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test1 visibility:local flags:
     CONSTRUCTOR visibility:public <> (stringArray:kotlin.Array<kotlin.String>, charArray:kotlin.CharArray, booleanArray:kotlin.BooleanArray, byteArray:kotlin.ByteArray, shortArray:kotlin.ShortArray, intArray:kotlin.IntArray, longArray:kotlin.LongArray, floatArray:kotlin.FloatArray, doubleArray:kotlin.DoubleArray) returnType:Test1 flags:primary
-      VALUE_PARAMETER name:stringArray index:0 type:kotlin.Array<kotlin.String> flags:
-      VALUE_PARAMETER name:charArray index:1 type:kotlin.CharArray flags:
-      VALUE_PARAMETER name:booleanArray index:2 type:kotlin.BooleanArray flags:
-      VALUE_PARAMETER name:byteArray index:3 type:kotlin.ByteArray flags:
-      VALUE_PARAMETER name:shortArray index:4 type:kotlin.ShortArray flags:
-      VALUE_PARAMETER name:intArray index:5 type:kotlin.IntArray flags:
-      VALUE_PARAMETER name:longArray index:6 type:kotlin.LongArray flags:
-      VALUE_PARAMETER name:floatArray index:7 type:kotlin.FloatArray flags:
-      VALUE_PARAMETER name:doubleArray index:8 type:kotlin.DoubleArray flags:
+      VALUE_PARAMETER name:stringArray index:0 type:kotlin.Array<kotlin.String> visibility:local flags:
+      VALUE_PARAMETER name:charArray index:1 type:kotlin.CharArray visibility:local flags:
+      VALUE_PARAMETER name:booleanArray index:2 type:kotlin.BooleanArray visibility:local flags:
+      VALUE_PARAMETER name:byteArray index:3 type:kotlin.ByteArray visibility:local flags:
+      VALUE_PARAMETER name:shortArray index:4 type:kotlin.ShortArray visibility:local flags:
+      VALUE_PARAMETER name:intArray index:5 type:kotlin.IntArray visibility:local flags:
+      VALUE_PARAMETER name:longArray index:6 type:kotlin.LongArray visibility:local flags:
+      VALUE_PARAMETER name:floatArray index:7 type:kotlin.FloatArray visibility:local flags:
+      VALUE_PARAMETER name:doubleArray index:8 type:kotlin.DoubleArray visibility:local flags:
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='Test1'
@@ -20,7 +20,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter stringArray: Array<String>' type=kotlin.Array<kotlin.String> origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-stringArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.Array<kotlin.String> flags:
         correspondingProperty: PROPERTY name:stringArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-stringArray>(): Array<String>'
             GET_FIELD 'stringArray: Array<String>' type=kotlin.Array<kotlin.String> origin=null
@@ -31,7 +31,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter charArray: CharArray' type=kotlin.CharArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-charArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.CharArray flags:
         correspondingProperty: PROPERTY name:charArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-charArray>(): CharArray'
             GET_FIELD 'charArray: CharArray' type=kotlin.CharArray origin=null
@@ -42,7 +42,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter booleanArray: BooleanArray' type=kotlin.BooleanArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-booleanArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.BooleanArray flags:
         correspondingProperty: PROPERTY name:booleanArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-booleanArray>(): BooleanArray'
             GET_FIELD 'booleanArray: BooleanArray' type=kotlin.BooleanArray origin=null
@@ -53,7 +53,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter byteArray: ByteArray' type=kotlin.ByteArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-byteArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.ByteArray flags:
         correspondingProperty: PROPERTY name:byteArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-byteArray>(): ByteArray'
             GET_FIELD 'byteArray: ByteArray' type=kotlin.ByteArray origin=null
@@ -64,7 +64,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter shortArray: ShortArray' type=kotlin.ShortArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-shortArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.ShortArray flags:
         correspondingProperty: PROPERTY name:shortArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-shortArray>(): ShortArray'
             GET_FIELD 'shortArray: ShortArray' type=kotlin.ShortArray origin=null
@@ -75,7 +75,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter intArray: IntArray' type=kotlin.IntArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-intArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.IntArray flags:
         correspondingProperty: PROPERTY name:intArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-intArray>(): IntArray'
             GET_FIELD 'intArray: IntArray' type=kotlin.IntArray origin=null
@@ -86,7 +86,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter longArray: LongArray' type=kotlin.LongArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-longArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.LongArray flags:
         correspondingProperty: PROPERTY name:longArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-longArray>(): LongArray'
             GET_FIELD 'longArray: LongArray' type=kotlin.LongArray origin=null
@@ -97,7 +97,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter floatArray: FloatArray' type=kotlin.FloatArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-floatArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.FloatArray flags:
         correspondingProperty: PROPERTY name:floatArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-floatArray>(): FloatArray'
             GET_FIELD 'floatArray: FloatArray' type=kotlin.FloatArray origin=null
@@ -108,100 +108,100 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter doubleArray: DoubleArray' type=kotlin.DoubleArray origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-doubleArray> visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.DoubleArray flags:
         correspondingProperty: PROPERTY name:doubleArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-doubleArray>(): DoubleArray'
             GET_FIELD 'doubleArray: DoubleArray' type=kotlin.DoubleArray origin=null
               receiver: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component1 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.Array<kotlin.String> flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component1(): Array<String>'
           CALL '<get-stringArray>(): Array<String>' type=kotlin.Array<kotlin.String> origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component2 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.CharArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component2(): CharArray'
           CALL '<get-charArray>(): CharArray' type=kotlin.CharArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component3 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.BooleanArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component3(): BooleanArray'
           CALL '<get-booleanArray>(): BooleanArray' type=kotlin.BooleanArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component4 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.ByteArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component4(): ByteArray'
           CALL '<get-byteArray>(): ByteArray' type=kotlin.ByteArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component5 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.ShortArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component5(): ShortArray'
           CALL '<get-shortArray>(): ShortArray' type=kotlin.ShortArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component6 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.IntArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component6(): IntArray'
           CALL '<get-intArray>(): IntArray' type=kotlin.IntArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component7 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.LongArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component7(): LongArray'
           CALL '<get-longArray>(): LongArray' type=kotlin.LongArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component8 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.FloatArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component8(): FloatArray'
           CALL '<get-floatArray>(): FloatArray' type=kotlin.FloatArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component9 visibility:public modality:FINAL <> ($this:Test1) returnType:kotlin.DoubleArray flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component9(): DoubleArray'
           CALL '<get-doubleArray>(): DoubleArray' type=kotlin.DoubleArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:copy visibility:public modality:FINAL <> ($this:Test1, stringArray:kotlin.Array<kotlin.String>, charArray:kotlin.CharArray, booleanArray:kotlin.BooleanArray, byteArray:kotlin.ByteArray, shortArray:kotlin.ShortArray, intArray:kotlin.IntArray, longArray:kotlin.LongArray, floatArray:kotlin.FloatArray, doubleArray:kotlin.DoubleArray) returnType:Test1 flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
-      VALUE_PARAMETER name:stringArray index:0 type:kotlin.Array<kotlin.String> flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
+      VALUE_PARAMETER name:stringArray index:0 type:kotlin.Array<kotlin.String> visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-stringArray>(): Array<String>' type=kotlin.Array<kotlin.String> origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:charArray index:1 type:kotlin.CharArray flags:
+      VALUE_PARAMETER name:charArray index:1 type:kotlin.CharArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-charArray>(): CharArray' type=kotlin.CharArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:booleanArray index:2 type:kotlin.BooleanArray flags:
+      VALUE_PARAMETER name:booleanArray index:2 type:kotlin.BooleanArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-booleanArray>(): BooleanArray' type=kotlin.BooleanArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:byteArray index:3 type:kotlin.ByteArray flags:
+      VALUE_PARAMETER name:byteArray index:3 type:kotlin.ByteArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-byteArray>(): ByteArray' type=kotlin.ByteArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:shortArray index:4 type:kotlin.ShortArray flags:
+      VALUE_PARAMETER name:shortArray index:4 type:kotlin.ShortArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-shortArray>(): ShortArray' type=kotlin.ShortArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:intArray index:5 type:kotlin.IntArray flags:
+      VALUE_PARAMETER name:intArray index:5 type:kotlin.IntArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-intArray>(): IntArray' type=kotlin.IntArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:longArray index:6 type:kotlin.LongArray flags:
+      VALUE_PARAMETER name:longArray index:6 type:kotlin.LongArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-longArray>(): LongArray' type=kotlin.LongArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:floatArray index:7 type:kotlin.FloatArray flags:
+      VALUE_PARAMETER name:floatArray index:7 type:kotlin.FloatArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-floatArray>(): FloatArray' type=kotlin.FloatArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
-      VALUE_PARAMETER name:doubleArray index:8 type:kotlin.DoubleArray flags:
+      VALUE_PARAMETER name:doubleArray index:8 type:kotlin.DoubleArray visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-doubleArray>(): DoubleArray' type=kotlin.DoubleArray origin=GET_PROPERTY
             $this: GET_VAR 'this@Test1: Test1' type=Test1 origin=null
@@ -220,7 +220,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:toString visibility:public modality:OPEN <> ($this:Test1) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='toString(): String'
           STRING_CONCATENATION type=kotlin.String
@@ -273,9 +273,9 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:hashCode visibility:public modality:OPEN <> ($this:Test1) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
-        VAR IR_TEMPORARY_VARIABLE name:tmp0_result type:kotlin.Int flags:var
+        VAR IR_TEMPORARY_VARIABLE name:tmp0_result type:kotlin.Int visibility:local flags:var
           CONST Int type=kotlin.Int value=0
         SET_VAR 'tmp0_result: Int' type=kotlin.Unit origin=EQ
           CALL 'dataClassArrayMemberHashCode(Any): Int' type=kotlin.Int origin=null
@@ -350,8 +350,8 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:equals visibility:public modality:OPEN <> ($this:Test1, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
       BLOCK_BODY
         WHEN type=kotlin.Unit origin=null
           BRANCH
@@ -367,7 +367,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
               GET_VAR 'value-parameter other: Any?' type=kotlin.Any? origin=null
             then: RETURN type=kotlin.Nothing from='equals(Any?): Boolean'
               CONST Boolean type=kotlin.Boolean value=false
-        VAR IR_TEMPORARY_VARIABLE name:tmp0_other_with_cast type:Test1 flags:val
+        VAR IR_TEMPORARY_VARIABLE name:tmp0_other_with_cast type:Test1 visibility:local flags:val
           TYPE_OP type=Test1 origin=CAST typeOperand=Test1
             typeOperand: CLASS CLASS name:Test1 modality:FINAL visibility:public flags:data superTypes:[kotlin.Any]
             GET_VAR 'value-parameter other: Any?' type=kotlin.Any? origin=null
@@ -464,10 +464,10 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
         RETURN type=kotlin.Nothing from='equals(Any?): Boolean'
           CONST Boolean type=kotlin.Boolean value=true
   CLASS CLASS name:Test2 modality:FINAL visibility:public flags:data superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test2<T> flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test2<T> visibility:local flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
     CONSTRUCTOR visibility:public <> (genericArray:kotlin.Array<T>) returnType:Test2<T> flags:primary
-      VALUE_PARAMETER name:genericArray index:0 type:kotlin.Array<T> flags:
+      VALUE_PARAMETER name:genericArray index:0 type:kotlin.Array<T> visibility:local flags:
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='Test2'
@@ -477,20 +477,20 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter genericArray: Array<T>' type=kotlin.Array<T> origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-genericArray> visibility:public modality:FINAL <> ($this:Test2<T>) returnType:kotlin.Array<T> flags:
         correspondingProperty: PROPERTY name:genericArray visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test2<T> flags:
+        $this: VALUE_PARAMETER name:<this> type:Test2<T> visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-genericArray>(): Array<T>'
             GET_FIELD 'genericArray: Array<T>' type=kotlin.Array<T> origin=null
               receiver: GET_VAR 'this@Test2: Test2<T>' type=Test2<T> origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component1 visibility:public modality:FINAL <> ($this:Test2<T>) returnType:kotlin.Array<T> flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2<T> flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2<T> visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component1(): Array<T>'
           CALL '<get-genericArray>(): Array<T>' type=kotlin.Array<T> origin=GET_PROPERTY
             $this: GET_VAR 'this@Test2: Test2<T>' type=Test2<T> origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:copy visibility:public modality:FINAL <> ($this:Test2<T>, genericArray:kotlin.Array<T>) returnType:Test2<T> flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2<T> flags:
-      VALUE_PARAMETER name:genericArray index:0 type:kotlin.Array<T> flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2<T> visibility:local flags:
+      VALUE_PARAMETER name:genericArray index:0 type:kotlin.Array<T> visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-genericArray>(): Array<T>' type=kotlin.Array<T> origin=GET_PROPERTY
             $this: GET_VAR 'this@Test2: Test2<T>' type=Test2<T> origin=null
@@ -502,7 +502,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:toString visibility:public modality:OPEN <> ($this:Test2<T>) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2<T> flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2<T> visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='toString(): String'
           STRING_CONCATENATION type=kotlin.String
@@ -515,9 +515,9 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:hashCode visibility:public modality:OPEN <> ($this:Test2<T>) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2<T> flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2<T> visibility:local flags:
       BLOCK_BODY
-        VAR IR_TEMPORARY_VARIABLE name:tmp0_result type:kotlin.Int flags:var
+        VAR IR_TEMPORARY_VARIABLE name:tmp0_result type:kotlin.Int visibility:local flags:var
           CONST Int type=kotlin.Int value=0
         SET_VAR 'tmp0_result: Int' type=kotlin.Unit origin=EQ
           CALL 'dataClassArrayMemberHashCode(Any): Int' type=kotlin.Int origin=null
@@ -528,8 +528,8 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:equals visibility:public modality:OPEN <> ($this:Test2<T>, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2<T> flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2<T> visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
       BLOCK_BODY
         WHEN type=kotlin.Unit origin=null
           BRANCH
@@ -545,7 +545,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
               GET_VAR 'value-parameter other: Any?' type=kotlin.Any? origin=null
             then: RETURN type=kotlin.Nothing from='equals(Any?): Boolean'
               CONST Boolean type=kotlin.Boolean value=false
-        VAR IR_TEMPORARY_VARIABLE name:tmp0_other_with_cast type:Test2<T> flags:val
+        VAR IR_TEMPORARY_VARIABLE name:tmp0_other_with_cast type:Test2<T> visibility:local flags:val
           TYPE_OP type=Test2<T> origin=CAST typeOperand=Test2<T>
             typeOperand: CLASS CLASS name:Test2 modality:FINAL visibility:public flags:data superTypes:[kotlin.Any]
             GET_VAR 'value-parameter other: Any?' type=kotlin.Any? origin=null
@@ -562,9 +562,9 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
         RETURN type=kotlin.Nothing from='equals(Any?): Boolean'
           CONST Boolean type=kotlin.Boolean value=true
   CLASS CLASS name:Test3 modality:FINAL visibility:public flags:data superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test3 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test3 visibility:local flags:
     CONSTRUCTOR visibility:public <> (anyArrayN:kotlin.Array<kotlin.Any>?) returnType:Test3 flags:primary
-      VALUE_PARAMETER name:anyArrayN index:0 type:kotlin.Array<kotlin.Any>? flags:
+      VALUE_PARAMETER name:anyArrayN index:0 type:kotlin.Array<kotlin.Any>? visibility:local flags:
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='Test3'
@@ -574,20 +574,20 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
           GET_VAR 'value-parameter anyArrayN: Array<Any>?' type=kotlin.Array<kotlin.Any>? origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-anyArrayN> visibility:public modality:FINAL <> ($this:Test3) returnType:kotlin.Array<kotlin.Any>? flags:
         correspondingProperty: PROPERTY name:anyArrayN visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Test3 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test3 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-anyArrayN>(): Array<Any>?'
             GET_FIELD 'anyArrayN: Array<Any>?' type=kotlin.Array<kotlin.Any>? origin=null
               receiver: GET_VAR 'this@Test3: Test3' type=Test3 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:component1 visibility:public modality:FINAL <> ($this:Test3) returnType:kotlin.Array<kotlin.Any>? flags:
-      $this: VALUE_PARAMETER name:<this> type:Test3 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test3 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='component1(): Array<Any>?'
           CALL '<get-anyArrayN>(): Array<Any>?' type=kotlin.Array<kotlin.Any>? origin=GET_PROPERTY
             $this: GET_VAR 'this@Test3: Test3' type=Test3 origin=null
     FUN GENERATED_DATA_CLASS_MEMBER name:copy visibility:public modality:FINAL <> ($this:Test3, anyArrayN:kotlin.Array<kotlin.Any>?) returnType:Test3 flags:
-      $this: VALUE_PARAMETER name:<this> type:Test3 flags:
-      VALUE_PARAMETER name:anyArrayN index:0 type:kotlin.Array<kotlin.Any>? flags:
+      $this: VALUE_PARAMETER name:<this> type:Test3 visibility:local flags:
+      VALUE_PARAMETER name:anyArrayN index:0 type:kotlin.Array<kotlin.Any>? visibility:local flags:
         EXPRESSION_BODY
           CALL '<get-anyArrayN>(): Array<Any>?' type=kotlin.Array<kotlin.Any>? origin=GET_PROPERTY
             $this: GET_VAR 'this@Test3: Test3' type=Test3 origin=null
@@ -598,7 +598,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:toString visibility:public modality:OPEN <> ($this:Test3) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:Test3 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test3 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='toString(): String'
           STRING_CONCATENATION type=kotlin.String
@@ -611,13 +611,13 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:hashCode visibility:public modality:OPEN <> ($this:Test3) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:Test3 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test3 visibility:local flags:
       BLOCK_BODY
-        VAR IR_TEMPORARY_VARIABLE name:tmp0_result type:kotlin.Int flags:var
+        VAR IR_TEMPORARY_VARIABLE name:tmp0_result type:kotlin.Int visibility:local flags:var
           CONST Int type=kotlin.Int value=0
         SET_VAR 'tmp0_result: Int' type=kotlin.Unit origin=EQ
           BLOCK type=kotlin.Int origin=null
-            VAR IR_TEMPORARY_VARIABLE name:tmp1 type:kotlin.Array<kotlin.Any>? flags:val
+            VAR IR_TEMPORARY_VARIABLE name:tmp1 type:kotlin.Array<kotlin.Any>? visibility:local flags:val
               CALL '<get-anyArrayN>(): Array<Any>?' type=kotlin.Array<kotlin.Any>? origin=GET_PROPERTY
                 $this: GET_VAR 'this@Test3: Test3' type=Test3 origin=null
             WHEN type=kotlin.Int origin=null
@@ -635,8 +635,8 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
     FUN GENERATED_DATA_CLASS_MEMBER name:equals visibility:public modality:OPEN <> ($this:Test3, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:Test3 flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:Test3 visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
       BLOCK_BODY
         WHEN type=kotlin.Unit origin=null
           BRANCH
@@ -652,7 +652,7 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
               GET_VAR 'value-parameter other: Any?' type=kotlin.Any? origin=null
             then: RETURN type=kotlin.Nothing from='equals(Any?): Boolean'
               CONST Boolean type=kotlin.Boolean value=false
-        VAR IR_TEMPORARY_VARIABLE name:tmp0_other_with_cast type:Test3 flags:val
+        VAR IR_TEMPORARY_VARIABLE name:tmp0_other_with_cast type:Test3 visibility:local flags:val
           TYPE_OP type=Test3 origin=CAST typeOperand=Test3
             typeOperand: CLASS CLASS name:Test3 modality:FINAL visibility:public flags:data superTypes:[kotlin.Any]
             GET_VAR 'value-parameter other: Any?' type=kotlin.Any? origin=null
@@ -668,4 +668,3 @@ FILE fqName:<root> fileName:/dataClassWithArrayMembers.kt
               CONST Boolean type=kotlin.Boolean value=false
         RETURN type=kotlin.Nothing from='equals(Any?): Boolean'
           CONST Boolean type=kotlin.Boolean value=true
-

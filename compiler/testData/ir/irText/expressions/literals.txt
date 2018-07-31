@@ -152,4 +152,3 @@ FILE fqName:<root> fileName:/literals.kt
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='<get-testL>(): Long'
           GET_FIELD 'testL: Long' type=kotlin.Long origin=null
-

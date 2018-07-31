@@ -10,7 +10,7 @@ FILE fqName:<root> fileName:/field.kt
           GET_FIELD 'testSimple: Int' type=kotlin.Int origin=null
     FUN name:<set-testSimple> visibility:public modality:FINAL <> (value:kotlin.Int) returnType:kotlin.Unit flags:
       correspondingProperty: PROPERTY name:testSimple visibility:public modality:FINAL flags:var
-      VALUE_PARAMETER name:value index:0 type:kotlin.Int flags:
+      VALUE_PARAMETER name:value index:0 type:kotlin.Int visibility:local flags:
       BLOCK_BODY
         SET_FIELD 'testSimple: Int' type=kotlin.Unit origin=EQ
           value: GET_VAR 'value-parameter value: Int' type=kotlin.Int origin=null
@@ -25,10 +25,9 @@ FILE fqName:<root> fileName:/field.kt
           GET_FIELD 'testAugmented: Int' type=kotlin.Int origin=null
     FUN name:<set-testAugmented> visibility:public modality:FINAL <> (value:kotlin.Int) returnType:kotlin.Unit flags:
       correspondingProperty: PROPERTY name:testAugmented visibility:public modality:FINAL flags:var
-      VALUE_PARAMETER name:value index:0 type:kotlin.Int flags:
+      VALUE_PARAMETER name:value index:0 type:kotlin.Int visibility:local flags:
       BLOCK_BODY
         SET_FIELD 'testAugmented: Int' type=kotlin.Unit origin=PLUSEQ
           value: CALL 'plus(Int): Int' type=kotlin.Int origin=PLUSEQ
             $this: GET_FIELD 'testAugmented: Int' type=kotlin.Int origin=PLUSEQ
             other: GET_VAR 'value-parameter value: Int' type=kotlin.Int origin=null
-

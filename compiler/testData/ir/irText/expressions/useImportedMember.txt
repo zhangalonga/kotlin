@@ -1,35 +1,35 @@
 FILE fqName:<root> fileName:/useImportedMember.kt
   CLASS INTERFACE name:I modality:ABSTRACT visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:I<G> flags:
-    TYPE_PARAMETER name:G index:0 variance: superTypes:[kotlin.Any?]
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:I<G> visibility:local flags:
+    TYPE_PARAMETER name:G index:0 variance: visibility:local superTypes:[kotlin.Any?]
     FUN name:fromInterface visibility:public modality:OPEN <T> ($this:I<G>, $receiver:T) returnType:T flags:
-      TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
-      $this: VALUE_PARAMETER name:<this> type:I<G> flags:
-      $receiver: VALUE_PARAMETER name:<this> type:T flags:
+      TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
+      $this: VALUE_PARAMETER name:<this> type:I<G> visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:T visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='fromInterface() on T: T'
           GET_VAR 'this@fromInterface: T' type=T origin=null
     FUN name:genericFromSuper visibility:public modality:OPEN <> ($this:I<G>, g:G) returnType:G flags:
-      $this: VALUE_PARAMETER name:<this> type:I<G> flags:
-      VALUE_PARAMETER name:g index:0 type:G flags:
+      $this: VALUE_PARAMETER name:<this> type:I<G> visibility:local flags:
+      VALUE_PARAMETER name:g index:0 type:G visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='genericFromSuper(G): G'
           GET_VAR 'value-parameter g: G' type=G origin=null
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS CLASS name:BaseClass modality:OPEN visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:BaseClass flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:BaseClass visibility:local flags:
     CONSTRUCTOR visibility:public <> () returnType:BaseClass flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -37,46 +37,46 @@ FILE fqName:<root> fileName:/useImportedMember.kt
     PROPERTY name:fromClass visibility:public modality:FINAL flags:val
       FUN name:<get-fromClass> visibility:public modality:FINAL <T> ($this:BaseClass, $receiver:T) returnType:T flags:
         correspondingProperty: PROPERTY name:fromClass visibility:public modality:FINAL flags:val
-        TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
-        $this: VALUE_PARAMETER name:<this> type:BaseClass flags:
-        $receiver: VALUE_PARAMETER name:<this> type:T flags:
+        TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
+        $this: VALUE_PARAMETER name:<this> type:BaseClass visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:T visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-fromClass>() on T: T'
             GET_VAR 'this@fromClass: T' type=T origin=null
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS OBJECT name:C modality:FINAL visibility:public flags: superTypes:[BaseClass; I<kotlin.String>]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:C flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:C visibility:local flags:
     CONSTRUCTOR visibility:private <> () returnType:C flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor BaseClass()'
         INSTANCE_INITIALIZER_CALL classDescriptor='C'
     FUN name:f visibility:public modality:FINAL <> ($this:C, s:kotlin.Int) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:C flags:
-      VALUE_PARAMETER name:s index:0 type:kotlin.Int flags:
+      $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+      VALUE_PARAMETER name:s index:0 type:kotlin.Int visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='f(Int): Int'
           CONST Int type=kotlin.Int value=1
     FUN name:f visibility:public modality:FINAL <> ($this:C, s:kotlin.String) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:C flags:
-      VALUE_PARAMETER name:s index:0 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+      VALUE_PARAMETER name:s index:0 type:kotlin.String visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='f(String): Int'
           CONST Int type=kotlin.Int value=2
     FUN name:f visibility:public modality:FINAL <> ($this:C, $receiver:kotlin.Boolean) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:C flags:
-      $receiver: VALUE_PARAMETER name:<this> type:kotlin.Boolean flags:
+      $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:kotlin.Boolean visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='f() on Boolean: Int'
           CONST Int type=kotlin.Int value=3
@@ -86,15 +86,15 @@ FILE fqName:<root> fileName:/useImportedMember.kt
           CONST Int type=kotlin.Int value=4
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-p> visibility:public modality:FINAL <> ($this:C) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:p visibility:public modality:FINAL flags:var
-        $this: VALUE_PARAMETER name:<this> type:C flags:
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-p>(): Int'
             GET_FIELD 'p: Int' type=kotlin.Int origin=null
               receiver: GET_VAR 'this@C: C' type=C origin=null
       FUN DEFAULT_PROPERTY_ACCESSOR name:<set-p> visibility:public modality:FINAL <> ($this:C, <set-?>:kotlin.Int) returnType:kotlin.Unit flags:
         correspondingProperty: PROPERTY name:p visibility:public modality:FINAL flags:var
-        $this: VALUE_PARAMETER name:<this> type:C flags:
-        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int flags:
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int visibility:local flags:
         BLOCK_BODY
           SET_FIELD 'p: Int' type=kotlin.Unit origin=null
             receiver: GET_VAR 'this@C: C' type=C origin=null
@@ -102,24 +102,24 @@ FILE fqName:<root> fileName:/useImportedMember.kt
     PROPERTY name:ext visibility:public modality:FINAL flags:val
       FUN name:<get-ext> visibility:public modality:FINAL <> ($this:C, $receiver:kotlin.Int) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:ext visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:C flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Int flags:
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Int visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-ext>() on Int: Int'
             CONST Int type=kotlin.Int value=6
     FUN name:g1 visibility:public modality:FINAL <T> ($this:C, t:T) returnType:T flags:
-      TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
-      $this: VALUE_PARAMETER name:<this> type:C flags:
-      VALUE_PARAMETER name:t index:0 type:T flags:
+      TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
+      $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+      VALUE_PARAMETER name:t index:0 type:T visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='g1(T): T'
           GET_VAR 'value-parameter t: T' type=T origin=null
     PROPERTY name:g2 visibility:public modality:FINAL flags:val
       FUN name:<get-g2> visibility:public modality:FINAL <T> ($this:C, $receiver:T) returnType:T flags:
         correspondingProperty: PROPERTY name:g2 visibility:public modality:FINAL flags:val
-        TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
-        $this: VALUE_PARAMETER name:<this> type:C flags:
-        $receiver: VALUE_PARAMETER name:<this> type:T flags:
+        TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:T visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-g2>() on T: T'
             GET_VAR 'this@g2: T' type=T origin=null
@@ -128,36 +128,36 @@ FILE fqName:<root> fileName:/useImportedMember.kt
         correspondingProperty: PROPERTY FAKE_OVERRIDE name:fromClass visibility:public modality:FINAL flags:val
         overridden:
           FUN name:<get-fromClass> visibility:public modality:FINAL <T> ($this:BaseClass, $receiver:T) returnType:T flags:
-        TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
-        $this: VALUE_PARAMETER name:<this> type:BaseClass flags:
-        $receiver: VALUE_PARAMETER name:<this> type:T flags:
+        TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
+        $this: VALUE_PARAMETER name:<this> type:BaseClass visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:T visibility:local flags:
     FUN FAKE_OVERRIDE name:fromInterface visibility:public modality:OPEN <T> ($this:I<kotlin.String>, $receiver:T) returnType:T flags:
       overridden:
         FUN name:fromInterface visibility:public modality:OPEN <T> ($this:I<G>, $receiver:T) returnType:T flags:
-      TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
-      $this: VALUE_PARAMETER name:<this> type:I<kotlin.String> flags:
-      $receiver: VALUE_PARAMETER name:<this> type:T flags:
+      TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
+      $this: VALUE_PARAMETER name:<this> type:I<kotlin.String> visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:T visibility:local flags:
     FUN FAKE_OVERRIDE name:genericFromSuper visibility:public modality:OPEN <> ($this:I<kotlin.String>, g:kotlin.String) returnType:kotlin.String flags:
       overridden:
         FUN name:genericFromSuper visibility:public modality:OPEN <> ($this:I<G>, g:G) returnType:G flags:
-      $this: VALUE_PARAMETER name:<this> type:I<kotlin.String> flags:
-      VALUE_PARAMETER name:g index:0 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:I<kotlin.String> visibility:local flags:
+      VALUE_PARAMETER name:g index:0 type:kotlin.String visibility:local flags:
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   FUN name:box visibility:public modality:FINAL <> () returnType:kotlin.String flags:
     BLOCK_BODY
       WHEN type=kotlin.Unit origin=null
@@ -277,4 +277,3 @@ FILE fqName:<root> fileName:/useImportedMember.kt
             CONST String type=kotlin.String value=11
       RETURN type=kotlin.Nothing from='box(): String'
         CONST String type=kotlin.String value=OK
-

@@ -20,9 +20,9 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
             thisRef: CONST Null type=kotlin.Nothing? value=null
             property: PROPERTY_REFERENCE 'test1: Int' field=null getter='<get-test1>(): Int' setter=null type=kotlin.reflect.KProperty0<kotlin.Int> origin=PROPERTY_REFERENCE_FOR_DELEGATE
   CLASS CLASS name:C modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:C flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:C visibility:local flags:
     CONSTRUCTOR visibility:public <> (map:kotlin.collections.MutableMap<kotlin.String, kotlin.Any>) returnType:C flags:primary
-      VALUE_PARAMETER name:map index:0 type:kotlin.collections.MutableMap<kotlin.String, kotlin.Any> flags:
+      VALUE_PARAMETER name:map index:0 type:kotlin.collections.MutableMap<kotlin.String, kotlin.Any> visibility:local flags:
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='C'
@@ -32,7 +32,7 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
           GET_VAR 'value-parameter map: MutableMap<String, Any>' type=kotlin.collections.MutableMap<kotlin.String, kotlin.Any> origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-map> visibility:public modality:FINAL <> ($this:C) returnType:kotlin.collections.MutableMap<kotlin.String, kotlin.Any> flags:
         correspondingProperty: PROPERTY name:map visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:C flags:
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-map>(): MutableMap<String, Any>'
             GET_FIELD 'map: MutableMap<String, Any>' type=kotlin.collections.MutableMap<kotlin.String, kotlin.Any> origin=null
@@ -50,7 +50,7 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
               FUNCTION_REFERENCE '<anonymous>(): Int' type=() -> kotlin.Int origin=LAMBDA
       FUN DELEGATED_PROPERTY_ACCESSOR name:<get-test2> visibility:public modality:FINAL <> ($this:C) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:test2 visibility:public modality:FINAL flags:delegated,val
-        $this: VALUE_PARAMETER name:<this> type:C flags:
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-test2>(): Int'
             CALL 'getValue(Any?, KProperty<*>) on Lazy<Int>: Int' type=kotlin.Int origin=null
@@ -66,7 +66,7 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
             $this: GET_VAR 'this@C: C' type=C origin=null
       FUN DELEGATED_PROPERTY_ACCESSOR name:<get-test3> visibility:public modality:FINAL <> ($this:C) returnType:kotlin.Any flags:
         correspondingProperty: PROPERTY name:test3 visibility:public modality:FINAL flags:delegated,var
-        $this: VALUE_PARAMETER name:<this> type:C flags:
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-test3>(): Any'
             CALL 'getValue(Any?, KProperty<*>) on MutableMap<in String, out Any>: Any' type=kotlin.Any origin=null
@@ -78,8 +78,8 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
               property: PROPERTY_REFERENCE 'test3: Any' field=null getter='<get-test3>(): Any' setter='<set-test3>(Any): Unit' type=kotlin.reflect.KMutableProperty1<C, kotlin.Any> origin=PROPERTY_REFERENCE_FOR_DELEGATE
       FUN DELEGATED_PROPERTY_ACCESSOR name:<set-test3> visibility:public modality:FINAL <> ($this:C, <set-?>:kotlin.Any) returnType:kotlin.Unit flags:
         correspondingProperty: PROPERTY name:test3 visibility:public modality:FINAL flags:delegated,var
-        $this: VALUE_PARAMETER name:<this> type:C flags:
-        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Any flags:
+        $this: VALUE_PARAMETER name:<this> type:C visibility:local flags:
+        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Any visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<set-test3>(Any): Unit'
             CALL 'setValue(Any?, KProperty<*>, Any) on MutableMap<in String, in Any>: Unit' type=kotlin.Unit origin=null
@@ -92,16 +92,16 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   PROPERTY name:test4 visibility:public modality:FINAL flags:delegated,var
     FIELD DELEGATE name:test4$delegate type:kotlin.collections.HashMap<kotlin.String, kotlin.Any> /* = java.util.HashMap<kotlin.String, kotlin.Any> */ visibility:private flags:final
       EXPRESSION_BODY
@@ -120,7 +120,7 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
             property: PROPERTY_REFERENCE 'test4: Any' field=null getter='<get-test4>(): Any' setter='<set-test4>(Any): Unit' type=kotlin.reflect.KMutableProperty0<kotlin.Any> origin=PROPERTY_REFERENCE_FOR_DELEGATE
     FUN DELEGATED_PROPERTY_ACCESSOR name:<set-test4> visibility:public modality:FINAL <> (<set-?>:kotlin.Any) returnType:kotlin.Unit flags:
       correspondingProperty: PROPERTY name:test4 visibility:public modality:FINAL flags:delegated,var
-      VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Any flags:
+      VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Any visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='<set-test4>(Any): Unit'
           CALL 'setValue(Any?, KProperty<*>, Any) on MutableMap<in String, in Any>: Unit' type=kotlin.Unit origin=null
@@ -129,4 +129,3 @@ FILE fqName:<root> fileName:/delegatedProperties.kt
             thisRef: CONST Null type=kotlin.Nothing? value=null
             property: PROPERTY_REFERENCE 'test4: Any' field=null getter='<get-test4>(): Any' setter='<set-test4>(Any): Unit' type=kotlin.reflect.KMutableProperty0<kotlin.Any> origin=PROPERTY_REFERENCE_FOR_DELEGATE
             value: GET_VAR 'value-parameter <set-?>: Any' type=kotlin.Any origin=null
-

@@ -15,4 +15,3 @@ FILE fqName:<root> fileName:/javaAnnotation.kt
         value: CONST String type=kotlin.String value=abc
         i: CONST Int type=kotlin.Int value=123
     BLOCK_BODY
-

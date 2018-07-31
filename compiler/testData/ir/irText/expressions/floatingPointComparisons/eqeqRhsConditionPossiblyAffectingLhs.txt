@@ -1,6 +1,6 @@
 FILE fqName:<root> fileName:/eqeqRhsConditionPossiblyAffectingLhs.kt
   FUN name:test visibility:public modality:FINAL <> (x:kotlin.Any) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test(Any): Boolean'
         CALL 'EQEQ(Any?, Any?): Boolean' type=kotlin.Boolean origin=EQEQ
@@ -11,7 +11,7 @@ FILE fqName:<root> fileName:/eqeqRhsConditionPossiblyAffectingLhs.kt
                 typeOperand: CLASS IR_EXTERNAL_DECLARATION_STUB CLASS name:Double modality:FINAL visibility:public flags: superTypes:[kotlin.Number; kotlin.Comparable<kotlin.Double>; java.io.Serializable]
                 GET_VAR 'value-parameter x: Any' type=kotlin.Any origin=null
               then: BLOCK type=kotlin.Nothing origin=EXCLEXCL
-                VAR IR_TEMPORARY_VARIABLE name:tmp0_notnull type:kotlin.Nothing? flags:val
+                VAR IR_TEMPORARY_VARIABLE name:tmp0_notnull type:kotlin.Nothing? visibility:local flags:val
                   CONST Null type=kotlin.Nothing? value=null
                 WHEN type=kotlin.Nothing origin=null
                   BRANCH
@@ -27,4 +27,3 @@ FILE fqName:<root> fileName:/eqeqRhsConditionPossiblyAffectingLhs.kt
               then: TYPE_OP type=kotlin.Double origin=IMPLICIT_CAST typeOperand=kotlin.Double
                 typeOperand: CLASS IR_EXTERNAL_DECLARATION_STUB CLASS name:Double modality:FINAL visibility:public flags: superTypes:[kotlin.Number; kotlin.Comparable<kotlin.Double>; java.io.Serializable]
                 GET_VAR 'value-parameter x: Any' type=kotlin.Any origin=null
-

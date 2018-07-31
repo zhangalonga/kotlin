@@ -1,6 +1,6 @@
 FILE fqName:<root> fileName:/augmentedAssignment2.kt
   CLASS CLASS name:A modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A visibility:local flags:
     CONSTRUCTOR visibility:public <> () returnType:A flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -8,35 +8,35 @@ FILE fqName:<root> fileName:/augmentedAssignment2.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   FUN name:plusAssign visibility:public modality:FINAL <> ($receiver:A, s:kotlin.String) returnType:kotlin.Unit flags:
-    $receiver: VALUE_PARAMETER name:<this> type:A flags:
-    VALUE_PARAMETER name:s index:0 type:kotlin.String flags:
+    $receiver: VALUE_PARAMETER name:<this> type:A visibility:local flags:
+    VALUE_PARAMETER name:s index:0 type:kotlin.String visibility:local flags:
     BLOCK_BODY
   FUN name:minusAssign visibility:public modality:FINAL <> ($receiver:A, s:kotlin.String) returnType:kotlin.Unit flags:
-    $receiver: VALUE_PARAMETER name:<this> type:A flags:
-    VALUE_PARAMETER name:s index:0 type:kotlin.String flags:
+    $receiver: VALUE_PARAMETER name:<this> type:A visibility:local flags:
+    VALUE_PARAMETER name:s index:0 type:kotlin.String visibility:local flags:
     BLOCK_BODY
   FUN name:timesAssign visibility:public modality:FINAL <> ($receiver:A, s:kotlin.String) returnType:kotlin.Unit flags:
-    $receiver: VALUE_PARAMETER name:<this> type:A flags:
-    VALUE_PARAMETER name:s index:0 type:kotlin.String flags:
+    $receiver: VALUE_PARAMETER name:<this> type:A visibility:local flags:
+    VALUE_PARAMETER name:s index:0 type:kotlin.String visibility:local flags:
     BLOCK_BODY
   FUN name:divAssign visibility:public modality:FINAL <> ($receiver:A, s:kotlin.String) returnType:kotlin.Unit flags:
-    $receiver: VALUE_PARAMETER name:<this> type:A flags:
-    VALUE_PARAMETER name:s index:0 type:kotlin.String flags:
+    $receiver: VALUE_PARAMETER name:<this> type:A visibility:local flags:
+    VALUE_PARAMETER name:s index:0 type:kotlin.String visibility:local flags:
     BLOCK_BODY
   FUN name:modAssign visibility:public modality:FINAL <> ($receiver:A, s:kotlin.String) returnType:kotlin.Unit flags:
-    $receiver: VALUE_PARAMETER name:<this> type:A flags:
-    VALUE_PARAMETER name:s index:0 type:kotlin.String flags:
+    $receiver: VALUE_PARAMETER name:<this> type:A visibility:local flags:
+    VALUE_PARAMETER name:s index:0 type:kotlin.String visibility:local flags:
     BLOCK_BODY
   PROPERTY name:p visibility:public modality:FINAL flags:val
     FIELD PROPERTY_BACKING_FIELD name:p type:A visibility:public flags:final
@@ -49,7 +49,7 @@ FILE fqName:<root> fileName:/augmentedAssignment2.kt
           GET_FIELD 'p: A' type=A origin=null
   FUN name:testVariable visibility:public modality:FINAL <> () returnType:kotlin.Unit flags:
     BLOCK_BODY
-      VAR name:a type:A flags:val
+      VAR name:a type:A visibility:local flags:val
         CALL 'constructor A()' type=A origin=null
       CALL 'plusAssign(String) on A: Unit' type=kotlin.Unit origin=PLUSEQ
         $receiver: GET_VAR 'a: A' type=A origin=PLUSEQ
@@ -88,4 +88,3 @@ FILE fqName:<root> fileName:/augmentedAssignment2.kt
         CALL 'modAssign(String) on A: Unit' type=kotlin.Unit origin=PERCEQ
           $receiver: CALL '<get-p>(): A' type=A origin=PERCEQ
           s: CONST String type=kotlin.String value=%=
-

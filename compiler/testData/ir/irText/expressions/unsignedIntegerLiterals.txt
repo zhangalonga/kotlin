@@ -93,4 +93,3 @@ FILE fqName:<root> fileName:/unsignedIntegerLiterals.kt
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='<get-testToULong>(): ULong'
           GET_FIELD 'testToULong: ULong' type=kotlin.ULong origin=null
-

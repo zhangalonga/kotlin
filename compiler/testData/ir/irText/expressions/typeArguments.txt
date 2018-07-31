@@ -1,6 +1,6 @@
 FILE fqName:<root> fileName:/typeArguments.kt
   FUN name:test1 visibility:public modality:FINAL <> (x:kotlin.Any) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test1(Any): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -16,4 +16,3 @@ FILE fqName:<root> fileName:/typeArguments.kt
           BRANCH
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
-

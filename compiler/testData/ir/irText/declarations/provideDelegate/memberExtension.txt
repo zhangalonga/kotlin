@@ -1,14 +1,14 @@
 FILE fqName:<root> fileName:/memberExtension.kt
   CLASS OBJECT name:Host modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Host flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Host visibility:local flags:
     CONSTRUCTOR visibility:private <> () returnType:Host flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='Host'
     CLASS CLASS name:StringDelegate modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Host.StringDelegate flags:
+      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Host.StringDelegate visibility:local flags:
       CONSTRUCTOR visibility:public <> (s:kotlin.String) returnType:Host.StringDelegate flags:primary
-        VALUE_PARAMETER name:s index:0 type:kotlin.String flags:
+        VALUE_PARAMETER name:s index:0 type:kotlin.String visibility:local flags:
         BLOCK_BODY
           DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
           INSTANCE_INITIALIZER_CALL classDescriptor='StringDelegate'
@@ -18,15 +18,15 @@ FILE fqName:<root> fileName:/memberExtension.kt
             GET_VAR 'value-parameter s: String' type=kotlin.String origin=INITIALIZE_PROPERTY_FROM_PARAMETER
         FUN DEFAULT_PROPERTY_ACCESSOR name:<get-s> visibility:public modality:FINAL <> ($this:Host.StringDelegate) returnType:kotlin.String flags:
           correspondingProperty: PROPERTY name:s visibility:public modality:FINAL flags:val
-          $this: VALUE_PARAMETER name:<this> type:Host.StringDelegate flags:
+          $this: VALUE_PARAMETER name:<this> type:Host.StringDelegate visibility:local flags:
           BLOCK_BODY
             RETURN type=kotlin.Nothing from='<get-s>(): String'
               GET_FIELD 's: String' type=kotlin.String origin=null
                 receiver: GET_VAR 'this@StringDelegate: StringDelegate' type=Host.StringDelegate origin=null
       FUN name:getValue visibility:public modality:FINAL <> ($this:Host.StringDelegate, receiver:kotlin.String, p:kotlin.Any) returnType:kotlin.String flags:
-        $this: VALUE_PARAMETER name:<this> type:Host.StringDelegate flags:
-        VALUE_PARAMETER name:receiver index:0 type:kotlin.String flags:
-        VALUE_PARAMETER name:p index:1 type:kotlin.Any flags:
+        $this: VALUE_PARAMETER name:<this> type:Host.StringDelegate visibility:local flags:
+        VALUE_PARAMETER name:receiver index:0 type:kotlin.String visibility:local flags:
+        VALUE_PARAMETER name:p index:1 type:kotlin.Any visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='getValue(String, Any): String'
             CALL 'plus(Any?): String' type=kotlin.String origin=PLUS
@@ -36,21 +36,21 @@ FILE fqName:<root> fileName:/memberExtension.kt
       FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
         overridden:
           FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-        VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+        $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+        VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
       FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
         overridden:
           FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+        $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
       FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
         overridden:
           FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+        $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN name:provideDelegate visibility:public modality:FINAL <> ($this:Host, $receiver:kotlin.String, host:kotlin.Any?, p:kotlin.Any) returnType:Host.StringDelegate flags:
-      $this: VALUE_PARAMETER name:<this> type:Host flags:
-      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String flags:
-      VALUE_PARAMETER name:host index:0 type:kotlin.Any? flags:
-      VALUE_PARAMETER name:p index:1 type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:Host visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String visibility:local flags:
+      VALUE_PARAMETER name:host index:0 type:kotlin.Any? visibility:local flags:
+      VALUE_PARAMETER name:p index:1 type:kotlin.Any visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='provideDelegate(Any?, Any) on String: Host.StringDelegate'
           CALL 'constructor StringDelegate(String)' type=Host.StringDelegate origin=null
@@ -65,8 +65,8 @@ FILE fqName:<root> fileName:/memberExtension.kt
             p: PROPERTY_REFERENCE 'plusK: String on String' field=null getter='<get-plusK>() on String: String' setter=null type=kotlin.reflect.KProperty2<kotlin.String, Host, kotlin.String> origin=PROPERTY_REFERENCE_FOR_DELEGATE
       FUN DELEGATED_PROPERTY_ACCESSOR name:<get-plusK> visibility:public modality:FINAL <> ($this:Host, $receiver:kotlin.String) returnType:kotlin.String flags:
         correspondingProperty: PROPERTY name:plusK visibility:public modality:FINAL flags:delegated,val
-        $this: VALUE_PARAMETER name:<this> type:Host flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.String flags:
+        $this: VALUE_PARAMETER name:<this> type:Host visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.String visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-plusK>() on String: String'
             CALL 'getValue(String, Any): String' type=kotlin.String origin=null
@@ -82,7 +82,7 @@ FILE fqName:<root> fileName:/memberExtension.kt
             $receiver: CONST String type=kotlin.String value=O
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-ok> visibility:public modality:FINAL <> ($this:Host) returnType:kotlin.String flags:
         correspondingProperty: PROPERTY name:ok visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:Host flags:
+        $this: VALUE_PARAMETER name:<this> type:Host visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-ok>(): String'
             GET_FIELD 'ok: String' type=kotlin.String origin=null
@@ -90,13 +90,13 @@ FILE fqName:<root> fileName:/memberExtension.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:

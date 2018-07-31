@@ -1,12 +1,12 @@
 FILE fqName:<root> fileName:/boundCallableReferences.kt
   CLASS CLASS name:A modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A visibility:local flags:
     CONSTRUCTOR visibility:public <> () returnType:A flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='A'
     FUN name:foo visibility:public modality:FINAL <> ($this:A) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:A flags:
+      $this: VALUE_PARAMETER name:<this> type:A visibility:local flags:
       BLOCK_BODY
     PROPERTY name:bar visibility:public modality:FINAL flags:val
       FIELD PROPERTY_BACKING_FIELD name:bar type:kotlin.Int visibility:public flags:final
@@ -14,7 +14,7 @@ FILE fqName:<root> fileName:/boundCallableReferences.kt
           CONST Int type=kotlin.Int value=0
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-bar> visibility:public modality:FINAL <> ($this:A) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:bar visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:A flags:
+        $this: VALUE_PARAMETER name:<this> type:A visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-bar>(): Int'
             GET_FIELD 'bar: Int' type=kotlin.Int origin=null
@@ -22,18 +22,18 @@ FILE fqName:<root> fileName:/boundCallableReferences.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   FUN name:qux visibility:public modality:FINAL <> ($receiver:A) returnType:kotlin.Unit flags:
-    $receiver: VALUE_PARAMETER name:<this> type:A flags:
+    $receiver: VALUE_PARAMETER name:<this> type:A visibility:local flags:
     BLOCK_BODY
   PROPERTY name:test1 visibility:public modality:FINAL flags:val
     FIELD PROPERTY_BACKING_FIELD name:test1 type:kotlin.reflect.KFunction0<kotlin.Unit> visibility:public flags:final
@@ -65,4 +65,3 @@ FILE fqName:<root> fileName:/boundCallableReferences.kt
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='<get-test3>(): KFunction0<Unit>'
           GET_FIELD 'test3: KFunction0<Unit>' type=kotlin.reflect.KFunction0<kotlin.Unit> origin=null
-

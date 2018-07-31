@@ -1,7 +1,7 @@
 FILE fqName:<root> fileName:/arrayAssignment.kt
   FUN name:test visibility:public modality:FINAL <> () returnType:kotlin.Unit flags:
     BLOCK_BODY
-      VAR name:x type:kotlin.IntArray flags:val
+      VAR name:x type:kotlin.IntArray visibility:local flags:val
         CALL 'intArrayOf(vararg Int): IntArray' type=kotlin.IntArray origin=null
           elements: VARARG type=kotlin.IntArray varargElementType=kotlin.Int
             CONST Int type=kotlin.Int value=1

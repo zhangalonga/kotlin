@@ -66,32 +66,32 @@ FILE fqName:<root> fileName:/signedToUnsignedConversions_test.kt
         RETURN type=kotlin.Nothing from='<get-UINT_CONST>(): UInt'
           GET_FIELD 'UINT_CONST: UInt' type=kotlin.UInt origin=null
   FUN name:takeUByte visibility:public modality:FINAL <> (u:kotlin.UByte) returnType:kotlin.Unit flags:
-    VALUE_PARAMETER name:u index:0 type:kotlin.UByte flags:
+    VALUE_PARAMETER name:u index:0 type:kotlin.UByte visibility:local flags:
       annotations:
         CALL 'constructor ImplicitIntegerCoercion()' type=kotlin.internal.ImplicitIntegerCoercion origin=null
     BLOCK_BODY
   FUN name:takeUShort visibility:public modality:FINAL <> (u:kotlin.UShort) returnType:kotlin.Unit flags:
-    VALUE_PARAMETER name:u index:0 type:kotlin.UShort flags:
+    VALUE_PARAMETER name:u index:0 type:kotlin.UShort visibility:local flags:
       annotations:
         CALL 'constructor ImplicitIntegerCoercion()' type=kotlin.internal.ImplicitIntegerCoercion origin=null
     BLOCK_BODY
   FUN name:takeUInt visibility:public modality:FINAL <> (u:kotlin.UInt) returnType:kotlin.Unit flags:
-    VALUE_PARAMETER name:u index:0 type:kotlin.UInt flags:
+    VALUE_PARAMETER name:u index:0 type:kotlin.UInt visibility:local flags:
       annotations:
         CALL 'constructor ImplicitIntegerCoercion()' type=kotlin.internal.ImplicitIntegerCoercion origin=null
     BLOCK_BODY
   FUN name:takeULong visibility:public modality:FINAL <> (u:kotlin.ULong) returnType:kotlin.Unit flags:
-    VALUE_PARAMETER name:u index:0 type:kotlin.ULong flags:
+    VALUE_PARAMETER name:u index:0 type:kotlin.ULong visibility:local flags:
       annotations:
         CALL 'constructor ImplicitIntegerCoercion()' type=kotlin.internal.ImplicitIntegerCoercion origin=null
     BLOCK_BODY
   FUN name:takeUBytes visibility:public modality:FINAL <> (u:kotlin.UByteArray) returnType:kotlin.Unit flags:
-    VALUE_PARAMETER name:u index:0 type:kotlin.UByteArray varargElementType:kotlin.UByte flags:vararg
+    VALUE_PARAMETER name:u index:0 type:kotlin.UByteArray varargElementType:kotlin.UByte visibility:local flags:vararg
       annotations:
         CALL 'constructor ImplicitIntegerCoercion()' type=kotlin.internal.ImplicitIntegerCoercion origin=null
     BLOCK_BODY
   FUN name:takeLong visibility:public modality:FINAL <> (l:kotlin.Long) returnType:kotlin.Unit flags:
-    VALUE_PARAMETER name:l index:0 type:kotlin.Long flags:
+    VALUE_PARAMETER name:l index:0 type:kotlin.Long visibility:local flags:
       annotations:
         CALL 'constructor ImplicitIntegerCoercion()' type=kotlin.internal.ImplicitIntegerCoercion origin=null
     BLOCK_BODY

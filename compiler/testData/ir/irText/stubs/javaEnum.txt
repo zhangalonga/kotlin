@@ -8,4 +8,3 @@ FILE fqName:<root> fileName:/javaEnum.kt
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='<get-test>(): JEnum'
           GET_FIELD 'test: JEnum' type=JEnum origin=null
-

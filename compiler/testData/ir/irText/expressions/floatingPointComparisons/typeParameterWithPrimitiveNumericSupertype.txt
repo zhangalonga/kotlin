@@ -1,8 +1,8 @@
 FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
   FUN name:test0 visibility:public modality:FINAL <T> (x:kotlin.Any, y:T) returnType:kotlin.Boolean flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Any?]
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:T flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Any?]
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:T visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test0(Any, T): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -17,9 +17,9 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:test1 visibility:public modality:FINAL <T> (x:kotlin.Any, y:T) returnType:kotlin.Boolean flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Float]
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:T flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Float]
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:T visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test1(Any, T): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -36,9 +36,9 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:test2 visibility:public modality:FINAL <T> (x:kotlin.Any, y:T) returnType:kotlin.Boolean flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Double]
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:T flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Double]
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:T visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test2(Any, T): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -56,9 +56,9 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:test3 visibility:public modality:FINAL <T> (x:kotlin.Any, y:T) returnType:kotlin.Boolean flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Float]
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:T flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Float]
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:T visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test3(Any, T): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -76,9 +76,9 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:test4 visibility:public modality:FINAL <T> (x:kotlin.Any, y:T) returnType:kotlin.Boolean flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Float?]
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:T flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Float?]
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:T visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test4(Any, T): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -96,10 +96,10 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:test5 visibility:public modality:FINAL <T, R> (x:kotlin.Any, y:R) returnType:kotlin.Boolean flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Float?]
-    TYPE_PARAMETER name:R index:1 variance: superTypes:[T]
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:R flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Float?]
+    TYPE_PARAMETER name:R index:1 variance: visibility:local superTypes:[T]
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:R visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test5(Any, R): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -117,9 +117,9 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:test6 visibility:public modality:FINAL <T> (x:kotlin.Any, y:T) returnType:kotlin.Boolean flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Number]
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:T flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Number]
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:T visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test6(Any, T): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -134,16 +134,16 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   CLASS CLASS name:F modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:F<T> flags:
-    TYPE_PARAMETER name:T index:0 variance: superTypes:[kotlin.Float]
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:F<T> visibility:local flags:
+    TYPE_PARAMETER name:T index:0 variance: visibility:local superTypes:[kotlin.Float]
     CONSTRUCTOR visibility:public <> () returnType:F<T> flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
         INSTANCE_INITIALIZER_CALL classDescriptor='F'
     FUN name:testCapturedType visibility:public modality:FINAL <> ($this:F<T>, x:T, y:kotlin.Any) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:F<T> flags:
-      VALUE_PARAMETER name:x index:0 type:T flags:
-      VALUE_PARAMETER name:y index:1 type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:F<T> visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:T visibility:local flags:
+      VALUE_PARAMETER name:y index:1 type:kotlin.Any visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='testCapturedType(T, Any): Boolean'
           WHEN type=kotlin.Boolean origin=ANDAND
@@ -163,14 +163,13 @@ FILE fqName:<root> fileName:/typeParameterWithPrimitiveNumericSupertype.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:

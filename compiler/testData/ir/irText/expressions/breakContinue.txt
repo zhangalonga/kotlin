@@ -57,4 +57,3 @@ FILE fqName:<root> fileName:/breakContinue.kt
             body: BLOCK type=kotlin.Unit origin=null
               CONTINUE label=L loop.label=L
           CONTINUE label=L loop.label=L
-

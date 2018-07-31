@@ -1,15 +1,15 @@
 FILE fqName:<root> fileName:/valueParametersWithAnnotations.kt
   CLASS ANNOTATION_CLASS name:TestAnn modality:FINAL visibility:public flags: superTypes:[kotlin.Annotation]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:TestAnn flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:TestAnn visibility:local flags:
     CONSTRUCTOR visibility:public <> (x:kotlin.String) returnType:TestAnn flags:primary
-      VALUE_PARAMETER name:x index:0 type:kotlin.String flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.String visibility:local flags:
     PROPERTY name:x visibility:public modality:FINAL flags:val
       FIELD PROPERTY_BACKING_FIELD name:x type:kotlin.String visibility:public flags:final
         EXPRESSION_BODY
           GET_VAR 'value-parameter x: String' type=kotlin.String origin=INITIALIZE_PROPERTY_FROM_PARAMETER
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-x> visibility:public modality:FINAL <> ($this:TestAnn) returnType:kotlin.String flags:
         correspondingProperty: PROPERTY name:x visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:TestAnn flags:
+        $this: VALUE_PARAMETER name:<this> type:TestAnn visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-x>(): String'
             GET_FIELD 'x: String' type=kotlin.String origin=null
@@ -17,26 +17,26 @@ FILE fqName:<root> fileName:/valueParametersWithAnnotations.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   FUN name:testFun visibility:public modality:FINAL <> (x:kotlin.Int) returnType:kotlin.Unit flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
       annotations:
         CALL 'constructor TestAnn(String)' type=TestAnn origin=null
           x: CONST String type=kotlin.String value=testFun.x
     BLOCK_BODY
   CLASS CLASS name:TestClassConstructor1 modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:TestClassConstructor1 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:TestClassConstructor1 visibility:local flags:
     CONSTRUCTOR visibility:public <> (x:kotlin.Int) returnType:TestClassConstructor1 flags:primary
-      VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
         annotations:
           CALL 'constructor TestAnn(String)' type=TestAnn origin=null
             x: CONST String type=kotlin.String value=TestClassConstructor1.x
@@ -49,7 +49,7 @@ FILE fqName:<root> fileName:/valueParametersWithAnnotations.kt
           GET_VAR 'value-parameter x: Int' type=kotlin.Int origin=null
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-xx> visibility:public modality:FINAL <> ($this:TestClassConstructor1) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:xx visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:TestClassConstructor1 flags:
+        $this: VALUE_PARAMETER name:<this> type:TestClassConstructor1 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-xx>(): Int'
             GET_FIELD 'xx: Int' type=kotlin.Int origin=null
@@ -57,14 +57,13 @@ FILE fqName:<root> fileName:/valueParametersWithAnnotations.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:

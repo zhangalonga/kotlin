@@ -1,30 +1,30 @@
 FILE fqName:<root> fileName:/delegatedImplementation.kt
   CLASS INTERFACE name:IBase modality:ABSTRACT visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IBase flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IBase visibility:local flags:
     FUN name:foo visibility:public modality:ABSTRACT <> ($this:IBase, x:kotlin.Int, s:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:IBase flags:
-      VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
-      VALUE_PARAMETER name:s index:1 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:IBase visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
+      VALUE_PARAMETER name:s index:1 type:kotlin.String visibility:local flags:
     FUN name:bar visibility:public modality:ABSTRACT <> ($this:IBase) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:IBase flags:
+      $this: VALUE_PARAMETER name:<this> type:IBase visibility:local flags:
     FUN name:qux visibility:public modality:ABSTRACT <> ($this:IBase, $receiver:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:IBase flags:
-      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:IBase visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String visibility:local flags:
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS OBJECT name:BaseImpl modality:FINAL visibility:public flags: superTypes:[IBase]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:BaseImpl flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:BaseImpl visibility:local flags:
     CONSTRUCTOR visibility:private <> () returnType:BaseImpl flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -32,86 +32,86 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN name:foo visibility:public modality:OPEN <> ($this:BaseImpl, x:kotlin.Int, s:kotlin.String) returnType:kotlin.Unit flags:
       overridden:
         FUN name:foo visibility:public modality:ABSTRACT <> ($this:IBase, x:kotlin.Int, s:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:BaseImpl flags:
-      VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
-      VALUE_PARAMETER name:s index:1 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:BaseImpl visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
+      VALUE_PARAMETER name:s index:1 type:kotlin.String visibility:local flags:
       BLOCK_BODY
     FUN name:bar visibility:public modality:OPEN <> ($this:BaseImpl) returnType:kotlin.Int flags:
       overridden:
         FUN name:bar visibility:public modality:ABSTRACT <> ($this:IBase) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:BaseImpl flags:
+      $this: VALUE_PARAMETER name:<this> type:BaseImpl visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='bar(): Int'
           CONST Int type=kotlin.Int value=42
     FUN name:qux visibility:public modality:OPEN <> ($this:BaseImpl, $receiver:kotlin.String) returnType:kotlin.Unit flags:
       overridden:
         FUN name:qux visibility:public modality:ABSTRACT <> ($this:IBase, $receiver:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:BaseImpl flags:
-      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:BaseImpl visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String visibility:local flags:
       BLOCK_BODY
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS INTERFACE name:IOther modality:ABSTRACT visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IOther flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:IOther visibility:local flags:
     PROPERTY name:x visibility:public modality:ABSTRACT flags:val
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-x> visibility:public modality:ABSTRACT <> ($this:IOther) returnType:kotlin.String flags:
         correspondingProperty: PROPERTY name:x visibility:public modality:ABSTRACT flags:val
-        $this: VALUE_PARAMETER name:<this> type:IOther flags:
+        $this: VALUE_PARAMETER name:<this> type:IOther visibility:local flags:
     PROPERTY name:y visibility:public modality:ABSTRACT flags:var
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-y> visibility:public modality:ABSTRACT <> ($this:IOther) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:y visibility:public modality:ABSTRACT flags:var
-        $this: VALUE_PARAMETER name:<this> type:IOther flags:
+        $this: VALUE_PARAMETER name:<this> type:IOther visibility:local flags:
       FUN DEFAULT_PROPERTY_ACCESSOR name:<set-y> visibility:public modality:ABSTRACT <> ($this:IOther, <set-?>:kotlin.Int) returnType:kotlin.Unit flags:
         correspondingProperty: PROPERTY name:y visibility:public modality:ABSTRACT flags:var
-        $this: VALUE_PARAMETER name:<this> type:IOther flags:
-        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int flags:
+        $this: VALUE_PARAMETER name:<this> type:IOther visibility:local flags:
+        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int visibility:local flags:
     PROPERTY name:z1 visibility:public modality:ABSTRACT flags:val
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-z1> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:z1 visibility:public modality:ABSTRACT flags:val
-        $this: VALUE_PARAMETER name:<this> type:IOther flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
+        $this: VALUE_PARAMETER name:<this> type:IOther visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
     PROPERTY name:z2 visibility:public modality:ABSTRACT flags:var
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-z2> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte) returnType:kotlin.Int flags:
         correspondingProperty: PROPERTY name:z2 visibility:public modality:ABSTRACT flags:var
-        $this: VALUE_PARAMETER name:<this> type:IOther flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
+        $this: VALUE_PARAMETER name:<this> type:IOther visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
       FUN DEFAULT_PROPERTY_ACCESSOR name:<set-z2> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte, <set-?>:kotlin.Int) returnType:kotlin.Unit flags:
         correspondingProperty: PROPERTY name:z2 visibility:public modality:ABSTRACT flags:var
-        $this: VALUE_PARAMETER name:<this> type:IOther flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
-        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int flags:
+        $this: VALUE_PARAMETER name:<this> type:IOther visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
+        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int visibility:local flags:
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   FUN name:otherImpl visibility:public modality:FINAL <> (x0:kotlin.String, y0:kotlin.Int) returnType:IOther flags:
-    VALUE_PARAMETER name:x0 index:0 type:kotlin.String flags:
-    VALUE_PARAMETER name:y0 index:1 type:kotlin.Int flags:
+    VALUE_PARAMETER name:x0 index:0 type:kotlin.String visibility:local flags:
+    VALUE_PARAMETER name:y0 index:1 type:kotlin.Int visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='otherImpl(String, Int): IOther'
         BLOCK type=otherImpl.<no name provided> origin=OBJECT_LITERAL
           CLASS CLASS name:<no name provided> modality:FINAL visibility:local flags: superTypes:[IOther]
-            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:otherImpl.<no name provided> flags:
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:otherImpl.<no name provided> visibility:local flags:
             CONSTRUCTOR visibility:public <> () returnType:otherImpl.<no name provided> flags:primary
               BLOCK_BODY
                 DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -124,7 +124,7 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
                 correspondingProperty: PROPERTY name:x visibility:public modality:OPEN flags:val
                 overridden:
                   FUN DEFAULT_PROPERTY_ACCESSOR name:<get-x> visibility:public modality:ABSTRACT <> ($this:IOther) returnType:kotlin.String flags:
-                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> flags:
+                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> visibility:local flags:
                 BLOCK_BODY
                   RETURN type=kotlin.Nothing from='<get-x>(): String'
                     GET_FIELD 'x: String' type=kotlin.String origin=null
@@ -137,7 +137,7 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
                 correspondingProperty: PROPERTY name:y visibility:public modality:OPEN flags:var
                 overridden:
                   FUN DEFAULT_PROPERTY_ACCESSOR name:<get-y> visibility:public modality:ABSTRACT <> ($this:IOther) returnType:kotlin.Int flags:
-                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> flags:
+                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> visibility:local flags:
                 BLOCK_BODY
                   RETURN type=kotlin.Nothing from='<get-y>(): Int'
                     GET_FIELD 'y: Int' type=kotlin.Int origin=null
@@ -146,8 +146,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
                 correspondingProperty: PROPERTY name:y visibility:public modality:OPEN flags:var
                 overridden:
                   FUN DEFAULT_PROPERTY_ACCESSOR name:<set-y> visibility:public modality:ABSTRACT <> ($this:IOther, <set-?>:kotlin.Int) returnType:kotlin.Unit flags:
-                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> flags:
-                VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int flags:
+                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> visibility:local flags:
+                VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int visibility:local flags:
                 BLOCK_BODY
                   SET_FIELD 'y: Int' type=kotlin.Unit origin=null
                     receiver: GET_VAR 'this@<no name provided>: <no name provided>' type=otherImpl.<no name provided> origin=null
@@ -157,8 +157,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
                 correspondingProperty: PROPERTY name:z1 visibility:public modality:OPEN flags:val
                 overridden:
                   FUN DEFAULT_PROPERTY_ACCESSOR name:<get-z1> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte) returnType:kotlin.Int flags:
-                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> flags:
-                $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
+                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> visibility:local flags:
+                $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
                 BLOCK_BODY
                   RETURN type=kotlin.Nothing from='<get-z1>() on Byte: Int'
                     CONST Int type=kotlin.Int value=1
@@ -167,8 +167,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
                 correspondingProperty: PROPERTY name:z2 visibility:public modality:OPEN flags:var
                 overridden:
                   FUN DEFAULT_PROPERTY_ACCESSOR name:<get-z2> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte) returnType:kotlin.Int flags:
-                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> flags:
-                $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
+                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> visibility:local flags:
+                $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
                 BLOCK_BODY
                   RETURN type=kotlin.Nothing from='<get-z2>() on Byte: Int'
                     CONST Int type=kotlin.Int value=2
@@ -176,26 +176,26 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
                 correspondingProperty: PROPERTY name:z2 visibility:public modality:OPEN flags:var
                 overridden:
                   FUN DEFAULT_PROPERTY_ACCESSOR name:<set-z2> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte, <set-?>:kotlin.Int) returnType:kotlin.Unit flags:
-                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> flags:
-                $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
-                VALUE_PARAMETER name:value index:0 type:kotlin.Int flags:
+                $this: VALUE_PARAMETER name:<this> type:otherImpl.<no name provided> visibility:local flags:
+                $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
+                VALUE_PARAMETER name:value index:0 type:kotlin.Int visibility:local flags:
                 BLOCK_BODY
             FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
               overridden:
                 FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-              $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-              VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+              $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+              VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
             FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
               overridden:
                 FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-              $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+              $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
             FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
               overridden:
                 FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-              $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+              $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
           CALL 'constructor <no name provided>()' type=otherImpl.<no name provided> origin=OBJECT_LITERAL
   CLASS CLASS name:Test1 modality:FINAL visibility:public flags: superTypes:[IBase]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test1 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test1 visibility:local flags:
     CONSTRUCTOR visibility:public <> () returnType:Test1 flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -206,7 +206,7 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN DELEGATED_MEMBER name:bar visibility:public modality:OPEN <> ($this:Test1) returnType:kotlin.Int flags:
       overridden:
         FUN name:bar visibility:public modality:ABSTRACT <> ($this:IBase) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='bar(): Int'
           CALL 'bar(): Int' type=kotlin.Int origin=null
@@ -215,9 +215,9 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN DELEGATED_MEMBER name:foo visibility:public modality:OPEN <> ($this:Test1, x:kotlin.Int, s:kotlin.String) returnType:kotlin.Unit flags:
       overridden:
         FUN name:foo visibility:public modality:ABSTRACT <> ($this:IBase, x:kotlin.Int, s:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
-      VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
-      VALUE_PARAMETER name:s index:1 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
+      VALUE_PARAMETER name:s index:1 type:kotlin.String visibility:local flags:
       BLOCK_BODY
         CALL 'foo(Int, String): Unit' type=kotlin.Unit origin=null
           $this: GET_FIELD '`Test1$IBase$delegate`: BaseImpl' type=BaseImpl origin=null
@@ -227,8 +227,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN DELEGATED_MEMBER name:qux visibility:public modality:OPEN <> ($this:Test1, $receiver:kotlin.String) returnType:kotlin.Unit flags:
       overridden:
         FUN name:qux visibility:public modality:ABSTRACT <> ($this:IBase, $receiver:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:Test1 flags:
-      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:Test1 visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String visibility:local flags:
       BLOCK_BODY
         CALL 'qux() on String: Unit' type=kotlin.Unit origin=null
           $this: GET_FIELD '`Test1$IBase$delegate`: BaseImpl' type=BaseImpl origin=null
@@ -237,18 +237,18 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   CLASS CLASS name:Test2 modality:FINAL visibility:public flags: superTypes:[IBase; IOther]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test2 flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:Test2 visibility:local flags:
     CONSTRUCTOR visibility:public <> () returnType:Test2 flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -259,7 +259,7 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN DELEGATED_MEMBER name:bar visibility:public modality:OPEN <> ($this:Test2) returnType:kotlin.Int flags:
       overridden:
         FUN name:bar visibility:public modality:ABSTRACT <> ($this:IBase) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2 flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='bar(): Int'
           CALL 'bar(): Int' type=kotlin.Int origin=null
@@ -268,9 +268,9 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN DELEGATED_MEMBER name:foo visibility:public modality:OPEN <> ($this:Test2, x:kotlin.Int, s:kotlin.String) returnType:kotlin.Unit flags:
       overridden:
         FUN name:foo visibility:public modality:ABSTRACT <> ($this:IBase, x:kotlin.Int, s:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2 flags:
-      VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
-      VALUE_PARAMETER name:s index:1 type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
+      VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
+      VALUE_PARAMETER name:s index:1 type:kotlin.String visibility:local flags:
       BLOCK_BODY
         CALL 'foo(Int, String): Unit' type=kotlin.Unit origin=null
           $this: GET_FIELD '`Test2$IBase$delegate`: BaseImpl' type=BaseImpl origin=null
@@ -280,8 +280,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
     FUN DELEGATED_MEMBER name:qux visibility:public modality:OPEN <> ($this:Test2, $receiver:kotlin.String) returnType:kotlin.Unit flags:
       overridden:
         FUN name:qux visibility:public modality:ABSTRACT <> ($this:IBase, $receiver:kotlin.String) returnType:kotlin.Unit flags:
-      $this: VALUE_PARAMETER name:<this> type:Test2 flags:
-      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String flags:
+      $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
+      $receiver: VALUE_PARAMETER name:<this> type:kotlin.String visibility:local flags:
       BLOCK_BODY
         CALL 'qux() on String: Unit' type=kotlin.Unit origin=null
           $this: GET_FIELD '`Test2$IBase$delegate`: BaseImpl' type=BaseImpl origin=null
@@ -297,8 +297,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
         correspondingProperty: PROPERTY DELEGATED_MEMBER name:z1 visibility:public modality:OPEN flags:val
         overridden:
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-z1> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte) returnType:kotlin.Int flags:
-        $this: VALUE_PARAMETER name:<this> type:Test2 flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
+        $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-z1>() on Byte: Int'
             CALL '<get-z1>() on Byte: Int' type=kotlin.Int origin=null
@@ -310,7 +310,7 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
         correspondingProperty: PROPERTY DELEGATED_MEMBER name:x visibility:public modality:OPEN flags:val
         overridden:
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-x> visibility:public modality:ABSTRACT <> ($this:IOther) returnType:kotlin.String flags:
-        $this: VALUE_PARAMETER name:<this> type:Test2 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-x>(): String'
             CALL '<get-x>(): String' type=kotlin.String origin=null
@@ -321,8 +321,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
         correspondingProperty: PROPERTY DELEGATED_MEMBER name:z2 visibility:public modality:OPEN flags:var
         overridden:
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-z2> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte) returnType:kotlin.Int flags:
-        $this: VALUE_PARAMETER name:<this> type:Test2 flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
+        $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-z2>() on Byte: Int'
             CALL '<get-z2>() on Byte: Int' type=kotlin.Int origin=null
@@ -333,9 +333,9 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
         correspondingProperty: PROPERTY DELEGATED_MEMBER name:z2 visibility:public modality:OPEN flags:var
         overridden:
           FUN DEFAULT_PROPERTY_ACCESSOR name:<set-z2> visibility:public modality:ABSTRACT <> ($this:IOther, $receiver:kotlin.Byte, <set-?>:kotlin.Int) returnType:kotlin.Unit flags:
-        $this: VALUE_PARAMETER name:<this> type:Test2 flags:
-        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte flags:
-        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int flags:
+        $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
+        $receiver: VALUE_PARAMETER name:<this> type:kotlin.Byte visibility:local flags:
+        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int visibility:local flags:
         BLOCK_BODY
           CALL '<set-z2>(Int) on Byte: Unit' type=kotlin.Unit origin=null
             $this: GET_FIELD '`Test2$IOther$delegate`: IOther' type=IOther origin=null
@@ -347,7 +347,7 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
         correspondingProperty: PROPERTY DELEGATED_MEMBER name:y visibility:public modality:OPEN flags:var
         overridden:
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-y> visibility:public modality:ABSTRACT <> ($this:IOther) returnType:kotlin.Int flags:
-        $this: VALUE_PARAMETER name:<this> type:Test2 flags:
+        $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-y>(): Int'
             CALL '<get-y>(): Int' type=kotlin.Int origin=null
@@ -357,8 +357,8 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
         correspondingProperty: PROPERTY DELEGATED_MEMBER name:y visibility:public modality:OPEN flags:var
         overridden:
           FUN DEFAULT_PROPERTY_ACCESSOR name:<set-y> visibility:public modality:ABSTRACT <> ($this:IOther, <set-?>:kotlin.Int) returnType:kotlin.Unit flags:
-        $this: VALUE_PARAMETER name:<this> type:Test2 flags:
-        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int flags:
+        $this: VALUE_PARAMETER name:<this> type:Test2 visibility:local flags:
+        VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int visibility:local flags:
         BLOCK_BODY
           CALL '<set-y>(Int): Unit' type=kotlin.Unit origin=null
             $this: GET_FIELD '`Test2$IOther$delegate`: IOther' type=IOther origin=null
@@ -368,16 +368,15 @@ FILE fqName:<root> fileName:/delegatedImplementation.kt
       overridden:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
         FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
         FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:

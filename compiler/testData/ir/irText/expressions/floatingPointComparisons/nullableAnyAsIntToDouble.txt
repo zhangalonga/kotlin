@@ -1,7 +1,7 @@
 FILE fqName:<root> fileName:/nullableAnyAsIntToDouble.kt
   FUN name:test visibility:public modality:FINAL <> (x:kotlin.Any?, y:kotlin.Double) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any? flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Double flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any? visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Double visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test(Any?, Double): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -11,7 +11,7 @@ FILE fqName:<root> fileName:/nullableAnyAsIntToDouble.kt
               GET_VAR 'value-parameter x: Any?' type=kotlin.Any? origin=null
             then: CALL 'less(Double, Double): Boolean' type=kotlin.Boolean origin=LT
               arg0: BLOCK type=kotlin.Double? origin=SAFE_CALL
-                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? flags:val
+                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? visibility:local flags:val
                   GET_VAR 'value-parameter x: Any?' type=kotlin.Any? origin=null
                 WHEN type=kotlin.Double? origin=null
                   BRANCH
@@ -29,4 +29,3 @@ FILE fqName:<root> fileName:/nullableAnyAsIntToDouble.kt
           BRANCH
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
-

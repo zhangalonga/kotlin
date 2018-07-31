@@ -1,6 +1,6 @@
 FILE fqName:<root> fileName:/when.kt
   CLASS OBJECT name:A modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:A visibility:local flags:
     CONSTRUCTOR visibility:private <> () returnType:A flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -8,22 +8,22 @@ FILE fqName:<root> fileName:/when.kt
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   FUN name:testWithSubject visibility:public modality:FINAL <> (x:kotlin.Any?) returnType:kotlin.String flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any? flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any? visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testWithSubject(Any?): String'
         BLOCK type=kotlin.String origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any? flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any? visibility:local flags:val
             GET_VAR 'value-parameter x: Any?' type=kotlin.Any? origin=null
           WHEN type=kotlin.String origin=WHEN
             BRANCH
@@ -52,7 +52,7 @@ FILE fqName:<root> fileName:/when.kt
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST String type=kotlin.String value=something
   FUN name:test visibility:public modality:FINAL <> (x:kotlin.Any?) returnType:kotlin.String flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any? flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any? visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test(Any?): String'
         WHEN type=kotlin.String origin=WHEN
@@ -82,11 +82,11 @@ FILE fqName:<root> fileName:/when.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST String type=kotlin.String value=something
   FUN name:testComma visibility:public modality:FINAL <> (x:kotlin.Int) returnType:kotlin.String flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Int flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Int visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testComma(Int): String'
         BLOCK type=kotlin.String origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Int flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Int visibility:local flags:val
             GET_VAR 'value-parameter x: Int' type=kotlin.Int origin=null
           WHEN type=kotlin.String origin=WHEN
             BRANCH
@@ -155,4 +155,3 @@ FILE fqName:<root> fileName:/when.kt
             BRANCH
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST String type=kotlin.String value=?
-

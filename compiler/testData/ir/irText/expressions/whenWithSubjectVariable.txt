@@ -7,7 +7,7 @@ FILE fqName:<root> fileName:/whenWithSubjectVariable.kt
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='test(): Int'
         BLOCK type=kotlin.Int origin=WHEN
-          VAR name:y type:kotlin.Any flags:val
+          VAR name:y type:kotlin.Any visibility:local flags:val
             CALL 'foo(): Any' type=kotlin.Any origin=null
           WHEN type=kotlin.Int origin=WHEN
             BRANCH
@@ -50,4 +50,3 @@ FILE fqName:<root> fileName:/whenWithSubjectVariable.kt
             BRANCH
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST Int type=kotlin.Int value=-1
-

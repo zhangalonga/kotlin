@@ -1,10 +1,10 @@
 FILE fqName:<root> fileName:/whenByFloatingPoint.kt
   FUN name:testSimple visibility:public modality:FINAL <> (x:kotlin.Double) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Double flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Double visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testSimple(Double): Int'
         BLOCK type=kotlin.Int origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Double flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Double visibility:local flags:val
             GET_VAR 'value-parameter x: Double' type=kotlin.Double origin=null
           WHEN type=kotlin.Int origin=WHEN
             BRANCH
@@ -16,7 +16,7 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST Int type=kotlin.Int value=1
   FUN name:testSmartCastInWhenSubject visibility:public modality:FINAL <> (x:kotlin.Any) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       WHEN type=kotlin.Unit origin=null
         BRANCH
@@ -27,7 +27,7 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
             CONST Int type=kotlin.Int value=-1
       RETURN type=kotlin.Nothing from='testSmartCastInWhenSubject(Any): Int'
         BLOCK type=kotlin.Int origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any visibility:local flags:val
             GET_VAR 'value-parameter x: Any' type=kotlin.Any origin=null
           WHEN type=kotlin.Int origin=WHEN
             BRANCH
@@ -41,8 +41,8 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST Int type=kotlin.Int value=1
   FUN name:testSmartCastInWhenCondition visibility:public modality:FINAL <> (x:kotlin.Double, y:kotlin.Any) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Double flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Any flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Double visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       WHEN type=kotlin.Unit origin=null
         BRANCH
@@ -53,7 +53,7 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
             CONST Int type=kotlin.Int value=-1
       RETURN type=kotlin.Nothing from='testSmartCastInWhenCondition(Double, Any): Int'
         BLOCK type=kotlin.Int origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Double flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Double visibility:local flags:val
             GET_VAR 'value-parameter x: Double' type=kotlin.Double origin=null
           WHEN type=kotlin.Int origin=WHEN
             BRANCH
@@ -67,11 +67,11 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST Int type=kotlin.Int value=1
   FUN name:testSmartCastInWhenConditionInBranch visibility:public modality:FINAL <> (x:kotlin.Any) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testSmartCastInWhenConditionInBranch(Any): Int'
         BLOCK type=kotlin.Int origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any visibility:local flags:val
             GET_VAR 'value-parameter x: Any' type=kotlin.Any origin=null
           WHEN type=kotlin.Int origin=WHEN
             BRANCH
@@ -90,8 +90,8 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST Int type=kotlin.Int value=1
   FUN name:testSmartCastToDifferentTypes visibility:public modality:FINAL <> (x:kotlin.Any, y:kotlin.Any) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Any flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       WHEN type=kotlin.Unit origin=null
         BRANCH
@@ -109,7 +109,7 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
             CONST Int type=kotlin.Int value=-1
       RETURN type=kotlin.Nothing from='testSmartCastToDifferentTypes(Any, Any): Int'
         BLOCK type=kotlin.Int origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any visibility:local flags:val
             GET_VAR 'value-parameter x: Any' type=kotlin.Any origin=null
           WHEN type=kotlin.Int origin=WHEN
             BRANCH
@@ -126,16 +126,16 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST Int type=kotlin.Int value=1
   FUN name:foo visibility:public modality:FINAL <> (x:kotlin.Double) returnType:kotlin.Double flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Double flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Double visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='foo(Double): Double'
         GET_VAR 'value-parameter x: Double' type=kotlin.Double origin=null
   FUN name:testWithPrematureExitInConditionSubexpression visibility:public modality:FINAL <> (x:kotlin.Any) returnType:kotlin.Int flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testWithPrematureExitInConditionSubexpression(Any): Int'
         BLOCK type=kotlin.Int origin=WHEN
-          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any flags:val
+          VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:kotlin.Any visibility:local flags:val
             GET_VAR 'value-parameter x: Any' type=kotlin.Any origin=null
           WHEN type=kotlin.Int origin=WHEN
             BRANCH
@@ -158,4 +158,3 @@ FILE fqName:<root> fileName:/whenByFloatingPoint.kt
             BRANCH
               if: CONST Boolean type=kotlin.Boolean value=true
               then: CONST Int type=kotlin.Int value=1
-

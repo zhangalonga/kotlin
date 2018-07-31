@@ -3,4 +3,3 @@ FILE fqName:<root> fileName:/boxOk.kt
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='box(): String'
         CONST String type=kotlin.String value=OK
-

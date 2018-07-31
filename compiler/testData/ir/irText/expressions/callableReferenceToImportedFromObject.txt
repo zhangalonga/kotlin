@@ -1,6 +1,6 @@
 FILE fqName:test fileName:/callableReferenceToImportedFromObject.kt
   CLASS OBJECT name:Foo modality:FINAL visibility:public flags: superTypes:[kotlin.Any]
-    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:test.Foo flags:
+    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:test.Foo visibility:local flags:
     CONSTRUCTOR visibility:private <> () returnType:test.Foo flags:primary
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
@@ -11,29 +11,29 @@ FILE fqName:test fileName:/callableReferenceToImportedFromObject.kt
           CONST String type=kotlin.String value=
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-a> visibility:public modality:FINAL <> ($this:test.Foo) returnType:kotlin.String flags:
         correspondingProperty: PROPERTY name:a visibility:public modality:FINAL flags:val
-        $this: VALUE_PARAMETER name:<this> type:test.Foo flags:
+        $this: VALUE_PARAMETER name:<this> type:test.Foo visibility:local flags:
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='<get-a>(): String'
             GET_FIELD 'a: String' type=kotlin.String origin=null
               receiver: GET_VAR 'this@Foo: Foo' type=test.Foo origin=null
     FUN name:foo visibility:public modality:FINAL <> ($this:test.Foo) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:test.Foo flags:
+      $this: VALUE_PARAMETER name:<this> type:test.Foo visibility:local flags:
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='foo(): String'
           CONST String type=kotlin.String value=
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
-      VALUE_PARAMETER name:other index:0 type:kotlin.Any? flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
+      VALUE_PARAMETER name:other index:0 type:kotlin.Any? visibility:local flags:
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
       overridden:
         FUN IR_EXTERNAL_DECLARATION_STUB name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String flags:
-      $this: VALUE_PARAMETER name:<this> type:kotlin.Any flags:
+      $this: VALUE_PARAMETER name:<this> type:kotlin.Any visibility:local flags:
   PROPERTY name:test1 visibility:public modality:FINAL flags:val
     FIELD PROPERTY_BACKING_FIELD name:test1 type:kotlin.reflect.KProperty0<kotlin.String> visibility:public flags:final
       EXPRESSION_BODY
@@ -74,4 +74,3 @@ FILE fqName:test fileName:/callableReferenceToImportedFromObject.kt
       BLOCK_BODY
         RETURN type=kotlin.Nothing from='<get-test2a>(): KFunction0<String>'
           GET_FIELD 'test2a: KFunction0<String>' type=kotlin.reflect.KFunction0<kotlin.String> origin=null
-

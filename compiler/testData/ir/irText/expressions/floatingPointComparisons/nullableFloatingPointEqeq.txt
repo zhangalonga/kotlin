@@ -1,15 +1,15 @@
 FILE fqName:<root> fileName:/nullableFloatingPointEqeq.kt
   FUN name:testDD visibility:public modality:FINAL <> (x:kotlin.Double?, y:kotlin.Double?) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Double? flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Double? flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Double? visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Double? visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testDD(Double?, Double?): Boolean'
         CALL 'ieee754equals(Double?, Double?): Boolean' type=kotlin.Boolean origin=EQEQ
           arg0: GET_VAR 'value-parameter x: Double?' type=kotlin.Double? origin=null
           arg1: GET_VAR 'value-parameter y: Double?' type=kotlin.Double? origin=null
   FUN name:testDF visibility:public modality:FINAL <> (x:kotlin.Double?, y:kotlin.Any?) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Double? flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Any? flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Double? visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Any? visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testDF(Double?, Any?): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -20,7 +20,7 @@ FILE fqName:<root> fileName:/nullableFloatingPointEqeq.kt
             then: CALL 'ieee754equals(Double?, Double?): Boolean' type=kotlin.Boolean origin=EQEQ
               arg0: GET_VAR 'value-parameter x: Double?' type=kotlin.Double? origin=null
               arg1: BLOCK type=kotlin.Double? origin=SAFE_CALL
-                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? flags:val
+                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? visibility:local flags:val
                   GET_VAR 'value-parameter y: Any?' type=kotlin.Any? origin=null
                 WHEN type=kotlin.Double? origin=null
                   BRANCH
@@ -38,8 +38,8 @@ FILE fqName:<root> fileName:/nullableFloatingPointEqeq.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:testDI visibility:public modality:FINAL <> (x:kotlin.Double?, y:kotlin.Any?) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Double? flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Any? flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Double? visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Any? visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testDI(Double?, Any?): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -50,7 +50,7 @@ FILE fqName:<root> fileName:/nullableFloatingPointEqeq.kt
             then: CALL 'ieee754equals(Double?, Double?): Boolean' type=kotlin.Boolean origin=EQEQ
               arg0: GET_VAR 'value-parameter x: Double?' type=kotlin.Double? origin=null
               arg1: BLOCK type=kotlin.Double? origin=SAFE_CALL
-                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? flags:val
+                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? visibility:local flags:val
                   GET_VAR 'value-parameter y: Any?' type=kotlin.Any? origin=null
                 WHEN type=kotlin.Double? origin=null
                   BRANCH
@@ -68,8 +68,8 @@ FILE fqName:<root> fileName:/nullableFloatingPointEqeq.kt
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
   FUN name:testDI2 visibility:public modality:FINAL <> (x:kotlin.Any?, y:kotlin.Any?) returnType:kotlin.Boolean flags:
-    VALUE_PARAMETER name:x index:0 type:kotlin.Any? flags:
-    VALUE_PARAMETER name:y index:1 type:kotlin.Any? flags:
+    VALUE_PARAMETER name:x index:0 type:kotlin.Any? visibility:local flags:
+    VALUE_PARAMETER name:y index:1 type:kotlin.Any? visibility:local flags:
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='testDI2(Any?, Any?): Boolean'
         WHEN type=kotlin.Boolean origin=ANDAND
@@ -87,7 +87,7 @@ FILE fqName:<root> fileName:/nullableFloatingPointEqeq.kt
                 then: CONST Boolean type=kotlin.Boolean value=false
             then: CALL 'ieee754equals(Double?, Double?): Boolean' type=kotlin.Boolean origin=EQEQ
               arg0: BLOCK type=kotlin.Double? origin=SAFE_CALL
-                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? flags:val
+                VAR IR_TEMPORARY_VARIABLE name:tmp0_safe_receiver type:kotlin.Any? visibility:local flags:val
                   GET_VAR 'value-parameter x: Any?' type=kotlin.Any? origin=null
                 WHEN type=kotlin.Double? origin=null
                   BRANCH
@@ -107,4 +107,3 @@ FILE fqName:<root> fileName:/nullableFloatingPointEqeq.kt
           BRANCH
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST Boolean type=kotlin.Boolean value=false
-
