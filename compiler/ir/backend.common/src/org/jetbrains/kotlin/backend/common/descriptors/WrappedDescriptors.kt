@@ -81,11 +81,10 @@ abstract class WrappedCallableDescriptor<T : IrDeclaration>: CallableDescriptor,
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override val annotations: Annotations
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val annotations: Annotations = Annotations.EMPTY
 }
 
-class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallableDescriptor<IrValueParameter>() {
+open class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallableDescriptor<IrValueParameter>() {
 
     override val index get() = owner.index
     override val isCrossinline get() = owner.isCrossinline
@@ -102,8 +101,10 @@ class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallabl
         TODO("")
     }
 
-    override fun copy(newOwner: CallableDescriptor, newName: Name, newIndex: Int): ValueParameterDescriptor {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun copy(newOwner: CallableDescriptor, newName: Name, newIndex: Int) = object : WrappedValueParameterDescriptor() {
+        override fun getContainingDeclaration() = newOwner as FunctionDescriptor
+        override fun getName() = newName
+        override val index = newIndex
     }
 
 
@@ -118,7 +119,7 @@ class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallabl
     }
 }
 
-class WrappedTypeParameterDescriptor: TypeParameterDescriptor, WrappedCallableDescriptor<IrTypeParameter>() {
+open class WrappedTypeParameterDescriptor: TypeParameterDescriptor, WrappedCallableDescriptor<IrTypeParameter>() {
     override fun getName() = owner.name
 
     override fun isReified(): Boolean {
@@ -148,7 +149,7 @@ class WrappedTypeParameterDescriptor: TypeParameterDescriptor, WrappedCallableDe
 
 }
 
-class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescriptor<IrVariable>() {
+open class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescriptor<IrVariable>() {
 
     override fun getContainingDeclaration() = (owner.parent as IrFunction).descriptor
     override fun getType() = owner.type.toKotlinType()
@@ -172,16 +173,16 @@ class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescriptor<I
     }
 }
 
-class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallableDescriptor<IrSimpleFunction>() {
+open class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallableDescriptor<IrSimpleFunction>() {
     override fun getOverriddenDescriptors() = owner.overriddenSymbols.map { it.descriptor }
     override fun getContainingDeclaration() = (owner.parent as IrDeclaration).descriptor
     override fun getModality() = owner.modality
     override fun getName() = owner.name
     override fun getVisibility() = owner.visibility
     override fun getReturnType() = owner.returnType.toKotlinType()
-    override fun getDispatchReceiverParameter() = owner.dispatchReceiverParameter?.descriptor as ReceiverParameterDescriptor
+    override fun getDispatchReceiverParameter() = owner.dispatchReceiverParameter?.descriptor as? ReceiverParameterDescriptor
     override fun getTypeParameters() = owner.typeParameters.map { it.descriptor }
-    override fun getValueParameters() = owner.valueParameters.map { it.descriptor as ValueParameterDescriptor }.toMutableList()
+    override fun getValueParameters() = owner.valueParameters.mapNotNull { it.descriptor as? ValueParameterDescriptor }.toMutableList()
     override fun isExternal() = owner.isExternal
     override fun isSuspend() = owner.isSuspend
     override fun isTailrec() = owner.isTailrec
@@ -200,7 +201,7 @@ class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallabl
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getKind() = CallableMemberDescriptor.Kind.DECLARATION
+    override fun getKind() = CallableMemberDescriptor.Kind.SYNTHESIZED
 
     override fun isHiddenToOvercomeSignatureClash(): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -233,11 +234,11 @@ class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallabl
     }
 }
 
-class WrappedClassConstructorDescriptor: ClassConstructorDescriptor, WrappedCallableDescriptor<IrConstructor>() {
+open class WrappedClassConstructorDescriptor: ClassConstructorDescriptor, WrappedCallableDescriptor<IrConstructor>() {
     override fun getContainingDeclaration() = (owner.parent as IrClass).descriptor
 
     override fun getTypeParameters() = owner.typeParameters.map { it.descriptor }
-    override fun getValueParameters() = owner.valueParameters.map { it.descriptor as ValueParameterDescriptor }.toMutableList()
+    override fun getValueParameters() = owner.valueParameters.mapNotNull { it.descriptor as? ValueParameterDescriptor }.toMutableList()
 
     override fun getOriginal() = this
 
