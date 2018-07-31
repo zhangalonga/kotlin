@@ -54,7 +54,6 @@ const val COROUTINE_LABEL_FIELD_NAME = "label"
 const val SUSPEND_FUNCTION_CREATE_METHOD_NAME = "create"
 const val DO_RESUME_METHOD_NAME = "doResume"
 const val INVOKE_SUSPEND_METHOD_NAME = "invokeSuspend"
-const val DATA_FIELD_NAME = "data"
 const val EXCEPTION_FIELD_NAME = "exception"
 
 fun LanguageVersionSettings.isResumeImplMethodName(name: String) =
@@ -62,6 +61,8 @@ fun LanguageVersionSettings.isResumeImplMethodName(name: String) =
         name == INVOKE_SUSPEND_METHOD_NAME
     else
         name == DO_RESUME_METHOD_NAME
+
+fun LanguageVersionSettings.dataFieldName(): String = if (isReleaseCoroutines()) "result" else "data"
 
 fun isResumeImplMethodNameFromAnyLanguageSettings(name: String) = name == INVOKE_SUSPEND_METHOD_NAME || name == DO_RESUME_METHOD_NAME
 

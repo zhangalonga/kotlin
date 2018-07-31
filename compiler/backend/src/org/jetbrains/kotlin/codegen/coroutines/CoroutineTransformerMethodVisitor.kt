@@ -304,7 +304,7 @@ class CoroutineTransformerMethodVisitor(
             visitLabel(afterCoroutineStateCreated)
 
             visitVarInsn(Opcodes.ALOAD, continuationIndex)
-            getfield(classBuilderForCoroutineState.thisName, DATA_FIELD_NAME, AsmTypes.OBJECT_TYPE.descriptor)
+            getfield(classBuilderForCoroutineState.thisName, languageVersionSettings.dataFieldName(), AsmTypes.OBJECT_TYPE.descriptor)
             visitVarInsn(Opcodes.ASTORE, dataIndex)
 
             if (!languageVersionSettings.isReleaseCoroutines()) {

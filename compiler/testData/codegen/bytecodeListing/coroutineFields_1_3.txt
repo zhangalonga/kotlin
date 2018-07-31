@@ -1,8 +1,8 @@
 @kotlin.Metadata
 final class Controller$multipleSuspensions$1 {
     field L$0: java.lang.Object
-    synthetic field data: java.lang.Object
     field label: int
+    synthetic field result: java.lang.Object
     synthetic final field this$0: Controller
     inner class Controller$multipleSuspensions$1
     method <init>(p0: Controller, p1: kotlin.coroutines.Continuation): void
@@ -12,8 +12,8 @@ final class Controller$multipleSuspensions$1 {
 @kotlin.Metadata
 final class Controller$nonTailCall$1 {
     field L$0: java.lang.Object
-    synthetic field data: java.lang.Object
     field label: int
+    synthetic field result: java.lang.Object
     synthetic final field this$0: Controller
     inner class Controller$nonTailCall$1
     method <init>(p0: Controller, p1: kotlin.coroutines.Continuation): void
