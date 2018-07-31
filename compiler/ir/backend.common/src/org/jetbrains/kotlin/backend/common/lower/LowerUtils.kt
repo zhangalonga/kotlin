@@ -55,16 +55,16 @@ class DeclarationIrBuilder(
 )
 
 abstract class AbstractVariableRemapper : IrElementTransformerVoid() {
-    protected abstract fun remapVariable(value: ValueDescriptor): IrValueParameter?
+    protected abstract fun remapVariable(value: IrValueDeclaration): IrValueParameter?
 
     override fun visitGetValue(expression: IrGetValue): IrExpression =
-        remapVariable(expression.descriptor)?.let {
+        remapVariable(expression.symbol.owner)?.let {
             IrGetValueImpl(expression.startOffset, expression.endOffset, it.type, it.symbol, expression.origin)
         } ?: expression
 }
 
-class VariableRemapper(val mapping: Map<ValueDescriptor, IrValueParameter>) : AbstractVariableRemapper() {
-    override fun remapVariable(value: ValueDescriptor): IrValueParameter? =
+class VariableRemapper(val mapping: Map<IrValueParameter, IrValueParameter>) : AbstractVariableRemapper() {
+    override fun remapVariable(value: IrValueDeclaration): IrValueParameter? =
         mapping[value]
 }
 

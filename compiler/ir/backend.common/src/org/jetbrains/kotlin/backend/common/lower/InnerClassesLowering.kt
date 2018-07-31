@@ -10,17 +10,16 @@ import org.jetbrains.kotlin.backend.common.BodyLoweringPass
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
-import org.jetbrains.kotlin.descriptors.ValueDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
-import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.declarations.impl.IrConstructorImpl
-import org.jetbrains.kotlin.ir.declarations.impl.IrFieldImpl
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrConstructor
+import org.jetbrains.kotlin.ir.declarations.IrField
+import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
-import org.jetbrains.kotlin.ir.util.createParameterDeclarations
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.dump
 import org.jetbrains.kotlin.ir.util.transformFlat
@@ -29,8 +28,6 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.ImplicitClassReceiver
 import java.util.*
 
 class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
-    object FIELD_FOR_OUTER_THIS : IrDeclarationOriginImpl("FIELD_FOR_OUTER_THIS")
-
     override fun lower(irClass: IrClass) {
         InnerClassTransformer(irClass).lowerInnerClass()
     }
@@ -38,7 +35,7 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
     private inner class InnerClassTransformer(val irClass: IrClass) {
         lateinit var outerThisField: IrField
 
-        val oldConstructorParameterToNew = HashMap<ValueDescriptor, IrValueParameter>()
+        val oldConstructorParameterToNew = HashMap<IrValueParameter, IrValueParameter>()
         val class2Symbol = HashMap<ClassDescriptor, IrClass>()
 
         fun lowerInnerClass() {
@@ -70,18 +67,20 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
         }
 
         private fun createOuterThisField() {
-            val fieldSymbol = context.descriptorsFactory.getOuterThisFieldSymbol(irClass)
-            irClass.declarations.add(
-                IrFieldImpl(
-                    irClass.startOffset, irClass.endOffset,
-                    FIELD_FOR_OUTER_THIS,
-                    fieldSymbol,
-                    irClass.defaultType
-                    ).also {
-                    it.parent = irClass
-                    outerThisField = it
-                }
-            )
+            val field = context.descriptorsFactory.getOuterThisFieldSymbol(irClass)
+            outerThisField = field.backingField!!
+            irClass.declarations += field
+//            irClass.declarations.add(
+//                IrFieldImpl(
+//                    irClass.startOffset, irClass.endOffset,
+//                    FIELD_FOR_OUTER_THIS,
+//                    fieldSymbol,
+//                    irClass.defaultType
+//                    ).also {
+//                    it.parent = irClass
+//                    outerThisField = it
+//                }
+//            )
         }
 
         private fun lowerConstructors() {
@@ -97,22 +96,26 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
             val startOffset = irConstructor.startOffset
             val endOffset = irConstructor.endOffset
 
-            val newSymbol = context.descriptorsFactory.getInnerClassConstructorWithOuterThisParameter(irConstructor)
-            val loweredConstructor = IrConstructorImpl(
-                startOffset, endOffset,
-                irConstructor.origin, // TODO special origin for lowered inner class constructors?
-                newSymbol,
-                null
-            ).apply {
-                returnType = irConstructor.returnType
-            }
+            val loweredConstructor = context.descriptorsFactory.getInnerClassConstructorWithOuterThisParameter(irConstructor)
+//            val loweredConstructor = IrConstructorImpl(
+//                startOffset, endOffset,
+//                irConstructor.origin, // TODO special origin for lowered inner class constructors?
+//                newSymbol,
+//                null
+//            ).apply {
+//                returnType = irConstructor.returnType
+//            }
 
-            loweredConstructor.createParameterDeclarations()
+//            loweredConstructor.createParameterDeclarations()
             val outerThisValueParameter = loweredConstructor.valueParameters[0].symbol
 
-            irConstructor.descriptor.valueParameters.forEach { oldValueParameter ->
-                oldConstructorParameterToNew[oldValueParameter] = loweredConstructor.valueParameters[oldValueParameter.index + 1]
+            irConstructor.valueParameters.forEach { old ->
+                oldConstructorParameterToNew[old] = loweredConstructor.valueParameters[old.index + 1]
             }
+
+//            irConstructor.descriptor.valueParameters.forEach { oldValueParameter ->
+//                oldConstructorParameterToNew[oldValueParameter] = loweredConstructor.valueParameters[oldValueParameter.index + 1]
+//            }
 
             val blockBody = irConstructor.body as? IrBlockBody ?: throw AssertionError("Unexpected constructor body: ${irConstructor.body}")
 
@@ -139,7 +142,7 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
             }
 
             loweredConstructor.body = blockBody
-            loweredConstructor.parent = irConstructor.parent
+//            loweredConstructor.parent = irConstructor.parent
             return loweredConstructor
         }
 
@@ -177,7 +180,7 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
                         }
 
                         val outerThisField = context.descriptorsFactory.getOuterThisFieldSymbol(innerClass)
-                        irThis = IrGetFieldImpl(startOffset, endOffset, outerThisField, innerClass.defaultType, irThis, origin)
+                        irThis = IrGetFieldImpl(startOffset, endOffset, outerThisField.backingField!!.symbol, innerClass.defaultType, irThis, origin)
 
                         val outer = innerClass.parent
                         innerClass = outer as? IrClass ?:
@@ -215,7 +218,7 @@ class InnerClassConstructorCallsLowering(val context: BackendContext) : BodyLowe
 
                 val newCallee = context.descriptorsFactory.getInnerClassConstructorWithOuterThisParameter(callee.owner)
                 val newCall = IrCallImpl(
-                    expression.startOffset, expression.endOffset, expression.type, newCallee, newCallee.descriptor,
+                    expression.startOffset, expression.endOffset, expression.type, newCallee.symbol, newCallee.descriptor,
                     0, // TODO type arguments map
                     expression.origin
                 )
@@ -237,12 +240,12 @@ class InnerClassConstructorCallsLowering(val context: BackendContext) : BodyLowe
 
                 val newCallee = context.descriptorsFactory.getInnerClassConstructorWithOuterThisParameter(classConstructor)
                 val newCall = IrDelegatingConstructorCallImpl(
-                    expression.startOffset, expression.endOffset, context.irBuiltIns.unitType, newCallee, newCallee.descriptor,
+                    expression.startOffset, expression.endOffset, context.irBuiltIns.unitType, newCallee.symbol, newCallee.descriptor,
                     classConstructor.typeParameters.size
                 ).apply { copyTypeArgumentsFrom(expression) }
 
                 newCall.putValueArgument(0, dispatchReceiver)
-                for (i in 1..newCallee.descriptor.valueParameters.lastIndex) {
+                for (i in 1..newCallee.valueParameters.lastIndex) {
                     newCall.putValueArgument(i, expression.getValueArgument(i - 1))
                 }
 
