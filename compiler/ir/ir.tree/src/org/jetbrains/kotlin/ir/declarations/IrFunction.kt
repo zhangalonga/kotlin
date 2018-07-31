@@ -30,7 +30,6 @@ interface IrFunction : IrDeclaration, IrTypeParametersContainer, IrSymbolOwner, 
     override val symbol: IrFunctionSymbol
 
     val name: Name
-    val visibility: Visibility
     val isInline: Boolean // NB: there's an inline constructor for Array and each primitive array class
     val isExternal: Boolean
     var returnType: IrType

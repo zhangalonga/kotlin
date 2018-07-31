@@ -29,7 +29,6 @@ interface IrClass : IrSymbolDeclaration<IrClassSymbol>, IrDeclarationContainer, 
 
     val name: Name
     val kind: ClassKind
-    val visibility: Visibility
     val modality: Modality
     val isCompanion: Boolean
     val isInner: Boolean

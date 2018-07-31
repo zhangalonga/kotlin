@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.ir.declarations.impl
 
 import org.jetbrains.kotlin.descriptors.ParameterDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
+import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
@@ -86,6 +87,7 @@ class IrValueParameterImpl(
     }
 
     override val descriptor: ParameterDescriptor = symbol.descriptor
+    override val visibility = Visibilities.LOCAL
 
     init {
         symbol.bind(this)

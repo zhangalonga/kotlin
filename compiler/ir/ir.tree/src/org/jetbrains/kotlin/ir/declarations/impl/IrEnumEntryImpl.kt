@@ -71,6 +71,7 @@ class IrEnumEntryImpl(
     override val descriptor: ClassDescriptor get() = symbol.descriptor
     override var correspondingClass: IrClass? = null
     override var initializerExpression: IrExpression? = null
+    override val visibility = descriptor.visibility
 
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
         return visitor.visitEnumEntry(this, data)

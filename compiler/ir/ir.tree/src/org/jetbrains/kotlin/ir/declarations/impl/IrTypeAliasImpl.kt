@@ -31,6 +31,8 @@ class IrTypeAliasImpl(
     IrDeclarationBase(startOffset, endOffset, origin),
     IrTypeAlias {
 
+    override val visibility = descriptor.visibility
+
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
         return visitor.visitTypeAlias(this, data)
     }

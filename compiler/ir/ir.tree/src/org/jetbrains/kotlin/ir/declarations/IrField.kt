@@ -17,7 +17,6 @@ interface IrField : IrSymbolDeclaration<IrFieldSymbol> {
 
     val name: Name
     val type: IrType
-    val visibility: Visibility
     val isFinal: Boolean
     val isExternal: Boolean
 

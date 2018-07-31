@@ -27,7 +27,6 @@ interface IrProperty : IrDeclaration {
 
     val name: Name
     val modality: Modality
-    val visibility: Visibility
     val isVar: Boolean
     val isConst: Boolean
     val isLateinit: Boolean
