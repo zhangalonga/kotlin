@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.backend.jvm.lower
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.lower.DECLARATION_ORIGIN_FUNCTION_FOR_DEFAULT_PARAMETER
 import org.jetbrains.kotlin.backend.common.lower.InitializersLowering.Companion.clinitName
-import org.jetbrains.kotlin.backend.common.lower.VariableRemapper
 import org.jetbrains.kotlin.backend.jvm.JvmLoweredDeclarationOrigin
 import org.jetbrains.kotlin.backend.jvm.descriptors.DefaultImplsClassDescriptorImpl
 import org.jetbrains.kotlin.codegen.AsmUtil
@@ -149,5 +148,5 @@ internal fun FunctionDescriptor.createFunctionAndMapVariables(
                             oldFunction.descriptor.valueParameters
                     ).zip(valueParameters).toMap()
 
-        body?.transform(VariableRemapper(mapping), null)
+//        body?.transform(VariableRemapper(mapping), null)
     }

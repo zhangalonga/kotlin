@@ -187,16 +187,18 @@ class EnumClassLowering(val context: JvmBackendContext) : ClassLoweringPass {
         }
 
         private fun createFieldForEnumEntry(enumEntry: IrEnumEntry): IrField {
-            val fieldSymbol = context.descriptorsFactory.getSymbolForEnumEntry(enumEntry.symbol)
 
-            return IrFieldImpl(
-                enumEntry.startOffset, enumEntry.endOffset, JvmLoweredDeclarationOrigin.FIELD_FOR_ENUM_ENTRY,
-                fieldSymbol, enumEntry.initializerExpression!!.type
-            ).also {
-                it.initializer = IrExpressionBodyImpl(enumEntry.initializerExpression!!)
-                enumEntryFields.add(it)
-                enumEntriesByField[it] = enumEntry
-            }
+            TODO()
+//            val fieldSymbol = context.descriptorsFactory.getSymbolForEnumEntry(enumEntry.symbol)
+//
+//            return IrFieldImpl(
+//                enumEntry.startOffset, enumEntry.endOffset, JvmLoweredDeclarationOrigin.FIELD_FOR_ENUM_ENTRY,
+//                fieldSymbol, enumEntry.initializerExpression!!.type
+//            ).also {
+//                it.initializer = IrExpressionBodyImpl(enumEntry.initializerExpression!!)
+//                enumEntryFields.add(it)
+//                enumEntriesByField[it] = enumEntry
+//            }
         }
 
         private fun setupSynthesizedEnumClassMembers() {
