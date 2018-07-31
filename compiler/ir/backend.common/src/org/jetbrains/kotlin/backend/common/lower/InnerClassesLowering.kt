@@ -8,9 +8,6 @@ package org.jetbrains.kotlin.backend.common.lower
 import org.jetbrains.kotlin.backend.common.BackendContext
 import org.jetbrains.kotlin.backend.common.BodyLoweringPass
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
-import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
@@ -23,8 +20,8 @@ import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.dump
 import org.jetbrains.kotlin.ir.util.transformFlat
-import org.jetbrains.kotlin.ir.visitors.*
-import org.jetbrains.kotlin.resolve.scopes.receivers.ImplicitClassReceiver
+import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
+import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import java.util.*
 
 class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
@@ -36,35 +33,35 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
         lateinit var outerThisField: IrField
 
         val oldConstructorParameterToNew = HashMap<IrValueParameter, IrValueParameter>()
-        val class2Symbol = HashMap<ClassDescriptor, IrClass>()
+        val class2Symbol = HashMap<IrClass, IrClass>()
 
         fun lowerInnerClass() {
             if (!irClass.isInner) return
-            rememberClassSymbols()
+//            rememberClassSymbols()
 
             createOuterThisField()
             lowerConstructors()
             lowerConstructorParameterUsages()
             lowerOuterThisReferences()
         }
-
-        //TODO: rewrite: this methods is required to 'getClassForImplicitThis' method
-        private fun rememberClassSymbols() {
-            var current = irClass.parent as? IrClass
-            while (current != null) {
-                class2Symbol[current.descriptor] = current
-                current = current.parent as? IrClass
-            }
-            irClass.acceptVoid(object : IrElementVisitorVoid {
-                override fun visitElement(element: IrElement) {
-                    element.acceptChildrenVoid(this)
-                }
-
-                override fun visitClass(declaration: IrClass) {
-                    return super.visitClass(declaration).also { class2Symbol[declaration.descriptor] = declaration }
-                }
-            })
-        }
+//
+//        //TODO: rewrite: this methods is required to 'getClassForImplicitThis' method
+//        private fun rememberClassSymbols() {
+//            var current = irClass.parent as? IrClass
+//            while (current != null) {
+//                class2Symbol[current] = current
+//                current = current.parent as? IrClass
+//            }
+//            irClass.acceptVoid(object : IrElementVisitorVoid {
+//                override fun visitElement(element: IrElement) {
+//                    element.acceptChildrenVoid(this)
+//                }
+//
+//                override fun visitClass(declaration: IrClass) {
+//                    return super.visitClass(declaration).also { class2Symbol[declaration] = declaration }
+//                }
+//            })
+//        }
 
         private fun createOuterThisField() {
             val field = context.descriptorsFactory.getOuterThisFieldSymbol(irClass)
@@ -193,13 +190,25 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
         }
 
         private fun IrValueSymbol.getClassForImplicitThis(): IrClass? {
-            val descriptor1 = this.descriptor
-            if (descriptor1 is ReceiverParameterDescriptor) {
-                val receiverValue = descriptor1.value
-                if (receiverValue is ImplicitClassReceiver) {
-                    return class2Symbol[receiverValue.classDescriptor]
-                }
-            }
+
+
+            return owner.parent as? IrClass
+
+//            if (this is IrValueParameterSymbol) {
+//                val declaration = owner
+//                if (declaration.index == -1) {
+//                    if (declaration.name.isSpecial) {
+//                        return declaration.parent as IrClass
+//                    }
+//                }
+//            }
+//            val descriptor1 = this.descriptor
+//            if (descriptor1 is ReceiverParameterDescriptor) {
+//                val receiverValue = descriptor1.value
+//                if (receiverValue is ImplicitClassReceiver) {
+//                    return class2Symbol[receiverValue.classDescriptor]
+//                }
+//            }
             return null
         }
     }
