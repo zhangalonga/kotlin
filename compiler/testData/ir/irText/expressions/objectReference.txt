@@ -46,7 +46,7 @@ FILE fqName:<root> fileName:/objectReference.kt
         BLOCK_BODY
           DELEGATING_CONSTRUCTOR_CALL 'constructor Any()'
           INSTANCE_INITIALIZER_CALL classDescriptor='Nested'
-      ANONYMOUS_INITIALIZER Nested visibility:public
+      ANONYMOUS_INITIALIZER Nested visibility:local
         BLOCK_BODY
           CALL '<set-counter>(Int): Unit' type=kotlin.Unit origin=EQ
             $this: GET_OBJECT 'Z' type=Z

@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.ir.declarations.impl
 
 import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
-import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
 import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
@@ -69,8 +68,6 @@ class IrTypeParameterImpl(
     override val descriptor: TypeParameterDescriptor get() = symbol.descriptor
 
     override val superTypes: MutableList<IrType> = SmartList()
-
-    override val visibility = Visibilities.LOCAL
 
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R =
         visitor.visitTypeParameter(this, data)

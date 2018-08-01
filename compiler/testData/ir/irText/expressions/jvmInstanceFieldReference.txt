@@ -5,7 +5,7 @@ FILE fqName:<root> fileName:/Derived.kt
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'constructor Base()'
         INSTANCE_INITIALIZER_CALL classDescriptor='Derived'
-    ANONYMOUS_INITIALIZER Derived visibility:public
+    ANONYMOUS_INITIALIZER Derived visibility:local
       BLOCK_BODY
         SET_FIELD 'value: Int' type=kotlin.Unit origin=EQ
           receiver: GET_VAR 'this@Derived: Derived' type=Derived origin=null

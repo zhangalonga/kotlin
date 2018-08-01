@@ -99,7 +99,7 @@ FILE fqName:<root> fileName:/initVar.kt
           SET_FIELD 'x: Int' type=kotlin.Unit origin=null
             receiver: GET_VAR 'this@TestInitVarInInitBlock: TestInitVarInInitBlock' type=TestInitVarInInitBlock origin=null
             value: GET_VAR 'value-parameter <set-?>: Int' type=kotlin.Int origin=null
-    ANONYMOUS_INITIALIZER TestInitVarInInitBlock visibility:public
+    ANONYMOUS_INITIALIZER TestInitVarInInitBlock visibility:local
       BLOCK_BODY
         CALL '<set-x>(Int): Unit' type=kotlin.Unit origin=EQ
           $this: GET_VAR 'this@TestInitVarInInitBlock: TestInitVarInInitBlock' type=TestInitVarInInitBlock origin=null
@@ -174,7 +174,7 @@ FILE fqName:<root> fileName:/initVar.kt
           SET_FIELD 'x: Int' type=kotlin.Unit origin=EQ
             receiver: GET_VAR 'this@TestInitVarWithCustomSetterWithExplicitCtor: TestInitVarWithCustomSetterWithExplicitCtor' type=TestInitVarWithCustomSetterWithExplicitCtor origin=null
             value: GET_VAR 'value-parameter value: Int' type=kotlin.Int origin=null
-    ANONYMOUS_INITIALIZER TestInitVarWithCustomSetterWithExplicitCtor visibility:public
+    ANONYMOUS_INITIALIZER TestInitVarWithCustomSetterWithExplicitCtor visibility:local
       BLOCK_BODY
         CALL '<set-x>(Int): Unit' type=kotlin.Unit origin=EQ
           $this: GET_VAR 'this@TestInitVarWithCustomSetterWithExplicitCtor: TestInitVarWithCustomSetterWithExplicitCtor' type=TestInitVarWithCustomSetterWithExplicitCtor origin=null

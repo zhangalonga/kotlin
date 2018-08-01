@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.ir.declarations.impl
 
 import org.jetbrains.kotlin.descriptors.VariableDescriptorWithAccessors
-import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrLocalDelegatedProperty
@@ -76,7 +75,6 @@ class IrLocalDelegatedPropertyImpl(
         this.setter = setter
     }
 
-    override val visibility = Visibilities.LOCAL
     override lateinit var delegate: IrVariable
     override lateinit var getter: IrFunction
     override var setter: IrFunction? = null

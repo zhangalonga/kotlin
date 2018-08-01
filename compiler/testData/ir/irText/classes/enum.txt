@@ -352,7 +352,7 @@ FILE fqName:<root> fileName:/enum.kt
               RETURN type=kotlin.Nothing from='<get-z>(): Int'
                 GET_FIELD 'z: Int' type=kotlin.Int origin=null
                   receiver: GET_VAR 'this@TEST2: TEST2' type=TestEnum4.TEST2 origin=null
-        ANONYMOUS_INITIALIZER TEST2 visibility:public
+        ANONYMOUS_INITIALIZER TEST2 visibility:local
           BLOCK_BODY
             SET_FIELD 'z: Int' type=kotlin.Unit origin=null
               receiver: GET_VAR 'this@TEST2: TEST2' type=TestEnum4.TEST2 origin=null

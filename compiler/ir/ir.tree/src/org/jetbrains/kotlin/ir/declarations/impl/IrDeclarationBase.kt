@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.ir.declarations.impl
 
+import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.ir.IrElementBase
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
@@ -28,6 +29,8 @@ abstract class IrDeclarationBase(
     override val origin: IrDeclarationOrigin
 ) : IrElementBase(startOffset, endOffset),
     IrDeclaration {
+
+    override val visibility get() = Visibilities.LOCAL
 
     override lateinit var parent: IrDeclarationParent
 

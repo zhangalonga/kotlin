@@ -44,7 +44,7 @@ FILE fqName:<root> fileName:/jvmStaticFieldReference.kt
           RETURN type=kotlin.Nothing from='<get-test>(): Int'
             GET_FIELD 'test: Int' type=kotlin.Int origin=null
               receiver: GET_VAR 'this@TestClass: TestClass' type=TestClass origin=null
-    ANONYMOUS_INITIALIZER TestClass visibility:public
+    ANONYMOUS_INITIALIZER TestClass visibility:local
       BLOCK_BODY
         CALL 'println(String!): Unit' type=kotlin.Unit origin=null
           $this: GET_FIELD 'out: PrintStream!' type=java.io.PrintStream? origin=GET_PROPERTY

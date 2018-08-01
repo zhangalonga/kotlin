@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.ir.declarations.impl
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
@@ -69,9 +70,9 @@ class IrEnumEntryImpl(
     }
 
     override val descriptor: ClassDescriptor get() = symbol.descriptor
+    override val visibility get() = Visibilities.PUBLIC
     override var correspondingClass: IrClass? = null
     override var initializerExpression: IrExpression? = null
-    override val visibility = descriptor.visibility
 
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
         return visitor.visitEnumEntry(this, data)

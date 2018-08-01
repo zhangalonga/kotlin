@@ -44,7 +44,7 @@ FILE fqName:<root> fileName:/objectWithInitializers.kt
           RETURN type=kotlin.Nothing from='<get-y>(): Int'
             GET_FIELD 'y: Int' type=kotlin.Int origin=null
               receiver: GET_VAR 'this@Test: Test' type=Test origin=null
-    ANONYMOUS_INITIALIZER Test visibility:public
+    ANONYMOUS_INITIALIZER Test visibility:local
       BLOCK_BODY
         SET_FIELD 'y: Int' type=kotlin.Unit origin=null
           receiver: GET_VAR 'this@Test: Test' type=Test origin=null

@@ -56,7 +56,6 @@ class IrAnonymousInitializerImpl(
     }
 
     override val descriptor: ClassDescriptor get() = symbol.descriptor
-    override val visibility = descriptor.visibility
 
     override lateinit var body: IrBlockBody
 
