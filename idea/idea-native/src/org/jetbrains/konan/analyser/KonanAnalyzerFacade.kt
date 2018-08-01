@@ -1,12 +1,11 @@
 package org.jetbrains.konan.analyser
 
-import com.intellij.openapi.module.Module
 import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.libraries.Library
 import com.intellij.openapi.vfs.LocalFileSystem
 import org.jetbrains.konan.KotlinWorkaroundUtil.*
 import org.jetbrains.konan.analyser.index.KonanDescriptorManager
-import org.jetbrains.konan.settings.KonanPaths
 import org.jetbrains.kotlin.analyzer.*
 import org.jetbrains.kotlin.backend.konan.KonanPlatform
 import org.jetbrains.kotlin.backend.konan.descriptors.createForwardDeclarationsModule
@@ -22,8 +21,8 @@ import org.jetbrains.kotlin.resolve.BindingTraceContext
 import org.jetbrains.kotlin.resolve.TargetEnvironment
 import org.jetbrains.kotlin.resolve.TargetPlatform
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
-import org.jetbrains.kotlin.storage.StorageManager
-import java.nio.file.Path
+import java.io.File
+import java.net.URI
 
 /**
  * @author Alefas
@@ -45,8 +44,8 @@ class KonanAnalyzerFacade : ResolverForModuleFactory() {
 
     val (syntheticFiles, moduleContentScope) = destructModuleContent(moduleContent)
     val project = getProject(moduleContext)
-    val declarationProviderFactory = createDeclarationProviderFactory(project, moduleContext, syntheticFiles, moduleContent.moduleInfo,
-                                                                      moduleContentScope)
+    val declarationProviderFactory = createDeclarationProviderFactory(project, moduleContext, syntheticFiles,
+                                                                      moduleContent.moduleInfo, moduleContentScope)
 
     val container = createContainerForLazyResolve(
       moduleContext,
@@ -60,75 +59,69 @@ class KonanAnalyzerFacade : ResolverForModuleFactory() {
 
     val packageFragmentProvider = container.get<ResolveSession>().packageFragmentProvider
 
-    val konanPaths = KonanPaths.getInstance(project)
-    val libraryPaths = konanPaths.libraryPaths().toMutableList()
-    libraryPaths.addAll(konanPaths.konanPlatformLibraries())
-
     val moduleInfo = moduleContent.moduleInfo as? ModuleProductionSourceInfo
     val module = moduleInfo?.let { getModule(it) }
 
-    fun setLibraryForDescriptor(path: Path, descriptor: ModuleDescriptorImpl) {
-      if (module == null) return
-      val library = findLibrary(module, path) ?: return
-      //todo: replace reflection by changes to kotlin-native?
-      descriptor.setField("capabilities", { oldValue ->
-        val capabilities = oldValue as Map<*, *>
-        val libraryInfo = createLibraryInfo(project, library)
-        capabilities + Pair(ModuleInfo.Capability, libraryInfo)
-      })
-    }
+    fun createLibraryDescriptor(library: Library): ModuleDescriptorImpl? {
 
-    fun createDescriptor(path: Path): ModuleDescriptorImpl? {
-      val file = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile())
-      return if (file != null && file.exists()) {
-        val descriptor = KonanDescriptorManager.INSTANCE.getDescriptor(file, languageVersionSettings)
-        setLibraryForDescriptor(path, descriptor)
-        descriptor
+      val libraryPath = library.getUrls(OrderRootType.CLASSES).map {
+        // cut off the schema ("jar:///" for ZIP files or "file:///" for directories)
+        // if this is a .klib file, then remove the rightmost part of the path that goes after the name of the file: "!/..."
+        File(URI(it).path.replaceAfterLast(".klib", ""))
+      }.first() // first() because a library should have one location
+
+      val virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(libraryPath)
+
+      return if (virtualFile != null && virtualFile.exists()) {
+        val libraryDescriptor = KonanDescriptorManager.INSTANCE.getDescriptor(virtualFile, languageVersionSettings)
+
+        //todo: replace reflection by changes to kotlin-native?
+        libraryDescriptor.setField("capabilities") { oldValue ->
+          val capabilities = oldValue as Map<*, *>
+          val libraryInfo = createLibraryInfo(project, library)
+          capabilities + Pair(ModuleInfo.Capability, libraryInfo)
+        }
+
+        libraryDescriptor
       }
       else null
     }
 
-    val descriptors = libraryPaths.mapNotNull(::createDescriptor)
-    val stdlibDescriptor = konanPaths.konanStdlib()?.let(::createDescriptor)
+    val libraryDescriptors = mutableListOf<ModuleDescriptorImpl>()
+    var stdlibDescriptor: ModuleDescriptorImpl? = null
 
-    val dependencies = descriptors.toMutableList()
-    if (stdlibDescriptor != null)
-      dependencies.add(stdlibDescriptor)
-
-    // Create module for handling `cnames.structs` opaque declarations. It should be singleton and last dependency in the list.
-    val builtIns = moduleContext.module.builtIns
-    val storageManager: StorageManager = moduleContext.storageManager
-    val forwardDeclarationsModule = createForwardDeclarationsModule(builtIns, storageManager)
-
-    for (descriptor in descriptors) {
-      descriptor.setField("dependencies", { null })
-      descriptor.setDependencies(descriptor, stdlibDescriptor!!, forwardDeclarationsModule)
+    if (module != null) {
+      ModuleRootManager.getInstance(module).orderEntries().forEachLibrary { library ->
+        createLibraryDescriptor(library)?.also {
+          libraryDescriptors.add(it)
+          if (library.name?.substringAfter(": ") == "stdlib" ) {
+            stdlibDescriptor = it
+          }
+        }
+        true // continue the loop while there are more libs
+      }
     }
 
-    stdlibDescriptor?.let {
-      it.setField("dependencies", { null })
-      it.setDependencies(listOf(it))
+    // Create a module for handling `cnames.structs` opaque declarations. It should be a singleton and the last dependency in the list.
+    val forwardDeclarationsDescriptor = createForwardDeclarationsModule(moduleContext.module.builtIns, moduleContext.storageManager)
+
+    for (libraryDescriptor in libraryDescriptors) {
+      libraryDescriptor.setField("dependencies") { null }
+
+      val dependencies = mutableListOf(libraryDescriptor)
+      if (stdlibDescriptor != null && stdlibDescriptor != libraryDescriptor) {
+        // don't add stdlib if it's in fact absent, or if it's the current library on the loop
+        dependencies.add(stdlibDescriptor!!)
+      }
+      dependencies.add(forwardDeclarationsDescriptor)
+
+      libraryDescriptor.setDependencies(dependencies)
     }
 
     val fragmentProviders = mutableListOf(packageFragmentProvider)
-    descriptors.mapTo(fragmentProviders) { it.packageFragmentProvider }
-    fragmentProviders.add(forwardDeclarationsModule.packageFragmentProvider)
-
+    libraryDescriptors.mapTo(fragmentProviders) { it.packageFragmentProvider }
+    fragmentProviders.add(forwardDeclarationsDescriptor.packageFragmentProvider)
     return ResolverForModule(CompositePackageFragmentProvider(fragmentProviders), container)
-  }
-
-  private fun findLibrary(module: Module, path: Path): Library? {
-    var lib: Library? = null
-    ModuleRootManager.getInstance(module).orderEntries().forEachLibrary {
-      if (it.name?.substringAfter(": ") == path.fileName.toString()) {
-        lib = it
-        false
-      }
-      else {
-        true
-      }
-    }
-    return lib
   }
 }
 
