@@ -33,7 +33,7 @@ CONTENT
       2 CALL 'unaryMinus(): Double' type=kotlin.Double origin=UMINUS
       3 GET_VAR 'value-parameter b: Double' type=kotlin.Double origin=null
       4 CALL 'div(Double): Double' type=kotlin.Double origin=DIV
-      5 VAR name:bc type:kotlin.Double flags:val
+      5 VAR name:bc type:kotlin.Double visibility:local flags:val
       6 WHEN type=kotlin.Unit origin=null
       7 GET_VAR 'bc: Double' type=kotlin.Double origin=null
       8 CONST Double type=kotlin.Double value=0.0
@@ -69,7 +69,7 @@ CONTENT
       7 GET_VAR 'value-parameter c: Double' type=kotlin.Double origin=null
       8 CALL 'times(Double): Double' type=kotlin.Double origin=MUL
       9 CALL 'minus(Double): Double' type=kotlin.Double origin=MINUS
-     10 VAR name:d type:kotlin.Double flags:val
+     10 VAR name:d type:kotlin.Double visibility:local flags:val
      11 WHEN type=kotlin.Unit origin=null
      12 GET_VAR 'd: Double' type=kotlin.Double origin=null
      13 CONST Double type=kotlin.Double value=0.0
@@ -95,7 +95,7 @@ CONTENT
       6 GET_VAR 'value-parameter a: Double' type=kotlin.Double origin=null
       7 CALL 'times(Double): Double' type=kotlin.Double origin=MUL
       8 CALL 'div(Double): Double' type=kotlin.Double origin=DIV
-      9 VAR name:y1 type:kotlin.Double flags:val
+      9 VAR name:y1 type:kotlin.Double visibility:local flags:val
      10 GET_VAR 'value-parameter b: Double' type=kotlin.Double origin=null
      11 CALL 'unaryMinus(): Double' type=kotlin.Double origin=UMINUS
      12 GET_VAR 'd: Double' type=kotlin.Double origin=null
@@ -104,7 +104,7 @@ CONTENT
      15 GET_VAR 'value-parameter a: Double' type=kotlin.Double origin=null
      16 CALL 'times(Double): Double' type=kotlin.Double origin=MUL
      17 CALL 'div(Double): Double' type=kotlin.Double origin=DIV
-     18 VAR name:y2 type:kotlin.Double flags:val
+     18 VAR name:y2 type:kotlin.Double visibility:local flags:val
      19 WHEN type=kotlin.Double origin=null
      20 GET_VAR 'y1: Double' type=kotlin.Double origin=null
      21 GET_VAR 'y2: Double' type=kotlin.Double origin=null
@@ -134,7 +134,7 @@ BB 12
 INCOMING <- BB 10, 11
     When exit: WHEN type=kotlin.Double origin=null
 CONTENT
-      1 VAR name:y3 type:kotlin.Double flags:val
+      1 VAR name:y3 type:kotlin.Double visibility:local flags:val
       2 WHEN type=kotlin.Double origin=null
       3 GET_VAR 'y3: Double' type=kotlin.Double origin=null
       4 CONST Double type=kotlin.Double value=0.0
