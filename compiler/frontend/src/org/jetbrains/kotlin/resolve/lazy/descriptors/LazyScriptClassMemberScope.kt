@@ -116,9 +116,10 @@ class LazyScriptClassMemberScope(
     }
 
     override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> {
-        val bodyFn = if (name.isSpecial && name.asString() == SCRIPT_BODY_METHOD_NAME) scriptBodyFunction() else null
+//        val bodyFn = if (name.isSpecial && name.asString() == SCRIPT_BODY_METHOD_NAME) scriptBodyFunction() else null
         val baseFns = super.getContributedFunctions(name, location)
-        return if (bodyFn == null) baseFns else baseFns + bodyFn
+        return baseFns
+//        return if (bodyFn == null) baseFns else baseFns + bodyFn
     }
 
     override fun createPropertiesFromPrimaryConstructorParameters(name: Name, result: MutableSet<PropertyDescriptor>) {

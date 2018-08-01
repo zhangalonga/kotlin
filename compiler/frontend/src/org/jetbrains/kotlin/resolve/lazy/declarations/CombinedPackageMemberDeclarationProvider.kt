@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.resolve.lazy.declarations
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtDestructuringDeclarationEntry
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 
 class CombinedPackageMemberDeclarationProvider(
@@ -33,7 +34,7 @@ class CombinedPackageMemberDeclarationProvider(
     override fun getDeclarations(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean) =
         providers.flatMap { it.getDeclarations(kindFilter, nameFilter) }
 
-    override fun getFunctionDeclarations(name: Name) = providers.flatMap { it.getFunctionDeclarations(name) }
+    override fun getFunctionDeclarations(name: Name): Collection<KtFunction> = providers.flatMap { it.getFunctionDeclarations(name) }
 
     override fun getPropertyDeclarations(name: Name) = providers.flatMap { it.getPropertyDeclarations(name) }
 

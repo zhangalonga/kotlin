@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 interface DeclarationProvider {
     fun getDeclarations(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): List<KtDeclaration>
 
-    fun getFunctionDeclarations(name: Name): Collection<KtNamedFunction>
+    fun getFunctionDeclarations(name: Name): Collection<KtFunction>
 
     fun getPropertyDeclarations(name: Name): Collection<KtProperty>
 

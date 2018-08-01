@@ -32,7 +32,7 @@ abstract class AbstractPsiBasedDeclarationProvider(storageManager: StorageManage
     protected class Index {
         // This mutable state is only modified under inside the computable
         val allDeclarations = ArrayList<KtDeclaration>()
-        val functions = ArrayListMultimap.create<Name, KtNamedFunction>()
+        val functions = ArrayListMultimap.create<Name, KtFunction>()
         val properties = ArrayListMultimap.create<Name, KtProperty>()
         val classesAndObjects = ArrayListMultimap.create<Name, KtClassLikeInfo>() // order matters here
         val typeAliases = ArrayListMultimap.create<Name, KtTypeAlias>()
@@ -56,7 +56,9 @@ abstract class AbstractPsiBasedDeclarationProvider(storageManager: StorageManage
                     val scriptInfo = KtScriptInfo(declaration)
                     classesAndObjects.put(scriptInfo.script.nameAsName, scriptInfo)
                 }
-                is KtScriptBody -> {}
+                is KtScriptBody -> {
+                    functions.put(declaration.safeNameForLazyResolve(), declaration)
+                }
                 is KtDestructuringDeclaration -> {
                     for (entry in declaration.entries) {
                         val name = entry.nameAsName.safeNameForLazyResolve()
@@ -93,7 +95,7 @@ abstract class AbstractPsiBasedDeclarationProvider(storageManager: StorageManage
     override fun getDeclarations(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): List<KtDeclaration> =
         index().allDeclarations
 
-    override fun getFunctionDeclarations(name: Name): List<KtNamedFunction> = index().functions[name.safeNameForLazyResolve()].toList()
+    override fun getFunctionDeclarations(name: Name): Collection<KtFunction> = index().functions[name.safeNameForLazyResolve()].toList()
 
     override fun getPropertyDeclarations(name: Name): List<KtProperty> = index().properties[name.safeNameForLazyResolve()].toList()
 

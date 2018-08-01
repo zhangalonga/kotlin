@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.cli.jvm.repl
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtDestructuringDeclarationEntry
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.resolve.lazy.declarations.PackageMemberDeclarationProvider
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 
@@ -34,7 +35,7 @@ open class DelegatePackageMemberDeclarationProvider(var delegate: PackageMemberD
     override fun getDeclarations(kindFilter: DescriptorKindFilter,
                                  nameFilter: (Name) -> Boolean) = delegate.getDeclarations(kindFilter, nameFilter)
 
-    override fun getFunctionDeclarations(name: Name) = delegate.getFunctionDeclarations(name)
+    override fun getFunctionDeclarations(name: Name): Collection<KtFunction> = delegate.getFunctionDeclarations(name)
 
     override fun getPropertyDeclarations(name: Name) = delegate.getPropertyDeclarations(name)
 
