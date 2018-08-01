@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.backend.common.lower.*
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.codegen.isInlineCall
 import org.jetbrains.kotlin.backend.jvm.codegen.isInlineIrExpression
+import org.jetbrains.kotlin.backend.jvm.descriptors.JvmPropertyDescriptorImpl
 import org.jetbrains.kotlin.codegen.PropertyReferenceCodegen
 import org.jetbrains.kotlin.codegen.binding.CodegenBinding
 import org.jetbrains.kotlin.descriptors.*
@@ -31,23 +32,25 @@ import org.jetbrains.kotlin.descriptors.SourceElement.NO_SOURCE
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.*
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
+import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.declarations.impl.IrClassImpl
-import org.jetbrains.kotlin.ir.declarations.impl.IrConstructorImpl
-import org.jetbrains.kotlin.ir.declarations.impl.IrFunctionImpl
+import org.jetbrains.kotlin.ir.declarations.impl.*
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrDelegatingConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
-import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
-import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.symbols.impl.IrConstructorSymbolImpl
+import org.jetbrains.kotlin.ir.symbols.impl.IrFieldSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.toIrType
+import org.jetbrains.kotlin.ir.types.toKotlinType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
+import org.jetbrains.kotlin.load.java.JavaVisibilities
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils
@@ -55,6 +58,8 @@ import org.jetbrains.kotlin.resolve.inline.InlineUtil
 import org.jetbrains.kotlin.storage.LockBasedStorageManager
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils
+import org.jetbrains.org.objectweb.asm.Opcodes
+import org.jetbrains.org.objectweb.asm.Type
 
 class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPass {
 
@@ -91,7 +96,7 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
             override fun visitFunctionReference(expression: IrFunctionReference): IrExpression {
                 expression.transformChildrenVoid(this)
 
-                if (!expression.type.isFunctionOrKFunctionType || inlineLambdaReferences.contains(expression)) {
+                if (!expression.type.toKotlinType().isFunctionOrKFunctionType || inlineLambdaReferences.contains(expression)) {
                     // Not a subject of this lowering.
                     return expression
                 }
@@ -143,8 +148,8 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
             val endOffset = irFunctionReference.endOffset
 
             val returnType = functionDescriptor.returnType!!
-            val superTypes = mutableListOf(
-                functionReference.owner.defaultType
+            val superTypes: MutableList<KotlinType> = mutableListOf(
+                functionReference.descriptor.defaultType
             )
 
             val numberOfParameters = unboundFunctionParameters.size
@@ -221,8 +226,6 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
             )
 
 
-            functionReferenceClass.addFakeOverrides()
-
             constructorBuilder.initialize()
             functionReferenceClass.declarations.add(constructorBuilder.ir)
 
@@ -289,26 +292,26 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
 
                     body = irBuilder.irBlockBody {
                         +IrDelegatingConstructorCallImpl(
-                            startOffset, endOffset,
+                            startOffset, endOffset, context.irBuiltIns.unitType,
                             kFunctionRefConstructorSymbol, kFunctionRefConstructorSymbol.descriptor
                         ).apply {
                             val const =
-                                IrConstImpl.int(startOffset, endOffset, context.builtIns.int.defaultType, unboundFunctionParameters.size)
+                                IrConstImpl.int(startOffset, endOffset, context.irBuiltIns.intType, unboundFunctionParameters.size)
                             putValueArgument(0, const)
 
                             val irReceiver = valueParameters.firstOrNull()
                             val receiver = boundFunctionParameters.singleOrNull()
 
                             val receiverValue = receiver?.let {
-                                irGet(irReceiver!!.symbol)
+                                irGet(irReceiver!!.symbol.owner)
                             } ?: irNull()
                             putValueArgument(1, receiverValue)
                             //TODO use receiver from base class
                             receiver?.let {
-                                +irSetField(irGet(functionReferenceThis), argumentToPropertiesMap[it]!!, receiverValue)
+                                +irSetField(irGet(functionReferenceThis.owner), argumentToPropertiesMap[it]!!.owner, receiverValue)
                             }
                         }
-                        +IrInstanceInitializerCallImpl(startOffset, endOffset, functionReferenceClass.symbol)
+                        +IrInstanceInitializerCallImpl(startOffset, endOffset, functionReferenceClass.symbol, context.irBuiltIns.unitType)
                         // Save all arguments to fields.
 
                     }
@@ -373,7 +376,7 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
                                         val argument =
                                             if (!unboundArgsSet.contains(it))
                                             // Bound parameter - read from field.
-                                                irGetField(irGet(functionReferenceThis), argumentToPropertiesMap[it]!!)
+                                                irGetField(irGet(functionReferenceThis.owner), argumentToPropertiesMap[it]!!.owner)
                                             else {
                                                 if (ourSymbol.descriptor.isSuspend && unboundIndex == valueParameters.size)
                                                 // For suspend functions the last argument is continuation and it is implicit.
@@ -381,7 +384,7 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
 //                                                        irCall(getContinuationSymbol,
 //                                                               listOf(ourSymbol.descriptor.returnType!!))
                                                 else
-                                                    irGet(valueParameters[unboundIndex++].symbol)
+                                                    irGet(valueParameters[unboundIndex++])
                                             }
                                         when (it) {
                                             functionDescriptor.dispatchReceiverParameter -> dispatchReceiver = argument
@@ -398,20 +401,16 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
             }
 
         private fun buildPropertyWithBackingField(name: Name, type: KotlinType, isMutable: Boolean): IrFieldSymbol {
-            val propertyBuilder = context.createPropertyWithBackingFieldBuilder(
-                startOffset = irFunctionReference.startOffset,
-                endOffset = irFunctionReference.endOffset,
-                origin = DECLARATION_ORIGIN_FUNCTION_REFERENCE_IMPL,
-                owner = functionReferenceClassDescriptor,
-                name = name,
-                type = type,
-                isMutable = isMutable
-            ).apply {
-                initialize()
-            }
+            val fieldSymbol = IrFieldSymbolImpl(
+                    JvmPropertyDescriptorImpl.createFinalField(
+                            Name.identifier("this$0"), type, functionReferenceClassDescriptor,
+                            Annotations.EMPTY, JavaVisibilities.PACKAGE_VISIBILITY, Opcodes.ACC_SYNTHETIC, SourceElement.NO_SOURCE
+                    ))
+            val field = IrFieldImpl(irFunctionReference.startOffset, irFunctionReference.endOffset, DECLARATION_ORIGIN_FUNCTION_REFERENCE_IMPL, fieldSymbol, type.toIrType()!!
+            )
 
-            functionReferenceClass.declarations.add(propertyBuilder.ir)
-            return propertyBuilder.ir.backingField!!.symbol
+            functionReferenceClass.declarations.add(field)
+            return fieldSymbol
         }
 
         private fun createGetNameMethodBuilder(superNameProperty: PropertyDescriptor) =
@@ -476,7 +475,7 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
 
                         body = irBuilder.irBlockBody(startOffset, endOffset) {
                             +irReturn(
-                                IrConstImpl.string(-1, -1, context.builtIns.stringType, functionDescriptor.name.asString())
+                                IrConstImpl.string(-1, -1, context.irBuiltIns.stringType, functionDescriptor.name.asString())
                             )
                         }
                     }
@@ -535,7 +534,7 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
                         body = irBuilder.irBlockBody(startOffset, endOffset) {
                             +irReturn(
                                 IrConstImpl.string(
-                                    -1, -1, context.builtIns.stringType,
+                                    -1, -1, context.irBuiltIns.stringType,
                                     PropertyReferenceCodegen.getSignatureString(
                                         irFunctionReference.symbol.descriptor, this@CallableReferenceLowering.context.state
                                     )
@@ -607,7 +606,6 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
                 ): IrExpression {
                     val globalContext = this@CallableReferenceLowering.context
                     val state = globalContext.state
-                    val kDeclarationContainer = globalContext.getClass(FqName("kotlin.reflect.KDeclarationContainer"))
                     val container = descriptor.containingDeclaration
 
                     val type =
@@ -621,15 +619,11 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
                                 globalContext.state.bindingContext.get(
                                     CodegenBinding.DELEGATED_PROPERTY_METADATA_OWNER, descriptor
                                 )!!
-                            else -> return IrConstImpl.constNull(
-                                -1, -1, kDeclarationContainer.defaultType
-                            )
+                            else -> state.typeMapper.mapOwner(descriptor)
                         }
 
-                    val clazz = IrConstImpl.type(
-                        -1, -1, globalContext.getClass(FqName("java.lang.Class")).defaultType,
-                        type
-                    )
+                    val clazzDescriptor = globalContext.getClass(FqName("java.lang.Class"))
+                    val clazz = IrClassReferenceImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, clazzDescriptor.toIrType()!!, clazzDescriptor, CrIrType(type))
 
                     val isContainerPackage = if (descriptor is LocalVariableDescriptor)
                         DescriptorUtils.getParentOfType(descriptor, ClassDescriptor::class.java) == null
@@ -642,7 +636,7 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
                         // but there's no nice API to obtain that name here yet
                         // TODO: write the referenced declaration's module name and use it in reflection
                         val module = IrConstImpl.string(
-                            -1, -1, globalContext.builtIns.string.defaultType,
+                            -1, -1, globalContext.irBuiltIns.stringType,
                             state.moduleName
                         )
                         val function = reflectionClass.getStaticFunction("getOrCreateKotlinPackage", emptyList())
@@ -672,22 +666,7 @@ class CallableReferenceLowering(val context: JvmBackendContext) : FileLoweringPa
         } else this
     }
 }
-//    private fun generateFunctionReferenceMethods(descriptor: FunctionDescriptor) {
-//        val flags = ACC_PUBLIC or ACC_FINAL
-//        val generateBody = state.classBuilderMode.generateBodies
-//
-//        run {
-//            val mv = v.newMethod(NO_ORIGIN, flags, "getOwner", Type.getMethodDescriptor(K_DECLARATION_CONTAINER_TYPE), null, null)
-//            if (generateBody) {
-//                mv.visitCode()
-//                val iv = InstructionAdapter(mv)
-//                generateCallableReferenceDeclarationContainer(iv, descriptor, state)
-//                iv.areturn(K_DECLARATION_CONTAINER_TYPE)
-//                FunctionCodegen.endVisit(iv, "function reference getOwner", element)
-//            }
-//        }
-//
-//    }
 
-
-//}
+class CrIrType(val type: Type) : IrType {
+    override val annotations = emptyList()
+}
