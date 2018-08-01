@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
-import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
@@ -58,9 +57,6 @@ val CallableMemberDescriptor.propertyIfAccessor
     get() = if (this is PropertyAccessorDescriptor)
         this.correspondingProperty
     else this
-
-val IrTypeParameter.isReified
-    get() = descriptor.isReified
 
 // Return is method has no real implementation except fake overrides from Any
 fun CallableMemberDescriptor.isFakeOverriddenFromAny(): Boolean {

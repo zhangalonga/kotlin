@@ -79,7 +79,7 @@ object JsIrBuilder {
         }
     }
 
-    fun buildTypeParameter(name: Name, index: Int, variance: Variance = Variance.INVARIANT): IrTypeParameter {
+    fun buildTypeParameter(name: Name, index: Int, isReified: Boolean, variance: Variance = Variance.INVARIANT): IrTypeParameter {
         val descriptor = WrappedTypeParameterDescriptor()
         return IrTypeParameterImpl(
             UNDEFINED_OFFSET,
@@ -88,6 +88,7 @@ object JsIrBuilder {
             IrTypeParameterSymbolImpl(descriptor),
             name,
             index,
+            isReified,
             variance
         ).also {
             descriptor.bind(it)
@@ -226,7 +227,7 @@ fun IrFunction.copyParameterDeclarationsFrom(from: IrFunction) {
         return JsIrBuilder.buildValueParameter(name, index + shift, type).also { it.parent = f }
     }
     fun IrTypeParameter.copyTo(f: IrFunction): IrTypeParameter {
-        return JsIrBuilder.buildTypeParameter(name, index, variance).also { it.parent = f }
+        return JsIrBuilder.buildTypeParameter(name, index, isReified, variance).also { it.parent = f }
     }
 
     dispatchReceiverParameter = from.dispatchReceiverParameter?.copyTo(this)
