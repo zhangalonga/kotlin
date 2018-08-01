@@ -534,9 +534,13 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                 parent = memberDeclaration.parent
                 returnType = localFunctionContext.declaration.returnType
 
+                val f = this
                 localFunctionContext.declaration.typeParameters.mapTo(this.typeParameters) {
                     IrTypeParameterImpl(it.startOffset, it.endOffset, it.origin, it.descriptor)
-                        .apply { superTypes += it.superTypes }
+                        .apply {
+                            superTypes += it.superTypes
+                            parent = f
+                        }
                 }
 
                 localFunctionContext.declaration.extensionReceiverParameter?.let {
@@ -547,9 +551,11 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                         descriptor.extensionReceiverParameter!!,
                         it.type,
                         null
-                    )
+                    ).also {
+                        it.parent = f
+                    }
                 }
-                this.valueParameters += newValueParameters
+                this.valueParameters += newValueParameters.map { it.also { p -> p.parent = f } }
                 recordTransformedValueParameters(localFunctionContext)
                 transformedDeclarations[oldDescriptor] = this
             }

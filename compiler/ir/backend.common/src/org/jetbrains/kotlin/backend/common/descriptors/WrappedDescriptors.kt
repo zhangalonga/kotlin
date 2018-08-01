@@ -33,17 +33,11 @@ abstract class WrappedCallableDescriptor<T : IrDeclaration>: CallableDescriptor,
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getSource(): SourceElement {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSource() = SourceElement.NO_SOURCE
 
-    override fun getExtensionReceiverParameter(): ReceiverParameterDescriptor? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getExtensionReceiverParameter(): ReceiverParameterDescriptor? = null
 
-    override fun getDispatchReceiverParameter(): ReceiverParameterDescriptor? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getDispatchReceiverParameter(): ReceiverParameterDescriptor?  = null
 
     override fun getTypeParameters(): List<TypeParameterDescriptor> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -61,9 +55,7 @@ abstract class WrappedCallableDescriptor<T : IrDeclaration>: CallableDescriptor,
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun hasSynthesizedParameterNames(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun hasSynthesizedParameterNames() = false
 
     override fun getVisibility(): Visibility {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -104,14 +96,19 @@ open class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCa
     }
 
 
-    override fun getOverriddenDescriptors(): Collection<ValueParameterDescriptor> {
-        TODO("Not Implemented")
-    }
+    override fun getOverriddenDescriptors(): Collection<ValueParameterDescriptor> = emptyList()
 
     override fun getOriginal() = this
 
     override fun substitute(substitutor: TypeSubstitutor): ValueParameterDescriptor {
         TODO("")
+    }
+
+    override fun <R : Any?, D : Any?> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D) =
+        visitor!!.visitValueParameterDescriptor(this, data)
+
+    override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
+        visitor!!.visitValueParameterDescriptor(this, null)
     }
 }
 
@@ -143,6 +140,12 @@ open class WrappedTypeParameterDescriptor: TypeParameterDescriptor, WrappedCalla
 
     override fun getContainingDeclaration() = (owner.parent as IrDeclaration).descriptor
 
+    override fun <R, D> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D) = visitor!!.visitTypeParameterDescriptor(this, data)
+
+    override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
+        visitor!!.visitTypeParameterDescriptor(this, null)
+    }
+
 }
 
 open class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescriptor<IrVariable>() {
@@ -167,16 +170,22 @@ open class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescrip
     override fun substitute(substitutor: TypeSubstitutor): VariableDescriptor {
         TODO("")
     }
+
+    override fun <R, D> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D) = visitor!!.visitVariableDescriptor(this, data)
+    override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
+        visitor!!.visitVariableDescriptor(this, null)
+    }
 }
 
 open class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallableDescriptor<IrSimpleFunction>() {
     override fun getOverriddenDescriptors() = owner.overriddenSymbols.map { it.descriptor }
-    override fun getContainingDeclaration() = (owner.parent as IrDeclaration).descriptor
+    override fun getContainingDeclaration() = (owner.parent as IrSymbolOwner).symbol.descriptor
     override fun getModality() = owner.modality
     override fun getName() = owner.name
     override fun getVisibility() = owner.visibility
     override fun getReturnType() = owner.returnType.toKotlinType()
     override fun getDispatchReceiverParameter() = owner.dispatchReceiverParameter?.descriptor as? ReceiverParameterDescriptor
+    override fun getExtensionReceiverParameter() = owner.extensionReceiverParameter?.descriptor as? ReceiverParameterDescriptor
     override fun getTypeParameters() = owner.typeParameters.map { it.descriptor }
     override fun getValueParameters() = owner.valueParameters.mapNotNull { it.descriptor as? ValueParameterDescriptor }.toMutableList()
     override fun isExternal() = owner.isExternal
@@ -227,6 +236,12 @@ open class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCa
 
     override fun newCopyBuilder(): FunctionDescriptor.CopyBuilder<out SimpleFunctionDescriptor> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun <R, D> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D) = visitor!!.visitFunctionDescriptor(this, data)
+
+    override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
+        visitor!!.visitFunctionDescriptor(this, null)
     }
 }
 
@@ -309,6 +324,11 @@ open class WrappedClassConstructorDescriptor: ClassConstructorDescriptor, Wrappe
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun <R, D> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D) = visitor!!.visitConstructorDescriptor(this, data)
+
+    override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
+        visitor!!.visitConstructorDescriptor(this, null)
+    }
 }
 
 open class WrappedClassDescriptor: ClassDescriptor, DescriptorWrapper<IrClass>() {
@@ -388,14 +408,13 @@ open class WrappedClassDescriptor: ClassDescriptor, DescriptorWrapper<IrClass>()
 
     override fun isInner() = owner.isInner
 
-    override fun <R : Any?, D : Any?> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D): R {
-        TODO("not implemented")
-    }
-
     override fun isExternal() = owner.isExternal
 
+    override fun <R : Any?, D : Any?> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D) =
+        visitor!!.visitClassDescriptor(this, data)
+
     override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
-        TODO("not implemented")
+        visitor!!.visitClassDescriptor(this, null)
     }
 
     override val annotations = Annotations.EMPTY
@@ -491,14 +510,13 @@ open class WrappedPropertyDescriptor: PropertyDescriptor, DescriptorWrapper<IrPr
         TODO("not implemented")
     }
 
-    override fun <R : Any?, D : Any?> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D): R {
-        TODO("not implemented")
-    }
-
     override fun isExternal() = owner.isExternal
 
+    override fun <R : Any?, D : Any?> accept(visitor: DeclarationDescriptorVisitor<R, D>?, data: D) =
+        visitor!!.visitPropertyDescriptor(this, data)
+
     override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
-        TODO("not implemented")
+        visitor!!.visitPropertyDescriptor(this, null)
     }
 
     override val getter: PropertyGetterDescriptor? get() = owner.getter?.descriptor as PropertyGetterDescriptor?

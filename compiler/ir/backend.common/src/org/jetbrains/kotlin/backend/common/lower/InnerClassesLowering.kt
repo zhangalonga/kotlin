@@ -16,7 +16,9 @@ import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
+import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.types.classifierOrNull
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.dump
 import org.jetbrains.kotlin.ir.util.transformFlat
@@ -33,7 +35,7 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
         lateinit var outerThisField: IrField
 
         val oldConstructorParameterToNew = HashMap<IrValueParameter, IrValueParameter>()
-        val class2Symbol = HashMap<IrClass, IrClass>()
+//        val class2Symbol = HashMap<IrClass, IrClass>()
 
         fun lowerInnerClass() {
             if (!irClass.isInner) return
@@ -177,7 +179,14 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
                         }
 
                         val outerThisField = context.descriptorsFactory.getOuterThisFieldSymbol(innerClass)
-                        irThis = IrGetFieldImpl(startOffset, endOffset, outerThisField.backingField!!.symbol, innerClass.defaultType, irThis, origin)
+                        irThis = IrGetFieldImpl(
+                            startOffset,
+                            endOffset,
+                            outerThisField.backingField!!.symbol,
+                            innerClass.defaultType,
+                            irThis,
+                            origin
+                        )
 
                         val outer = innerClass.parent
                         innerClass = outer as? IrClass ?:
@@ -190,18 +199,14 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
         }
 
         private fun IrValueSymbol.getClassForImplicitThis(): IrClass? {
-
-
-            return owner.parent as? IrClass
-
-//            if (this is IrValueParameterSymbol) {
-//                val declaration = owner
-//                if (declaration.index == -1) {
-//                    if (declaration.name.isSpecial) {
-//                        return declaration.parent as IrClass
-//                    }
-//                }
-//            }
+            if (this is IrValueParameterSymbol) {
+                val declaration = owner
+                if (declaration.index == -1) { // means value is either IMPLICIT or EXTENSION receiver
+                    if (declaration.name.isSpecial) { // whether name is <this>
+                        return owner.type.classifierOrNull?.owner as IrClass
+                    }
+                }
+            }
 //            val descriptor1 = this.descriptor
 //            if (descriptor1 is ReceiverParameterDescriptor) {
 //                val receiverValue = descriptor1.value
@@ -233,7 +238,7 @@ class InnerClassConstructorCallsLowering(val context: BackendContext) : BodyLowe
                 )
 
                 newCall.putValueArgument(0, dispatchReceiver)
-                for (i in 1..newCallee.descriptor.valueParameters.lastIndex) {
+                for (i in 1..newCallee.valueParameters.lastIndex) {
                     newCall.putValueArgument(i, expression.getValueArgument(i - 1))
                 }
 

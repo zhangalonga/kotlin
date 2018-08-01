@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
-import org.jetbrains.kotlin.ir.backend.js.symbols.JsSymbolBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrValueParameterImpl
@@ -165,16 +164,18 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
 
         val additionalDeclarations = generateGetterBodyWithGuard(refGetFunction) {
             val irClosureReference = JsIrBuilder.buildFunctionReference(functionReference.type, refClosureFunction.symbol)
-            val irVarSymbol = JsSymbolBuilder.buildTempVar(refGetFunction.symbol, irClosureReference.type)
-            val irVar = JsIrBuilder.buildVar(irVarSymbol, irClosureReference, type = irClosureReference.type)
+
+            val irVar = JsIrBuilder.buildVar(irClosureReference.type, initializer = irClosureReference).also {
+                it.parent = refGetFunction
+            }
 
             // TODO: fill other fields of callable reference (returnType, parameters, isFinal, etc.)
             val irSetName = JsIrBuilder.buildCall(context.intrinsics.jsSetJSField.symbol).apply {
-                putValueArgument(0, JsIrBuilder.buildGetValue(irVarSymbol))
+                putValueArgument(0, JsIrBuilder.buildGetValue(irVar.symbol))
                 putValueArgument(1, callableNameConst)
                 putValueArgument(2, JsIrBuilder.buildString(context.irBuiltIns.stringType, getReferenceName(declaration)))
             }
-            Pair(listOf(irVar, irSetName), irVarSymbol)
+            Pair(listOf(irVar, irSetName), irVar.symbol)
         }
 
 
@@ -215,21 +216,21 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
             val getterFunctionType = context.builtIns.getFunction(getterFunction.valueParameters.size + 1)
             val type = getterFunctionType.toIrType()
             val irGetReference = JsIrBuilder.buildFunctionReference(type, getterFunction.symbol)
-            val irVarSymbol = JsSymbolBuilder.buildTempVar(refGetFunction.symbol, type)
+            val irVar = JsIrBuilder.buildVar(type, initializer = irGetReference).also { it.parent = refGetFunction }
 
-            statements += JsIrBuilder.buildVar(irVarSymbol, irGetReference, type = type)
+            statements += irVar
 
             statements += JsIrBuilder.buildCall(context.intrinsics.jsSetJSField.symbol).apply {
-                putValueArgument(0, JsIrBuilder.buildGetValue(irVarSymbol))
+                putValueArgument(0, JsIrBuilder.buildGetValue(irVar.symbol))
                 putValueArgument(1, getterConst)
-                putValueArgument(2, JsIrBuilder.buildGetValue(irVarSymbol))
+                putValueArgument(2, JsIrBuilder.buildGetValue(irVar.symbol))
             }
 
             if (setterFunction != null) {
                 val setterFunctionType = context.builtIns.getFunction(setterFunction.valueParameters.size + 1)
                 val irSetReference = JsIrBuilder.buildFunctionReference(setterFunctionType.toIrType(), setterFunction.symbol)
                 statements += JsIrBuilder.buildCall(context.intrinsics.jsSetJSField.symbol).apply {
-                    putValueArgument(0, JsIrBuilder.buildGetValue(irVarSymbol))
+                    putValueArgument(0, JsIrBuilder.buildGetValue(irVar.symbol))
                     putValueArgument(1, setterConst)
                     putValueArgument(2, irSetReference)
                 }
@@ -237,7 +238,7 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
 
             // TODO: fill other fields of callable reference (returnType, parameters, isFinal, etc.)
             statements += JsIrBuilder.buildCall(context.intrinsics.jsSetJSField.symbol).apply {
-                putValueArgument(0, JsIrBuilder.buildGetValue(irVarSymbol))
+                putValueArgument(0, JsIrBuilder.buildGetValue(irVar.symbol))
                 putValueArgument(1, callableNameConst)
                 putValueArgument(
                     2,
@@ -248,7 +249,7 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
                 )
             }
 
-            Pair(statements, irVarSymbol)
+            Pair(statements, irVar.symbol)
         }
 
         callableToGetterFunction[makeCallableKey(getterDeclaration, propertyReference)] = refGetFunction
