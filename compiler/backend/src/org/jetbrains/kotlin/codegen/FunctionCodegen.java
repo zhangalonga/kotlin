@@ -113,7 +113,7 @@ public class FunctionCodegen {
         this.memberCodegen = memberCodegen;
     }
 
-    public void gen(@NotNull KtNamedFunction function) {
+    public void gen(@NotNull KtFunction function) {
         SimpleFunctionDescriptor functionDescriptor = bindingContext.get(BindingContext.FUNCTION, function);
         if (bindingContext.get(CodegenBinding.SUSPEND_FUNCTION_TO_JVM_VIEW, functionDescriptor) != null) {
             functionDescriptor =
@@ -161,7 +161,7 @@ public class FunctionCodegen {
     }
 
     public void generateOverloadsWithDefaultValues(
-            @Nullable KtNamedFunction function,
+            @Nullable KtFunction function,
             @NotNull FunctionDescriptor functionDescriptor,
             @NotNull FunctionDescriptor delegateFunctionDescriptor
     ) {
@@ -1168,7 +1168,7 @@ public class FunctionCodegen {
             @NotNull FunctionDescriptor functionDescriptor,
             @NotNull OwnerKind kind,
             @NotNull DefaultParameterValueLoader loadStrategy,
-            @Nullable KtNamedFunction function
+            @Nullable KtFunction function
     ) {
         DeclarationDescriptor contextClass = owner.getContextDescriptor().getContainingDeclaration();
 
@@ -1241,7 +1241,7 @@ public class FunctionCodegen {
             @NotNull FunctionDescriptor functionDescriptor,
             @NotNull MethodVisitor mv,
             @NotNull DefaultParameterValueLoader loadStrategy,
-            @Nullable KtNamedFunction function,
+            @Nullable KtFunction function,
             @NotNull MemberCodegen<?> parentCodegen,
             @NotNull Method defaultMethod
     ) {
@@ -1390,7 +1390,7 @@ public class FunctionCodegen {
         }
     }
 
-    private boolean isDefaultNeeded(@NotNull FunctionDescriptor descriptor, @Nullable KtNamedFunction function) {
+    private boolean isDefaultNeeded(@NotNull FunctionDescriptor descriptor, @Nullable KtFunction function) {
         List<ValueParameterDescriptor> parameters =
                 CodegenUtil.getFunctionParametersForDefaultValueGeneration(descriptor, state.getDiagnostics());
         return CollectionsKt.any(parameters, ValueParameterDescriptor::declaresDefaultValue);
