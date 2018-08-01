@@ -89,12 +89,12 @@ class JsIntrinsicTransformers(backendContext: JsIrBackendContext) {
                 typeName.makeRef()
             }
 
-            add(backendContext.sharedVariablesManager.closureBoxConstructorTypeSymbol) { call, context ->
-                val args = translateCallArguments(call, context)
-                val initializer = args[0]
-                val propertyInit = JsPropertyInitializer(JsNameRef("v"), initializer)
-                JsObjectLiteral(listOf(propertyInit))
-            }
+//            add(backendContext.sharedVariablesManager.closureBoxConstructorTypeSymbol) { call, context ->
+//                val args = translateCallArguments(call, context)
+//                val initializer = args[0]
+//                val propertyInit = JsPropertyInitializer(JsNameRef("v"), initializer)
+//                JsObjectLiteral(listOf(propertyInit))
+//            }
 
             addIfNotNull(intrinsics.jsCode) { call, context ->
                 val jsCode = translateJsCode(call, context.currentScope)

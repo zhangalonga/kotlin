@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.types.toKotlinType
-import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.constants.ConstantValue
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
@@ -288,6 +287,8 @@ open class WrappedClassConstructorDescriptor: ClassConstructorDescriptor, Wrappe
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun getVisibility() = owner.visibility
+
     override fun isHiddenToOvercomeSignatureClash(): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -358,7 +359,10 @@ open class WrappedClassDescriptor: ClassDescriptor, DescriptorWrapper<IrClass>()
 
     override fun getContainingDeclaration() = (owner.parent as IrSymbolOwner).symbol.descriptor
 
-    override fun getDefaultType() = owner.defaultType.toKotlinType() as SimpleType
+//    override fun getDefaultType() = owner.thisReceiver?.type?.toKotlinType() as SimpleType
+override fun getDefaultType(): SimpleType {
+    TODO()
+}
 
     override fun getKind() = owner.kind
 
