@@ -28,12 +28,16 @@ fun calcProperTypeForIeee754ArithmeticIfNeeded(
     typeMapper: KotlinTypeMapper
 ): TypeAndNullability? {
     if (inferredPrimitiveType == null) return null
+    if (!inferredPrimitiveType.isFloatingPointOrNullable()) return null
     val ktType = expression.getKotlinTypeForComparison(bindingContext) ?: return null
     val isNullable = TypeUtils.isNullableType(ktType)
     val asmType = typeMapper.mapType(inferredPrimitiveType)
     if (!AsmUtil.isPrimitive(asmType)) return null
     return TypeAndNullability(asmType, isNullable)
 }
+
+private fun KotlinType.isFloatingPointOrNullable() =
+    KotlinBuiltIns.isDoubleOrNullableDouble(this) || KotlinBuiltIns.isFloatOrNullableFloat(this)
 
 private fun KtExpression.getKotlinTypeForComparison(bindingContext: BindingContext): KotlinType? =
     when {
