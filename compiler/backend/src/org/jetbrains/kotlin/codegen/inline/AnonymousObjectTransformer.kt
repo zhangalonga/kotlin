@@ -448,7 +448,8 @@ class AnonymousObjectTransformer(
                 languageVersionSettings = languageVersionSettings,
                 shouldPreserveClassInitialization = state.constructorCallNormalizationMode.shouldPreserveClassInitialization,
                 containingClassInternalName = builder.thisName,
-                isForNamedFunction = false
+                isForNamedFunction = false,
+                sourceFile = sourceInfo ?: ""
             )
         }
     }
@@ -477,7 +478,8 @@ class AnonymousObjectTransformer(
                 containingClassInternalName = builder.thisName,
                 isForNamedFunction = true,
                 needDispatchReceiver = true,
-                internalNameForDispatchReceiver = builder.thisName
+                internalNameForDispatchReceiver = builder.thisName,
+                sourceFile = sourceInfo ?: ""
             )
         }
     }

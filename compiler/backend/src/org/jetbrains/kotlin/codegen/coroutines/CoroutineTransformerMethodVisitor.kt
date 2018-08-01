@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.config.isReleaseCoroutines
 import org.jetbrains.kotlin.resolve.jvm.AsmTypes
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
+import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 import org.jetbrains.kotlin.utils.sure
 import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.MethodVisitor
@@ -44,6 +45,7 @@ class CoroutineTransformerMethodVisitor(
     private val shouldPreserveClassInitialization: Boolean,
     private val lineNumber: Int,
     private val languageVersionSettings: LanguageVersionSettings,
+    private val sourceFile: String,
     // It's only matters for named functions, may differ from '!isStatic(access)' in case of DefaultImpls
     private val needDispatchReceiver: Boolean = false,
     // May differ from containingClassInternalName in case of DefaultImpls
@@ -106,7 +108,7 @@ class CoroutineTransformerMethodVisitor(
 
         UninitializedStoresProcessor(methodNode, shouldPreserveClassInitialization).run()
 
-        spillVariables(suspensionPoints, methodNode)
+        val variableToSpilledMapping = spillVariables(suspensionPoints, methodNode)
 
         val suspendMarkerVarIndex = methodNode.maxLocals++
 
@@ -115,9 +117,9 @@ class CoroutineTransformerMethodVisitor(
         }
 
         val defaultLabel = LabelNode()
+        val tableSwitchLabel = LabelNode()
         methodNode.instructions.apply {
             val startLabel = LabelNode()
-            val tableSwitchLabel = LabelNode()
 
             // tableswitch(this.label)
             insertBefore(
@@ -161,6 +163,39 @@ class CoroutineTransformerMethodVisitor(
                 defaultLabel
             )
         }
+
+        if (languageVersionSettings.isReleaseCoroutines()) {
+            writeDebugMetadata(listOf(tableSwitchLabel) + suspensionPointLabels.map {
+                it.label.info.safeAs<LabelNode>().sure { "suspensionPointLabel shall have valid info. Check state-machine generation." }
+            }, variableToSpilledMapping)
+        }
+    }
+
+    private fun writeDebugMetadata(
+        suspensionPointLabels: List<LabelNode>,
+        variableToSpilledMapping: List<List<Pair<Int, String>>>
+    ) {
+        val lines = suspensionPointLabels.map { label ->
+            label.safeAs<AbstractInsnNode>()?.findNextOrNull { it is LineNumberNode }.safeAs<LineNumberNode>()
+                .sure { "lineNumber of label $label is not found, check state machine generation" }.line
+        }
+        val metadata = classBuilderForCoroutineState.newAnnotation(debugMetadataAnnotationAsmType.descriptor, true)
+        // TODO: support inlined functions (similar to SMAP)
+        metadata.visitArray("runtimeSourceFiles").also { v ->
+            lines.forEach { v.visit(null, sourceFile) }
+        }.visitEnd()
+        metadata.visit("runtimeLineNumbers", lines.toTypedArray().toIntArray())
+
+        val debugIndexToLabel = variableToSpilledMapping.withIndex().flatMap { (labelIndex, list) ->
+            list.map { labelIndex }
+        }
+        val (debugLocalIndexes, debugSpilled) = variableToSpilledMapping.flatten().unzip()
+        metadata.visit("debugIndexToLabel", debugIndexToLabel.toTypedArray().toIntArray())
+        metadata.visit("debugLocalIndexes", debugLocalIndexes.toTypedArray().toIntArray())
+        metadata.visitArray("debugSpilled").also { v ->
+            debugSpilled.forEach { v.visit(null, it) }
+        }.visitEnd()
+        metadata.visitEnd()
     }
 
     private fun addContinuationToLvt(methodNode: MethodNode, startLabel: LabelNode, endLabel: LabelNode) {
@@ -361,7 +396,7 @@ class CoroutineTransformerMethodVisitor(
         }
     }
 
-    private fun spillVariables(suspensionPoints: List<SuspensionPoint>, methodNode: MethodNode) {
+    private fun spillVariables(suspensionPoints: List<SuspensionPoint>, methodNode: MethodNode): List<List<Pair<Int, String>>> {
         val instructions = methodNode.instructions
         val frames = performRefinedTypeAnalysis(methodNode, containingClassInternalName)
         fun AbstractInsnNode.index() = instructions.indexOf(this)
@@ -370,6 +405,7 @@ class CoroutineTransformerMethodVisitor(
         val postponedActions = mutableListOf<() -> Unit>()
         val maxVarsCountByType = mutableMapOf<Type, Int>()
         val livenessFrames = analyzeLiveness(methodNode)
+        val variableToSpilledMapping = arrayListOf<List<Pair<Int, String>>>()
 
         for (suspension in suspensionPoints) {
             val suspensionCallBegin = suspension.suspensionCallBegin
@@ -395,6 +431,8 @@ class CoroutineTransformerMethodVisitor(
             // So we only spill variables that are alive at the begin of suspension point.
             // NB: it's also rather useful for sake of optimization
             val livenessFrame = livenessFrames[suspensionCallBegin.index()]
+
+            val variableToSpilled = arrayListOf<Pair<Int, String>>()
 
             // 0 - this
             // 1 - parameter
@@ -431,6 +469,7 @@ class CoroutineTransformerMethodVisitor(
                 varsCountByType[normalizedType] = indexBySort
 
                 val fieldName = normalizedType.fieldNameForVar(indexBySort)
+                variableToSpilled.add(index to fieldName)
 
                 postponedActions.add {
                     with(instructions) {
@@ -453,6 +492,8 @@ class CoroutineTransformerMethodVisitor(
                 }
             }
 
+            variableToSpilledMapping.add(variableToSpilled)
+
             varsCountByType.forEach {
                 maxVarsCountByType[it.key] = Math.max(maxVarsCountByType[it.key] ?: 0, it.value)
             }
@@ -469,6 +510,7 @@ class CoroutineTransformerMethodVisitor(
                 )
             }
         }
+        return variableToSpilledMapping
     }
 
     /**

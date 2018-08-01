@@ -360,7 +360,8 @@ class CoroutineCodegenForLambda private constructor(
                         shouldPreserveClassInitialization = constructorCallNormalizationMode.shouldPreserveClassInitialization,
                         containingClassInternalName = v.thisName,
                         isForNamedFunction = false,
-                        languageVersionSettings = languageVersionSettings
+                        languageVersionSettings = languageVersionSettings,
+                        sourceFile = element.containingFile.name
                     )
                 }
 
