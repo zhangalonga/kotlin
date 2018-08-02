@@ -60,12 +60,12 @@ dependencies {
     proguardLibraryJars(files(firstFromJavaHomeThatExists("jre/lib/rt.jar", "../Classes/classes.jar"),
             firstFromJavaHomeThatExists("jre/lib/jsse.jar", "../Classes/jsse.jar"),
             toolsJar()))
-    proguardLibraryJars(projectDist(":kotlin-stdlib"))
-    proguardLibraryJars(projectDist(":kotlin-script-runtime"))
-    proguardLibraryJars(projectDist(":kotlin-reflect"))
+    proguardLibraryJars(project(":kotlin-stdlib"))
+    proguardLibraryJars(project(":kotlin-script-runtime"))
+    proguardLibraryJars(project(":kotlin-reflect"))
     proguardLibraryJars(project(":kotlin-annotations-jvm"))
-    proguardLibraryJars(projectDist(":kotlin-scripting-common"))
-    proguardLibraryJars(projectDist(":kotlin-scripting-jvm"))
+    proguardLibraryJars(project(":kotlin-scripting-common"))
+    proguardLibraryJars(project(":kotlin-scripting-jvm"))
 
     compile(project(":kotlin-stdlib"))
     compile(project(":kotlin-script-runtime"))

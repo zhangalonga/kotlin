@@ -17,7 +17,7 @@ dependencies {
     testCompile(projectTests(":jps-plugin"))
     testCompile(project(":compiler:tests-common"))
     testCompile(commonDep("junit:junit"))
-    testCompile(projectDist(":kotlin-test:kotlin-test-jvm"))
+    testCompile(project(":kotlin-test:kotlin-test-jvm"))
     testCompile(projectTests(":kotlin-build-common"))
     testCompileOnly(intellijDep()) { includeJars("openapi", "jps-builders") }
     testCompileOnly(intellijDep("jps-build-test")) { includeJars("jps-build-test") }
