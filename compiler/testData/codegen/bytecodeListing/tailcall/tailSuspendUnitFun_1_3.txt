@@ -5,6 +5,7 @@ public final class Generic {
 }
 
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class TailSuspendUnitFunKt$callsIntNotTailCall$1 {
     field label: int
     synthetic field result: java.lang.Object
@@ -14,6 +15,7 @@ final class TailSuspendUnitFunKt$callsIntNotTailCall$1 {
 }
 
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class TailSuspendUnitFunKt$lambdaAsParameterNotTailCall$1 {
     field L$0: java.lang.Object
     field label: int
@@ -24,6 +26,7 @@ final class TailSuspendUnitFunKt$lambdaAsParameterNotTailCall$1 {
 }
 
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class TailSuspendUnitFunKt$multipleExitPointsNotTailCall$1 {
     field Z$0: boolean
     field label: int
@@ -33,6 +36,7 @@ final class TailSuspendUnitFunKt$multipleExitPointsNotTailCall$1 {
     public final @org.jetbrains.annotations.Nullable method invokeSuspend(@org.jetbrains.annotations.NotNull p0: java.lang.Object): java.lang.Object
 }
 
+@kotlin.coroutines.jvm.internal.DebugMetadata
 @kotlin.Metadata
 final class TailSuspendUnitFunKt$multipleExitPointsWhen$2 {
     field label: int
@@ -45,6 +49,7 @@ final class TailSuspendUnitFunKt$multipleExitPointsWhen$2 {
 }
 
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class TailSuspendUnitFunKt$notTailCall$1 {
     field label: int
     synthetic field result: java.lang.Object
@@ -64,6 +69,7 @@ final class TailSuspendUnitFunKt$useGenericIngerType$2 {
 }
 
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class TailSuspendUnitFunKt$useNullableUnit$1 {
     field label: int
     synthetic field result: java.lang.Object

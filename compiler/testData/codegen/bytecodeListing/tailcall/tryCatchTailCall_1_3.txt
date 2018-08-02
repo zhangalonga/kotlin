@@ -1,4 +1,5 @@
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class TryCatchTailCallKt$catchException$1 {
     field label: int
     synthetic field result: java.lang.Object

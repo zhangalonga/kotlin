@@ -179,6 +179,10 @@ class CoroutineTransformerMethodVisitor(
             label.safeAs<AbstractInsnNode>()?.findNextOrNull { it is LineNumberNode }.safeAs<LineNumberNode>()
                 .sure { "lineNumber of label $label is not found, check state machine generation" }.line
         }
+        // TODO: HACK around crossinline suspend functions: otherwise DebugMetadata is duplicated
+        if (classBuilderForCoroutineState.thisName.contains("\$\$inlined\$")) {
+            return
+        }
         val metadata = classBuilderForCoroutineState.newAnnotation(debugMetadataAnnotationAsmType.descriptor, true)
         // TODO: support inlined functions (similar to SMAP)
         metadata.visitArray("runtimeSourceFiles").also { v ->

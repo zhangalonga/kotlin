@@ -1,4 +1,5 @@
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class Controller$multipleSuspensions$1 {
     field L$0: java.lang.Object
     field label: int
@@ -10,6 +11,7 @@ final class Controller$multipleSuspensions$1 {
 }
 
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class Controller$nonTailCall$1 {
     field L$0: java.lang.Object
     field label: int
@@ -31,6 +33,7 @@ public final class Controller {
     public final @org.jetbrains.annotations.Nullable method tailCall(@org.jetbrains.annotations.NotNull p0: kotlin.coroutines.Continuation): java.lang.Object
 }
 
+@kotlin.coroutines.jvm.internal.DebugMetadata
 @kotlin.Metadata
 final class CoroutineFieldsKt$box$1 {
     synthetic final field $result: kotlin.jvm.internal.Ref$ObjectRef

@@ -1,4 +1,5 @@
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class CoroutineContextIntrinsicKt$notTailCall$1 {
     field label: int
     synthetic field result: java.lang.Object

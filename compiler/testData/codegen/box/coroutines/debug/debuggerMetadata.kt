@@ -16,8 +16,8 @@ fun getLabelValue(c: Continuation<*>): Int {
     return field.get(c) as Int - 1
 }
 
-suspend fun getSourceFileAndLineNumberFromContinuation() = suspendCoroutineUninterceptedOrReturn<Pair<String, Int>> {
-    getSourceFileAndLineNumber(it, getLabelValue(it))
+suspend fun getVariableToSpilled() = suspendCoroutineUninterceptedOrReturn<Map<Int, String>> {
+    getVariableToSpilledMapping(it, getLabelValue(it))
 }
 
 var continuation: Continuation<*>? = null
@@ -29,13 +29,15 @@ suspend fun suspendHere() = suspendCoroutineUninterceptedOrReturn<Unit> {
 
 suspend fun dummy() {}
 
-suspend fun named(): Pair<String, Int> {
+suspend fun named(): String {
     dummy()
-    return getSourceFileAndLineNumberFromContinuation()
+    val s = ""
+    return getVariableToSpilled()[1] ?: "named fail"
 }
 
 suspend fun suspended() {
     dummy()
+    val s = ""
     suspendHere()
 }
 
@@ -44,26 +46,27 @@ fun builder(c: suspend () -> Unit) {
 }
 
 fun box(): String {
-    var res: Any? = null
+    var res: String = ""
     builder {
         res = named()
     }
-    if (res != Pair("runtimeDebugMetadata.kt", 34)) {
+    if (res != "L$0") {
         return "" + res
     }
     builder {
         dummy()
-        res = getSourceFileAndLineNumberFromContinuation()
+        val a = ""
+        res = getVariableToSpilled()[2] ?: "lambda fail"
     }
-    if (res != Pair("runtimeDebugMetadata.kt", 56)) {
+    if (res != "L$0") {
         return "" + res
     }
 
     builder {
         suspended()
     }
-    res = getSourceFileAndLineNumber(continuation!!, getLabelValue(continuation!!))
-    if (res != Pair("runtimeDebugMetadata.kt", 39)) {
+    res = getVariableToSpilledMapping(continuation!!, getLabelValue(continuation!!))[1] ?: "suspended fail"
+    if (res != "L$0") {
         return "" + res
     }
     return "OK"

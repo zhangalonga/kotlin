@@ -6248,6 +6248,11 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
                 KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/box/coroutines/debug"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.JVM, true);
             }
 
+            @TestMetadata("debuggerMetadata.kt")
+            public void testDebuggerMetadata() throws Exception {
+                runTest("compiler/testData/codegen/box/coroutines/debug/debuggerMetadata.kt");
+            }
+
             @TestMetadata("runtimeDebugMetadata.kt")
             public void testRuntimeDebugMetadata() throws Exception {
                 runTest("compiler/testData/codegen/box/coroutines/debug/runtimeDebugMetadata.kt");

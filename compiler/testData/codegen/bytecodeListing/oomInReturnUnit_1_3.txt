@@ -1,4 +1,5 @@
 @kotlin.Metadata
+@kotlin.coroutines.jvm.internal.DebugMetadata
 final class OomInReturnUnitKt$test$1 {
     field L$0: java.lang.Object
     field label: int
