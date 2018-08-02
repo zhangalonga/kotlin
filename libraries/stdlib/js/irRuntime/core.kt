@@ -29,79 +29,85 @@ fun equals(obj1: dynamic, obj2: dynamic): Boolean {
     """).unsafeCast<Boolean>()
 }
 
+fun anyEquals(obj1: dynamic, obj2: dynamic): Boolean {
+    if (js("obj1 == null").unsafeCast<Boolean>()) {
+        return js("obj2 == null").unsafeCast<Boolean>();
+    }
+    if (js("obj2 == null").unsafeCast<Boolean>()) {
+        return false;
+    }
+    return js("obj1 === obj2").unsafeCast<Boolean>()
+}
+
+
 fun toString(o: dynamic): String = when {
     js("o == null").unsafeCast<Boolean>() -> "null"
     isArrayish(o) -> "[...]"
     else -> js("o.toString()").unsafeCast<String>()
 }
 
-// TODO: Simplify, extract kotlin declarations for inner helper functions
+fun anyToString(o: dynamic): String = js("Object.prototype.toString.call(o)")
+
 fun hashCode(obj: dynamic): Int {
-    return js(
-        """
-    function hashCode(obj) {
-        if (obj == null) {
-            return 0;
-        }
-        var objType = typeof obj;
-        if ("object" === objType) {
-            return "function" === typeof obj.hashCode ? obj.hashCode() : getObjectHashCode(obj);
-        }
-        if ("function" === objType) {
-            return getObjectHashCode(obj);
-        }
-        if ("number" === objType) {
-            return getNumberHashCode(obj);
-        }
-        if ("boolean" === objType) {
-            return Number(obj)
-        }
+    if (obj == null)
+        return 0
 
-        var str = String(obj);
-        return getStringHashCode(str);
-    };
+    return when (typeOf(obj)) {
+        "object" ->  if ("function" === js("typeof obj.hashCode")) js("obj.hashCode()") else getObjectHashCode(obj)
+        "function" -> getObjectHashCode(obj)
+        "number" -> getNumberHashCode(obj)
+        "boolean" -> if(obj.unsafeCast<Boolean>()) 1 else 0
+        else -> getStringHashCode(js("String(obj)"))
+    }
+}
 
-    /** @const */
+fun anyHashCode(obj: dynamic): Int {
+    if (obj == null)
+        return 0
+
+    return when (typeOf(obj)) {
+        "object",
+        "function" -> getObjectHashCode(obj)
+        "number" -> getNumberHashCode(obj)
+        "boolean" -> if(obj.unsafeCast<Boolean>()) 1 else 0
+        else -> getStringHashCode(js("String(obj)"))
+    }
+}
+
+fun getObjectHashCode(obj: dynamic) = js("""
     var POW_2_32 = 4294967296;
-    // TODO: consider switching to Symbol type once we are on ES6.
-    /** @const */
     var OBJECT_HASH_CODE_PROPERTY_NAME = "kotlinHashCodeValue${"$"}";
 
-    var byteBuffer = new ArrayBuffer(8);
-    var bufFloat64 = new Float64Array(byteBuffer);
-    var bufInt32 = new Int32Array(byteBuffer);
-
-    function getObjectHashCode(obj) {
-        if (!(OBJECT_HASH_CODE_PROPERTY_NAME in obj)) {
-            var hash = (Math.random() * POW_2_32) | 0; // Make 32-bit singed integer.
-            Object.defineProperty(obj, OBJECT_HASH_CODE_PROPERTY_NAME, { value:  hash, enumerable: false });
-        }
-        return obj[OBJECT_HASH_CODE_PROPERTY_NAME];
+    if (!(OBJECT_HASH_CODE_PROPERTY_NAME in obj)) {
+        var hash = (Math.random() * POW_2_32) | 0; // Make 32-bit singed integer.
+        Object.defineProperty(obj, OBJECT_HASH_CODE_PROPERTY_NAME, { value: hash, enumerable: false });
     }
+    return obj[OBJECT_HASH_CODE_PROPERTY_NAME];
+""").unsafeCast<Int>();
 
-    function getStringHashCode(str) {
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-            var code  = str.charCodeAt(i);
-            hash  = (hash * 31 + code) | 0; // Keep it 32-bit.
-        }
-        return hash;
+fun getStringHashCode(str: String): Int {
+    var hash = 0
+    val length: Int = js("str.length")  // TODO: Implement WString.length
+    for (i in 0..length-1) {
+        val code: Int = js("str.charCodeAt(i)")
+        hash = hash * 31 + code
     }
-
-    function getNumberHashCode(obj) {
-        if ((obj | 0) === obj) {
-            return obj | 0;
-        }
-        else {
-            bufFloat64[0] = obj;
-            return (bufInt32[1] * 31 | 0) + bufInt32[0] | 0;
-        }
-    }
-
-    return hashCode(obj);
-    """
-    ).unsafeCast<Int>()
+    return hash
 }
+
+fun getNumberHashCode(obj: dynamic) = js("""
+    if ((obj | 0) === obj) {
+        return obj | 0;
+    }
+    else {
+        var byteBuffer = new ArrayBuffer (8);
+        var bufFloat64 = new Float64Array (byteBuffer);
+        var bufInt32 = new Int32Array (byteBuffer);
+
+        bufFloat64[0] = obj;
+        return (bufInt32[1] * 31 | 0)+bufInt32[0] | 0;
+    }
+""").unsafeCast<Int>()
 
 // TODO: Use getObjectHashCode instead
 fun identityHashCode(obj: dynamic): Int = hashCode(obj)
