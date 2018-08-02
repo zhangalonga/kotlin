@@ -92,6 +92,8 @@ class LazyTopDownAnalyzer(
                 }
 
                 override fun visitScriptBody(scriptBody: KtScriptBody) {
+                    val simpleFunctionDescriptor = lazyDeclarationResolver.resolveToDescriptor(scriptBody) as SimpleFunctionDescriptor
+                    c.scriptBodies.put(scriptBody, simpleFunctionDescriptor)
                 }
 
                 override fun visitKtFile(file: KtFile) {

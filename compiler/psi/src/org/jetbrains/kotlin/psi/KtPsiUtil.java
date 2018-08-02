@@ -250,7 +250,7 @@ public class KtPsiUtil {
     public static KtScript getScript(@NotNull KtDeclaration namedDeclaration) {
         PsiElement parent = namedDeclaration.getParent();
         if (parent != null && parent.getParent() instanceof KtScriptBody) {
-            return (KtScript) parent.getParent();
+            return (KtScript) parent.getParent().getParent();
         }
         else {
             return null;

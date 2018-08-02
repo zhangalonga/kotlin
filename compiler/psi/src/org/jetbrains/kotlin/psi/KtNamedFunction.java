@@ -21,6 +21,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.ItemPresentationProviders;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiModifiableCodeBlock;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,10 @@ public class KtNamedFunction extends KtTypeParameterListOwnerStub<KotlinFunction
 
     public KtNamedFunction(@NotNull KotlinFunctionStub stub) {
         super(stub, KtStubElementTypes.FUNCTION);
+    }
+
+    public KtNamedFunction(@NotNull KotlinFunctionStub stub, @NotNull IStubElementType nodeType) {
+        super(stub, nodeType);
     }
 
     @Override

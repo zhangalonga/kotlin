@@ -85,6 +85,10 @@ public class DeclarationScopeProviderImpl implements DeclarationScopeProvider {
             LazyScriptDescriptor scriptDescriptor = (LazyScriptDescriptor) lazyDeclarationResolver.resolveToDescriptor(scriptDeclaration);
             return scriptDescriptor.getScopeForInitializerResolution();
         }
+        if (parentDeclaration instanceof KtScript) {
+            LazyScriptDescriptor scriptDescriptor = (LazyScriptDescriptor) lazyDeclarationResolver.resolveToDescriptor(parentDeclaration);
+            return scriptDescriptor.getScopeForInitializerResolution();
+        }
 
         throw new IllegalStateException("Don't call this method for local declarations: " + ktDeclaration + "\n" +
                                         PsiUtilsKt.getElementTextWithContext(ktDeclaration));

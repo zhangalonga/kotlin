@@ -191,9 +191,9 @@ public abstract class MemberCodegen<T extends KtPureElement/* TODO: & KtDeclarat
     }
 
     public void genSimpleMember(@NotNull KtDeclaration declaration) {
-        if (declaration instanceof KtNamedFunction) {
+        if (declaration instanceof KtFunction) {
             try {
-                functionCodegen.gen((KtNamedFunction) declaration);
+                functionCodegen.gen((KtFunction) declaration);
             }
             catch (ProcessCanceledException | CompilationException e) {
                 throw e;

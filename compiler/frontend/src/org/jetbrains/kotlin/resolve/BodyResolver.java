@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.resolve.calls.results.OverloadResolutionResults;
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo;
 import org.jetbrains.kotlin.resolve.calls.util.CallMaker;
 import org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil;
+import org.jetbrains.kotlin.resolve.lazy.descriptors.LazyScriptDescriptor;
 import org.jetbrains.kotlin.resolve.scopes.*;
 import org.jetbrains.kotlin.types.*;
 import org.jetbrains.kotlin.types.expressions.ExpressionTypingServices;
@@ -117,6 +118,7 @@ public class BodyResolver {
         resolveAnonymousInitializers(c);
         resolvePrimaryConstructorParameters(c);
         resolveSecondaryConstructors(c);
+        resolveScriptBodies(c);
 
         resolveFunctionBodies(c);
 
@@ -234,6 +236,31 @@ public class BodyResolver {
     private ConstructorDescriptor getDelegatedConstructor(@NotNull ConstructorDescriptor constructor) {
         ResolvedCall<ConstructorDescriptor> call = trace.get(CONSTRUCTOR_RESOLVED_DELEGATION_CALL, constructor);
         return call == null || !call.getStatus().isSuccess() ? null : call.getResultingDescriptor().getOriginal();
+    }
+
+    private void resolveScriptBodies(@NotNull BodiesResolveContext c) {
+        for (Map.Entry<KtScriptBody, SimpleFunctionDescriptor> entry : c.getScriptBodies().entrySet()) {
+            LexicalScope declaringScope = c.getDeclaringScope(entry.getKey());
+            assert declaringScope != null : "Declaring scope should be registered before body resolve";
+            resolveScriptBody(c.getOuterDataFlowInfo(), trace, entry.getKey(), entry.getValue(), declaringScope);
+        }
+    }
+
+    private void resolveScriptBody(
+            @NotNull DataFlowInfo outerDataFlowInfo,
+            @NotNull BindingTrace trace,
+            @NotNull KtScriptBody scriptBody,
+            @NotNull SimpleFunctionDescriptor descriptor,
+            @NotNull LexicalScope declaringScope
+    ) {
+        ForceResolveUtil.forceResolveAllContents(descriptor.getAnnotations());
+
+        resolveFunctionBody(outerDataFlowInfo, trace, scriptBody, descriptor, declaringScope,
+                            null,
+                            scope -> new LexicalScopeImpl(
+                                    scope, descriptor, scope.isOwnerDescriptorAccessibleByLabel(), scope.getImplicitReceiver(),
+                                    LexicalScopeKind.FUNCTION_HEADER
+                            ));
     }
 
     public void resolveBodies(@NotNull BodiesResolveContext c) {
@@ -861,6 +888,9 @@ public class BodyResolver {
                 resolveFunctionBody(c.getOuterDataFlowInfo(), trace, declaration, entry.getValue(), scope);
             }
         }
+        //for (Map.Entry<KtScript, LazyScriptDescriptor> script : c.getScripts().entrySet()) {
+        //    script.
+        //}
     }
 
     public void resolveFunctionBody(

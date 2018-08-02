@@ -47,6 +47,7 @@ public class TopDownAnalysisContext implements BodiesResolveContext {
     private Map<KtCallableDeclaration, CallableMemberDescriptor> members = null;
 
     private final Map<KtScript, LazyScriptDescriptor> scripts = Maps.newLinkedHashMap();
+    private final Map<KtScriptBody, SimpleFunctionDescriptor> scriptBodies = Maps.newLinkedHashMap();
 
     private final TopDownAnalysisMode topDownAnalysisMode;
     private final DeclarationScopeProvider declarationScopeProvider;
@@ -116,6 +117,11 @@ public class TopDownAnalysisContext implements BodiesResolveContext {
     @NotNull
     public Map<KtScript, LazyScriptDescriptor> getScripts() {
         return scripts;
+    }
+
+    @Override
+    public Map<KtScriptBody, SimpleFunctionDescriptor> getScriptBodies() {
+        return scriptBodies;
     }
 
     public Map<KtParameter, PropertyDescriptor> getPrimaryConstructorParameterProperties() {

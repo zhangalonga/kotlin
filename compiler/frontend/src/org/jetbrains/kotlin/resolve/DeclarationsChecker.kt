@@ -119,6 +119,10 @@ class DeclarationsChecker(
             exposedChecker.checkFunction(declaration, constructorDescriptor)
         }
 
+        for ((scriptBody, functionDescriptor) in bodiesResolveContext.scriptBodies.entries) {
+            // TODO:
+        }
+
         for ((declaration, typeAliasDescriptor) in bodiesResolveContext.typeAliases.entries) {
             checkTypeAliasDeclaration(declaration, typeAliasDescriptor)
             modifiersChecker.checkModifiersForDeclaration(declaration, typeAliasDescriptor)

@@ -1160,7 +1160,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
     }
 
     /* package */ StackValue generateBlock(@NotNull KtBlockExpression expression, boolean isStatement) {
-        if (expression.getParent() instanceof KtNamedFunction) {
+        if (expression.getParent() instanceof KtFunction) {
             // For functions end of block should be end of function label
             return generateBlock(expression.getStatements(), isStatement, null, context.getMethodEndLabel());
         }
@@ -1200,13 +1200,6 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
             KtExpression possiblyLabeledStatement = iterator.next();
 
             KtElement statement = KtPsiUtil.safeDeparenthesize(possiblyLabeledStatement);
-
-            if (statement instanceof KtNamedDeclaration) {
-                KtNamedDeclaration declaration = (KtNamedDeclaration) statement;
-                if (KtPsiUtil.isScriptDeclaration(declaration)) {
-                    continue;
-                }
-            }
 
             putDescriptorIntoFrameMap(statement);
 

@@ -85,6 +85,13 @@ public class ControlFlowAnalyzer {
         controlFlowInformationProvider.checkFunction(builtIns.getUnitType());
     }
 
+    private void checkScriptBody(@NotNull KtScriptBody scriptBody) {
+        ControlFlowInformationProvider controlFlowInformationProvider =
+                new ControlFlowInformationProvider(scriptBody, trace, languageVersionSettings, diagnosticSuppressor);
+        controlFlowInformationProvider.checkDeclaration();
+        controlFlowInformationProvider.checkFunction(builtIns.getUnitType());
+    }
+
     private void checkDeclarationContainer(@NotNull BodiesResolveContext c, KtDeclarationContainer declarationContainer) {
         // A pseudocode of class/object initialization corresponds to a class/object
         // or initialization of properties corresponds to a package declared in a file

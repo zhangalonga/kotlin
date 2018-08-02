@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.resolve.calls.context.ContextDependency
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowValueFactory
 import org.jetbrains.kotlin.resolve.calls.util.isSingleUnderscore
+import org.jetbrains.kotlin.resolve.descriptorUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil
 import org.jetbrains.kotlin.resolve.scopes.LexicalScope
 import org.jetbrains.kotlin.resolve.source.toSourceElement
@@ -155,41 +156,13 @@ class LocalVariableResolver(
         dataFlowInfo: DataFlowInfo,
         trace: BindingTrace
     ): VariableDescriptor {
-        val containingDeclaration = scope.ownerDescriptor
         val result: VariableDescriptorWithInitializerImpl
         val type: KotlinType
-        if (KtPsiUtil.isScriptDeclaration(variable)) {
-            val propertyDescriptor = PropertyDescriptorImpl.create(
-                containingDeclaration,
-                annotationResolver.resolveAnnotationsWithArguments(scope, variable.modifierList, trace),
-                Modality.FINAL,
-                Visibilities.INTERNAL,
-                variable.isVar,
-                KtPsiUtil.safeName(variable.name),
-                CallableMemberDescriptor.Kind.DECLARATION,
-                variable.toSourceElement(),
-                /* lateInit = */ false,
-                /* isConst = */ false,
-                /* isExpect = */ false,
-                /* isActual = */ false,
-                /* isExternal = */ false,
-                variable is KtProperty && variable.hasDelegate()
-            )
-            // For a local variable the type must not be deferred
-            type = variableTypeAndInitializerResolver.resolveType(propertyDescriptor, scope, variable, dataFlowInfo, trace, local = true)
-
-            val receiverParameter = (containingDeclaration as ScriptDescriptor).thisAsReceiverParameter
-            propertyDescriptor.setType(type, emptyList<TypeParameterDescriptor>(), receiverParameter, null as KotlinType?)
-            initializeWithDefaultGetterSetter(propertyDescriptor)
-            trace.record(BindingContext.VARIABLE, variable, propertyDescriptor)
-            result = propertyDescriptor
-        } else {
-            val variableDescriptor = resolveLocalVariableDescriptorWithType(scope, variable, null, trace)
-            // For a local variable the type must not be deferred
-            type = variableTypeAndInitializerResolver.resolveType(variableDescriptor, scope, variable, dataFlowInfo, trace, local = true)
-            variableDescriptor.setOutType(type)
-            result = variableDescriptor
-        }
+        val variableDescriptor = resolveLocalVariableDescriptorWithType(scope, variable, null, trace)
+        // For a local variable the type must not be deferred
+        type = variableTypeAndInitializerResolver.resolveType(variableDescriptor, scope, variable, dataFlowInfo, trace, local = true)
+        variableDescriptor.setOutType(type)
+        result = variableDescriptor
         variableTypeAndInitializerResolver.setConstantForVariableIfNeeded(result, scope, variable, dataFlowInfo, type, trace)
         // Type annotations also should be resolved
         ForceResolveUtil.forceResolveAllContents(type.annotations)

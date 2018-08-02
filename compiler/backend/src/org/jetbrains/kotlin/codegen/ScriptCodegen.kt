@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.codegen
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.kotlin.codegen.AsmUtil.writeAnnotationData
 import org.jetbrains.kotlin.codegen.context.CodegenContext
 import org.jetbrains.kotlin.codegen.context.MethodContext
@@ -14,9 +15,11 @@ import org.jetbrains.kotlin.codegen.serialization.JvmSerializerExtension
 import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ScriptDescriptor
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.load.java.JvmAnnotationNames
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.getElementTextWithContext
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
@@ -26,6 +29,8 @@ import org.jetbrains.kotlin.resolve.jvm.AsmTypes.OBJECT_TYPE
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin.Companion.NO_ORIGIN
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.OtherOrigin
+import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodSignature
+import org.jetbrains.kotlin.script.ScriptBodyTarget
 import org.jetbrains.kotlin.serialization.DescriptorSerializer
 import org.jetbrains.org.objectweb.asm.Opcodes.*
 import org.jetbrains.org.objectweb.asm.Type
@@ -230,14 +235,19 @@ class ScriptCodegen private constructor(
 
     private fun genMembers() {
         for (declaration in scriptDeclaration.declarations) {
-            if (declaration is KtProperty || declaration is KtNamedFunction || declaration is KtTypeAlias) {
-                genSimpleMember(declaration)
-            }
-            else if (declaration is KtClassOrObject) {
-                genClassOrObject(declaration)
-            }
-            else if (declaration is KtDestructuringDeclaration) {
-                for (entry in declaration.entries) {
+            when (declaration) {
+                is KtScriptBody -> {
+                    val descriptor = bindingContext.get(BindingContext.FUNCTION, declaration)!!
+                    val origin = OtherOrigin(declaration, descriptor)
+                    val strategy = ScriptBodyGenerationStrategy(
+                        bindingContext, state, scriptDeclaration, declaration, descriptor,
+                        scriptContext.script.kotlinScriptDefinition.scriptBodyTarget
+                    )
+                    functionCodegen.generateMethod(origin, descriptor, strategy)
+                }
+                is KtProperty, is KtNamedFunction, is KtTypeAlias -> genSimpleMember(declaration)
+                is KtClassOrObject -> genClassOrObject(declaration)
+                is KtDestructuringDeclaration -> for (entry in declaration.entries) {
                     genSimpleMember(entry)
                 }
             }
@@ -269,6 +279,43 @@ class ScriptCodegen private constructor(
             )
 
             return ScriptCodegen(declaration, state, scriptContext, builder)
+        }
+    }
+}
+
+
+private class ScriptBodyGenerationStrategy(
+    val bindingContext: BindingContext,
+    val state: GenerationState,
+    val script: KtScript,
+    val declaration: KtScriptBody,
+    val descriptor: SimpleFunctionDescriptor,
+    val scriptBodyTarget: ScriptBodyTarget
+) :
+    FunctionGenerationStrategy.FunctionDefault(state, declaration) {
+
+    override fun doGenerateBody(codegen: ExpressionCodegen, signature: JvmMethodSignature) {
+        val bodyExpression = declaration.bodyExpression ?: error("Function has no body: " + declaration.getElementTextWithContext())
+        codegen.gen(bodyExpression)
+
+        if (scriptBodyTarget == ScriptBodyTarget.SingleAbstractMethod) {
+            codegen.returnExpression(bodyExpression)
+        } else {
+            val vars = PsiTreeUtil.getChildrenOfTypeAsList(script.blockExpression, KtDeclaration::class.java).map {
+                val varDescriptor = bindingContext.get(BindingContext.VARIABLE, it)!!
+                varDescriptor to codegen.frameMap.getIndex(varDescriptor)
+            }
+            val retType = AsmUtil.getArrayType(OBJECT_TYPE)
+            val retIdx = codegen.frameMap.enterTemp(retType)
+            val array = StackValue.local(retIdx, retType)
+
+            for (v in vars) {
+                val type = codegen.typeMapper.mapType(v.first.type)
+                val variable = StackValue.local(v.second, type, v.first)
+                val arrayElement = StackValue.arrayElement(type, null, array, StackValue.constant(v.second, Type.INT_TYPE))
+                arrayElement.store(variable, codegen.v)
+            }
+            codegen.v.areturn(retType)
         }
     }
 }
