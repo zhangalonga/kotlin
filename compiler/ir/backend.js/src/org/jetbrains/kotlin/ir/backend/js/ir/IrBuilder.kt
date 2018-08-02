@@ -61,12 +61,12 @@ object JsIrBuilder {
 
     fun buildValueParameter(name: String = "tmp", index: Int, type: IrType) = buildValueParameter(Name.identifier(name), index, type)
 
-    fun buildValueParameter(name: Name, index: Int, type: IrType): IrValueParameter {
+    fun buildValueParameter(name: Name, index: Int, type: IrType, origin: IrDeclarationOrigin = SYNTHESIZED_DECLARATION): IrValueParameter {
         val descriptor = WrappedValueParameterDescriptor()
         return IrValueParameterImpl(
             UNDEFINED_OFFSET,
             UNDEFINED_OFFSET,
-            SYNTHESIZED_DECLARATION,
+            origin,
             IrValueParameterSymbolImpl(descriptor),
             name,
             index,

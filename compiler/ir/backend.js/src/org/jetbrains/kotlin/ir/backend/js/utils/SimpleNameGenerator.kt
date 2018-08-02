@@ -43,7 +43,7 @@ class SimpleNameGenerator : NameGenerator {
             val nameBuilder = StringBuilder()
             when (declaration) {
                 is IrValueParameter -> {
-                    if (declaration.origin == IrDeclarationOrigin.INSTANCE_RECEIVER ||
+                    if ((context.currentFunction is IrConstructor && declaration.origin == IrDeclarationOrigin.INSTANCE_RECEIVER && declaration.name.isSpecial) ||
                         declaration == context.currentFunction?.dispatchReceiverParameter)
                         nameBuilder.append(Namer.IMPLICIT_RECEIVER_NAME)
                     else if (declaration == context.currentFunction?.extensionReceiverParameter) {

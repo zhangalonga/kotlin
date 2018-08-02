@@ -140,7 +140,7 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
     private fun getReferenceName(declaration: IrDeclaration) = when (declaration) {
         is IrConstructor -> (declaration.parent as IrClass).name.identifier
         is IrProperty -> declaration.name.identifier
-        is IrSimpleFunction -> declaration.name.identifier
+        is IrSimpleFunction -> declaration.name.asString()
         else -> TODO("WTF?")
     }
 
