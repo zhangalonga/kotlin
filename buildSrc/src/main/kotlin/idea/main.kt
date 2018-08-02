@@ -4,10 +4,10 @@ import IntelliJInstrumentCodeTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.compile.AbstractCompile
-import org.jetbrains.gradle.ext.IdeArtifacts
+import org.jetbrains.gradle.ext.TopLevelArtifact
 import java.io.File
 
-fun generateIdeArtifacts(rootProject: Project, ideArtifacts: IdeArtifacts) {
+fun generateIdeArtifacts(rootProject: Project, ideArtifacts: TopLevelArtifact) {
     val reportsDir = File("${rootProject.buildDir}/reports/idea-artifacts-cfg")
     val projectDir = rootProject.projectDir
 
@@ -84,9 +84,8 @@ fun generateIdeArtifacts(rootProject: Project, ideArtifacts: IdeArtifacts) {
                                     .flatten()
                                     .also { it.printTree(report) }
 
-                    ideArtifacts.ideArtifact("ideaPlugin") {
-                        addFiles(getFlattenned("dist/artifacts/ideaPlugin/Kotlin"))
-                    }
+                    ideArtifacts.name = "ideaPlugin"
+                    ideArtifacts.addFiles(getFlattenned("dist/artifacts/ideaPlugin/Kotlin"))
                 }
             }
         }

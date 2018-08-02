@@ -37,7 +37,7 @@ class DistModelIdeaArtifactBuilder(val rootProject: Project) {
         vFile.child.values.forEach {
             if (it.name !in files) {
                 when {
-                    it.name.endsWith(".jar") -> jar(it.name).addFiles(it, true)
+                    it.name.endsWith(".jar") -> archive(it.name).addFiles(it, true)
                     else -> directory(it.name).addFiles(it, inJar)
                 }
             }
@@ -51,14 +51,4 @@ class DistModelIdeaArtifactBuilder(val rootProject: Project) {
             val name = idea?.module?.name
             return name
         }
-
-    fun RecursiveArtifact.add(name: String, artifactType: ArtifactType): RecursiveArtifact {
-        val result = this.project.objects.newInstance(RecursiveArtifact::class.java, this.project, name, artifactType)
-                as RecursiveArtifact
-        this.children.add(result)
-        return result
-    }
-
-    fun RecursiveArtifact.directory(name: String): RecursiveArtifact = add(name, ArtifactType.DIR)
-    fun RecursiveArtifact.jar(name: String): RecursiveArtifact = add(name, ArtifactType.ARCHIVE)
 }

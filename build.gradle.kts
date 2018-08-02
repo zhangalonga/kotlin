@@ -84,6 +84,11 @@ allprojects {
     version = kotlinVersion
 }
 
+allprojects {
+    group = "org.jetbrains.kotlin"
+    version = kotlinVersion
+}
+
 extra["kotlin_root"] = rootDir
 
 val bootstrapCompileCfg = configurations.create("bootstrapCompile")
@@ -712,12 +717,14 @@ tasks.create("findShadowJarsInClasspath").doLast {
     }
 }
 
-afterEvaluate {
-    rootProject.idea {
-        project {
-            (this@project as ExtensionAware).extensions.configure<org.jetbrains.gradle.ext.ProjectSettings>("settings") {
-                ideArtifacts {
-                    org.jetbrains.kotlin.buildUtils.idea.generateIdeArtifacts(rootProject, this)
+if (ideaActive) {
+    afterEvaluate {
+        rootProject.idea {
+            project {
+                (this@project as ExtensionAware).extensions.configure<org.jetbrains.gradle.ext.ProjectSettings>("settings") {
+                    extensions.configure<org.jetbrains.gradle.ext.TopLevelArtifact>("ideArtifacts") {
+                        org.jetbrains.kotlin.buildUtils.idea.generateIdeArtifacts(rootProject, this)
+                    }
                 }
             }
         }
