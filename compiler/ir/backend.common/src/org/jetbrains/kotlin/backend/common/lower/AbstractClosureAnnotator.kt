@@ -19,10 +19,6 @@ package org.jetbrains.kotlin.backend.common.lower
 import org.jetbrains.kotlin.backend.common.peek
 import org.jetbrains.kotlin.backend.common.pop
 import org.jetbrains.kotlin.backend.common.push
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.FunctionDescriptor
-import org.jetbrains.kotlin.descriptors.ValueDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
@@ -36,38 +32,27 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils
 // TODO: rename the file.
 class Closure(val capturedValues: List<IrValueSymbol> = emptyList())
 
-class ClosureAnnotator   {
-    private val closureBuilders = mutableMapOf<DeclarationDescriptor, ClosureBuilder>()
-    private val closureBuilders2 = mutableMapOf<IrDeclaration, ClosureBuilder>()
+class ClosureAnnotator {
+    private val closureBuilders = mutableMapOf<IrDeclaration, ClosureBuilder>()
 
-    constructor(declaration: IrDeclaration)  {
+    constructor(declaration: IrDeclaration) {
         // Collect all closures for classes and functions. Collect call graph
         declaration.acceptChildrenVoid(ClosureCollectorVisitor())
     }
 
-    fun getFunctionClosure(descriptor: FunctionDescriptor) = getClosure(descriptor)
     fun getFunctionClosure(declaration: IrFunction) = getClosure(declaration)
-    fun getClassClosure(descriptor: ClassDescriptor) = getClosure(descriptor)
     fun getClassClosure(declaration: IrClass) = getClosure(declaration)
 
-    private fun getClosure(descriptor: DeclarationDescriptor) : Closure {
+    private fun getClosure(declaration: IrDeclaration): Closure {
         closureBuilders.values.forEach { it.processed = false }
         return closureBuilders
-                .getOrElse(descriptor) { throw AssertionError("No closure builder for passed descriptor.") }
-                .buildClosure()
-    }
-
-    private fun getClosure(declaration: IrDeclaration) : Closure {
-        closureBuilders2.values.forEach { it.processed = false }
-        return closureBuilders2
             .getOrElse(declaration) { throw AssertionError("No closure builder for passed descriptor.") }
             .buildClosure()
     }
 
     private class ClosureBuilder(val owner: IrDeclaration) {
         val capturedValues = mutableSetOf<IrValueSymbol>()
-        private val declaredValues = mutableSetOf<ValueDescriptor>()
-        private val declaredValues2 = mutableSetOf<IrValueDeclaration>()
+        private val declaredValues = mutableSetOf<IrValueDeclaration>()
         private val includes = mutableSetOf<ClosureBuilder>()
 
         var processed = false
@@ -94,14 +79,9 @@ class ClosureAnnotator   {
             includes.add(includingBuilder)
         }
 
-        fun declareVariable(valueDescriptor: ValueDescriptor?) {
-            if (valueDescriptor != null)
-                declaredValues.add(valueDescriptor)
-        }
-
         fun declareVariable(valueDeclaration: IrValueDeclaration?) {
             if (valueDeclaration != null)
-                declaredValues2.add(valueDeclaration)
+                declaredValues.add(valueDeclaration)
         }
 
         fun seeVariable(value: IrValueSymbol) {
@@ -109,13 +89,9 @@ class ClosureAnnotator   {
                 capturedValues.add(value)
         }
 
-        fun isExternal(valueDescriptor: ValueDescriptor): Boolean {
-            return !declaredValues.contains(valueDescriptor)
-        }
         fun isExternal(valueDeclaration: IrValueDeclaration): Boolean {
-            return !declaredValues2.contains(valueDeclaration)
+            return !declaredValues.contains(valueDeclaration)
         }
-
     }
 
     private inner class ClosureCollectorVisitor : IrElementVisitorVoid {
@@ -136,22 +112,14 @@ class ClosureAnnotator   {
         }
 
         override fun visitClass(declaration: IrClass) {
-//            val classDescriptor = declaration.descriptor
             val closureBuilder = ClosureBuilder(declaration)
-//            closureBuilders[declaration.descriptor] = closureBuilder
-            closureBuilders2[declaration] = closureBuilder
+            closureBuilders[declaration] = closureBuilder
 
-//            closureBuilder.declareVariable(classDescriptor.thisAsReceiverParameter)
             closureBuilder.declareVariable(declaration.thisReceiver)
             if (declaration.isInner) {
-//                closureBuilder.declareVariable((classDescriptor.containingDeclaration as ClassDescriptor).thisAsReceiverParameter)
                 closureBuilder.declareVariable((declaration.parent as IrClass).thisReceiver)
                 includeInParent(closureBuilder)
             }
-
-//            classDescriptor.unsubstitutedPrimaryConstructor?.valueParameters?.forEach {
-//                closureBuilder.declareVariable(it)
-//            }
 
             declaration.declarations.firstOrNull { it is IrConstructor && it.isPrimary }?.let {
                 val constructor = it as IrConstructor
@@ -164,40 +132,20 @@ class ClosureAnnotator   {
         }
 
         override fun visitFunction(declaration: IrFunction) {
-            val functionDescriptor = declaration.descriptor
-//            val closureBuilder = ClosureBuilder(functionDescriptor)
             val closureBuilder = ClosureBuilder(declaration)
-//            closureBuilders[functionDescriptor] = closureBuilder
-            closureBuilders2[declaration] = closureBuilder
+            closureBuilders[declaration] = closureBuilder
 
-//            functionDescriptor.valueParameters.forEach { closureBuilder.declareVariable(it) }
             declaration.valueParameters.forEach { closureBuilder.declareVariable(it) }
-//            closureBuilder.declareVariable(functionDescriptor.dispatchReceiverParameter)
             closureBuilder.declareVariable(declaration.dispatchReceiverParameter)
-//            closureBuilder.declareVariable(functionDescriptor.extensionReceiverParameter)
             closureBuilder.declareVariable(declaration.extensionReceiverParameter)
 
-//            if (functionDescriptor is ConstructorDescriptor) {
-//                closureBuilder.declareVariable(functionDescriptor.constructedClass.thisAsReceiverParameter)
-//                // Include closure of the class in the constructor closure.
-//                val classBuilder = closuresStack.peek()
-//                classBuilder?.let {
-//                    assert(classBuilder.owner == functionDescriptor.constructedClass)
-//                    closureBuilder.include(classBuilder)
-//                }
-//            }
-
             if (declaration is IrConstructor) {
-//                closureBuilder.declareVariable(functionDescriptor.constructedClass.thisAsReceiverParameter)
-//                closureBuilder.declareVariable((declaration.parent as IrClass).thisReceiver)
-//                val constructedClass = declaration.returnType.classifierOrFail.owner as IrClass
                 val constructedClass = (declaration.parent as IrClass)
                 closureBuilder.declareVariable(constructedClass.thisReceiver)
 
                 // Include closure of the class in the constructor closure.
                 val classBuilder = closuresStack.peek()
                 classBuilder?.let {
-//                    assert(classBuilder.owner == functionDescriptor.constructedClass)
                     assert(classBuilder.owner == constructedClass)
                     closureBuilder.include(classBuilder)
                 }
@@ -222,28 +170,13 @@ class ClosureAnnotator   {
         }
 
         override fun visitVariable(declaration: IrVariable) {
-//            closuresStack.peek()?.declareVariable(declaration.descriptor)
             closuresStack.peek()?.declareVariable(declaration)
             super.visitVariable(declaration)
         }
 
         override fun visitCatch(aCatch: IrCatch) {
-//            closuresStack.peek()?.declareVariable(aCatch.parameter)
             closuresStack.peek()?.declareVariable(aCatch.catchParameter)
             super.visitCatch(aCatch)
-        }
-
-        // Process delegating constructor calls, enum constructor calls, calls and callable references.
-        override fun visitMemberAccess(expression: IrMemberAccessExpression) {
-            expression.acceptChildrenVoid(this)
-            val descriptor = expression.descriptor
-            if (DescriptorUtils.isLocal(descriptor)) {
-//            if (dec) {
-                val builder = closureBuilders[descriptor]
-                builder?.let {
-                    closuresStack.peek()?.include(builder)
-                }
-            }
         }
 
         override fun visitDelegatingConstructorCall(expression: IrDelegatingConstructorCall) {
@@ -265,12 +198,12 @@ class ClosureAnnotator   {
             expression.acceptChildrenVoid(this)
             processMemberAccess(expression.symbol.owner)
         }
+
 //        override fun visitPropertyReference(expression: IrPropertyReference) = processMemberAccess(expression.)
 
         private fun processMemberAccess(declaration: IrDeclaration) {
             if (DescriptorUtils.isLocal(declaration.descriptor)) {
-//            if (dec) {
-                val builder = closureBuilders2[declaration]
+                val builder = closureBuilders[declaration]
                 builder?.let {
                     closuresStack.peek()?.include(builder)
                 }
