@@ -291,6 +291,7 @@ public class DefaultErrorMessages {
 
         MAP.put(PROJECTION_ON_NON_CLASS_TYPE_ARGUMENT, "Projections are not allowed on type arguments of functions and properties");
         MAP.put(SUPERTYPE_NOT_INITIALIZED, "This type has a constructor, and thus must be initialized here");
+        MAP.put(EXPECT_SUPER_CLASS_WITHOUT_CONSTRUCTORS, "This expect class must be initialized here but has no constructors");
         MAP.put(NOTHING_TO_OVERRIDE, "''{0}'' overrides nothing", NAME);
         MAP.put(VIRTUAL_MEMBER_HIDDEN, "''{0}'' hides member of supertype ''{2}'' and needs ''override'' modifier", NAME, NAME, NAME);
 

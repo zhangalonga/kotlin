@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.resolve.calls.results.OverloadResolutionResults;
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo;
 import org.jetbrains.kotlin.resolve.calls.util.CallMaker;
 import org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil;
+import org.jetbrains.kotlin.resolve.multiplatform.ExpectedActualResolver;
 import org.jetbrains.kotlin.resolve.scopes.*;
 import org.jetbrains.kotlin.types.*;
 import org.jetbrains.kotlin.types.expressions.ExpressionTypingServices;
@@ -375,7 +376,25 @@ public class BodyResolver {
                     !descriptor.isExpect() && !isEffectivelyExternal(descriptor) &&
                     !ErrorUtils.isError(superClass)
                 ) {
-                    trace.report(SUPERTYPE_NOT_INITIALIZED.on(specifier));
+                    ClassDescriptor expectSuperClass = superClass.isExpect()
+                                                       ? superClass : null;
+                    if (expectSuperClass == null) {
+                        List<MemberDescriptor> expectedList = ExpectedActualResolver.INSTANCE.findCompatibleExpectedForActual(
+                                superClass,
+                                DescriptorUtils.getContainingModule(descriptor)
+                        );
+                        if (expectedList.size() > 0) {
+                            MemberDescriptor firstExpected = expectedList.get(0);
+                            if (firstExpected instanceof ClassDescriptor) {
+                                expectSuperClass = (ClassDescriptor) firstExpected;
+                            }
+                        }
+                    }
+                    if (expectSuperClass != null && expectSuperClass.getConstructors().isEmpty()) {
+                        trace.report(EXPECT_SUPER_CLASS_WITHOUT_CONSTRUCTORS.on(specifier));
+                    } else {
+                        trace.report(SUPERTYPE_NOT_INITIALIZED.on(specifier));
+                    }
                 }
             }
 

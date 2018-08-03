@@ -282,6 +282,7 @@ public interface Errors {
     DiagnosticFactory0<PsiElement> CYCLIC_SCOPES_WITH_COMPANION = DiagnosticFactory0.create(WARNING);
 
     DiagnosticFactory0<KtSuperTypeEntry> SUPERTYPE_NOT_INITIALIZED = DiagnosticFactory0.create(ERROR);
+    DiagnosticFactory0<KtSuperTypeEntry> EXPECT_SUPER_CLASS_WITHOUT_CONSTRUCTORS = DiagnosticFactory0.create(ERROR);
 
     DiagnosticFactory0<KtTypeReference> DELEGATION_NOT_TO_INTERFACE = DiagnosticFactory0.create(ERROR);
     DiagnosticFactory2<KtClassOrObject, CallableMemberDescriptor, List<CallableMemberDescriptor>> DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE =
