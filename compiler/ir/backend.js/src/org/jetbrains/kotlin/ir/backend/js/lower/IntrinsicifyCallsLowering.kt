@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.backend.common.utils.isSubtypeOfClass
 import org.jetbrains.kotlin.descriptors.PropertyAccessorDescriptor
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
+import org.jetbrains.kotlin.ir.backend.js.lower.EqualityLoweringType.*
 import org.jetbrains.kotlin.ir.backend.js.utils.*
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
@@ -368,16 +369,17 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
     private fun transformEqeqOperator(call: IrCall): IrExpression {
         val lhs = call.getValueArgument(0)!!
         val rhs = call.getValueArgument(1)!!
+        if (lhs.type is IrDynamicType) return irCall(call, intrinsics.jsEqeq.symbol)
 
         // Special optimization for "<expression> == null"
         if (lhs.isNullConst() || rhs.isNullConst())
             return irCall(call, intrinsics.jsEqeq.symbol)
 
         return when (translateEquals(lhs.type, rhs.type)) {
-            is IdentityOperator -> irCall(call, intrinsics.jsEqeqeq.symbol)
-            is EqualityOperator -> irCall(call, intrinsics.jsEqeq.symbol)
-            is RuntimeFunctionCall -> irCall(call, intrinsics.jsEquals)
-            is RuntimeOrMethodCall -> {
+            IDENTITY_OPERATOR -> irCall(call, intrinsics.jsEqeqeq.symbol)
+            EQUALITY_OPERATOR -> irCall(call, intrinsics.jsEqeq.symbol)
+            RUNTIME_FUNCTION_CALL -> irCall(call, intrinsics.jsEquals)
+            RUNTIME_OR_METHOD_CALL -> {
                 assert(!lhs.type.isNullable())
                 val equalsMethod = lhs.type.findEqualsMethod(rhs.type)
                 if (equalsMethod != null) {
@@ -466,15 +468,13 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
     private fun transformEqualsMethodCall(call: IrCall): IrExpression {
         if (call.superQualifier != null) return call
         val symbol = call.symbol
-        if (!symbol.isBound) return call
-        val function = (symbol.owner as? IrFunction) ?: return call
-        val lhs = function.dispatchReceiverParameter ?: function.extensionReceiverParameter ?: return call
+        val lhs = call.dispatchReceiver ?: return call
         val rhs = call.getValueArgument(0) ?: return call
         return when (translateEquals(lhs.type, rhs.type)) {
-            is IdentityOperator -> irCall(call, intrinsics.jsEqeqeq.symbol)
-            is EqualityOperator -> irCall(call, intrinsics.jsEqeq.symbol)
-            is RuntimeFunctionCall -> irCall(call, intrinsics.jsEquals, true)
-            is RuntimeOrMethodCall -> if (symbol.owner.descriptor.isFakeOverriddenFromAny()) {
+            IDENTITY_OPERATOR -> irCall(call, intrinsics.jsEqeqeq.symbol, true)
+            EQUALITY_OPERATOR -> irCall(call, intrinsics.jsEqeq.symbol, true)
+            RUNTIME_FUNCTION_CALL -> irCall(call, intrinsics.jsEquals, true)
+            RUNTIME_OR_METHOD_CALL -> if (symbol.owner.descriptor.isFakeOverriddenFromAny()) {
                 irCall(call, intrinsics.jsEquals, true)
             } else {
                 call
@@ -513,127 +513,68 @@ fun shouldReplaceCompareToWithRuntimeCall(call: IrCall): Boolean {
     } ?: false
 }
 
-/*
- Equality translation table:
-
-|                | JsN  | JsN? | Long | Long? | Bool | Bool? | String | String? | Other | Other? |
-|----------------|------|------|------|-------|------|-------|--------|---------|-------|--------|
-| JsN            | ===  | ===  | ==   | ==    | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
-| JsN?           | ===  | ==   | ==   | ==    | ===  | K.eq  | ===    | K.eq    | K.eq  | K.eq   |
-| Long           | ==   | ==   | K.eq | K.eq  | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
-| Long?          | ==   | ==   | K.eq | K.eq  | ===  | K.eq  | ===    | K.eq    | K.eq  | K.eq   |
-| Bool           | ===  | ===  | ===  | ===   | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
-| Bool?          | ===  | K.eq | ===  | K.eq  | ===  | ==    | ===    | K.eq    | K.eq  | K.eq   |
-| String         | ===  | ===  | ===  | ===   | ===  | ===   | ===    | ===     | K.eq  | K.eq   |
-| String?        | ===  | K.eq | ===  | K.eq  | ===  | K.eq  | ===    | ==      | K.eq  | K.eq   |
-| Other with .eq | .eq  | .eq  | .eq  | .eq   | .eq  | .eq   | .eq    | .eq     | .eq   | .eq    |
-| Other w/o .eq  | K.eq | K.eq | K.eq | K.eq  | K.eq | K.eq  | K.eq   | K.eq    | K.eq  | K.eq   |
-| Other?         | K.eq | K.eq | K.eq | K.eq  | K.eq | K.eq  | K.eq   | K.eq    | K.eq  | K.eq   |
-
-
-JsNumber -- type lowered to JS Number
-    K.eq -- runtime library call
-     .eq -- .equals(x) method call
-
- */
-
-sealed class EqualityLoweringType
-object IdentityOperator : EqualityLoweringType()
-object EqualityOperator : EqualityLoweringType()
-object RuntimeFunctionCall : EqualityLoweringType()
-object RuntimeOrMethodCall : EqualityLoweringType()
-
-fun translateEquals(lhs: IrType, rhs: IrType): EqualityLoweringType = when {
-    lhs is IrDynamicType -> EqualityOperator
-    lhs.isJsNumber() -> translateEqualsForJsNumber(rhs)
-    lhs.isNullableJsNumber() -> translateEqualsForNullableJsNumber(rhs)
-    lhs.isLong() -> translateEqualsForLong(rhs)
-    lhs.isNullableLong() -> translateEqualsForNullableLong(rhs)
-    lhs.isBoolean() -> translateEqualsForBoolean(rhs)
-    lhs.isNullableBoolean() -> translateEqualsForNullableBoolean(rhs)
-    lhs.isString() -> translateEqualsForString(rhs)
-    lhs.isNullableString() -> translateEqualsForNullableString(rhs)
-    lhs.isNullable() -> RuntimeFunctionCall
-    else -> RuntimeOrMethodCall
+enum class EqualityLoweringType {
+    IDENTITY_OPERATOR,
+    EQUALITY_OPERATOR,
+    RUNTIME_FUNCTION_CALL,
+    RUNTIME_OR_METHOD_CALL
 }
 
-fun translateEqualsForJsNumber(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator
-    rhs.isLong() || rhs.isNullableLong() -> EqualityOperator
-    rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
-    rhs.isString() || rhs.isNullableString() -> IdentityOperator
-    else -> RuntimeFunctionCall
+enum class JsType {
+    NUMBER,
+    STRING,
+    BOOLEAN,
+    OTHER
 }
 
-fun translateEqualsForNullableJsNumber(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() -> IdentityOperator
-    rhs.isNullableJsNumber() -> EqualityOperator
-    rhs.isLong() || rhs.isNullableLong() -> EqualityOperator
-    rhs.isBoolean() || rhs.isString() -> IdentityOperator
-    else -> RuntimeFunctionCall
+fun IrType.getJsType() = when {
+    isBoolean() || isNullableBoolean() -> JsType.BOOLEAN
+    isJsNumber() || isNullableJsNumber() -> JsType.NUMBER
+    isString() || isNullableString() -> JsType.STRING
+    else -> JsType.OTHER
 }
 
-fun translateEqualsForLong(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() || rhs.isNullableJsNumber() -> EqualityOperator
-    rhs.isLong() || rhs.isNullableLong() -> RuntimeFunctionCall
-    rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
-    rhs.isString() || rhs.isNullableString() -> IdentityOperator
-    else -> RuntimeFunctionCall
+fun translateEquals(lhs: IrType, rhs: IrType): EqualityLoweringType {
+    val lhsJsType = lhs.getJsType()
+    val rhsJsType = rhs.getJsType()
+
+    if (lhsJsType == JsType.NUMBER && rhsJsType == JsType.NUMBER) {
+        // Use runtime call for total order equality
+        if (lhs.isAnyFloatOrDouble() || rhs.isAnyFloatOrDouble())
+            return RUNTIME_FUNCTION_CALL
+    }
+
+    // Use equality operator between long and jsNumbers to implicitly use 'valueOf' method of long
+    if ((lhs.isLongOrNullableLong() && rhsJsType == JsType.NUMBER) ||
+        (rhs.isLongOrNullableLong() && lhsJsType == JsType.NUMBER)
+    ) {
+        return EQUALITY_OPERATOR
+    }
+
+    if (lhsJsType == JsType.OTHER) {
+        return if (lhs.isNullable()) RUNTIME_FUNCTION_CALL else RUNTIME_OR_METHOD_CALL
+    }
+    if (rhsJsType == JsType.OTHER) {
+        return RUNTIME_FUNCTION_CALL
+    }
+
+    if (lhs.isNullable() && rhs.isNullable()) {
+        return if (lhsJsType == rhsJsType) {
+            // Use equality operator to enable 'null == nothing'
+            EQUALITY_OPERATOR
+        } else {
+            // Fall back to runtime call for different types to avoid JS coercion of different types
+            RUNTIME_FUNCTION_CALL
+        }
+    }
+
+    return IDENTITY_OPERATOR
 }
-
-fun translateEqualsForNullableLong(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() || rhs.isNullableJsNumber() -> EqualityOperator
-    rhs.isLong() || rhs.isNullableLong() -> RuntimeFunctionCall
-    rhs.isBoolean() -> IdentityOperator
-    rhs.isString() -> IdentityOperator
-    else -> RuntimeFunctionCall
-}
-
-fun translateEqualsForBoolean(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator
-    rhs.isLong() || rhs.isNullableLong() -> IdentityOperator
-    rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
-    rhs.isString() || rhs.isNullableString() -> IdentityOperator
-    else -> RuntimeFunctionCall
-}
-
-fun translateEqualsForNullableBoolean(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() -> IdentityOperator
-    rhs.isNullableJsNumber() -> RuntimeFunctionCall
-    rhs.isLong() -> IdentityOperator
-    rhs.isNullableLong() -> RuntimeFunctionCall
-    rhs.isBoolean() -> IdentityOperator
-    rhs.isNullableBoolean() -> EqualityOperator
-    rhs.isString() -> IdentityOperator
-    else -> RuntimeFunctionCall
-}
-
-fun translateEqualsForString(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() || rhs.isNullableJsNumber() -> IdentityOperator
-    rhs.isLong() || rhs.isNullableLong() -> IdentityOperator
-    rhs.isBoolean() || rhs.isNullableBoolean() -> IdentityOperator
-    rhs.isString() || rhs.isNullableString() -> IdentityOperator
-    else -> RuntimeFunctionCall
-}
-
-fun translateEqualsForNullableString(rhs: IrType): EqualityLoweringType = when {
-    rhs.isJsNumber() -> IdentityOperator
-    rhs.isNullableJsNumber() -> RuntimeFunctionCall
-    rhs.isLong() -> IdentityOperator
-    rhs.isNullableLong() -> RuntimeFunctionCall
-    rhs.isBoolean() -> IdentityOperator
-    rhs.isNullableBoolean() -> RuntimeFunctionCall
-    rhs.isString() -> IdentityOperator
-    rhs.isNullableString() -> EqualityOperator
-    else -> RuntimeFunctionCall
-}
-
-
 
 private fun IrType.isNullableJsNumber(): Boolean = isNullablePrimitiveType() && !isNullableLong() && !isNullableChar()
-
 private fun IrType.isJsNumber(): Boolean = isPrimitiveType() && !isLong() && !isChar()
-
+private fun IrType.isAnyFloatOrDouble(): Boolean = isFloat() || isDouble() || isNullableFloat() || isNullableDouble()
+private fun IrType.isLongOrNullableLong() = isLong() || isNullableLong()
 
 // TODO extract to common place?
 fun irCall(
