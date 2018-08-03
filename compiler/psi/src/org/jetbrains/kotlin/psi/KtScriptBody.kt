@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 import org.jetbrains.kotlin.psi.typeRefHelpers.getTypeReference
 import org.jetbrains.kotlin.psi.typeRefHelpers.setTypeReference
 
-const val SCRIPT_BODY_METHOD_NAME = "<script body>"
+const val SCRIPT_BODY_METHOD_NAME = "\$scriptBody"
 
 class KtScriptBody : KtDeclarationStub<KotlinPlaceHolderStub<KtScriptBody>>,
     KtFunction, PsiModifiableCodeBlock, KtDeclaration
@@ -64,7 +64,7 @@ class KtScriptBody : KtDeclarationStub<KotlinPlaceHolderStub<KtScriptBody>>,
 
     override fun getName(): String? = SCRIPT_BODY_METHOD_NAME
 
-    override fun getNameAsSafeName() = Name.special(SCRIPT_BODY_METHOD_NAME)
+    override fun getNameAsSafeName() = Name.identifier(SCRIPT_BODY_METHOD_NAME)
 
     override fun getFqName(): FqName? = null
 

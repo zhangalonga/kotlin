@@ -929,10 +929,6 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
     public StackValue visitNamedFunction(@NotNull KtNamedFunction function, StackValue data, boolean isStatement) {
         assert data == StackValue.none();
 
-        if (KtPsiUtil.isScriptDeclaration(function)) {
-            return StackValue.none();
-        }
-
         StackValue closure = genClosure(function, null);
         if (isStatement) {
             DeclarationDescriptor descriptor = bindingContext.get(DECLARATION_TO_DESCRIPTOR, function);
@@ -3977,9 +3973,6 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
     ) {
         LocalVariableDescriptor variableDescriptor = (LocalVariableDescriptor) getVariableDescriptorNotNull(variableDeclaration);
 
-        if (KtPsiUtil.isScriptDeclaration(variableDeclaration)) {
-            return;
-        }
         int index = lookupLocalIndex(variableDescriptor);
 
         if (index < 0) {

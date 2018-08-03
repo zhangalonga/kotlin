@@ -13,7 +13,9 @@ import org.jetbrains.kotlin.codegen.context.MethodContext
 import org.jetbrains.kotlin.codegen.context.ScriptContext
 import org.jetbrains.kotlin.codegen.serialization.JvmSerializerExtension
 import org.jetbrains.kotlin.codegen.state.GenerationState
+import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.descriptors.ScriptDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.load.java.JvmAnnotationNames
@@ -29,12 +31,14 @@ import org.jetbrains.kotlin.resolve.jvm.AsmTypes.OBJECT_TYPE
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin.Companion.NO_ORIGIN
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.OtherOrigin
+import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodGenericSignature
 import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodSignature
 import org.jetbrains.kotlin.script.ScriptBodyTarget
 import org.jetbrains.kotlin.serialization.DescriptorSerializer
 import org.jetbrains.org.objectweb.asm.Opcodes.*
 import org.jetbrains.org.objectweb.asm.Type
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
+import org.jetbrains.org.objectweb.asm.commons.Method
 
 class ScriptCodegen private constructor(
         private val scriptDeclaration: KtScript,
@@ -294,26 +298,41 @@ private class ScriptBodyGenerationStrategy(
 ) :
     FunctionGenerationStrategy.FunctionDefault(state, declaration) {
 
+    override fun mapMethodSignature(
+        functionDescriptor: FunctionDescriptor,
+        typeMapper: KotlinTypeMapper,
+        contextKind: OwnerKind,
+        hasSpecialBridge: Boolean
+    ): JvmMethodGenericSignature {
+        val origSignature = typeMapper.mapSignatureWithGeneric(functionDescriptor, contextKind, hasSpecialBridge)
+        val paramTypes = origSignature.valueParameters.map { it.asmType }.toTypedArray()
+        val newMethod = Method(origSignature.asmMethod.name, AsmUtil.getArrayType(OBJECT_TYPE), paramTypes)
+        return JvmMethodGenericSignature(newMethod, origSignature.valueParameters, null)
+    }
+
     override fun doGenerateBody(codegen: ExpressionCodegen, signature: JvmMethodSignature) {
         val bodyExpression = declaration.bodyExpression ?: error("Function has no body: " + declaration.getElementTextWithContext())
-        codegen.gen(bodyExpression)
 
         if (scriptBodyTarget == ScriptBodyTarget.SingleAbstractMethod) {
             codegen.returnExpression(bodyExpression)
         } else {
-            val vars = PsiTreeUtil.getChildrenOfTypeAsList(script.blockExpression, KtDeclaration::class.java).map {
+            val retFromScript = codegen.gen(bodyExpression)
+            val vars = PsiTreeUtil.getChildrenOfTypeAsList(script.blockExpression, KtProperty::class.java).map {
                 val varDescriptor = bindingContext.get(BindingContext.VARIABLE, it)!!
-                varDescriptor to codegen.frameMap.getIndex(varDescriptor)
+                codegen.findLocalOrCapturedValue(varDescriptor)!!
             }
             val retType = AsmUtil.getArrayType(OBJECT_TYPE)
-            val retIdx = codegen.frameMap.enterTemp(retType)
-            val array = StackValue.local(retIdx, retType)
 
-            for (v in vars) {
-                val type = codegen.typeMapper.mapType(v.first.type)
-                val variable = StackValue.local(v.second, type, v.first)
-                val arrayElement = StackValue.arrayElement(type, null, array, StackValue.constant(v.second, Type.INT_TYPE))
-                arrayElement.store(variable, codegen.v)
+            retFromScript.put(retFromScript.type, codegen.v)
+            codegen.v.iconst(vars.size)
+            codegen.v.newarray(OBJECT_TYPE)
+
+            val array = StackValue.onStack(retType)
+
+            for ((idx, v) in vars.withIndex()) {
+                codegen.v.dup()
+                val arrayElement = StackValue.arrayElement(OBJECT_TYPE, null, array, StackValue.constant(idx, Type.INT_TYPE))
+                arrayElement.store(v, codegen.v)
             }
             codegen.v.areturn(retType)
         }

@@ -21,6 +21,7 @@ import java.io.File
 import kotlin.reflect.KClass
 import kotlin.script.experimental.annotations.KotlinScript
 
+val x = Array(1) { 2 }
 
 class CustomScriptCodegenTest : CodegenTestCase() {
 
