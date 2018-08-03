@@ -19,12 +19,15 @@ package org.jetbrains.kotlin.resolve.lazy.descriptors
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.*
+import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory1
 import org.jetbrains.kotlin.diagnostics.Errors
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
+import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.lazy.LazyClassContext
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
@@ -37,6 +40,7 @@ import org.jetbrains.kotlin.resolve.scopes.LexicalScopeImpl
 import org.jetbrains.kotlin.resolve.scopes.LexicalScopeKind
 import org.jetbrains.kotlin.resolve.source.toSourceElement
 import org.jetbrains.kotlin.script.KotlinScriptDefinition
+import org.jetbrains.kotlin.script.ScriptBodyTarget
 import org.jetbrains.kotlin.script.ScriptPriorities
 import org.jetbrains.kotlin.script.getScriptDefinition
 import org.jetbrains.kotlin.types.TypeSubstitutor
@@ -166,4 +170,38 @@ class LazyScriptDescriptor(
 
     override val annotations: Annotations
         get() = scriptClassAnnotations()
+
+    private val scriptTargetFunction: () -> SimpleFunctionDescriptor? = resolveSession.storageManager.createNullableLazyValue {
+        if (scriptDefinition().scriptBodyTarget == ScriptBodyTarget.Constructor) null
+        else {
+            // TODO: check whether it is correct
+            val parentSam = getSuperClassNotAny()?.let {
+                DescriptorUtils.getAllDescriptors(it.unsubstitutedMemberScope)
+            }?.filterIsInstance(SimpleFunctionDescriptor::class.java)?.firstOrNull {
+                it.modality == Modality.ABSTRACT
+            }
+            val bodyDescr = if (parentSam == null) {
+                SimpleFunctionDescriptorImpl.create(
+                    this, Annotations.EMPTY, Name.special("run"), CallableMemberDescriptor.Kind.DECLARATION,
+                    source
+                ).also {
+                    it.initialize(
+                        null, null, // receiver
+                        emptyList(), // type params
+                        emptyList(), // value params - TODO
+                        builtIns.array.defaultType, // return type
+                        Modality.FINAL,
+                        Visibilities.PRIVATE
+                    )
+                }
+            } else {
+                parentSam.copy(this, Modality.FINAL, Visibilities.PUBLIC, CallableMemberDescriptor.Kind.SYNTHESIZED, true)
+            }
+            resolveSession.trace.record(BindingContext.FUNCTION, this.scriptInfo.script.body, bodyDescr)
+            bodyDescr
+        }
+    }
+
+    override fun getScriptTargetMethodDescriptor(): SimpleFunctionDescriptor? = scriptTargetFunction()
+
 }
