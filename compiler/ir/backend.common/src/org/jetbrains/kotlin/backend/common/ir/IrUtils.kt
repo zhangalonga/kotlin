@@ -42,14 +42,14 @@ import java.io.StringWriter
 fun ir2string(ir: IrElement?): String = ir2stringWhole(ir).takeWhile { it != '\n' }
 
 fun ir2stringWhole(ir: IrElement?, withDescriptors: Boolean = false): String {
-    TODO()
-//    val strWriter = StringWriter()
-//
-//    if (withDescriptors)
-//        ir?.accept(DumpIrTreeWithDescriptorsVisitor(strWriter), "")
-//    else
-//        ir?.accept(DumpIrTreeVisitor(strWriter), "")
-//    return strWriter.toString()
+    val strWriter = StringWriter()
+
+    //TODO:
+    //if (withDescriptors)
+     //   ir?.accept(DumpIrTreeWithDescriptorsVisitor(strWriter), "")
+    //else
+        ir?.accept(DumpIrTreeVisitor(strWriter), "")
+    return strWriter.toString()
 }
 
 fun DeclarationDescriptor.createFakeOverrideDescriptor(owner: ClassDescriptor): DeclarationDescriptor? {

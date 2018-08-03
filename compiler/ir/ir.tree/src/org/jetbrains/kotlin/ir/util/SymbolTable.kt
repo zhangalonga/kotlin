@@ -26,6 +26,10 @@ import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.symbols.impl.*
 import org.jetbrains.kotlin.ir.types.IrType
 
+interface IrDeserializer {
+    fun deserializeDeclaration(descriptor: DeclarationDescriptor): IrDeclaration
+}
+
 class SymbolTable {
     private abstract class SymbolTableBase<D : DeclarationDescriptor, B : IrSymbolOwner, S : IrBindableSymbol<D, B>> {
         val unboundSymbols = linkedSetOf<S>()

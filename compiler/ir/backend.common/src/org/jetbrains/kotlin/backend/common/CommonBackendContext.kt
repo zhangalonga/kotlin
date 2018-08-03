@@ -20,8 +20,11 @@ import org.jetbrains.kotlin.utils.addIfNotNull
 import java.util.*
 import kotlin.reflect.KProperty
 
+interface WithLogger {
+    fun log(message: () -> String)
+}
 
-interface CommonBackendContext : BackendContext {
+interface CommonBackendContext : BackendContext, WithLogger {
 
     val ir: Ir<CommonBackendContext>
 
@@ -34,8 +37,6 @@ interface CommonBackendContext : BackendContext {
     fun getInternalFunctions(name: String): List<FunctionDescriptor>
 
     val reflectionTypes: ReflectionTypes
-
-    fun log(message: () -> String)
 
     fun report(element: IrElement?, irFile: IrFile?, message: String, isError: Boolean)
 }

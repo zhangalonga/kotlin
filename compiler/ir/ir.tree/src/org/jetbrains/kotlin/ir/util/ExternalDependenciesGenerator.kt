@@ -27,7 +27,8 @@ import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 class ExternalDependenciesGenerator(
     moduleDescriptor: ModuleDescriptor,
     val symbolTable: SymbolTable,
-    val irBuiltIns: IrBuiltIns
+    val irBuiltIns: IrBuiltIns,
+    val deserializer: IrDeserializer? = null
 ) {
     private val stubGenerator = DeclarationStubGenerator(moduleDescriptor,symbolTable, IrDeclarationOrigin.IR_EXTERNAL_DECLARATION_STUB)
 
@@ -66,6 +67,7 @@ class ExternalDependenciesGenerator(
         ): IrExternalPackageFragment =
             getOrCreatePackageFragment(packageFragmentDescriptor).also { irExternalPackageFragment ->
                 topLevelDescriptors.mapTo(irExternalPackageFragment.declarations) {
+                    deserializer?.deserializeDeclaration(it) ?:
                     stubGenerator.generateMemberStub(it)
                 }
                 irExternalPackageFragment.patchDeclarationParents()

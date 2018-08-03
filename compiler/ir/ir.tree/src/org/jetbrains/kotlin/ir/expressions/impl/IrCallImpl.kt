@@ -34,6 +34,7 @@ class IrCallImpl(
     type: IrType,
     override val symbol: IrFunctionSymbol,
     override val descriptor: FunctionDescriptor,
+    valueArgumentsCount: Int,
     typeArgumentsCount: Int,
     origin: IrStatementOrigin? = null,
     override val superQualifierSymbol: IrClassSymbol? = null
@@ -41,10 +42,21 @@ class IrCallImpl(
     IrCallWithIndexedArgumentsBase(
         startOffset, endOffset, type,
         typeArgumentsCount,
-        symbol.descriptor.valueParameters.size,
+        valueArgumentsCount,
         origin
     ),
     IrCall {
+
+    constructor(
+        startOffset: Int,
+        endOffset: Int,
+        type: IrType,
+        symbol: IrFunctionSymbol,
+        descriptor: FunctionDescriptor,
+        typeArgumentsCount: Int,
+        origin: IrStatementOrigin? = null,
+        superQualifierSymbol: IrClassSymbol? = null
+    ) : this(startOffset, endOffset, type, symbol, descriptor, symbol.descriptor.valueParameters.size, typeArgumentsCount, origin, superQualifierSymbol)
 
     constructor(
         startOffset: Int,
