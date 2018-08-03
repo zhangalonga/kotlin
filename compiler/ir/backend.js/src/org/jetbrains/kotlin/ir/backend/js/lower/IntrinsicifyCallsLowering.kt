@@ -228,7 +228,7 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
             put(Name.identifier("hashCode")) { call ->
                 if (call.symbol.owner.descriptor.isFakeOverriddenFromAny()) {
                     if (call.isSuperToAny()) {
-                        irCall(call, intrinsics.jsAnyHashCode, dispatchReceiverAsFirstArgument = true)
+                        irCall(call, intrinsics.jsGetObjectHashCode, dispatchReceiverAsFirstArgument = true)
                     } else {
                         irCall(call, intrinsics.jsHashCode, dispatchReceiverAsFirstArgument = true)
                     }
@@ -478,9 +478,6 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
         }
     }
 
-    private fun IrCall.isSuperToAny() =
-        superQualifier?.let { this.symbol.owner.descriptor.isFakeOverriddenFromAny() } ?: false
-
     private fun transformEqualsMethodCall(call: IrCall): IrExpression {
         val symbol = call.symbol
         if (!symbol.isBound) return call
@@ -493,7 +490,7 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
             is RuntimeFunctionCall -> irCall(call, intrinsics.jsEquals, true)
             is RuntimeOrMethodCall -> if (symbol.owner.descriptor.isFakeOverriddenFromAny()) {
                 if (call.isSuperToAny()) {
-                    irCall(call, intrinsics.jsAnyEquals, dispatchReceiverAsFirstArgument = true)
+                    irCall(call, intrinsics.jsEqeqeq.symbol, dispatchReceiverAsFirstArgument = true)
                 } else {
                     irCall(call, intrinsics.jsEquals, dispatchReceiverAsFirstArgument = true)
                 }

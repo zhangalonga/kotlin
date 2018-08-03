@@ -6,11 +6,11 @@
 package kotlin.js
 
 fun equals(obj1: dynamic, obj2: dynamic): Boolean {
-    if (js("obj1 == null").unsafeCast<Boolean>()) {
-        return js("obj2 == null").unsafeCast<Boolean>();
+    if (obj1 == null) {
+        return obj2 == null
     }
-    if (js("obj2 == null").unsafeCast<Boolean>()) {
-        return false;
+    if (obj2 == null) {
+        return false
     }
 
     return js("""
@@ -29,17 +29,6 @@ fun equals(obj1: dynamic, obj2: dynamic): Boolean {
     """).unsafeCast<Boolean>()
 }
 
-fun anyEquals(obj1: dynamic, obj2: dynamic): Boolean {
-    if (js("obj1 == null").unsafeCast<Boolean>()) {
-        return js("obj2 == null").unsafeCast<Boolean>();
-    }
-    if (js("obj2 == null").unsafeCast<Boolean>()) {
-        return false;
-    }
-    return js("obj1 === obj2").unsafeCast<Boolean>()
-}
-
-
 fun toString(o: dynamic): String = when {
     js("o == null").unsafeCast<Boolean>() -> "null"
     isArrayish(o) -> "[...]"
@@ -54,19 +43,6 @@ fun hashCode(obj: dynamic): Int {
 
     return when (typeOf(obj)) {
         "object" ->  if ("function" === js("typeof obj.hashCode")) js("obj.hashCode()") else getObjectHashCode(obj)
-        "function" -> getObjectHashCode(obj)
-        "number" -> getNumberHashCode(obj)
-        "boolean" -> if(obj.unsafeCast<Boolean>()) 1 else 0
-        else -> getStringHashCode(js("String(obj)"))
-    }
-}
-
-fun anyHashCode(obj: dynamic): Int {
-    if (obj == null)
-        return 0
-
-    return when (typeOf(obj)) {
-        "object",
         "function" -> getObjectHashCode(obj)
         "number" -> getNumberHashCode(obj)
         "boolean" -> if(obj.unsafeCast<Boolean>()) 1 else 0

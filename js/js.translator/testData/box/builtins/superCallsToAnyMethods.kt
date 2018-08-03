@@ -13,11 +13,11 @@ class C {
 open class D
 
 class E : D() {
-    override fun toString() = D@super.toString()
+    override fun toString() = super.toString()
 
-    override fun equals(other: Any?) = D@super.equals(other)
+    override fun equals(other: Any?) = super.equals(other)
 
-    override fun hashCode() = D@super.hashCode()
+    override fun hashCode() = super.hashCode()
 }
 
 fun testAnyBuiltins(x1: Any, x2: Any): String {
