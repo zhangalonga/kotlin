@@ -14,6 +14,4 @@ interface NameGenerator {
     fun getNameForSymbol(symbol: IrSymbol, context: JsGenerationContext): JsName
     fun getNameForType(type: IrType, context: JsGenerationContext): JsName
     fun getNameForLoop(loop: IrLoop, context: JsGenerationContext): JsName?
-
-//    fun getNameForReceiver(symbol: IrValueSymbol, isExt: Boolean, context: JsGenerationContext): JsName
 }

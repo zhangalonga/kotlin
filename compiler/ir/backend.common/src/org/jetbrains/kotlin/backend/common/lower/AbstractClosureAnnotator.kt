@@ -32,10 +32,10 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils
 // TODO: rename the file.
 class Closure(val capturedValues: List<IrValueSymbol> = emptyList())
 
-class ClosureAnnotator {
+class ClosureAnnotator(declaration: IrDeclaration) {
     private val closureBuilders = mutableMapOf<IrDeclaration, ClosureBuilder>()
 
-    constructor(declaration: IrDeclaration) {
+    init {
         // Collect all closures for classes and functions. Collect call graph
         declaration.acceptChildrenVoid(ClosureCollectorVisitor())
     }

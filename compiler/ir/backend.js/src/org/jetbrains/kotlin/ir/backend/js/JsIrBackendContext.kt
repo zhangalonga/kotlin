@@ -68,7 +68,7 @@ class JsIrBackendContext(
     private val internalPackageName = FqName("kotlin.js")
     private val internalPackage = module.getPackage(internalPackageName)
 
-    val intrinsics = JsIntrinsics(module, irBuiltIns, this)
+    val intrinsics = JsIntrinsics(irBuiltIns, this)
 
     private val operatorMap = referenceOperators()
 

@@ -69,17 +69,6 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
             val field = context.descriptorsFactory.getOuterThisFieldSymbol(irClass)
             outerThisField = field.backingField!!
             irClass.declarations += field
-//            irClass.declarations.add(
-//                IrFieldImpl(
-//                    irClass.startOffset, irClass.endOffset,
-//                    FIELD_FOR_OUTER_THIS,
-//                    fieldSymbol,
-//                    irClass.defaultType
-//                    ).also {
-//                    it.parent = irClass
-//                    outerThisField = it
-//                }
-//            )
         }
 
         private fun lowerConstructors() {
@@ -96,25 +85,11 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
             val endOffset = irConstructor.endOffset
 
             val loweredConstructor = context.descriptorsFactory.getInnerClassConstructorWithOuterThisParameter(irConstructor)
-//            val loweredConstructor = IrConstructorImpl(
-//                startOffset, endOffset,
-//                irConstructor.origin, // TODO special origin for lowered inner class constructors?
-//                newSymbol,
-//                null
-//            ).apply {
-//                returnType = irConstructor.returnType
-//            }
-
-//            loweredConstructor.createParameterDeclarations()
             val outerThisValueParameter = loweredConstructor.valueParameters[0].symbol
 
             irConstructor.valueParameters.forEach { old ->
                 oldConstructorParameterToNew[old] = loweredConstructor.valueParameters[old.index + 1]
             }
-
-//            irConstructor.descriptor.valueParameters.forEach { oldValueParameter ->
-//                oldConstructorParameterToNew[oldValueParameter] = loweredConstructor.valueParameters[oldValueParameter.index + 1]
-//            }
 
             val blockBody = irConstructor.body as? IrBlockBody ?: throw AssertionError("Unexpected constructor body: ${irConstructor.body}")
 
@@ -141,7 +116,6 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
             }
 
             loweredConstructor.body = blockBody
-//            loweredConstructor.parent = irConstructor.parent
             return loweredConstructor
         }
 
@@ -199,6 +173,7 @@ class InnerClassesLowering(val context: BackendContext) : ClassLoweringPass {
         }
 
         private fun IrValueSymbol.getClassForImplicitThis(): IrClass? {
+            //TODO: is it correct way to get class
             if (this is IrValueParameterSymbol) {
                 val declaration = owner
                 if (declaration.index == -1) { // means value is either IMPLICIT or EXTENSION receiver

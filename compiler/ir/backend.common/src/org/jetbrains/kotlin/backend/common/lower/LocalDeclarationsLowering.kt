@@ -8,7 +8,10 @@ package org.jetbrains.kotlin.backend.common.lower
 import org.jetbrains.kotlin.backend.common.BackendContext
 import org.jetbrains.kotlin.backend.common.DeclarationContainerLoweringPass
 import org.jetbrains.kotlin.backend.common.descriptors.*
-import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.descriptors.Visibilities
+import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.*
@@ -269,7 +272,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                 }
             }
 
-            inline fun <T : IrMemberAccessExpression> T.mapValueParameters2(
+            inline fun <T : IrMemberAccessExpression> T.mapValueParameters(
                 newTarget: IrFunction,
                 transform: (IrValueParameter) -> IrExpression?
             ): T =
@@ -281,7 +284,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
 
             private fun <T : IrMemberAccessExpression> T.fillArguments2(oldExpression: IrMemberAccessExpression, newTarget: IrFunction): T {
 
-                mapValueParameters2(newTarget) { newValueParameterDeclaration ->
+                mapValueParameters(newTarget) { newValueParameterDeclaration ->
                     val oldParameter = newParameterToOld[newValueParameterDeclaration]
 
                     if (oldParameter != null) {
@@ -367,7 +370,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
 
             val constructorsCallingSuper = constructors
                 .map { localClassConstructors[it]!! }
-                .filter { it.declaration.callsSuper() }
+                .filter { it.declaration.callsSuper(context.irBuiltIns) }
 
             assert(constructorsCallingSuper.any()) { "Expected at least one constructor calling super; class: $irClass" }
 
@@ -462,10 +465,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
             val oldDeclaration = localFunctionContext.declaration as IrSimpleFunction
 
             val memberOwner = memberDeclaration.parent
-            val newDescriptor = object : WrappedSimpleFunctionDescriptor() {
-                override val annotations = oldDeclaration.descriptor.annotations
-                override fun getSource() = oldDeclaration.descriptor.source
-            }
+            val newDescriptor = WrappedSimpleFunctionDescriptor(oldDeclaration.descriptor.annotations, oldDeclaration.descriptor.source)
             val newSymbol = IrSimpleFunctionSymbolImpl(newDescriptor)
             val newName = generateNameForLiftedDeclaration(oldDeclaration, memberOwner)
 
@@ -504,11 +504,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                 }
             }
             oldDeclaration.typeParameters.mapTo(newDeclaration.typeParameters) {
-                val pDescriptor = object : WrappedTypeParameterDescriptor() {
-                    override val annotations = it.descriptor.annotations
-                    override fun getSource() = it.descriptor.source
-                }
-
+                val pDescriptor = WrappedTypeParameterDescriptor(it.descriptor.annotations, it.descriptor.source)
                 val pSymbol = IrTypeParameterSymbolImpl(pDescriptor)
 
                 IrTypeParameterImpl(
@@ -552,12 +548,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
             }
 
             oldDeclaration.valueParameters.mapIndexedTo(this) { i, v ->
-                v.copy(newDeclaration, capturedValues.size + i) {
-                    object : WrappedValueParameterDescriptor() {
-                        override val annotations = v.descriptor.annotations
-                        override fun getSource() = v.descriptor.source
-                    }
-                }.also {
+                v.copy(newDeclaration, capturedValues.size + i).also {
                     newParameterToOld.putAbsentOrSame(it, v)
                 }
             }
@@ -565,10 +556,9 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
 
         private fun IrValueParameter.copy(
             parent: IrFunction,
-            newIndex: Int = index,
-            descriptorBuilder: () -> WrappedValueParameterDescriptor = { WrappedValueParameterDescriptor() }
+            newIndex: Int = index
         ): IrValueParameter {
-            val descriptor = descriptorBuilder()
+            val descriptor = WrappedValueParameterDescriptor(descriptor.annotations, descriptor.source)
             return IrValueParameterImpl(
                 startOffset,
                 endOffset,
@@ -610,10 +600,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
             val localClassContext = localClasses[oldDeclaration.parent]!!
             val capturedValues = localClassContext.closure.capturedValues
 
-            val newDescriptor = object : WrappedClassConstructorDescriptor() {
-                override val annotations = oldDeclaration.descriptor.annotations
-                override fun getSource() = oldDeclaration.descriptor.source
-            }
+            val newDescriptor = WrappedClassConstructorDescriptor(oldDeclaration.descriptor.annotations, oldDeclaration.descriptor.source)
             val newSymbol = IrConstructorSymbolImpl(newDescriptor)
 
             val newDeclaration = IrConstructorImpl(
@@ -740,14 +727,6 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                 oldNameStr.substring(1, oldNameStr.length - 1).synthesizedName
             } else
                 declaration.name
-
-
-        private fun suggestNameForCapturedValue(valueDescriptor: ValueDescriptor): Name =
-            if (valueDescriptor.name.isSpecial) {
-                val oldNameStr = valueDescriptor.name.asString()
-                oldNameStr.substring(1, oldNameStr.length - 1).synthesizedName
-            } else
-                valueDescriptor.name
 
 
         private fun collectClosures() {

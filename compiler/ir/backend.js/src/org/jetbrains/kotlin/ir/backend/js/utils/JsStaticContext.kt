@@ -30,6 +30,5 @@ class JsStaticContext(
 
     fun getNameForSymbol(irSymbol: IrSymbol, context: JsGenerationContext) = nameGenerator.getNameForSymbol(irSymbol, context)
     fun getNameForType(type: IrType, context: JsGenerationContext) = nameGenerator.getNameForType(type, context)
-//    fun getNameForReceiver(irSymbol: IrValueSymbol, isExt: Boolean, context: JsGenerationContext) = nameGenerator.getNameForReceiver(irSymbol, isExt, context)
     fun getNameForLoop(loop: IrLoop, context: JsGenerationContext) = nameGenerator.getNameForLoop(loop, context)
 }

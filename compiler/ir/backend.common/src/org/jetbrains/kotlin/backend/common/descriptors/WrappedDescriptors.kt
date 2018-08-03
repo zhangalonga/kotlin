@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.backend.common.descriptors
 
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.ir.declarations.*
@@ -21,7 +22,10 @@ abstract class DescriptorWrapper<T : IrDeclaration> : DeclarationDescriptor {
     fun bind(declaration: T) { owner = declaration }
 }
 
-abstract class WrappedCallableDescriptor<T : IrDeclaration>: CallableDescriptor, DescriptorWrapper<T>() {
+abstract class WrappedCallableDescriptor<T : IrDeclaration>(
+    override val annotations: Annotations,
+    private val sourceElement: SourceElement
+) : CallableDescriptor, DescriptorWrapper<T>() {
     override fun getOriginal() = this
 
     override fun substitute(substitutor: TypeSubstitutor): CallableDescriptor {
@@ -32,11 +36,11 @@ abstract class WrappedCallableDescriptor<T : IrDeclaration>: CallableDescriptor,
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getSource() = SourceElement.NO_SOURCE
+    override fun getSource() = sourceElement
 
     override fun getExtensionReceiverParameter(): ReceiverParameterDescriptor? = null
 
-    override fun getDispatchReceiverParameter(): ReceiverParameterDescriptor?  = null
+    override fun getDispatchReceiverParameter(): ReceiverParameterDescriptor? = null
 
     override fun getTypeParameters(): List<TypeParameterDescriptor> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -67,11 +71,12 @@ abstract class WrappedCallableDescriptor<T : IrDeclaration>: CallableDescriptor,
     override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-    override val annotations: Annotations = Annotations.EMPTY
 }
 
-open class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCallableDescriptor<IrValueParameter>() {
+open class WrappedValueParameterDescriptor(
+    annotations: Annotations = Annotations.EMPTY,
+    sourceElement: SourceElement = SourceElement.NO_SOURCE
+) : ValueParameterDescriptor, WrappedCallableDescriptor<IrValueParameter>(annotations, sourceElement) {
 
     override val index get() = owner.index
     override val isCrossinline get() = owner.isCrossinline
@@ -111,20 +116,37 @@ open class WrappedValueParameterDescriptor : ValueParameterDescriptor, WrappedCa
     }
 }
 
-open class WrappedTypeParameterDescriptor: TypeParameterDescriptor, WrappedCallableDescriptor<IrTypeParameter>() {
+open class WrappedTypeParameterDescriptor(
+    annotations: Annotations = Annotations.EMPTY,
+    sourceElement: SourceElement = SourceElement.NO_SOURCE
+): TypeParameterDescriptor, WrappedCallableDescriptor<IrTypeParameter>(annotations, sourceElement) {
     override fun getName() = owner.name
 
-    override fun isReified(): Boolean {
-        return false
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun isReified() = owner.isReified
 
     override fun getVariance() = owner.variance
 
     override fun getUpperBounds() = owner.superTypes.map { it.toKotlinType() }
 
     override fun getTypeConstructor(): TypeConstructor {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return object : TypeConstructor {
+            override fun getParameters(): List<TypeParameterDescriptor> {
+                TODO("not implemented")
+            }
+
+            override fun getSupertypes() = upperBounds
+
+            override fun isFinal() = false
+
+            override fun isDenotable() = false
+
+            override fun getDeclarationDescriptor() = owner.descriptor
+
+            override fun getBuiltIns(): KotlinBuiltIns {
+                TODO("not implemented")
+            }
+
+        }
     }
 
     override fun getOriginal() = this
@@ -147,7 +169,10 @@ open class WrappedTypeParameterDescriptor: TypeParameterDescriptor, WrappedCalla
 
 }
 
-open class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescriptor<IrVariable>() {
+open class WrappedVariableDescriptor(
+    annotations: Annotations = Annotations.EMPTY,
+    sourceElement: SourceElement = SourceElement.NO_SOURCE
+): VariableDescriptor, WrappedCallableDescriptor<IrVariable>(annotations, sourceElement) {
 
     override fun getContainingDeclaration() = (owner.parent as IrFunction).descriptor
     override fun getType() = owner.type.toKotlinType()
@@ -176,7 +201,10 @@ open class WrappedVariableDescriptor: VariableDescriptor, WrappedCallableDescrip
     }
 }
 
-open class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCallableDescriptor<IrSimpleFunction>() {
+open class WrappedSimpleFunctionDescriptor(
+    annotations: Annotations = Annotations.EMPTY,
+    sourceElement: SourceElement = SourceElement.NO_SOURCE
+) : SimpleFunctionDescriptor, WrappedCallableDescriptor<IrSimpleFunction>(annotations, sourceElement) {
     override fun getOverriddenDescriptors() = owner.overriddenSymbols.map { it.descriptor }
     override fun getContainingDeclaration() = (owner.parent as IrSymbolOwner).symbol.descriptor
     override fun getModality() = owner.modality
@@ -244,7 +272,10 @@ open class WrappedSimpleFunctionDescriptor : SimpleFunctionDescriptor, WrappedCa
     }
 }
 
-open class WrappedClassConstructorDescriptor: ClassConstructorDescriptor, WrappedCallableDescriptor<IrConstructor>() {
+open class WrappedClassConstructorDescriptor(
+    annotations: Annotations = Annotations.EMPTY,
+    sourceElement: SourceElement = SourceElement.NO_SOURCE
+) : ClassConstructorDescriptor, WrappedCallableDescriptor<IrConstructor>(annotations, sourceElement) {
     override fun getContainingDeclaration() = (owner.parent as IrClass).descriptor
 
     override fun getTypeParameters() = owner.typeParameters.map { it.descriptor }
@@ -332,7 +363,10 @@ open class WrappedClassConstructorDescriptor: ClassConstructorDescriptor, Wrappe
     }
 }
 
-open class WrappedClassDescriptor: ClassDescriptor, DescriptorWrapper<IrClass>() {
+open class WrappedClassDescriptor(
+    override val annotations: Annotations = Annotations.EMPTY,
+    private val sourceElement: SourceElement = SourceElement.NO_SOURCE
+): ClassDescriptor, DescriptorWrapper<IrClass>() {
     override fun getName() = owner.name
 
     override fun getMemberScope(typeArguments: MutableList<out TypeProjection>): MemberScope {
@@ -355,20 +389,20 @@ open class WrappedClassDescriptor: ClassDescriptor, DescriptorWrapper<IrClass>()
         TODO("not implemented")
     }
 
+    override fun getSource() = sourceElement
+
     override fun getConstructors() = owner.declarations.filterIsInstance<IrConstructor>().map { it.descriptor }
 
     override fun getContainingDeclaration() = (owner.parent as IrSymbolOwner).symbol.descriptor
 
-//    override fun getDefaultType() = owner.thisReceiver?.type?.toKotlinType() as SimpleType
-override fun getDefaultType(): SimpleType {
-    TODO()
-}
+    //    override fun getDefaultType() = owner.thisReceiver?.type?.toKotlinType() as SimpleType
+    override fun getDefaultType(): SimpleType {
+        TODO()
+    }
 
     override fun getKind() = owner.kind
 
     override fun getModality() = owner.modality
-
-    override fun getSource() = SourceElement.NO_SOURCE
 
     override fun getCompanionObjectDescriptor() = owner.declarations.filterIsInstance<IrClass>().firstOrNull { it.isCompanion }?.descriptor
 
@@ -420,13 +454,13 @@ override fun getDefaultType(): SimpleType {
     override fun acceptVoid(visitor: DeclarationDescriptorVisitor<Void, Void>?) {
         visitor!!.visitClassDescriptor(this, null)
     }
-
-    override val annotations = Annotations.EMPTY
-
 }
 
 
-open class WrappedPropertyDescriptor: PropertyDescriptor, DescriptorWrapper<IrProperty>() {
+open class WrappedPropertyDescriptor(
+    override val annotations: Annotations = Annotations.EMPTY,
+    private val sourceElement: SourceElement = SourceElement.NO_SOURCE
+) : PropertyDescriptor, DescriptorWrapper<IrProperty>() {
     override fun getModality() = owner.modality
 
     override fun setOverriddenDescriptors(overriddenDescriptors: MutableCollection<out CallableMemberDescriptor>) {
@@ -437,7 +471,7 @@ open class WrappedPropertyDescriptor: PropertyDescriptor, DescriptorWrapper<IrPr
 
     override fun getName() = owner.name
 
-    override fun getSource() = SourceElement.NO_SOURCE
+    override fun getSource() = sourceElement
 
     override fun hasSynthesizedParameterNames(): Boolean {
         TODO("not implemented")
@@ -530,6 +564,4 @@ open class WrappedPropertyDescriptor: PropertyDescriptor, DescriptorWrapper<IrPr
     }
 
     override val isDelegated get() = owner.isDelegated
-    override val annotations get() = Annotations.EMPTY
-
 }

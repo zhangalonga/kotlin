@@ -10,9 +10,6 @@ import org.jetbrains.kotlin.backend.common.CommonBackendContext
 import org.jetbrains.kotlin.backend.common.DeclarationContainerLoweringPass
 import org.jetbrains.kotlin.backend.common.descriptors.*
 import org.jetbrains.kotlin.backend.common.ir.ir2string
-import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
-import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
-import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.*
@@ -38,7 +35,6 @@ import org.jetbrains.kotlin.ir.util.transformFlat
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
 
 open class DefaultArgumentStubGenerator constructor(val context: CommonBackendContext, private val skipInlineMethods: Boolean = true) :
     DeclarationContainerLoweringPass {
@@ -302,7 +298,7 @@ class DefaultParameterInjector constructor(val context: CommonBackendContext, pr
                         value = maskValue
                     )
                 }
-                if (expression.descriptor is ClassConstructorDescriptor) {
+                if (expression.symbol is IrConstructorSymbol) {
                     val defaultArgumentMarker = context.ir.symbols.defaultConstructorMarker
                     params += markerParameterDeclaration(realFunction) to IrGetObjectValueImpl(
                         startOffset = irBody.startOffset,
@@ -332,9 +328,6 @@ class DefaultParameterInjector constructor(val context: CommonBackendContext, pr
 
     private fun log(msg: () -> String) = context.log { "DEFAULT-INJECTOR: ${msg()}" }
 }
-
-private fun CallableMemberDescriptor.needsDefaultArgumentsLowering(skipInlineMethods: Boolean) =
-    valueParameters.any { it.hasDefaultValue() } && !(this is FunctionDescriptor && isInline && skipInlineMethods)
 
 private fun IrFunction.needsDefaultArgumentsLowering(skipInlineMethods: Boolean): Boolean {
     if (isInline && skipInlineMethods) return false
@@ -366,21 +359,10 @@ private fun IrFunction.generateDefaultsFunctionImpl(context: CommonBackendContex
         )
     }
 
-    val newValueParameters = valueParameters.map {
-        it.copy(newFunction) {
-            object : WrappedValueParameterDescriptor() {
-                override val annotations = it.descriptor.annotations
-                override fun getSource() = it.descriptor.source
-            }
-        }
-
-    } + syntheticParameters
+    val newValueParameters = valueParameters.map { it.copy(newFunction) } + syntheticParameters
 
     val newTypeParameters = typeParameters.map {
-        val typeDescriptor = object : WrappedTypeParameterDescriptor() {
-            override val annotations = it.descriptor.annotations
-            override fun getSource() = it.descriptor.source
-        }
+        val typeDescriptor = WrappedTypeParameterDescriptor(it.descriptor.annotations, it.descriptor.source)
 
         IrTypeParameterImpl(
             it.startOffset,
@@ -411,10 +393,7 @@ private fun IrFunction.generateDefaultsFunctionImpl(context: CommonBackendContex
 
 private fun buildFunctionDeclaration(irFunction: IrFunction): IrFunction {
     if (irFunction is IrConstructor) {
-        val descriptor = object : WrappedClassConstructorDescriptor() {
-            override val annotations = irFunction.descriptor.annotations
-            override fun getSource() = irFunction.descriptor.source
-        }
+        val descriptor = WrappedClassConstructorDescriptor(irFunction.descriptor.annotations, irFunction.descriptor.source)
         return IrConstructorImpl(
             irFunction.startOffset,
             irFunction.endOffset,
@@ -430,10 +409,7 @@ private fun buildFunctionDeclaration(irFunction: IrFunction): IrFunction {
             it.parent = irFunction.parent
         }
     } else if (irFunction is IrSimpleFunction) {
-        val descriptor = object : WrappedSimpleFunctionDescriptor() {
-            override val annotations = irFunction.descriptor.annotations
-            override fun getSource() = irFunction.descriptor.source
-        }
+        val descriptor = WrappedSimpleFunctionDescriptor(irFunction.descriptor.annotations, irFunction.descriptor.source)
         val name = Name.identifier("${irFunction.name}\$default")
 
         return IrFunctionImpl(
@@ -483,11 +459,8 @@ private fun IrFunction.valueParameter(index: Int, name: Name, type: IrType): IrV
     }
 }
 
-private fun IrValueParameter.copy(
-    parent: IrFunction,
-    descriptorBuilder: () -> WrappedValueParameterDescriptor = { WrappedValueParameterDescriptor() }
-): IrValueParameter {
-    val descriptor = descriptorBuilder()
+private fun IrValueParameter.copy(parent: IrFunction): IrValueParameter {
+    val descriptor = WrappedValueParameterDescriptor(symbol.descriptor.annotations, symbol.descriptor.source)
     return IrValueParameterImpl(
         startOffset,
         endOffset,

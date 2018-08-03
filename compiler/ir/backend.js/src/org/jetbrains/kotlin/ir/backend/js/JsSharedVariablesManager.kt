@@ -17,16 +17,13 @@ import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrGetValue
 import org.jetbrains.kotlin.ir.expressions.IrSetVariable
-import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrClassSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrConstructorSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrFieldSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrVariableSymbolImpl
-import org.jetbrains.kotlin.ir.types.IrDynamicType
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.classifierOrFail
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.name.Name
 
@@ -71,34 +68,19 @@ class JsSharedVariablesManager(val builtIns: IrBuiltIns, val implicitDeclaration
 
     override fun defineSharedValue(originalDeclaration: IrVariable, sharedVariableDeclaration: IrVariable) = sharedVariableDeclaration
 
-    override fun getSharedValue(sharedVariableSymbol: IrVariableSymbol, originalGet: IrGetValue): IrExpression {
-
-        val value = IrGetFieldImpl(
-            originalGet.startOffset, originalGet.endOffset,
-            closureBoxFieldDeclaration.symbol,
-            closureBoxFieldDeclaration.type,
-            IrGetValueImpl(
-                originalGet.startOffset,
-                originalGet.endOffset,
-                closureBoxType,
-                sharedVariableSymbol,
-                originalGet.origin
-            ),
+    override fun getSharedValue(sharedVariableSymbol: IrVariableSymbol, originalGet: IrGetValue) = IrGetFieldImpl(
+        originalGet.startOffset, originalGet.endOffset,
+        closureBoxFieldDeclaration.symbol,
+        originalGet.type,
+        IrGetValueImpl(
+            originalGet.startOffset,
+            originalGet.endOffset,
+            closureBoxType,
+            sharedVariableSymbol,
             originalGet.origin
-        )
-
-        return if (originalGet.type !is IrDynamicType) IrTypeOperatorCallImpl(
-        originalGet.startOffset,
-        originalGet.endOffset,
-        originalGet.type,
-        IrTypeOperator.IMPLICIT_CAST,
-        originalGet.type,
-        originalGet.type.classifierOrFail,
-        value)
-        else value
-
-
-    }
+        ),
+        originalGet.origin
+    )
 
     override fun setSharedValue(sharedVariableSymbol: IrVariableSymbol, originalSet: IrSetVariable): IrExpression =
         IrSetFieldImpl(
@@ -118,7 +100,6 @@ class JsSharedVariablesManager(val builtIns: IrBuiltIns, val implicitDeclaration
         )
 
     private val boxTypeName = "\$closureBox\$"
-
 
     private val closureBoxClassDeclaration by lazy {
         createClosureBoxClassDeclaration()

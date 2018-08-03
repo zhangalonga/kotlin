@@ -32,8 +32,13 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
-import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.classifierOrFail
+import org.jetbrains.kotlin.ir.types.isArray
+import org.jetbrains.kotlin.ir.types.isString
+import org.jetbrains.kotlin.ir.util.constructors
+import org.jetbrains.kotlin.ir.util.functions
+import org.jetbrains.kotlin.ir.util.getPropertyGetter
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -245,7 +250,7 @@ class VarargInjectionLowering constructor(val context: CommonBackendContext): De
 
     private fun handle(symbol: IrClassSymbol) = ArrayHandle(
             arraySymbol = symbol,
-            setMethodSymbol = symbol.functions.single { it.descriptor.name == OperatorNameConventions.SET },
+            setMethodSymbol = symbol.functions.single { it.owner.name == OperatorNameConventions.SET },
             sizeGetterSymbol = symbol.getPropertyGetter("size")!!,
             copyRangeToSymbol = symbols.copyRangeTo[symbol.descriptor]!!
     )

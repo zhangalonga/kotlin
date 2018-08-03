@@ -102,11 +102,7 @@ class JsDescriptorsFactory : DescriptorsFactory {
         val irClass = oldConstructor.parent as IrClass
         val outerThisType = (irClass.parent as IrClass).defaultType
 
-        val descriptor = object : WrappedClassConstructorDescriptor() {
-            override val annotations = oldConstructor.descriptor.annotations
-            override fun getSource() = oldConstructor.descriptor.source
-        }
-
+        val descriptor = WrappedClassConstructorDescriptor(oldConstructor.descriptor.annotations, oldConstructor.descriptor.source)
         val symbol = IrConstructorSymbolImpl(descriptor)
 
         val newConstructor = IrConstructorImpl(
@@ -142,7 +138,6 @@ class JsDescriptorsFactory : DescriptorsFactory {
     override fun getSymbolForObjectInstance(singleton: IrClass): IrProperty =
         singletonFieldDescriptors.getOrPut(singleton) {
             createObjectInstanceFieldDescriptor(singleton)
-
         }
 
     private fun createObjectInstanceFieldDescriptor(singleton: IrClass): IrProperty {

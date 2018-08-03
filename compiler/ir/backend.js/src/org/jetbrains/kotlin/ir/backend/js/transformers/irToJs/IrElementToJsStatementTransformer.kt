@@ -5,11 +5,11 @@
 
 package org.jetbrains.kotlin.ir.backend.js.transformers.irToJs
 
-import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.ir.backend.js.utils.JsGenerationContext
-import org.jetbrains.kotlin.ir.backend.js.utils.constructedClass
+import org.jetbrains.kotlin.ir.backend.js.utils.constructedClassType
 import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.types.isAny
 import org.jetbrains.kotlin.js.backend.ast.*
 
 class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsStatement, JsGenerationContext> {
@@ -53,7 +53,7 @@ class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsSta
     }
 
     override fun visitDelegatingConstructorCall(expression: IrDelegatingConstructorCall, context: JsGenerationContext): JsStatement {
-        if (KotlinBuiltIns.isAny(expression.symbol.constructedClass)) {
+        if (expression.symbol.constructedClassType.isAny()) {
             return JsEmpty
         }
         return expression.accept(IrElementToJsExpressionTransformer(), context).makeStmt()

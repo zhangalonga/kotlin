@@ -56,9 +56,6 @@ object JsIrBuilder {
 
     fun buildThrow(type: IrType, value: IrExpression) = IrThrowImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, value)
 
-    fun buildValueParameter(symbol: IrValueParameterSymbol, type: IrType? = null) =
-        IrValueParameterImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol, type ?: symbol.owner.type, null)
-
     fun buildValueParameter(name: String = "tmp", index: Int, type: IrType) = buildValueParameter(Name.identifier(name), index, type)
 
     fun buildValueParameter(name: Name, index: Int, type: IrType, origin: IrDeclarationOrigin = SYNTHESIZED_DECLARATION): IrValueParameter {
@@ -95,11 +92,6 @@ object JsIrBuilder {
         }
     }
 
-    fun buildFunction(symbol: IrSimpleFunctionSymbol, returnType: IrType) =
-        IrFunctionImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol).apply {
-            this.returnType = returnType
-        }
-
     fun buildFunction(
         name: String,
         visibility: Visibility = Visibilities.PUBLIC,
@@ -114,7 +106,7 @@ object JsIrBuilder {
         return IrFunctionImpl(
             UNDEFINED_OFFSET,
             UNDEFINED_OFFSET,
-            SYNTHESIZED_DECLARATION,
+            origin,
             IrSimpleFunctionSymbolImpl(descriptor),
             Name.identifier(name),
             visibility,
@@ -152,10 +144,6 @@ object JsIrBuilder {
 
     fun buildFunctionReference(type: IrType, symbol: IrFunctionSymbol) =
         IrFunctionReferenceImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, symbol, symbol.descriptor, 0, null)
-
-    fun buildVar(symbol: IrVariableSymbol, initializer: IrExpression? = null, type: IrType? = null) =
-        IrVariableImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, SYNTHESIZED_DECLARATION, symbol, type ?: symbol.owner.type)
-            .apply { this.initializer = initializer }
 
     fun buildVar(
         type: IrType,
@@ -220,7 +208,6 @@ object JsIrBuilder {
     fun buildString(type: IrType, s: String) = IrConstImpl.string(UNDEFINED_OFFSET, UNDEFINED_OFFSET, type, s)
 }
 
-
 fun IrFunction.copyParameterDeclarationsFrom(from: IrFunction) {
 
     fun IrValueParameter.copyTo(f: IrFunction, shift: Int = 0): IrValueParameter {
@@ -239,4 +226,3 @@ fun IrFunction.copyParameterDeclarationsFrom(from: IrFunction) {
     assert(typeParameters.isEmpty())
     from.typeParameters.mapTo(typeParameters) {it.copyTo(this) }
 }
-

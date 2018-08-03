@@ -207,7 +207,7 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
 
             addWithPredicate(
                 Name.identifier("hashCode"),
-                { call -> (call.superQualifier == null) && (call.symbol.owner.descriptor.isFakeOverriddenFromAny()) },
+                { call -> (call.superQualifier == null) && (call.symbol.owner./*descriptor.*/isFakeOverriddenFromAny()) },
                 { call -> irCall(call, intrinsics.jsHashCode, dispatchReceiverAsFirstArgument = true) }
             )
 
@@ -337,7 +337,7 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
                 it.name == Name.identifier("equals")
                         && it.valueParameters.size == 1
                         && rhs.isSubtypeOf(it.valueParameters[0].type)
-                        && !it.descriptor.isFakeOverriddenFromAny()
+                        && !it./*descriptor.*/isFakeOverriddenFromAny()
             }
             .maxWith(  // Find the most specific function
                 Comparator { f1, f2 ->
@@ -413,7 +413,7 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
             is IdentityOperator -> irCall(call, intrinsics.jsEqeqeq.symbol)
             is EqualityOperator -> irCall(call, intrinsics.jsEqeq.symbol)
             is RuntimeFunctionCall -> irCall(call, intrinsics.jsEquals, true)
-            is RuntimeOrMethodCall -> if (symbol.owner.descriptor.isFakeOverriddenFromAny()) {
+            is RuntimeOrMethodCall -> if (symbol.owner/*.descriptor*/.isFakeOverriddenFromAny()) {
                 irCall(call, intrinsics.jsEquals, true)
             } else {
                 call
