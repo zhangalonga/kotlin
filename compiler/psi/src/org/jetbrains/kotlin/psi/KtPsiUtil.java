@@ -242,21 +242,6 @@ public class KtPsiUtil {
         return qualifiedParent.getReceiverExpression() == expression || isLHSOfDot(qualifiedParent);
     }
 
-    public static boolean isScriptDeclaration(@NotNull KtDeclaration namedDeclaration) {
-        return getScript(namedDeclaration) != null;
-    }
-
-    @Nullable
-    public static KtScript getScript(@NotNull KtDeclaration namedDeclaration) {
-        PsiElement parent = namedDeclaration.getParent();
-        if (parent != null && parent.getParent() instanceof KtScriptBody) {
-            return (KtScript) parent.getParent().getParent();
-        }
-        else {
-            return null;
-        }
-    }
-
     public static boolean isRemovableVariableDeclaration(@NotNull KtDeclaration declaration) {
         if (!(declaration instanceof KtVariableDeclaration)) return false;
         if (declaration instanceof KtProperty) return true;
@@ -790,7 +775,7 @@ public class KtPsiUtil {
         boolean isNonLocalCallable = isNonLocalCallable(declaration);
         while (current != null) {
             PsiElement parent = PsiTreeUtil.getStubOrPsiParent(current);
-            if (parent instanceof KtScriptBody) return null;
+            if (parent instanceof KtScript) return null;
             if (current instanceof KtAnonymousInitializer) {
                 return ((KtAnonymousInitializer) current).getBody();
             }

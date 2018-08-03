@@ -47,7 +47,6 @@ class KtScript : KtNamedDeclarationStub<KotlinScriptStub>, KtDeclarationContaine
     override fun getName(): String? = fqName.shortName().asString()
 
     override fun getDeclarations(): List<KtDeclaration> = listOf(body)
-//        PsiTreeUtil.getChildrenOfTypeAsList(blockExpression, KtDeclaration::class.java) + body
 
     override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D): R = visitor.visitScript(this, data)
 

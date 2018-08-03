@@ -233,11 +233,6 @@ open class LazyDeclarationResolver @Deprecated("") constructor(
             return when (parentDeclaration) {
                 is KtClassOrObject -> getClassDescriptor(parentDeclaration, location).unsubstitutedMemberScope
                 is KtScript -> getScriptDescriptor(parentDeclaration, location).unsubstitutedMemberScope
-                is KtScriptBody ->
-                    getScriptDescriptor(
-                        KtStubbedPsiUtil.getContainingDeclaration(parentDeclaration) as KtScript,
-                        location
-                    ).unsubstitutedMemberScope
                 else -> throw IllegalStateException(
                     "Don't call this method for local declarations: " + declaration + "\n" +
                             declaration.getElementTextWithContext()
