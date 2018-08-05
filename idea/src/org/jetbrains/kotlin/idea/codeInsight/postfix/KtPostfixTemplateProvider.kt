@@ -79,7 +79,6 @@ class KtPostfixTemplateProvider : PostfixTemplateProvider {
         /**
          * In tests only one expression should be suggested, so in case there are many of them, save relevant items
          */
-        @TestOnly
         @Volatile
         var previouslySuggestedExpressions = emptyList<String>()
     }
