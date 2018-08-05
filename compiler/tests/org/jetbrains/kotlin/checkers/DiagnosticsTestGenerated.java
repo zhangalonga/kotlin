@@ -10872,6 +10872,11 @@ public class DiagnosticsTestGenerated extends AbstractDiagnosticsTest {
                 runTest("compiler/testData/diagnostics/tests/inlineClasses/inlineClassImplementsCollection.kt");
             }
 
+            @TestMetadata("inlineClassOfUnitAndTypeParameter.kt")
+            public void testInlineClassOfUnitAndTypeParameter() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inlineClasses/inlineClassOfUnitAndTypeParameter.kt");
+            }
+
             @TestMetadata("inlineClassesInsideAnnotations.kt")
             public void testInlineClassesInsideAnnotations() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/inlineClasses/inlineClassesInsideAnnotations.kt");
