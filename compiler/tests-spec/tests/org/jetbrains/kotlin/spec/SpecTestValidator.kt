@@ -78,8 +78,8 @@ enum class SpecTestValidationFailedReason(val description: String) {
     METAINFO_NOT_VALID("Incorrect meta info in test file."),
     FILENAME_AND_METAINFO_NOT_CONSISTENCY("Test info from filename and file content is not consistency"),
     NOT_PARSED("Test info not parsed. You must call parseTestInfo before test info printing."),
-    TEST_IS_NOT_POSITIVE("Test is not positive because it contains diagnostics with ERROR severity."),
-    TEST_IS_NOT_NEGATIVE("Test is not negative because it not contains diagnostics with ERROR severity."),
+    TEST_IS_NOT_POSITIVE("Test is not positive because it contains error elements (PsiErrorElement or diagnostic with error severity)."),
+    TEST_IS_NOT_NEGATIVE("Test is not negative because it not contains error type elements (PsiErrorElement or diagnostic with error severity)."),
     UNKNOWN("Unknown validation error.")
 }
 
