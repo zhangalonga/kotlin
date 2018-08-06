@@ -1,7 +1,7 @@
-// IGNORE_BACKEND: JVM_IR
 // FILE: inline.kt
 // KOTLIN_CONFIGURATION_FLAGS: ASSERTIONS_MODE=jvm
 // WITH_RUNTIME
+// FULL_JDK
 
 inline fun inlineMe() {
     assert(false) { "FROM INLINED" }
@@ -20,7 +20,7 @@ class Checker {
 class Dummy
 
 fun enableAssertions(): Checker {
-    val loader = Dummy::class.java.classLoader
+    val loader = java.net.URLClassLoader(emptyArray(), Dummy::class.java.classLoader)
     loader.setDefaultAssertionStatus(true)
     val c = loader.loadClass("Checker")
     return c.newInstance() as Checker
