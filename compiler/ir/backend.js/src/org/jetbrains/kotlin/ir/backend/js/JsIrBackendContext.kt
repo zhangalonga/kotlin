@@ -28,6 +28,12 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.types.KotlinType
 
+data class CallableReferenceKey(
+    val declaration: IrFunction,
+    val hasDispatchReference: Boolean,
+    val hasExtensionReceiver: Boolean
+)
+
 class JsIrBackendContext(
     val module: ModuleDescriptor,
     override val irBuiltIns: IrBuiltIns,
@@ -56,6 +62,8 @@ class JsIrBackendContext(
 
     val secondaryConstructorsMap = mutableMapOf<IrConstructorSymbol, SecondaryCtorPair>()
     val enumEntryToGetInstanceFunction = mutableMapOf<IrEnumEntrySymbol, IrSimpleFunctionSymbol>()
+
+    val callableReferenceToGetterFunction = mutableMapOf<CallableReferenceKey, IrFunction>()
 
     fun getOperatorByName(name: Name, type: IrType) = operatorMap[name]?.get(type.toKotlinType())
 

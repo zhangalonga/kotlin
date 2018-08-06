@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.backend.js.CallableReferenceKey
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.symbols.JsSymbolBuilder
@@ -32,13 +33,6 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 // TODO: generate $metadata$ property and fill it with corresponding KFunction/KProperty interface
 class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringPass {
 
-    private data class CallableReferenceKey(
-        val declaration: IrFunction,
-        val hasDispatchReference: Boolean,
-        val hasExtensionReceiver: Boolean
-    )
-
-    private val callableToGetterFunction = mutableMapOf<CallableReferenceKey, IrFunction>()
     private val collectedReferenceMap = mutableMapOf<CallableReferenceKey, IrCallableReference>()
 
     private val callableNameConst = JsIrBuilder.buildString(context.irBuiltIns.stringType, Namer.KCALLABLE_NAME)
@@ -87,13 +81,13 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
 
     inner class CallableReferenceTransformer : IrElementTransformerVoid() {
         override fun visitFunctionReference(expression: IrFunctionReference): IrExpression {
-            return callableToGetterFunction[makeCallableKey(expression.symbol.owner, expression)]?.let {
+            return context.callableReferenceToGetterFunction[makeCallableKey(expression.symbol.owner, expression)]?.let {
                 redirectToFunction(expression, it)
             } ?: expression
         }
 
         override fun visitPropertyReference(expression: IrPropertyReference): IrExpression {
-            return callableToGetterFunction[makeCallableKey(expression.getter!!.owner, expression)]?.let {
+            return context.callableReferenceToGetterFunction[makeCallableKey(expression.getter!!.owner, expression)]?.let {
                 redirectToFunction(expression, it)
             } ?: expression
         }
@@ -144,6 +138,9 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
     }
 
     private fun lowerKFunctionReference(declaration: IrFunction, functionReference: IrFunctionReference): List<IrDeclaration> {
+        val key = makeCallableKey(declaration, functionReference)
+        if (key in context.callableReferenceToGetterFunction) return emptyList()
+
         // transform
         // x = Foo::bar ->
         // x = Foo_bar_KreferenceGet(c1: closure$C1, c2: closure$C2) : KFunctionN<Foo, T2, ..., TN, TReturn> {
@@ -176,12 +173,15 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
         }
 
 
-        callableToGetterFunction[makeCallableKey(declaration, functionReference)] = refGetFunction
+        context.callableReferenceToGetterFunction[key] = refGetFunction
 
         return additionalDeclarations + listOf(refGetFunction)
     }
 
     private fun lowerKPropertyReference(getterDeclaration: IrFunction, propertyReference: IrPropertyReference): List<IrDeclaration> {
+        val key = makeCallableKey(getterDeclaration, propertyReference)
+        if (key in context.callableReferenceToGetterFunction) return emptyList()
+
         // transform
         // x = Foo::bar ->
         // x = Foo_bar_KreferenceGet() : KPropertyN<Foo, PType> {
@@ -243,7 +243,7 @@ class CallableReferenceLowering(val context: JsIrBackendContext) : FileLoweringP
             Pair(statements, irVarSymbol)
         }
 
-        callableToGetterFunction[makeCallableKey(getterDeclaration, propertyReference)] = refGetFunction
+        context.callableReferenceToGetterFunction[key] = refGetFunction
 
         return additionalDeclarations + listOf(refGetFunction)
     }
