@@ -9,7 +9,7 @@ import templates.Family.*
 
 object ComparableOps : TemplateGroupBase() {
 
-    private val numericPrimitives = PrimitiveType.numericPrimitives.sortedBy { it.capacity }.toSet()
+    private val numericPrimitives = PrimitiveType.numericPrimitives.asSequence().sortedBy { it.capacity }.toSet()
     private val intPrimitives = setOf(PrimitiveType.Int, PrimitiveType.Long)
     private val shortIntPrimitives = setOf(PrimitiveType.Byte, PrimitiveType.Short)
 

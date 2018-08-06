@@ -55,7 +55,8 @@ internal class ReferenceTracker<in Reference, RemoveCandidate : JsNode> {
 
         visited.add(reference)
         getReferencedBy(reference)
-                .filterNot { it in visited }
+            .asSequence()
+            .filterNot { it in visited }
                 .filter { isReferenceToRemovableCandidate(it) && !isReachable(it) }
                 .forEach { markReachable(it) }
 

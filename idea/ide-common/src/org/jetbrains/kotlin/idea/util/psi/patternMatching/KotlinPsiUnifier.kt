@@ -351,7 +351,7 @@ class KotlinPsiUnifier(
                 val args1 = type1.arguments
                 val args2 = type2.arguments
                 if (args1.size != args2.size) return UNMATCHED
-                if (!args1.withIndex().all { p ->
+                if (!args1.asSequence().withIndex().all { p ->
                     val (i, arg1) = p
                     val arg2 = args2[i]
                     matchTypeArguments(i, arg1, arg2, typeRef1, typeRef2)
@@ -609,8 +609,10 @@ class KotlinPsiUnifier(
 
             fun resolveAndSortDeclarationsByDescriptor(declarations: List<KtDeclaration>): List<Pair<KtDeclaration, DeclarationDescriptor?>> {
                 return declarations
-                        .map { it to it.bindingContext[BindingContext.DECLARATION_TO_DESCRIPTOR, it] }
-                        .sortedBy { it.second?.let { IdeDescriptorRenderers.SOURCE_CODE.render(it) } ?: "" }
+                    .asSequence()
+                    .map { it to it.bindingContext[BindingContext.DECLARATION_TO_DESCRIPTOR, it] }
+                    .sortedBy { it.second?.let { IdeDescriptorRenderers.SOURCE_CODE.render(it) } ?: "" }
+                    .toList()
             }
 
             fun sortDeclarationsByElementType(declarations: List<KtDeclaration>): List<KtDeclaration> {

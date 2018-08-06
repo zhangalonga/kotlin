@@ -223,8 +223,8 @@ abstract class AbstractKotlinCompile<T : CommonCompilerArguments>() : AbstractKo
                 addAll(friendTask.attachedClassesDirs.map { it.value })
             }
 
-            possibleFriendDirs.filterNotNullTo(HashSet())
-                .map { it.absolutePath }
+            possibleFriendDirs.asSequence().filterNotNullTo(HashSet())
+                .map { it.absolutePath }.toList()
                 .toTypedArray()
         }
     }

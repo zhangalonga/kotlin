@@ -197,6 +197,7 @@ class KotlinCodeFragmentFactory : CodeFragmentFactory() {
     private fun initImports(imports: String?): String? {
         if (imports != null && !imports.isEmpty()) {
             return imports.split(KtCodeFragment.IMPORT_SEPARATOR)
+                .asSequence()
                 .mapNotNull { fixImportIfNeeded(it) }
                 .joinToString(KtCodeFragment.IMPORT_SEPARATOR)
         }

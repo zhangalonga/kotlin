@@ -100,7 +100,8 @@ class TreeBasedClass(
 
     val innerClasses: Map<Name, TreeBasedClass> by lazy {
         tree.members
-                .filterIsInstance(JCTree.JCClassDecl::class.java)
+            .asSequence()
+            .filterIsInstance(JCTree.JCClassDecl::class.java)
                 .map { TreeBasedClass(it, compilationUnit, javac, classId?.createNestedClassId(Name.identifier(it.simpleName.toString())), this) }
                 .associateBy(JavaClass::name)
     }
@@ -119,20 +120,26 @@ class TreeBasedClass(
 
     override val methods: Collection<JavaMethod>
         get() = tree.members
-                .filter { it.kind == Tree.Kind.METHOD && !TreeInfo.isConstructor(it) }
-                .map { TreeBasedMethod(it as JCTree.JCMethodDecl, compilationUnit,this, javac) }
+            .asSequence()
+            .filter { it.kind == Tree.Kind.METHOD && !TreeInfo.isConstructor(it) }
+            .map { TreeBasedMethod(it as JCTree.JCMethodDecl, compilationUnit,this, javac) }
+            .toList()
 
     override val fields: Collection<JavaField>
         get() = tree.members
-                .filterIsInstance(JCTree.JCVariableDecl::class.java)
-                .map { TreeBasedField(it, compilationUnit, this, javac) }
+            .asSequence()
+            .filterIsInstance(JCTree.JCVariableDecl::class.java)
+            .map { TreeBasedField(it, compilationUnit, this, javac) }
+            .toList()
 
     override val constructors: Collection<JavaConstructor>
         get() = tree.members
-                .filter { member -> TreeInfo.isConstructor(member) }
-                .map { constructor ->
-                    TreeBasedConstructor(constructor as JCTree.JCMethodDecl, compilationUnit, this, javac)
-                }
+            .asSequence()
+            .filter { member -> TreeInfo.isConstructor(member) }
+            .map { constructor ->
+                TreeBasedConstructor(constructor as JCTree.JCMethodDecl, compilationUnit, this, javac)
+            }
+            .toList()
 
     override val innerClassNames: Collection<Name>
         get() = innerClasses.keys

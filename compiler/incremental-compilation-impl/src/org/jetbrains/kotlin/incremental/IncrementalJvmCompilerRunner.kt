@@ -435,7 +435,7 @@ class IncrementalJvmCompilerRunner(
 
         try {
             reporter.report { "compiling with args: ${ArgumentUtils.convertArgumentsToStringList(args)}" }
-            reporter.report { "compiling with classpath: ${classpath.toList().sorted().joinToString()}" }
+            reporter.report { "compiling with classpath: ${classpath.asSequence().toList().sorted().joinToString()}" }
             val exitCode = compiler.exec(messageCollector, services, args)
             reporter.reportCompileIteration(sourcesToCompile, exitCode)
             return exitCode

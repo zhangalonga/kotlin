@@ -278,6 +278,7 @@ class KotlinMavenImporter : MavenImporter(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_
 
     private fun detectPlatformByExecutions(mavenProject: MavenProject): TargetPlatformKind<*>? {
         return mavenProject.findPlugin(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_ARTIFACT_ID)?.executions?.flatMap { it.goals }
+            ?.asSequence()
             ?.mapNotNull { goal ->
                 when (goal) {
                     PomFile.KotlinGoals.Compile, PomFile.KotlinGoals.TestCompile -> TargetPlatformKind.Jvm[JvmTarget.JVM_1_6]
@@ -313,7 +314,7 @@ class KotlinMavenImporter : MavenImporter(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_
     private fun contributeSourceDirectories(mavenProject: MavenProject, module: Module, rootModel: MavenRootModelAdapter) {
         val directories = collectSourceDirectories(mavenProject)
 
-        val toBeAdded = directories.map { it.second }.toSet()
+        val toBeAdded = directories.asSequence().map { it.second }.toSet()
         val state = module.kotlinImporterComponent
 
         val isNonJvmModule = mavenProject
@@ -345,7 +346,7 @@ class KotlinMavenImporter : MavenImporter(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_
             mavenProject.testResources.forEach { rootModel.addSourceFolder(it.directory, KotlinResourceRootType.TestResource) }
         }
 
-        state.addedSources.filter { it !in toBeAdded }.forEach {
+        state.addedSources.asSequence().filter { it !in toBeAdded }.forEach {
             rootModel.unregisterAll(it, true, true)
             state.addedSources.remove(it)
         }
@@ -381,7 +382,7 @@ private fun Element?.sourceDirectories(): List<String> =
             ?: emptyList()
 
 private fun MavenPlugin.Execution.sourceType() =
-    goals.map { if (isTestGoalName(it)) SourceType.TEST else SourceType.PROD }
+    goals.asSequence().map { if (isTestGoalName(it)) SourceType.TEST else SourceType.PROD }
         .distinct()
         .singleOrNull() ?: SourceType.PROD
 

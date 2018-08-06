@@ -450,7 +450,7 @@ class KotlinElementActionsFactory : JvmElementActionsFactory() {
                 KtPsiFactory(target)
                     .createAnnotationEntry(
                         "@${request.qualifiedName}${
-                        request.attributes.mapIndexed { i, p ->
+                        request.attributes.asSequence().mapIndexed { i, p ->
                             if (!kotlinAnnotation && i == 0 && p.name == "value")
                                 renderAttributeValue(p.value).toString()
                             else

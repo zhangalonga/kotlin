@@ -28,4 +28,4 @@ fun CompilerConfiguration.addKotlinSourceRoots(sources: List<String>): Unit =
         sources.forEach(this::addKotlinSourceRoot)
 
 val CompilerConfiguration.kotlinSourceRoots: List<String>
-    get() = get(JVMConfigurationKeys.CONTENT_ROOTS)?.filterIsInstance<KotlinSourceRoot>()?.map { it.path }.orEmpty()
+    get() = get(JVMConfigurationKeys.CONTENT_ROOTS)?.asSequence()?.filterIsInstance<KotlinSourceRoot>()?.map { it.path }?.toList().orEmpty()

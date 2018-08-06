@@ -51,7 +51,7 @@ class IrInlineCodegen(
     ) {
         if (valueParameterDescriptor?.let { isInlineParameter(it) } == true && isInlineIrExpression(argumentExpression)) {
             val irReference: IrFunctionReference =
-                (argumentExpression as IrBlock).statements.filterIsInstance<IrFunctionReference>().single()
+                (argumentExpression as IrBlock).statements.asSequence().filterIsInstance<IrFunctionReference>().single()
             rememberClosure(irReference, parameterType, valueParameterDescriptor) as IrExpressionLambda
         } else {
             putValueOnStack(argumentExpression, parameterType, valueParameterDescriptor?.index ?: -1)

@@ -197,11 +197,11 @@ class KotlinBuildScriptManipulator(
 
     private fun KtBlockExpression.findPluginInPluginsGroup(pluginName: String): KtCallExpression? {
         return PsiTreeUtil.getChildrenOfAnyType(
-                this,
-                KtCallExpression::class.java,
-                KtBinaryExpression::class.java,
-                KtDotQualifiedExpression::class.java
-        ).mapNotNull {
+            this,
+            KtCallExpression::class.java,
+            KtBinaryExpression::class.java,
+            KtDotQualifiedExpression::class.java
+        ).asSequence().mapNotNull {
             when (it) {
                 is KtCallExpression -> it
                 is KtBinaryExpression -> {

@@ -154,7 +154,7 @@ private fun File.toRelativeStringOrNull(base: File): String? {
         if (sameCount < baseCount)
             res.append(File.separatorChar)
 
-        thisComponents.segments.drop(sameCount).joinTo(res, File.separator)
+        thisComponents.segments.asSequence().drop(sameCount).joinTo(res, File.separator)
     }
 
     return res.toString()

@@ -226,7 +226,8 @@ private fun Element.restoreNormalOrdering(bean: Any) {
     val normalOrdering = bean.javaClass.normalOrdering
     val elementsToReorder = this.getContent<Element> { it is Element && it.getAttribute("name")?.value in normalOrdering }
     elementsToReorder
-            .sortedBy { normalOrdering[it.getAttribute("name")?.value!!] }
+        .asSequence()
+        .sortedBy { normalOrdering[it.getAttribute("name")?.value!!] }
             .forEachIndexed { index, element -> elementsToReorder[index] = element.clone() }
 }
 

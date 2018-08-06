@@ -48,7 +48,7 @@ class ReformatInspection : LocalInspectionTool() {
         val changes = collectFormattingChanges(file)
         if (changes.isEmpty()) return null
 
-        val elements = changes.map {
+        val elements = changes.asSequence().map {
             val rangeOffset = when (it) {
                 is ShiftIndentInsideRange -> it.range.startOffset
                 is ReplaceWhiteSpace -> it.textRange.startOffset
@@ -59,7 +59,7 @@ class ReformatInspection : LocalInspectionTool() {
             if (leaf is PsiWhiteSpace && isEmptyLineReformat(leaf, it)) return@map null
 
             leaf
-        }.filterNotNull()
+        }.filterNotNull().toList()
 
         return elements.map {
             ProblemDescriptorImpl(

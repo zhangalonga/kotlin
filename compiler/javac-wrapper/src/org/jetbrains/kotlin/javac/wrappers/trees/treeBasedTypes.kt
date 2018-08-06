@@ -224,14 +224,14 @@ class TreeBasedGenericClassifierType(
     override val annotations: Collection<JavaAnnotation>
         get() {
             val newTree = tree.clazz
-            return (newTree as? JCTree.JCAnnotatedType)?.annotations?.map { TreeBasedAnnotation(it, compilationUnit, javac, containingElement) }
+            return (newTree as? JCTree.JCAnnotatedType)?.annotations?.asSequence()?.map { TreeBasedAnnotation(it, compilationUnit, javac, containingElement) }
                            ?.toMutableList<JavaAnnotation>()
                            ?.apply { addAll(super.annotations) }
                    ?: super.annotations
         }
 
     override val typeArguments: List<JavaType>
-        get() = tree.arguments.map { create(it, compilationUnit, javac, emptyList(), containingElement) }
+        get() = tree.arguments.asSequence().map { create(it, compilationUnit, javac, emptyList(), containingElement) }
                 .toMutableList()
                 .apply { addAll(super.typeArguments) }
 

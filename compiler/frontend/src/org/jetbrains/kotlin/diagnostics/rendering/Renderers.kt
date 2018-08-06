@@ -173,6 +173,7 @@ object Renderers {
         val descriptors = calls.map { it.resultingDescriptor }
         val context = RenderingContext.Impl(descriptors)
         descriptors
+            .asSequence()
             .sortedWith(MemberComparator.INSTANCE)
             .joinToString(separator = "\n", prefix = "\n") { FQ_NAMES_IN_TYPES.render(it, context) }
     }
@@ -281,7 +282,7 @@ object Renderers {
         inferenceErrorData: InferenceErrorData, renderer: TabledDescriptorRenderer
     ): TabledDescriptorRenderer {
         val constraintErrors = inferenceErrorData.constraintSystem.status.constraintErrors
-        val errorPositions = constraintErrors.filter { it is ParameterConstraintError }.map { it.constraintPosition }
+        val errorPositions = constraintErrors.asSequence().filter { it is ParameterConstraintError }.map { it.constraintPosition }.toList()
         return renderer.table(
             TabledDescriptorRenderer
                 .newTable()

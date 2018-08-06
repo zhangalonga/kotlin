@@ -151,7 +151,7 @@ class KotlinSafeDeleteProcessor : JavaSafeDeleteProcessor() {
             }
             val searchInfo = super.findUsages(elementToPassToJava, asLightElements(allElementsToDelete), javaUsages)
 
-            javaUsages.filterIsInstance<SafeDeleteOverridingMethodUsageInfo>().mapNotNullTo(deleteSet) { it.element }
+            javaUsages.asSequence().filterIsInstance<SafeDeleteOverridingMethodUsageInfo>().mapNotNullTo(deleteSet) { it.element }
 
             val ignoranceCondition = getIgnoranceCondition()
 
@@ -281,7 +281,7 @@ class KotlinSafeDeleteProcessor : JavaSafeDeleteProcessor() {
                 else {
                     val lightMethods = element.toLightMethods()
                     if (lightMethods.isNotEmpty()) {
-                        lightMethods.map { method -> findUsagesByJavaProcessor(method, false) }.firstOrNull()
+                        lightMethods.asSequence().map { method -> findUsagesByJavaProcessor(method, false) }.firstOrNull()
                     }
                     else {
                         findKotlinDeclarationUsages(element)

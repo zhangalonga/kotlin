@@ -69,8 +69,10 @@ private fun createSynthesizedFunctionWithFirstParameterAsReceiver(descriptor: Fu
         setExtensionReceiverType(descriptor.original.valueParameters.first().type)
         setValueParameters(
             descriptor.original.valueParameters
+                .asSequence()
                 .drop(1)
                 .map { p -> p.copy(descriptor.original, Name.identifier("p${p.index + 1}"), p.index - 1) }
+                .toList()
         )
     }.build()!!
 

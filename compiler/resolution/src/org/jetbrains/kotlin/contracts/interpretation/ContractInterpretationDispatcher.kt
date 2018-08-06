@@ -49,7 +49,7 @@ class ContractInterpretationDispatcher {
             if (effect is ConditionalEffectDeclaration) {
                 conditionalEffectInterpreter.interpret(effect) ?: return null
             } else {
-                effectsInterpreters.mapNotNull { it.tryInterpret(effect) }.singleOrNull() ?: return null
+                effectsInterpreters.asSequence().mapNotNull { it.tryInterpret(effect) }.singleOrNull() ?: return null
             }
         }
 

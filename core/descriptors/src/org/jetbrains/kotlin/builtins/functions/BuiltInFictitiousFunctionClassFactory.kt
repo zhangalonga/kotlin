@@ -81,7 +81,7 @@ class BuiltInFictitiousFunctionClassFactory(
         val packageFqName = classId.packageFqName
         val (kind, arity) = parseClassName(className, packageFqName) ?: return null
 
-        val containingPackageFragment = module.getPackage(packageFqName).fragments.filterIsInstance<BuiltInsPackageFragment>().first()
+        val containingPackageFragment = module.getPackage(packageFqName).fragments.asSequence().filterIsInstance<BuiltInsPackageFragment>().first()
 
         return FunctionClassDescriptor(storageManager, containingPackageFragment, kind, arity)
     }

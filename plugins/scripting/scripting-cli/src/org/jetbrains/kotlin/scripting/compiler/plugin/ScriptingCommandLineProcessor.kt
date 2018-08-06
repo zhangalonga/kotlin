@@ -124,7 +124,7 @@ class ScriptingCommandLineProcessor : CommandLineProcessor {
                     throw CliOptionProcessingException("Unable to parse script-resolver-environment argument $envParam")
                 }
                 currentEnv[match.groupValues[1]] =
-                        match.groupValues.drop(2).firstOrNull { it.isNotEmpty() }?.let { unescapeRe.replace(it, "\$1") }
+                        match.groupValues.asSequence().drop(2).firstOrNull { it.isNotEmpty() }?.let { unescapeRe.replace(it, "\$1") }
             }
             configuration.put(ScriptingConfigurationKeys.LEGACY_SCRIPT_RESOLVER_ENVIRONMENT_OPTION, currentEnv)
         }

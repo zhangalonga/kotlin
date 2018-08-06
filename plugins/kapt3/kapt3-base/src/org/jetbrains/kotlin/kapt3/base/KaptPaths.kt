@@ -23,8 +23,10 @@ class KaptPaths(
 
     fun collectJavaSourceFiles(): List<File> {
         return (javaSourceRoots + stubsOutputDir)
+            .asSequence()
             .map { it.canonicalFile }
             .distinct()
+            .toList()
             .flatMap { root ->
                 root.walk().filter { it.isFile && it.extension == "java" }.toList()
             }

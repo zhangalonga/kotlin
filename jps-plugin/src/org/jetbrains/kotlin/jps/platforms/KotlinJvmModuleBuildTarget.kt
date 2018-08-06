@@ -146,7 +146,7 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
 
         val targets = chunk.targets.mapNotNull { this.context.kotlinBuildTargets[it] as? KotlinJvmModuleBuildTarget }
 
-        val outputDirs = targets.map { it.outputDir }.toSet()
+        val outputDirs = targets.asSequence().map { it.outputDir }.toSet()
 
         for (target in targets) {
             val outputDir = target.outputDir

@@ -31,7 +31,7 @@ class KtFileClassProviderImpl(val kotlinAsJavaSupport: KotlinAsJavaSupport) :
         }
 
         val result = arrayListOf<PsiClass>()
-        file.declarations.filterIsInstance<KtClassOrObject>().map { it.toLightClass() }.filterNotNullTo(result)
+        file.declarations.asSequence().filterIsInstance<KtClassOrObject>().map { it.toLightClass() }.filterNotNullTo(result)
 
         val moduleInfo = file.getModuleInfoPreferringJvmPlatform()
         val jvmClassInfo = JvmFileClassUtil.getFileClassInfoNoResolve(file)

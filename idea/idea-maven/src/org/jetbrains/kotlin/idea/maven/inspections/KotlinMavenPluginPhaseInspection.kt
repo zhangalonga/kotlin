@@ -182,7 +182,7 @@ class KotlinMavenPluginPhaseInspection : DomElementsInspection<MavenDomProjectMo
             }
         }
 
-        pom.findKotlinExecutions().filter {
+        pom.findKotlinExecutions().asSequence().filter {
             it.goals.goals.any { it.rawText == PomFile.KotlinGoals.Compile || it.rawText == PomFile.KotlinGoals.Js }
                     && it.goals.goals.any { it.rawText == PomFile.KotlinGoals.TestCompile || it.rawText == PomFile.KotlinGoals.TestJs }
         }.forEach { badExecution ->

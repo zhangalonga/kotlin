@@ -161,7 +161,7 @@ class TypeConverter(val converter: Converter) {
                     val paramIndex = scope.parameterList.parameters.indexOf(variable)
                     assert(paramIndex >= 0)
                     val superSignatures = scope.hierarchicalMethodSignature.superSignatures
-                    value = superSignatures.map { signature ->
+                    value = superSignatures.asSequence().map { signature ->
                         val params = signature.method.parameterList.parameters
                         if (paramIndex < params.size) forVariableType(params[paramIndex], false) else default
                     }.firstOrNull { it != default } ?: default
@@ -209,7 +209,7 @@ class TypeConverter(val converter: Converter) {
             if (value != default) return value
 
             val superSignatures = method.hierarchicalMethodSignature.superSignatures
-            value = superSignatures.map { forMethodReturnType(it.method) }.firstOrNull { it != default } ?: default
+            value = superSignatures.asSequence().map { forMethodReturnType(it.method) }.firstOrNull { it != default } ?: default
             if (value != default) return value
 
             value = fromTypeHeuristics(returnType)

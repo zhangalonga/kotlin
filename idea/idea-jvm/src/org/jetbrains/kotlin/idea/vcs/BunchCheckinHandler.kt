@@ -85,7 +85,7 @@ class BunchFileCheckInHandlerFactory : CheckinHandlerFactory() {
             if (forgottenFiles.isEmpty()) return CheckinHandler.ReturnResult.COMMIT
 
             val projectBaseFile = File(project.basePath)
-            var filePaths = forgottenFiles.map { it.relativeTo(projectBaseFile).path }.sorted()
+            var filePaths = forgottenFiles.asSequence().map { it.relativeTo(projectBaseFile).path }.sorted().toList()
             if (filePaths.size > 15) {
                 filePaths = filePaths.take(15) + "..."
             }
@@ -117,9 +117,9 @@ object BunchFileUtils {
         val file = File(bunchFile.path)
         if (!file.exists()) return null
 
-        val lines = file.readLines().map { it.trim() }.filter { !it.isEmpty() }
+        val lines = file.readLines().asSequence().map { it.trim() }.filter { !it.isEmpty() }.toList()
         if (lines.size <= 1) return null
 
-        return lines.drop(1).map { it.split('_').first() }
+        return lines.asSequence().drop(1).map { it.split('_').first() }.toList()
     }
 }

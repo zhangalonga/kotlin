@@ -82,7 +82,7 @@ class FrameworkLibraryValidatorWithDynamicDescription(
                 it != TargetPlatformKind.Common && it.name != targetPlatform.name && checkLibraryIsConfigured(it)
             }
             if (conflictingPlatforms.isNotEmpty()) {
-                val platformText = conflictingPlatforms.mapTo(LinkedHashSet()) { it.name }.joinToString()
+                val platformText = conflictingPlatforms.asSequence().mapTo(LinkedHashSet()) { it.name }.joinToString()
                 return ValidationResult("Libraries for the following platform are also present in the module dependencies: $platformText")
             }
 

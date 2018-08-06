@@ -33,7 +33,8 @@ class ConvertForEachToForLoopIntention : SelfTargetingOffsetIndependentIntention
 ) {
     companion object {
         private const val FOR_EACH_NAME = "forEach"
-        private val FOR_EACH_FQ_NAMES = listOf("collections", "sequences", "text", "ranges").map { "kotlin.$it.$FOR_EACH_NAME" }.toSet()
+        private val FOR_EACH_FQ_NAMES = listOf("collections", "sequences", "text", "ranges").asSequence().map { "kotlin.$it.$FOR_EACH_NAME" }
+            .toSet()
     }
 
     override fun isApplicableTo(element: KtSimpleNameExpression): Boolean {

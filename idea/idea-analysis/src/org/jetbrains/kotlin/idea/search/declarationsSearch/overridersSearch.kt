@@ -52,7 +52,8 @@ fun HierarchySearchRequest<*>.searchOverriders(): Query<PsiMethod> {
     if (psiMethods.isEmpty()) return EmptyQuery.getEmptyQuery()
 
     return psiMethods
-            .map { psiMethod -> KotlinPsiMethodOverridersSearch.search(copy(psiMethod)) }
+        .asSequence()
+        .map { psiMethod -> KotlinPsiMethodOverridersSearch.search(copy(psiMethod)) }
             .reduce { query1, query2 -> MergeQuery(query1, query2)}
 }
 
@@ -125,7 +126,8 @@ private fun forEachKotlinOverride(
         processor: (superMember: PsiElement, overridingMember: PsiElement) -> Boolean
 ): Boolean {
     val baseClassDescriptor = runReadAction { ktClass.unsafeResolveToDescriptor() as ClassDescriptor }
-    val baseDescriptors = runReadAction { members.mapNotNull { it.unsafeResolveToDescriptor() as? CallableMemberDescriptor }.filter { it.isOverridable } }
+    val baseDescriptors = runReadAction { members.asSequence().mapNotNull { it.unsafeResolveToDescriptor() as? CallableMemberDescriptor }.filter { it.isOverridable }
+        .toList() }
     if (baseDescriptors.isEmpty()) return true
 
     HierarchySearchRequest(ktClass, scope, true).searchInheritors().forEach(Processor {

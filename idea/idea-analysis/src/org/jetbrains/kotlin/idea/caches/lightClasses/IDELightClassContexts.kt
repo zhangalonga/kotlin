@@ -177,7 +177,7 @@ internal object IDELightClassContexts {
 
         if (hasMembersOverridingInternalMembers(classOrObject)) return false
 
-        return classOrObject.declarations.filterIsInstance<KtClassOrObject>().all { isDummyResolveApplicable(it) }
+        return classOrObject.declarations.asSequence().filterIsInstance<KtClassOrObject>().all { isDummyResolveApplicable(it) }
     }
 
     private fun hasDelegatedSupertypes(classOrObject: KtClassOrObject) =
@@ -185,7 +185,7 @@ internal object IDELightClassContexts {
 
     private fun isDataClassWithGeneratedMembersOverridden(classOrObject: KtClassOrObject): Boolean {
         return classOrObject.hasModifier(KtTokens.DATA_KEYWORD) &&
-                classOrObject.declarations.filterIsInstance<KtFunction>().any {
+                classOrObject.declarations.asSequence().filterIsInstance<KtFunction>().any {
                     isGeneratedForDataClass(it.nameAsSafeName)
                 }
     }
@@ -200,7 +200,7 @@ internal object IDELightClassContexts {
     }
 
     private fun hasMembersOverridingInternalMembers(classOrObject: KtClassOrObject): Boolean {
-        return classOrObject.declarations.filterIsInstance<KtCallableDeclaration>().any {
+        return classOrObject.declarations.asSequence().filterIsInstance<KtCallableDeclaration>().any {
             possiblyOverridesInternalMember(it)
         }
     }

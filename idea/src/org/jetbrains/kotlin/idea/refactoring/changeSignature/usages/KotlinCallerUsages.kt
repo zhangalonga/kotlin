@@ -35,7 +35,8 @@ class KotlinCallerUsage(element: KtNamedDeclaration): KotlinUsageInfo<KtNamedDec
             else -> null
         } ?: return true
         changeInfo.getNonReceiverParameters()
-                .withIndex()
+            .asSequence()
+            .withIndex()
                 .filter { it.value.isNewParameter }
                 .forEach {
                     val newParameter = it.value.getDeclarationSignature(it.index, changeInfo.methodDescriptor.originalPrimaryCallable)
@@ -52,7 +53,8 @@ class KotlinCallerCallUsage(element: KtCallElement): KotlinUsageInfo<KtCallEleme
         val psiFactory = KtPsiFactory(project)
         val isNamedCall = argumentList.arguments.any { it.getArgumentName() != null }
         changeInfo.getNonReceiverParameters()
-                .filter { it.isNewParameter }
+            .asSequence()
+            .filter { it.isNewParameter }
                 .forEach {
                     val parameterName = it.name
                     val argumentExpression = if (element.isInsideOfCallerBody(allUsages)) {

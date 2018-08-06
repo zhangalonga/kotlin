@@ -70,10 +70,10 @@ class KotlinGradleMultiplatformModuleBuilder : GradleModuleBuilder() {
             setupPlatformModule(module, platformRootDir, jsModuleName, GradleKotlinMPPJSFrameworkSupportProvider())
 
             updateSettingsScript(module) {
-                val includedModules = listOfNotNull(commonModuleName, jvmModuleName, jsModuleName).filter { it.isNotEmpty() }.map {
+                val includedModules = listOfNotNull(commonModuleName, jvmModuleName, jsModuleName).asSequence().filter { it.isNotEmpty() }.map {
                     if (!commonModuleIsParent || it == commonModuleName) it
                     else "$commonModuleName:$it"
-                }
+                }.toList()
                 if (includedModules.isNotEmpty()) {
                     it.addIncludedModules(includedModules)
                 }

@@ -135,9 +135,9 @@ fun getLambdasAtLineIfAny(file: KtFile, line: Int): List<KtFunction> {
     val start = lineElement.startOffset
     val end = lineElement.endOffset
 
-    val allLiterals = CodeInsightUtils.
-            findElementsOfClassInRange(file, start, end, KtFunction::class.java)
-            .filterIsInstance<KtFunction>()
+    val allLiterals = CodeInsightUtils.findElementsOfClassInRange(file, start, end, KtFunction::class.java)
+        .asSequence()
+        .filterIsInstance<KtFunction>()
             // filter function literals and functional expressions
             .filter { it is KtFunctionLiteral || it.name == null }
             .toSet()

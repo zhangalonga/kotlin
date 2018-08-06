@@ -130,8 +130,9 @@ class KotlinFieldBreakpoint(
                 val sourcePosition = sourcePosition
                 if (sourcePosition != null) {
                     debugProcess.positionManager
-                            .locationsOfLine(refType, sourcePosition)
-                            .filter { it.method().isConstructor || it.method().isStaticInitializer }
+                        .locationsOfLine(refType, sourcePosition)
+                        .asSequence()
+                        .filter { it.method().isConstructor || it.method().isStaticInitializer }
                             .forEach {
                                 val request = debugProcess.requestsManager.createBreakpointRequest(this, it)
                                 debugProcess.requestsManager.enableRequest(request)

@@ -81,7 +81,8 @@ class SymbolBasedClass(
     val innerClasses: Map<Name, JavaClass>
             by lazy {
                 enclosedElements
-                        .filterIsInstance(TypeElement::class.java)
+                    .asSequence()
+                    .filterIsInstance(TypeElement::class.java)
                         .map { SymbolBasedClass(it, javac, classId?.createNestedClassId(Name.identifier(it.simpleName.toString())), file) }
                         .associateBy(JavaClass::name)
             }
@@ -107,8 +108,10 @@ class SymbolBasedClass(
 
     override val methods: Collection<JavaMethod>
         get() = enclosedElements
-                .filter { it.kind == ElementKind.METHOD && !isEnumValuesOrValueOf(it as ExecutableElement) }
-                .map { SymbolBasedMethod(it as ExecutableElement, this, javac) }
+            .asSequence()
+            .filter { it.kind == ElementKind.METHOD && !isEnumValuesOrValueOf(it as ExecutableElement) }
+            .map { SymbolBasedMethod(it as ExecutableElement, this, javac) }
+            .toList()
 
     private fun isEnumValuesOrValueOf(method: ExecutableElement): Boolean {
         return isEnum && when (method.simpleName.toString()) {
@@ -120,13 +123,17 @@ class SymbolBasedClass(
 
     override val fields: Collection<JavaField>
         get() = enclosedElements
-                .filter { it.kind.isField && Name.isValidIdentifier(it.simpleName.toString()) }
-                .map { SymbolBasedField(it as VariableElement, this, javac) }
+            .asSequence()
+            .filter { it.kind.isField && Name.isValidIdentifier(it.simpleName.toString()) }
+            .map { SymbolBasedField(it as VariableElement, this, javac) }
+            .toList()
 
     override val constructors: Collection<JavaConstructor>
         get() = enclosedElements
-                .filter { it.kind == ElementKind.CONSTRUCTOR }
-                .map { SymbolBasedConstructor(it as ExecutableElement, this, javac) }
+            .asSequence()
+            .filter { it.kind == ElementKind.CONSTRUCTOR }
+            .map { SymbolBasedConstructor(it as ExecutableElement, this, javac) }
+            .toList()
 
     override val innerClassNames: Collection<Name>
         get() = innerClasses.keys

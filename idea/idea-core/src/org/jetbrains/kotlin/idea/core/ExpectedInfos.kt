@@ -223,7 +223,8 @@ class ExpectedInfos(
             if (expectedFuzzyTypes.isEmpty() || expectedFuzzyTypes.any { it.freeParameters.isNotEmpty() }) return results
 
             return expectedFuzzyTypes
-                    .map { it.type }
+                .asSequence()
+                .map { it.type }
                     .toSet()
                     .flatMap { calculateForArgument(call, it, argument) }
         }
@@ -345,7 +346,7 @@ class ExpectedInfos(
         val tail = if (argumentName == null) {
             when {
                 parameter == parameters.last() -> rparenthTail
-                parameters.dropWhile { it != parameter }.drop(1).any(::needCommaForParameter) -> Tail.COMMA
+                parameters.asSequence().dropWhile { it != parameter }.drop(1).any(::needCommaForParameter) -> Tail.COMMA
                 else -> null
             }
         }

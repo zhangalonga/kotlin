@@ -110,8 +110,10 @@ class ConstructorConsistencyChecker private constructor(
     fun check() {
         // List of properties to initialize
         val propertyDescriptors = variablesData.getDeclaredVariables(pseudocode, false)
+            .asSequence()
             .filterIsInstance<PropertyDescriptor>()
             .filter { trace.get(BindingContext.BACKING_FIELD_REQUIRED, it) == true }
+            .toList()
         pseudocode.traverse(
             TraversalOrder.FORWARD, variablesData.variableInitializers
         ) { instruction, enterData, _ ->

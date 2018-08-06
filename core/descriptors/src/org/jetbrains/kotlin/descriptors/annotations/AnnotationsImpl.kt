@@ -31,15 +31,17 @@ class AnnotationsImpl : Annotations {
             @Suppress("UNUSED_PARAMETER") i: Int
     ) {
         this.targetedAnnotations = targetedAnnotations
-        this.annotations = targetedAnnotations.filter { it.target == null }.map { it.annotation }
+        this.annotations = targetedAnnotations.asSequence().filter { it.target == null }.map { it.annotation }.toList()
     }
 
     override fun isEmpty() = targetedAnnotations.isEmpty()
 
     override fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget> {
         return targetedAnnotations
-                .filter { it.target != null }
-                .map { AnnotationWithTarget(it.annotation, it.target!!) }
+            .asSequence()
+            .filter { it.target != null }
+            .map { AnnotationWithTarget(it.annotation, it.target!!) }
+            .toList()
     }
 
     override fun getAllAnnotations() = targetedAnnotations

@@ -360,7 +360,7 @@ private fun makeCall(
         return when (outputValue) {
             is OutputValue.ExpressionValue -> {
                 val exprText = if (outputValue.callSiteReturn) {
-                    val firstReturn = outputValue.originalExpressions.filterIsInstance<KtReturnExpression>().firstOrNull()
+                    val firstReturn = outputValue.originalExpressions.asSequence().filterIsInstance<KtReturnExpression>().firstOrNull()
                     val label = firstReturn?.getTargetLabel()?.text ?: ""
                     "return$label $callText"
                 }
@@ -402,9 +402,10 @@ private fun makeCall(
     val defaultValue = controlFlow.defaultOutputValue
 
     controlFlow.outputValues
-            .filter { it != defaultValue }
-            .flatMap { wrapCall(it, unboxingExpressions[it]!!) }
-            .withIndex()
+        .filter { it != defaultValue }
+        .flatMap { wrapCall(it, unboxingExpressions[it]!!) }
+        .asSequence()
+        .withIndex()
             .forEach {
                 val (i, e) = it
 

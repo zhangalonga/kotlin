@@ -164,6 +164,7 @@ class DelegationResolver<T : CallableMemberDescriptor> private constructor(
             return delegatedMembers
                 .keysToMapExceptNulls { delegatingMember ->
                     val actualDelegates = DescriptorUtils.getAllOverriddenDescriptors(delegatingMember)
+                        .asSequence()
                         .filter { it.containingDeclaration == toInterface }
                         .map { overriddenDescriptor ->
                             val scope = (delegateExpressionType ?: toInterface.defaultType).memberScope
@@ -174,6 +175,7 @@ class DelegationResolver<T : CallableMemberDescriptor> private constructor(
                                     scope.getContributedVariables(name, NoLookupLocation.WHEN_CHECK_OVERRIDES))
                                 .firstOrNull { it == overriddenDescriptor || OverridingUtil.overrides(it, overriddenDescriptor) }
                         }
+                        .toList()
 
                     actualDelegates.firstOrNull()
                 }

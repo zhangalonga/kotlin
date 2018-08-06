@@ -32,9 +32,9 @@ import org.jetbrains.kotlin.resolve.jvm.annotations.findJvmOverloadsAnnotation
 class JvmOverloadsAnnotationLowering(val context: JvmBackendContext) : ClassLoweringPass {
 
     override fun lower(irClass: IrClass) {
-        val functions = irClass.declarations.filterIsInstance<IrFunction>().filter {
+        val functions = irClass.declarations.asSequence().filterIsInstance<IrFunction>().filter {
             it.descriptor.findJvmOverloadsAnnotation() != null
-        }
+        }.toList()
 
         functions.forEach {
             generateWrappers(it, irClass)

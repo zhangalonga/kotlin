@@ -47,13 +47,13 @@ open class KotlinFileStubImpl(
     override fun toString(): String = "PsiJetFileStubImpl[" + "package=" + getPackageFqName().asString() + "]"
 
     override fun getClasses(): Array<PsiClass> {
-        return childrenStubs.filterIsInstance<PsiClassStub<*>>().map { it.psi }.toTypedArray()
+        return childrenStubs.asSequence().filterIsInstance<PsiClassStub<*>>().map { it.psi }.toList().toTypedArray()
     }
 
     override fun findImportsByAlias(alias: String): List<KotlinImportDirectiveStub> {
         val importList = childrenStubs.firstOrNull { it.stubType == IMPORT_LIST } ?: return emptyList()
-        return importList.childrenStubs.filterIsInstance<KotlinImportDirectiveStub>().filter {
+        return importList.childrenStubs.asSequence().filterIsInstance<KotlinImportDirectiveStub>().filter {
             it.childrenStubs.firstIsInstanceOrNull<KotlinImportAliasStub>()?.getName() == alias
-        }
+        }.toList()
     }
 }

@@ -144,7 +144,7 @@ private open class HistoryActionsForNoRepeat(val state: GenericReplEvaluatorStat
         fun classNameFromPath(path: String) = JvmClassName.byInternalName(path.removeSuffix(".class"))
         fun compiledClassesNames() = compileResult.classes.map { classNameFromPath(it.path).internalName.replace('/', '.') }
         val expectedClassName = compileResult.mainClassName
-        compileResult.classes.filter { it.path.endsWith(".class") }
+        compileResult.classes.asSequence().filter { it.path.endsWith(".class") }
                 .forEach {
                     val className = classNameFromPath(it.path)
                     if (className.internalName == expectedClassName || className.internalName.endsWith("/$expectedClassName")) {

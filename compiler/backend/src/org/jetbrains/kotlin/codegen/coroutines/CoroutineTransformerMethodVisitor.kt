@@ -110,9 +110,9 @@ class CoroutineTransformerMethodVisitor(
 
         val suspendMarkerVarIndex = methodNode.maxLocals++
 
-        val suspensionPointLabels = suspensionPoints.withIndex().map {
+        val suspensionPointLabels = suspensionPoints.asSequence().withIndex().map {
             transformCallAndReturnContinuationLabel(it.index + 1, it.value, methodNode, suspendMarkerVarIndex)
-        }
+        }.toList()
 
         val defaultLabel = LabelNode()
         methodNode.instructions.apply {
@@ -710,7 +710,7 @@ private class SuspensionPoint(
 }
 
 private fun getLastParameterIndex(desc: String, access: Int) =
-    Type.getArgumentTypes(desc).dropLast(1).map { it.size }.sum() + (if (!isStatic(access)) 1 else 0)
+    Type.getArgumentTypes(desc).dropLast(1).asSequence().map { it.size }.sum() + (if (!isStatic(access)) 1 else 0)
 
 private fun getParameterTypesForCoroutineConstructor(desc: String, hasDispatchReceiver: Boolean, thisName: String) =
     listOfNotNull(if (!hasDispatchReceiver) null else Type.getObjectType(thisName)).toTypedArray() +
@@ -730,7 +730,7 @@ private fun getParameterTypesIndicesForCoroutineConstructor(
             add(Type.getObjectType(thisName) to 0)
         }
         val continuationIndex =
-            getAllParameterTypes(desc, !isStatic(containingFunctionAccess), thisName).dropLast(1).map(Type::getSize).sum()
+            getAllParameterTypes(desc, !isStatic(containingFunctionAccess), thisName).dropLast(1).asSequence().map(Type::getSize).sum()
         add(languageVersionSettings.continuationAsmType() to continuationIndex)
     }
 }
@@ -812,7 +812,7 @@ private fun findSafelyReachableReturns(methodNode: MethodNode, sourceFrames: Arr
             @Suppress("RemoveExplicitTypeArguments")
             val newResult =
                 controlFlowGraph
-                    .getSuccessorsIndices(index).plus(index)
+                    .getSuccessorsIndices(index).asSequence().plus(index)
                     .map(reachableReturnsIndices::get)
                     .fold<Set<Int>?, Set<Int>?>(mutableSetOf<Int>()) { acc, successorsResult ->
                         if (acc != null && successorsResult != null) acc + successorsResult else null

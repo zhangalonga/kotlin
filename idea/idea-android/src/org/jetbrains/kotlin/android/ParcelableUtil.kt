@@ -175,14 +175,17 @@ private fun KtClass.addFieldWrites(function: KtFunction, factory: KtPsiFactory, 
     val propertyParameterDescriptors = primaryConstructor?.valueParameters?.mapNotNull { it.propertyDescriptor } ?: emptyList()
 
     val propertyDescriptors = declarations
-            .filter { it.isParcelableProperty() }
-            .mapNotNull { it.descriptor as? PropertyDescriptor }
+        .asSequence()
+        .filter { it.isParcelableProperty() }
+        .mapNotNull { it.descriptor as? PropertyDescriptor }
+        .toList()
 
     val parcelName = function.valueParameters[0].name ?: return
     val flagsName = function.valueParameters[1].name ?: return
     val blockText =
             (propertyParameterDescriptors + propertyDescriptors)
-            .mapNotNull { it.formatWriteToParcel(parcelName, flagsName) }
+                .asSequence()
+                .mapNotNull { it.formatWriteToParcel(parcelName, flagsName) }
             .joinToString(separator = "\n")
 
     val block = factory.createBlock(
@@ -202,15 +205,18 @@ private fun KtClass.addFieldReads(constructor: KtConstructor<*>, factory: KtPsiF
 
     val parcelName = constructor.getValueParameters().firstOrNull()?.name ?: return
     val parcelableProperties = declarations
-            .filter { it.isParcelableProperty() }
-            .mapNotNull { it.descriptor as? PropertyDescriptor }
+        .asSequence()
+        .filter { it.isParcelableProperty() }
+        .mapNotNull { it.descriptor as? PropertyDescriptor }
+        .toList()
 
     if (parcelableProperties.isEmpty()) {
         return
     }
 
     val blockText = parcelableProperties
-            .mapNotNull { descriptor -> descriptor.formatReadFromParcel(parcelName)?.let { "${descriptor.name} = $it" } }
+        .asSequence()
+        .mapNotNull { descriptor -> descriptor.formatReadFromParcel(parcelName)?.let { "${descriptor.name} = $it" } }
             .joinToString(separator = "\n")
 
     val block = factory.createBlock(blockText)

@@ -166,7 +166,7 @@ private fun findAllReachableDeclarations(
             functionDescriptor,
             areDeclarationAndDefinitionSame
         )
-    ).map { it.descriptor }.toMutableSet()
+    ).asSequence().map { it.descriptor }.toMutableSet()
 
 private fun <Signature> CallableMemberDescriptor.getSpecialBridgeSignatureIfExists(
         signatureByDescriptor: (FunctionDescriptor) -> Signature

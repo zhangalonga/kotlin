@@ -44,7 +44,7 @@ object MapPsiToAsmDesc {
         append("L")
         val classes = generateSequence(psiClass) { it.containingClass }.toList().reversed()
         append(classes.first().qualifiedName!!.replace(".", "/"))
-        classes.drop(1).forEach {
+        classes.asSequence().drop(1).forEach {
             append("$")
             append(it.name!!)
         }

@@ -263,7 +263,7 @@ class ExpressionsOfTypeProcessor(
     }
 
     private class StaticMemberRequestResultProcessor(val psiMember: PsiMember, classes: List<PsiClass>) : RequestResultProcessor(psiMember) {
-        val possibleClassesNames: Set<String> = runReadAction { classes.map { it.qualifiedName }.filterNotNullTo(HashSet()) }
+        val possibleClassesNames: Set<String> = runReadAction { classes.asSequence().map { it.qualifiedName }.filterNotNullTo(HashSet()) }
 
         override fun processTextOccurrence(element: PsiElement, offsetInElement: Int, consumer: ExecutorProcessor<PsiReference>): Boolean {
             when (element) {
@@ -611,7 +611,7 @@ class ExpressionsOfTypeProcessor(
                 val whenEntry = typeRefParent.parent as KtWhenEntry
                 if (typeRefParent.isNegated) {
                     val whenExpression = whenEntry.parent as KtWhenExpression
-                    val entriesAfter = whenExpression.entries.dropWhile { it != whenEntry }.drop(1)
+                    val entriesAfter = whenExpression.entries.asSequence().dropWhile { it != whenEntry }.drop(1).toList()
                     entriesAfter.forEach { usePlainSearch(it) }
                 }
                 else {

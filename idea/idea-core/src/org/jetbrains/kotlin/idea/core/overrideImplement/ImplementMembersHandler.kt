@@ -56,7 +56,9 @@ class ImplementAsConstructorParameter : ImplementMembersHandler() {
 
     override fun collectMembersToGenerate(descriptor: ClassDescriptor, project: Project): Collection<OverrideMemberChooserObject> {
         return OverrideResolver.getMissingImplementations(descriptor)
-                .filter { it is PropertyDescriptor }
-                .map { OverrideMemberChooserObject.create(project, it, it, OverrideMemberChooserObject.BodyType.EMPTY, true) }
+            .asSequence()
+            .filter { it is PropertyDescriptor }
+            .map { OverrideMemberChooserObject.create(project, it, it, OverrideMemberChooserObject.BodyType.EMPTY, true) }
+            .toList()
     }
 }

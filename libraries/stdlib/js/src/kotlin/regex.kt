@@ -45,7 +45,7 @@ public actual class Regex actual constructor(pattern: String, options: Set<Regex
     public actual val pattern: String = pattern
     /** The set of options that were used to create this regular expression. */
     public actual val options: Set<RegexOption> = options.toSet()
-    private val nativePattern: RegExp = RegExp(pattern, options.map { it.value }.joinToString(separator = "") + "g")
+    private val nativePattern: RegExp = RegExp(pattern, options.asSequence().map { it.value }.joinToString(separator = "") + "g")
 
     /** Indicates whether the regular expression matches the entire [input]. */
     public actual infix fun matches(input: CharSequence): Boolean {
@@ -126,7 +126,7 @@ public actual class Regex actual constructor(pattern: String, options: Set<Regex
      * @param replacement A replacement expression that can include substitutions. See [Matcher.appendReplacement] for details.
      */
     public actual fun replaceFirst(input: CharSequence, replacement: String): String {
-        val nonGlobalOptions = options.map { it.value }.joinToString(separator = "")
+        val nonGlobalOptions = options.asSequence().map { it.value }.joinToString(separator = "")
         return input.toString().nativeReplace(RegExp(pattern, nonGlobalOptions), replacement)
     }
 

@@ -54,7 +54,7 @@ class DslMembersCompletion(
     fun completeDslFunctions() {
         if (nearestReceiver == null || nearestReceiverMarkers.isEmpty()) return
 
-        val receiverMarkersShortNames = nearestReceiverMarkers.map { it.shortName() }.distinct()
+        val receiverMarkersShortNames = nearestReceiverMarkers.asSequence().map { it.shortName() }.distinct().toList()
         val extensionDescriptors = indicesHelper.getCallableTopLevelExtensions(
             nameFilter = { prefixMatcher.prefixMatches(it) },
             declarationFilter = {

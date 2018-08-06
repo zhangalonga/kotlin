@@ -84,6 +84,6 @@ abstract class CommonCompilerPerformanceManager(private val presentableName: Str
 
     private fun createPerformanceReport(): ByteArray = buildString {
         appendln("$presentableName performance report")
-        measurements.map { it.render() }.sorted().forEach { appendln(it) }
+        measurements.asSequence().map { it.render() }.sorted().forEach { appendln(it) }
     }.toByteArray()
 }

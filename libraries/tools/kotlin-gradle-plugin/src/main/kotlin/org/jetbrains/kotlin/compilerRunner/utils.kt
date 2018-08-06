@@ -73,7 +73,7 @@ internal fun runToolInSeparateProcess(
         logger: KotlinLogger, messageCollector: MessageCollector
 ): ExitCode {
     val javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java"
-    val classpathString = classpath.map {it.absolutePath}.joinToString(separator = File.pathSeparator)
+    val classpathString = classpath.asSequence().map {it.absolutePath}.joinToString(separator = File.pathSeparator)
     val builder = ProcessBuilder(javaBin, "-cp", classpathString, compilerClassName, *argsArray)
     val process = launchProcessWithFallback(builder, DaemonReportingTargets(messageCollector = messageCollector))
 

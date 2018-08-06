@@ -172,7 +172,7 @@ class ResolveElementCache(
                             bodyResolveMode
                         )
                     }) { // partial resolve is already cached for these statements
-                    return CompositeBindingContext.create(cachedResults.map { it!!.bindingContext }.distinct())
+                    return CompositeBindingContext.create(cachedResults.asSequence().map { it!!.bindingContext }.distinct().toList())
                 }
 
                 val (bindingContext, statementFilter) = performElementAdditionalResolve(resolveElement, contextElements, bodyResolveMode)
@@ -223,6 +223,7 @@ class ResolveElementCache(
                 bindingContexts.add(bindingContext)
             } else {
                 contextElements
+                    .asSequence()
                     .mapNotNull { it.getNonStrictParentOfType<KtDeclaration>() }
                     .filterTo(declarationsToResolve) {
                         it !is KtAnonymousInitializer && it !is KtDestructuringDeclaration && it !is KtDestructuringDeclarationEntry

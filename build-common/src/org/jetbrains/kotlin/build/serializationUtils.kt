@@ -38,8 +38,9 @@ inline fun <reified T : Any> deserializeFromPlainText(str: String): T? = deseria
 fun <T : Any> deserializeFromPlainText(str: String, klass: KClass<T>): T? {
     val args = ArrayList<Any?>()
     val properties = str
-            .split("\n")
-            .filter(String::isNotBlank)
+        .split("\n")
+        .asSequence()
+        .filter(String::isNotBlank)
             .associate { it.substringBefore("=") to it.substringAfter("=") }
 
     val primaryConstructor = klass.primaryConstructor

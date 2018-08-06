@@ -404,12 +404,12 @@ abstract class AbstractBinaryClassAnnotationAndConstantLoader<A : Any, C : Any, 
 
     private companion object {
         val SPECIAL_ANNOTATIONS = listOf(
-                JvmAnnotationNames.METADATA_FQ_NAME,
-                JvmAnnotationNames.JETBRAINS_NOT_NULL_ANNOTATION,
-                JvmAnnotationNames.JETBRAINS_NULLABLE_ANNOTATION,
-                FqName("java.lang.annotation.Target"),
-                FqName("java.lang.annotation.Retention"),
-                FqName("java.lang.annotation.Documented")
-        ).map(ClassId::topLevel).toSet()
+            JvmAnnotationNames.METADATA_FQ_NAME,
+            JvmAnnotationNames.JETBRAINS_NOT_NULL_ANNOTATION,
+            JvmAnnotationNames.JETBRAINS_NULLABLE_ANNOTATION,
+            FqName("java.lang.annotation.Target"),
+            FqName("java.lang.annotation.Retention"),
+            FqName("java.lang.annotation.Documented")
+        ).asSequence().map(ClassId::topLevel).toSet()
     }
 }

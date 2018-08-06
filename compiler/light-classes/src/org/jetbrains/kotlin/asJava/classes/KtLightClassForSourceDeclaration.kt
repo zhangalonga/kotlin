@@ -302,7 +302,7 @@ abstract class KtLightClassForSourceDeclaration(protected val classOrObject: KtC
 
     override fun getOwnInnerClasses(): List<PsiClass> {
         val result = ArrayList<PsiClass>()
-        classOrObject.declarations.filterIsInstance<KtClassOrObject>()
+        classOrObject.declarations.asSequence().filterIsInstance<KtClassOrObject>()
                 // workaround for ClassInnerStuffCache not supporting classes with null names, see KT-13927
                 // inner classes with null names can't be searched for and can't be used from java anyway
                 // we can't prohibit creating light classes with null names either since they can contain members

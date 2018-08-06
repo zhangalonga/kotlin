@@ -97,7 +97,7 @@ class MainFunctionDetector {
     }
 
     private fun findMainFunction(declarations: List<KtDeclaration>) =
-        declarations.filterIsInstance<KtNamedFunction>().find { isMain(it) }
+        declarations.asSequence().filterIsInstance<KtNamedFunction>().find { isMain(it) }
 
     companion object {
 

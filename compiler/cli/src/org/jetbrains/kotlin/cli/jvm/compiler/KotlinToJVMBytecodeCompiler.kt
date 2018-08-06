@@ -322,13 +322,13 @@ object KotlinToJVMBytecodeCompiler {
         val state = analyzeAndGenerate(environment) ?: return null
 
         try {
-            val urls = environment.configuration.getList(JVMConfigurationKeys.CONTENT_ROOTS).mapNotNull { root ->
+            val urls = environment.configuration.getList(JVMConfigurationKeys.CONTENT_ROOTS).asSequence().mapNotNull { root ->
                 when (root) {
                     is JvmModulePathRoot -> root.file // TODO: only add required modules
                     is JvmClasspathRoot -> root.file
                     else -> null
                 }
-            }.map { it.toURI().toURL() }
+            }.map { it.toURI().toURL() }.toList()
 
             val classLoader = GeneratedClassLoader(state.factory, parentClassLoader ?: URLClassLoader(urls.toTypedArray(), null))
 

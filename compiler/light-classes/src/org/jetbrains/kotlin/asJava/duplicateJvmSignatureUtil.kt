@@ -108,7 +108,7 @@ class FilteredJvmDiagnostics(val jvmDiagnostics: Diagnostics, val otherDiagnosti
         }
 
         val filtered = arrayListOf<Diagnostic>()
-        conflicting.groupBy {
+        conflicting.asSequence().groupBy {
             it.data().signature.name
         }.forEach {
             val diagnostics = it.value

@@ -139,7 +139,7 @@ class FunctionClassDescriptor(
             }
             if (numberedSupertypeKind != null) {
                 val packageView = containingDeclaration.containingDeclaration.getPackage(BUILT_INS_PACKAGE_FQ_NAME)
-                val kotlinPackageFragment = packageView.fragments.filterIsInstance<BuiltInsPackageFragment>().first()
+                val kotlinPackageFragment = packageView.fragments.asSequence().filterIsInstance<BuiltInsPackageFragment>().first()
 
                 add(kotlinPackageFragment, numberedSupertypeKind.numberedClassName(arity))
             }

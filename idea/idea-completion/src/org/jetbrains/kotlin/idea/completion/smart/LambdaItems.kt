@@ -39,7 +39,8 @@ object LambdaItems {
         if (functionExpectedInfos.isEmpty()) return
 
         val functionTypes = functionExpectedInfos
-                .mapNotNull { it.fuzzyType?.type }
+            .asSequence()
+            .mapNotNull { it.fuzzyType?.type }
                 .toSet()
 
         val singleType = if (functionTypes.size == 1) functionTypes.single() else null

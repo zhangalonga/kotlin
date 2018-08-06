@@ -139,7 +139,7 @@ class JvmRuntimeTypes(module: ModuleDescriptor, private val languageVersionSetti
             Annotations.EMPTY,
             if (isBound) null else referencedFunction.extensionReceiverParameter?.type
                     ?: referencedFunction.dispatchReceiverParameter?.type,
-            anonymousFunctionDescriptor.valueParameters.drop(receivers).map { it.type },
+            anonymousFunctionDescriptor.valueParameters.asSequence().drop(receivers).map { it.type }.toList(),
             null,
             referencedFunction.returnType!!,
             referencedFunction.isSuspend

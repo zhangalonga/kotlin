@@ -90,7 +90,8 @@ class OptimizedImportsBuilder(
         // TODO: should we drop unused aliases?
         // keep all non-trivial aliases
         file.importDirectives
-                .mapNotNull { it.importPath }
+            .asSequence()
+            .mapNotNull { it.importPath }
                 .filter {
                     val aliasName = it.alias
                     aliasName != null && aliasName != it.fqName.shortName()
@@ -119,7 +120,8 @@ class OptimizedImportsBuilder(
     private fun tryBuildOptimizedImports(): List<ImportPath>? {
         val importsToGenerate = HashSet<ImportPath>()
         importRules
-                .filterIsInstance<ImportRule.Add>()
+            .asSequence()
+            .filterIsInstance<ImportRule.Add>()
                 .mapTo(importsToGenerate) { it.importPath }
 
         val descriptorsByParentFqName = HashMap<FqName, MutableSet<DeclarationDescriptor>>()
@@ -146,13 +148,14 @@ class OptimizedImportsBuilder(
             if (starImportPath in importsToGenerate) continue
 
             val descriptors = descriptorsByParentFqName[parentFqName]!!
-            val fqNames = descriptors.map { it.importableFqName!! }.toSet()
+            val fqNames = descriptors.asSequence().map { it.importableFqName!! }.toSet()
             val nameCountToUseStar = descriptors.first().nameCountToUseStar()
             val useExplicitImports = fqNames.size < nameCountToUseStar && !options.isInPackagesToUseStarImport(parentFqName)
                                      || !starImportPath.isAllowedByRules()
             if (useExplicitImports) {
                 fqNames
-                        .filter { !isImportedByDefault(it) }
+                    .asSequence()
+                    .filter { !isImportedByDefault(it) }
                         .mapTo(importsToGenerate) { ImportPath(it, false) }
             }
             else {

@@ -228,12 +228,12 @@ private constructor(private val whenExpression: KtWhenExpression, context: Trans
             }
             if (hasImproperConstants) break
 
-            val constants = constantValues.filter(filter).mapNotNull {
+            val constants = constantValues.asSequence().filter(filter).mapNotNull {
                 wrapper(it) ?: run {
                     hasImproperConstants = true
                     null
                 }
-            }
+            }.toList()
             if (hasImproperConstants) break
 
             if (constants.isNotEmpty()) {

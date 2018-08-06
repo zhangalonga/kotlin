@@ -98,14 +98,16 @@ class AnnotationConverter(private val converter: Converter) {
 
     private fun convertModifiersToAnnotations(owner: PsiModifierListOwner, target: AnnotationUseTarget?): Annotations {
         val list = MODIFIER_TO_ANNOTATION
-                .filter { owner.hasModifierProperty(it.first) }
-                .map {
-                    Annotation(Identifier.withNoPrototype(it.second),
-                               listOf(),
-                               newLineAfter = false,
-                               target = target
-                    ).assignNoPrototype()
-                }
+            .asSequence()
+            .filter { owner.hasModifierProperty(it.first) }
+            .map {
+                Annotation(Identifier.withNoPrototype(it.second),
+                           listOf(),
+                           newLineAfter = false,
+                           target = target
+                ).assignNoPrototype()
+            }
+            .toList()
         return Annotations(list).assignNoPrototype()
     }
 

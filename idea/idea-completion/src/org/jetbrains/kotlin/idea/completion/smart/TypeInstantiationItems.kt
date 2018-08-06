@@ -313,7 +313,8 @@ class TypeInstantiationItems(
                     else -> return
                 }
                 scope.collectSyntheticStaticMembersAndConstructors(resolutionFacade, DescriptorKindFilter.FUNCTIONS, { classifier.name == it })
-                        .filterIsInstance<SamConstructorDescriptor>()
+                    .asSequence()
+                    .filterIsInstance<SamConstructorDescriptor>()
                         .singleOrNull() ?: return
             }
             lookupElementFactory

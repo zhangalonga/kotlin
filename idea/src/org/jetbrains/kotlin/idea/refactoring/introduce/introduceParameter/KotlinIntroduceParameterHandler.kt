@@ -124,12 +124,14 @@ fun getParametersToRemove(
 
     val occurrenceRanges = occurrencesToReplace.map { it.getTextRange() }
     return parametersUsages.entrySet()
-            .filter {
-                it.value.all { paramUsage ->
-                    occurrenceRanges.any { occurrenceRange -> occurrenceRange.contains(paramUsage.textRange) }
-                }
+        .asSequence()
+        .filter {
+            it.value.all { paramUsage ->
+                occurrenceRanges.any { occurrenceRange -> occurrenceRange.contains(paramUsage.textRange) }
             }
-            .map { it.key }
+        }
+        .map { it.key }
+        .toList()
 }
 
 fun IntroduceParameterDescriptor.performRefactoring(onExit: (() -> Unit)? = null) {
@@ -140,11 +142,12 @@ fun IntroduceParameterDescriptor.performRefactoring(onExit: (() -> Unit)? = null
                     val parameters = callable.getValueParameters()
                     val withReceiver = methodDescriptor.receiver != null
                     parametersToRemove
-                            .map {
-                                if (it is KtParameter) {
-                                    parameters.indexOf(it) + if (withReceiver) 1 else 0
-                                } else 0
-                            }
+                        .asSequence()
+                        .map {
+                            if (it is KtParameter) {
+                                parameters.indexOf(it) + if (withReceiver) 1 else 0
+                            } else 0
+                        }
                             .sortedDescending()
                             .forEach { methodDescriptor.removeParameter(it) }
                 }
@@ -269,7 +272,7 @@ open class KotlinIntroduceParameterHandler(
 
         val parametersUsages = findInternalUsagesOfParametersAndReceiver(targetParent, functionDescriptor) ?: return
 
-        val forbiddenRanges = (targetParent as? KtClass)?.declarations?.filter(::isObjectOrNonInnerClass)?.map { it.textRange }
+        val forbiddenRanges = (targetParent as? KtClass)?.declarations?.asSequence()?.filter(::isObjectOrNonInnerClass)?.map { it.textRange }?.toList()
                               ?: Collections.emptyList()
 
         val occurrencesToReplace = if (expression is KtProperty) {
@@ -277,20 +280,22 @@ open class KotlinIntroduceParameterHandler(
         }
         else {
             expression.toRange()
-                    .match(targetParent, KotlinPsiUnifier.DEFAULT)
-                    .filterNot {
-                        val textRange = it.range.getPhysicalTextRange()
-                        forbiddenRanges.any { it.intersects(textRange) }
+                .match(targetParent, KotlinPsiUnifier.DEFAULT)
+                .asSequence()
+                .filterNot {
+                    val textRange = it.range.getPhysicalTextRange()
+                    forbiddenRanges.any { it.intersects(textRange) }
+                }
+                .mapNotNull {
+                    val matchedElement = it.range.elements.singleOrNull()
+                    val matchedExpr = when (matchedElement) {
+                        is KtExpression -> matchedElement
+                        is KtStringTemplateEntryWithExpression -> matchedElement.expression
+                        else -> null
                     }
-                    .mapNotNull {
-                        val matchedElement = it.range.elements.singleOrNull()
-                        val matchedExpr = when (matchedElement) {
-                            is KtExpression -> matchedElement
-                            is KtStringTemplateEntryWithExpression -> matchedElement.expression
-                            else -> null
-                        }
-                        matchedExpr?.toRange()
-                    }
+                    matchedExpr?.toRange()
+                }
+                .toList()
         }
 
         project.executeCommand(
@@ -423,7 +428,8 @@ private fun findInternalUsagesOfParametersAndReceiver(
     val searchComplete = targetParent.project.runSynchronouslyWithProgress("Searching usages of '${targetParent.name}' parameter", true) {
         runReadAction {
             targetParent.getValueParameters()
-                    .filter { !it.hasValOrVar() }
+                .asSequence()
+                .filter { !it.hasValOrVar() }
                     .forEach {
                         val paramUsages = ReferencesSearch.search(it).map { it.element as KtElement }
                         if (paramUsages.isNotEmpty()) {

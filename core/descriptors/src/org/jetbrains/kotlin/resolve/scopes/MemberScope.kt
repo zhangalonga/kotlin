@@ -112,7 +112,8 @@ class DescriptorKindFilter(
     override fun toString(): String {
         val predefinedFilterName = DEBUG_PREDEFINED_FILTERS_MASK_NAMES.firstOrNull { it.mask == kindMask } ?.name
         val kindString = predefinedFilterName ?: DEBUG_MASK_BIT_NAMES
-                .mapNotNull { if (acceptsKinds(it.mask)) it.name else null }
+            .asSequence()
+            .mapNotNull { if (acceptsKinds(it.mask)) it.name else null }
                 .joinToString(separator = " | ")
 
         return "DescriptorKindFilter($kindString, $excludes)"
@@ -160,14 +161,16 @@ class DescriptorKindFilter(
         private class MaskToName(val mask: Int, val name: String)
 
         private val DEBUG_PREDEFINED_FILTERS_MASK_NAMES = staticFields<DescriptorKindFilter>()
-                .mapNotNull { field ->
-                    val filter = field.get(null) as? DescriptorKindFilter
-                    if (filter != null) MaskToName(filter.kindMask, field.name) else null
-                }
+            .asSequence()
+            .mapNotNull { field ->
+                val filter = field.get(null) as? DescriptorKindFilter
+                if (filter != null) MaskToName(filter.kindMask, field.name) else null
+            }
                 .toList()
 
         private val DEBUG_MASK_BIT_NAMES = staticFields<DescriptorKindFilter>()
-                .filter { it.type == Integer.TYPE }
+            .asSequence()
+            .filter { it.type == Integer.TYPE }
                 .mapNotNull { field ->
                     val mask = field.get(null) as Int
                     val isOneBitMask = mask == (mask and (-mask))

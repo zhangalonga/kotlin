@@ -23,12 +23,12 @@ import org.jetbrains.org.objectweb.asm.Type
 class NewJavaField(val name: String, val type: Type, val skip: Boolean)
 
 fun getNewFieldsToGenerate(params: List<CapturedParamInfo>): List<NewJavaField> {
-    return params.filter {
+    return params.asSequence().filter {
         //not inlined
         it.lambda == null
     }.map {
         NewJavaField(it.newFieldName, it.type, it.isSkipInConstructor)
-    }
+    }.toList()
 }
 
 fun transformToFieldInfo(lambdaType: Type, newFields: List<NewJavaField>): List<FieldInfo> {

@@ -586,6 +586,7 @@ class OverrideResolver(
             }
 
             val (concreteOverridden, abstractOverridden) = relevantDirectlyOverridden
+                .asSequence()
                 .filter { !isOrOverridesSynthesized(it) }
                 .partition { it.modality != Modality.ABSTRACT }
 

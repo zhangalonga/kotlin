@@ -281,7 +281,8 @@ abstract class OperatorReferenceSearcher<TReferenceElement : KtElement>(
                             (element.containingFile as KtFile).getResolutionFacade().analyze(elements, BodyResolveMode.PARTIAL)
 
                             refs
-                                    .filter { it.isReferenceTo(targetDeclaration) }
+                                .asSequence()
+                                .filter { it.isReferenceTo(targetDeclaration) }
                                     .forEach { consumer.process(it) }
                         }
                     }

@@ -46,10 +46,12 @@ private fun Iterable<PackageParts>.addCompiledParts(state: GenerationState): Lis
     }
 
     return (this + mapping.packageFqName2Parts.values)
-            .groupBy { it.packageFqName }
-            .map { (packageFqName, allOldPackageParts) ->
-                PackageParts(packageFqName).apply {
-                    allOldPackageParts.forEach { packageParts -> this += packageParts }
-                }
+        .asSequence()
+        .groupBy { it.packageFqName }
+        .map { (packageFqName, allOldPackageParts) ->
+            PackageParts(packageFqName).apply {
+                allOldPackageParts.forEach { packageParts -> this += packageParts }
             }
+        }
+        .toList()
 }

@@ -443,10 +443,13 @@ internal class DescriptorRendererImpl(
         val allValueArguments = descriptor.allValueArguments
         val classDescriptor = if (renderDefaultAnnotationArguments) descriptor.annotationClass else null
         val parameterDescriptorsWithDefaultValue = classDescriptor?.unsubstitutedPrimaryConstructor?.valueParameters
-                ?.filter { it.declaresDefaultValue() }
-                ?.map { it.name }
+            ?.asSequence()
+            ?.filter { it.declaresDefaultValue() }
+            ?.map { it.name }
+            ?.toList()
                 .orEmpty()
-        val defaultList = parameterDescriptorsWithDefaultValue.filter { it !in allValueArguments }.map { "${it.asString()} = ..." }
+        val defaultList =
+            parameterDescriptorsWithDefaultValue.asSequence().filter { it !in allValueArguments }.map { "${it.asString()} = ..." }.toList()
         val argumentList = allValueArguments.entries
                 .map { (name, value) ->
                     "${name.asString()} = ${if (name !in parameterDescriptorsWithDefaultValue) renderConstant(value) else "..."}"
@@ -725,7 +728,8 @@ internal class DescriptorRendererImpl(
 
         for (typeParameter in typeParameters) {
             typeParameter.upperBounds
-                    .drop(1) // first parameter is rendered by renderTypeParameter
+                .asSequence()
+                .drop(1) // first parameter is rendered by renderTypeParameter
                     .mapTo(upperBoundStrings) { renderName(typeParameter.name, false) + " : " + renderType(it) }
         }
 

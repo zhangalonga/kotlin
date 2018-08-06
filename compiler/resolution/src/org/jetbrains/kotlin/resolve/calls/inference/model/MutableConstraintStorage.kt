@@ -72,6 +72,7 @@ class MutableVariableWithConstraints(
 
     private fun simplifyConstraints(): List<Constraint> {
         val equalityConstraints = mutableConstraints
+            .asSequence()
             .filter { it.kind == ConstraintKind.EQUALITY }
             .groupBy { it.typeHashCode }
         return mutableConstraints.filter { isUsefulConstraint(it, equalityConstraints) }

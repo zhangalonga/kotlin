@@ -64,7 +64,8 @@ fun KotlinType.replace(types: List<KotlinType>) = this.replace(types.map(::TypeP
 fun FunctionDescriptor.substitute(vararg types: KotlinType): FunctionDescriptor {
     val typeSubstitutor = TypeSubstitutor.create(
             typeParameters
-                    .withIndex()
+                .asSequence()
+                .withIndex()
                     .associateBy({ it.value.typeConstructor }, { TypeProjectionImpl(types[it.index]) })
     )
     return substitute(typeSubstitutor)!!
@@ -80,7 +81,8 @@ fun FunctionDescriptor.substitute(typeArguments: Map<TypeParameterDescriptor, Ko
 fun ClassDescriptor.getFunction(name: String, types: List<KotlinType>): FunctionDescriptor {
     val typeSubstitutor = TypeSubstitutor.create(
             declaredTypeParameters
-                    .withIndex()
+                .asSequence()
+                .withIndex()
                     .associateBy({ it.value.typeConstructor }, { TypeProjectionImpl(types[it.index]) })
     )
     return unsubstitutedMemberScope

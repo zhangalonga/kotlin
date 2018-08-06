@@ -47,11 +47,11 @@ abstract class GivenFunctionsMemberScope(
     }
 
     override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> {
-        return allDescriptors.filterIsInstance<SimpleFunctionDescriptor>().filter { it.name == name }
+        return allDescriptors.asSequence().filterIsInstance<SimpleFunctionDescriptor>().filter { it.name == name }.toList()
     }
 
     override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> {
-        return allDescriptors.filterIsInstance<PropertyDescriptor>().filter { it.name == name }
+        return allDescriptors.asSequence().filterIsInstance<PropertyDescriptor>().filter { it.name == name }.toList()
     }
 
     private fun createFakeOverrides(functionsFromCurrent: List<FunctionDescriptor>): List<DeclarationDescriptor> {

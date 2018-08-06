@@ -138,18 +138,20 @@ class JavacWrapper(
     }.toMap()
 
     private val javaPackages = compilationUnits
-            .mapTo(hashSetOf<TreeBasedPackage>()) { unit ->
-                unit.packageName?.toString()?.let { packageName ->
-                    TreeBasedPackage(packageName, this, unit)
-                } ?: TreeBasedPackage("<root>", this, unit)
-            }
+        .asSequence()
+        .mapTo(hashSetOf<TreeBasedPackage>()) { unit ->
+            unit.packageName?.toString()?.let { packageName ->
+                TreeBasedPackage(packageName, this, unit)
+            } ?: TreeBasedPackage("<root>", this, unit)
+        }
             .associateBy(TreeBasedPackage::fqName)
 
     private val packageSourceAnnotations = compilationUnits
-            .filter {
-                it.sourceFile.isNameCompatible("package-info", JavaFileObject.Kind.SOURCE) &&
-                it.packageName != null
-            }.associateBy({ FqName(it.packageName!!.toString()) }) { compilationUnit ->
+        .asSequence()
+        .filter {
+            it.sourceFile.isNameCompatible("package-info", JavaFileObject.Kind.SOURCE) &&
+                    it.packageName != null
+        }.associateBy({ FqName(it.packageName!!.toString()) }) { compilationUnit ->
         compilationUnit.packageAnnotations
     }
 

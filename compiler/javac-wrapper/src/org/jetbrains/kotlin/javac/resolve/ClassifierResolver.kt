@@ -138,7 +138,7 @@ private class GlobalScope(javac: JavacWrapper,
     private fun findByFqName(pathSegments: List<String>): JavaClass? {
         pathSegments.forEachIndexed { index, _ ->
             if (index != 0) {
-                val packageFqName = pathSegments.take(index).joinToString(separator = ".")
+                val packageFqName = pathSegments.asSequence().take(index).joinToString(separator = ".")
                 helper.findPackage(packageFqName)?.let { packageName ->
                     val className = pathSegments.drop(index)
                     helper.findJavaOrKotlinClass(ClassId(packageName, Name.identifier(className.first())))?.let { javaClass ->

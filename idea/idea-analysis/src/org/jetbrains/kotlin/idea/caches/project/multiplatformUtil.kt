@@ -80,7 +80,7 @@ fun PsiElement.getPlatformModuleInfo(desiredPlatform: TargetPlatform): PlatformM
     val moduleInfo = getModuleInfo() as? ModuleSourceInfo ?: return null
     return when (moduleInfo.platform) {
         TargetPlatform.Common -> {
-            val correspondingImplementingModule = moduleInfo.module.implementingModules.map { it.toInfo(moduleInfo.isTests()) }
+            val correspondingImplementingModule = moduleInfo.module.implementingModules.asSequence().map { it.toInfo(moduleInfo.isTests()) }
                 .firstOrNull { it?.platform == desiredPlatform } ?: return null
             PlatformModuleInfo(correspondingImplementingModule, correspondingImplementingModule.expectedBy)
         }

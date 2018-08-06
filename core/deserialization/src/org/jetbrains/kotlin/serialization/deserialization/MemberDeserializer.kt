@@ -256,6 +256,7 @@ class MemberDeserializer(private val c: DeserializationContext) {
             c.containingDeclaration.asProtoContainer()?.let {
                 c.components.annotationAndConstantLoader
                     .loadExtensionReceiverParameterAnnotations(it, proto, receiverTargetedKind)
+                    .asSequence()
                     .map { annotation -> AnnotationWithTarget(annotation, AnnotationUseSiteTarget.RECEIVER) }
                     .toList()
             }.orEmpty()
@@ -270,7 +271,7 @@ class MemberDeserializer(private val c: DeserializationContext) {
         val callableDescriptor = c.containingDeclaration as CallableDescriptor
         val containerOfCallable = callableDescriptor.containingDeclaration.asProtoContainer()
 
-        return valueParameters.mapIndexed { i, proto ->
+        return valueParameters.asSequence().mapIndexed { i, proto ->
             val flags = if (proto.hasFlags()) proto.flags else 0
             val annotations = if (containerOfCallable != null && Flags.HAS_ANNOTATIONS.get(flags)) {
                 NonEmptyDeserializedAnnotations(c.storageManager) {

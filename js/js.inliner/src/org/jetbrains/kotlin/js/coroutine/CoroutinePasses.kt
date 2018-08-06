@@ -334,7 +334,7 @@ fun List<CoroutineBlock>.collectVariablesSurvivingBetweenBlocks(localVariables: 
         return use.isEmpty()
     }
 
-    return localVariables.filterNot { localVar ->
+    return localVariables.asSequence().filterNot { localVar ->
         if (localVar in parameters) {
             varUsedIn[localVar]!!.isEmpty() && varDefinedIn[localVar]!!.isEmpty() && varDeclaredIn[localVar]!!.isEmpty()
         }

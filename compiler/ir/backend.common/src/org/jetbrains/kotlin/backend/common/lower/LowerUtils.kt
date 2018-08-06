@@ -186,12 +186,12 @@ class SimpleMemberScope(val members: List<DeclarationDescriptor>) : MemberScopeI
             .atMostOne { it.name == name }
 
     override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> =
-        members.filterIsInstance<PropertyDescriptor>()
-            .filter { it.name == name }
+        members.asSequence().filterIsInstance<PropertyDescriptor>()
+            .filter { it.name == name }.toList()
 
     override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> =
-        members.filterIsInstance<SimpleFunctionDescriptor>()
-            .filter { it.name == name }
+        members.asSequence().filterIsInstance<SimpleFunctionDescriptor>()
+            .filter { it.name == name }.toList()
 
     override fun getContributedDescriptors(
         kindFilter: DescriptorKindFilter,

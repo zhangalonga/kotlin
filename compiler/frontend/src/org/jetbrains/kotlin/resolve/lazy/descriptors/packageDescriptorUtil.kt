@@ -22,5 +22,6 @@ import org.jetbrains.kotlin.psi.KtFile
 
 fun ModuleDescriptor.findPackageFragmentForFile(ktFile: KtFile): PackageFragmentDescriptor? =
     getPackage(ktFile.packageFqName).fragments
+        .asSequence()
         .filterIsInstance<LazyPackageDescriptor>()
         .firstOrNull { it.declarationProvider.containsFile(ktFile) }

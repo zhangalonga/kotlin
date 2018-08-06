@@ -117,7 +117,8 @@ fun isInsideInlineArgument(inlineArgument: KtFunction, location: Location, debug
     val functionName = runReadAction { functionNameByArgument(inlineArgument, context) }
 
     return markerLocalVariables
-            .map { it.name() }
+        .asSequence()
+        .map { it.name() }
             .any { variableName ->
                 lambdaOrdinalByLocalVariable(variableName) == lambdaOrdinal && functionNameByLocalVariable(variableName) == functionName
             }
@@ -250,7 +251,7 @@ fun isOnSuspendReturnOrReenter(location: Location): Boolean {
 }
 
 fun isLastLineLocationInMethod(location: Location): Boolean {
-    val knownLines = location.method().safeAllLineLocations().map { it.lineNumber() }.filter { it != -1 }
+    val knownLines = location.method().safeAllLineLocations().asSequence().map { it.lineNumber() }.filter { it != -1 }.toList()
     if (knownLines.isEmpty()) {
         return false
     }

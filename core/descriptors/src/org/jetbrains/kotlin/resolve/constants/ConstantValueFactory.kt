@@ -59,7 +59,7 @@ object ConstantValueFactory {
     }
 
     private fun createArrayValue(value: List<*>, componentType: PrimitiveType): ArrayValue =
-        ArrayValue(value.toList().mapNotNull(this::createConstantValue)) { module ->
+        ArrayValue(value.asSequence().toList().mapNotNull(this::createConstantValue).toList()) { module ->
             module.builtIns.getPrimitiveArrayKotlinType(componentType)
         }
 

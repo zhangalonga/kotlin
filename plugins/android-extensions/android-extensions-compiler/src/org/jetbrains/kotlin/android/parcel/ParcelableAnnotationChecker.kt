@@ -89,7 +89,8 @@ class ParcelableAnnotationChecker : CallChecker {
         val thisMappedType = resolvedCall.typeArguments.values.takeIf { it.size == 2 }?.first() ?: return
 
         val duplicatingAnnotationCount = descriptor.annotations.getAllAnnotations()
-                .filter { it.annotation.fqName == TYPE_PARCELER_FQNAME }
+            .asSequence()
+            .filter { it.annotation.fqName == TYPE_PARCELER_FQNAME }
                 .mapNotNull { it.annotation.type.arguments.takeIf { it.size == 2 }?.first()?.type }
                 .count { it == thisMappedType }
 

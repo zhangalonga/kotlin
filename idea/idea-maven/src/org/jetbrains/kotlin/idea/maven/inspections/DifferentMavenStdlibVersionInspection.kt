@@ -44,7 +44,8 @@ class DifferentMavenStdlibVersionInspection : DomElementsInspection<MavenDomProj
         val manager = MavenProjectsManager.getInstance(module.project) ?: return
         val project = manager.findProject(module) ?: return
 
-        val stdlibVersion = project.findDependencies(KotlinMavenConfigurator.GROUP_ID, MAVEN_STDLIB_ID).map { it.version }.distinct()
+        val stdlibVersion =
+            project.findDependencies(KotlinMavenConfigurator.GROUP_ID, MAVEN_STDLIB_ID).asSequence().map { it.version }.distinct().toList()
         val pluginVersion = project.findPlugin(KotlinMavenConfigurator.GROUP_ID, KotlinMavenConfigurator.MAVEN_PLUGIN_ID)?.version
 
         if (pluginVersion == null || stdlibVersion.isEmpty() || stdlibVersion.singleOrNull() == pluginVersion) {
@@ -52,7 +53,7 @@ class DifferentMavenStdlibVersionInspection : DomElementsInspection<MavenDomProj
         }
 
         val pomFile = PomFile.forFileOrNull(file) ?: return
-        pomFile.findKotlinPlugins().filter { it.version.stringValue != stdlibVersion.singleOrNull() }.forEach { plugin ->
+        pomFile.findKotlinPlugins().asSequence().filter { it.version.stringValue != stdlibVersion.singleOrNull() }.forEach { plugin ->
             val fixes = plugin.version.stringValue?.let { version ->
                 createFixes(project, plugin.version, stdlibVersion + version)
             } ?: emptyList()
@@ -66,6 +67,7 @@ class DifferentMavenStdlibVersionInspection : DomElementsInspection<MavenDomProj
         }
 
         pomFile.findDependencies(MavenId(KotlinMavenConfigurator.GROUP_ID, MAVEN_STDLIB_ID, null))
+            .asSequence()
             .filter { it.version.stringValue != pluginVersion }
             .forEach { dependency ->
                 val fixes = dependency.version.stringValue?.let { version ->
@@ -87,7 +89,7 @@ class DifferentMavenStdlibVersionInspection : DomElementsInspection<MavenDomProj
             return emptyList()
         }
 
-        val properties = project.properties.entries.filter { it.value == bestVersion }.map { "\${${it.key}}" }
+        val properties = project.properties.entries.asSequence().filter { it.value == bestVersion }.map { "\${${it.key}}" }.toList()
 
         return properties.map { SetVersionQuickFix(versionElement, it, bestVersion) } +
                 SetVersionQuickFix(versionElement, bestVersion, null)

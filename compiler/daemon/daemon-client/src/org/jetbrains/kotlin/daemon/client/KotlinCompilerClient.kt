@@ -296,8 +296,9 @@ object KotlinCompilerClient {
 
     fun detectCompilerClasspath(): List<String>? =
             System.getProperty("java.class.path")
-            ?.split(File.pathSeparator)
-            ?.map { File(it).parentFile }
+                ?.split(File.pathSeparator)
+                ?.asSequence()
+                ?.map { File(it).parentFile }
             ?.distinct()
             ?.mapNotNull {
                 it?.walk()

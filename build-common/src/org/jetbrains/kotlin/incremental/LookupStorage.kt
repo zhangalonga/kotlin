@@ -185,7 +185,7 @@ open class LookupStorage(targetDataDir: File) : BasicMapsOwner(targetDataDir) {
             val fileIds = lookupMap[lookup]!!
 
             val key = if (lookup in lookupsStrings) {
-                lookupsStrings[lookup]!!.map { "${it.scope}#${it.name}" }.sorted().joinToString(", ")
+                lookupsStrings[lookup]!!.asSequence().map { "${it.scope}#${it.name}" }.sorted().joinToString(", ")
             }
             else {
                 lookup.toString()

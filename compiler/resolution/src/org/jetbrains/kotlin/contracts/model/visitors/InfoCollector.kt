@@ -24,7 +24,7 @@ class InfoCollector(private val observedEffect: ESEffect) : ESExpressionVisitor<
     private var isInverted: Boolean = false
 
     fun collectFromSchema(schema: List<ESEffect>): MutableContextInfo =
-        schema.mapNotNull { collectFromEffect(it) }.fold(
+        schema.asSequence().mapNotNull { collectFromEffect(it) }.fold(
             MutableContextInfo.EMPTY,
             { resultingInfo, clauseInfo -> resultingInfo.and(clauseInfo) })
 

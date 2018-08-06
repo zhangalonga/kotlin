@@ -77,7 +77,7 @@ private fun useVar(
     typeAnnotatedFrame: Frame<BasicValue>?
 ) {
     val index = node.instructions.indexOf(insn)
-    node.localVariables.filter {
+    node.localVariables.asSequence().filter {
         node.instructions.indexOf(it.start) < index && index < node.instructions.indexOf(it.end) &&
                 Type.getType(it.desc).sort == typeAnnotatedFrame?.getLocal(it.index)?.type?.sort
     }.forEach {

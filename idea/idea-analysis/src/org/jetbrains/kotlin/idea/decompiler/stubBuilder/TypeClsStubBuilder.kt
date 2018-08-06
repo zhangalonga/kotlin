@@ -274,7 +274,7 @@ class TypeClsStubBuilder(private val c: ClsStubBuilderContext) {
                 if (!upperBound.isDefaultUpperBound()) {
                     createTypeReferenceStub(typeParameterStub, upperBound)
                 }
-                protosForTypeConstraintList.addAll(upperBoundProtos.drop(1).map { Pair(name, it) })
+                protosForTypeConstraintList.addAll(upperBoundProtos.asSequence().drop(1).map { Pair(name, it) }.toList())
             }
         }
         return protosForTypeConstraintList

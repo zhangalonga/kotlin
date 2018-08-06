@@ -194,7 +194,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                     it.transformedDeclaration.apply {
                         this.body = original.body
 
-                        original.descriptor.valueParameters.filter { it.declaresDefaultValue() }.forEach { argument ->
+                        original.descriptor.valueParameters.asSequence().filter { it.declaresDefaultValue() }.forEach { argument ->
                             val body = original.getDefault(argument)!!
                             oldParameterToNew[argument]!!.defaultValue = body
                         }
@@ -244,7 +244,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                     return constructorContext.transformedDeclaration.apply {
                         this.body = declaration.body!!
 
-                        declaration.descriptor.valueParameters.filter { it.declaresDefaultValue() }.forEach { argument ->
+                        declaration.descriptor.valueParameters.asSequence().filter { it.declaresDefaultValue() }.forEach { argument ->
                             val body = declaration.getDefault(argument)!!
                             oldParameterToNew[argument]!!.defaultValue = body
                         }
@@ -478,6 +478,7 @@ class LocalDeclarationsLowering(val context: BackendContext, val localNameProvid
                 descriptor.parentsWithSelf
                     .takeWhile { it != newOwner }
                     .toList().reversed()
+                    .asSequence()
                     .map { suggestLocalName(it) }
                     .joinToString(separator = "$")
             )

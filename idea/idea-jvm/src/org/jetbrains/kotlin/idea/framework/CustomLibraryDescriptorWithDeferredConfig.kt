@@ -215,8 +215,10 @@ abstract class CustomLibraryDescriptorWithDeferredConfig
 
     private fun collectPathsInPlugin(rootType: OrderRootType): List<File> {
         return configurator.getLibraryJarDescriptors(null)
-                .filter { it.orderRootType == rootType }
-                .map { it.getPathInPlugin() }
+            .asSequence()
+            .filter { it.orderRootType == rootType }
+            .map { it.getPathInPlugin() }
+            .toList()
     }
 
     protected fun createConfiguration(libraryFiles: List<File>, librarySourceFiles: List<File>): NewLibraryConfiguration {

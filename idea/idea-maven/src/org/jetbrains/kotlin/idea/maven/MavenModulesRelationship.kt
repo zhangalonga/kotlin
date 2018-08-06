@@ -62,5 +62,5 @@ fun excludeMavenChildrenModules(project: Project, selectedModules: List<Module>)
         }
     }
 
-    return selectedProjects.filter { it.mavenId !in excluded }.mapNotNull { mavenManager.findModule(it) }
+    return selectedProjects.asSequence().filter { it.mavenId !in excluded }.mapNotNull { mavenManager.findModule(it) }.toList()
 }

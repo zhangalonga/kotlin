@@ -127,8 +127,8 @@ abstract class DifferenceCalculator {
             oldList: List<Int>,
             newList: List<Int>
     ): Collection<String> {
-        val oldNames = oldList.map { compareObject.oldNameResolver.getString(it) }.toSet()
-        val newNames = newList.map { compareObject.newNameResolver.getString(it) }.toSet()
+        val oldNames = oldList.asSequence().map { compareObject.oldNameResolver.getString(it) }.toSet()
+        val newNames = newList.asSequence().map { compareObject.newNameResolver.getString(it) }.toSet()
         return oldNames.union(newNames) - oldNames.intersect(newNames)
     }
 

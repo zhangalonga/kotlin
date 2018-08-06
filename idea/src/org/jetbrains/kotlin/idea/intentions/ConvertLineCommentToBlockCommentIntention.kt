@@ -44,7 +44,7 @@ class ConvertLineCommentToBlockCommentIntention : SelfTargetingIntention<PsiComm
                 "$indent${it.commentText()}"
             }
 
-        comments.drop(1).forEach {
+        comments.asSequence().drop(1).forEach {
             (it.prevSibling as? PsiWhiteSpace)?.delete()
             it.delete()
         }

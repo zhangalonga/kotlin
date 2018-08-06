@@ -46,7 +46,7 @@ class InterfaceLowering(val state: GenerationState) : IrElementTransformerVoid()
 
         val members = defaultImplsIrClass.declarations
 
-        irClass.declarations.filterIsInstance<IrFunction>().forEach {
+        irClass.declarations.asSequence().filterIsInstance<IrFunction>().forEach {
             val descriptor = it.descriptor
             if (it.origin == DECLARATION_ORIGIN_FUNCTION_FOR_DEFAULT_PARAMETER) {
                 members.add(it) //just copy $default to DefaultImpls
@@ -63,16 +63,16 @@ class InterfaceLowering(val state: GenerationState) : IrElementTransformerVoid()
         irClass.transformChildrenVoid(this)
 
         //REMOVE private methods
-        val privateToRemove = irClass.declarations.filterIsInstance<IrFunction>().mapNotNull {
+        val privateToRemove = irClass.declarations.asSequence().filterIsInstance<IrFunction>().mapNotNull {
             val visibility = AsmUtil.getVisibilityAccessFlag(it.descriptor)
             if (visibility == Opcodes.ACC_PRIVATE && it.descriptor.name != clinitName) {
                 it
             } else null
-        }
+        }.toList()
 
-        val defaultBodies = irClass.declarations.filterIsInstance<IrFunction>().filter {
+        val defaultBodies = irClass.declarations.asSequence().filterIsInstance<IrFunction>().filter {
             it.origin == DECLARATION_ORIGIN_FUNCTION_FOR_DEFAULT_PARAMETER
-        }
+        }.toList()
         irClass.declarations.removeAll(privateToRemove)
         irClass.declarations.removeAll(defaultBodies)
     }

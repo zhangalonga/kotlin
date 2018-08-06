@@ -137,17 +137,17 @@ object JsLibraryUtils {
             }
 
             librariesWithoutSourceMaps
-                    .map {
-                        val zipEntry = possibleMapFiles[it.path]
-                        if (zipEntry != null) {
-                            val stream = zipFile.getInputStream(zipEntry)
-                            val content = FileUtil.loadTextAndClose(stream)
-                            it.copy(sourceMapContent = content)
-                        }
-                        else {
-                            it
-                        }
+                .asSequence()
+                .map {
+                    val zipEntry = possibleMapFiles[it.path]
+                    if (zipEntry != null) {
+                        val stream = zipFile.getInputStream(zipEntry)
+                        val content = FileUtil.loadTextAndClose(stream)
+                        it.copy(sourceMapContent = content)
+                    } else {
+                        it
                     }
+                }
                     .forEach(action)
         }
         catch (ex: IOException) {

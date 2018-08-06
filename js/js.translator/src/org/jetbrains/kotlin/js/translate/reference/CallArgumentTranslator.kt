@@ -187,10 +187,11 @@ class CallArgumentTranslator private constructor(
         }
 
         val resolvedOrder = resolvedCall.valueArgumentsByIndex.orEmpty()
-                .flatMap { it.arguments }
-                .withIndex()
+            .flatMap { it.arguments }
+            .asSequence()
+            .withIndex()
                 .associate { (index, arg) -> arg to index }
-        val argumentsAreOrdered = resolvedCall.call.valueArguments.withIndex().none { (index, arg) -> resolvedOrder[arg] != index }
+        val argumentsAreOrdered = resolvedCall.call.valueArguments.asSequence().withIndex().none { (index, arg) -> resolvedOrder[arg] != index }
 
         if (argumentContexts.values.any { !it.currentBlockIsEmpty() } || !argumentsAreOrdered) {
             result = result.map { (arg, expr) ->

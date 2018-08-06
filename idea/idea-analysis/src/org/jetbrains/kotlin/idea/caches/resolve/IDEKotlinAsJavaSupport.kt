@@ -288,7 +288,7 @@ class IDEKotlinAsJavaSupport(private val project: Project): KotlinAsJavaSupport(
     private fun createLightClassForDecompiledKotlinFile(file: KtClsFile): KtLightClassForDecompiledDeclaration? {
         val virtualFile = file.virtualFile ?: return null
 
-        val classOrObject = file.declarations.filterIsInstance<KtClassOrObject>().singleOrNull()
+        val classOrObject = file.declarations.asSequence().filterIsInstance<KtClassOrObject>().singleOrNull()
 
         val javaClsClass = createClsJavaClassFromVirtualFile(
             file, virtualFile,

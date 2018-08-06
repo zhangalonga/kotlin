@@ -90,9 +90,11 @@ class KotlinGradleModelBuilder : AbstractKotlinGradleModelBuilder() {
 
     private fun getImplementedProjects(project: Project): List<Project> {
         return listOf("expectedBy", "implement")
-                .flatMap { project.configurations.findByName(it)?.dependencies ?: emptySet<Dependency>() }
-                .filterIsInstance<ProjectDependency>()
-                .mapNotNull { it.dependencyProject }
+            .flatMap { project.configurations.findByName(it)?.dependencies ?: emptySet<Dependency>() }
+            .asSequence()
+            .filterIsInstance<ProjectDependency>()
+            .mapNotNull { it.dependencyProject }
+            .toList()
     }
 
     // see GradleProjectResolverUtil.getModuleId() in IDEA codebase

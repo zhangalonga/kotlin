@@ -222,8 +222,10 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         val sourceDirs = ModuleRootManager.getInstance(module)
             .contentEntries
             .flatMap { it.sourceFolders.filter { it.isRelatedSourceRoot(isTest) } }
+            .asSequence()
             .mapNotNull { it.file }
             .mapNotNull { VfsUtilCore.getRelativePath(it, xmlFile.virtualFile.parent, '/') }
+            .toList()
 
         executionSourceDirs(execution, sourceDirs)
     }
@@ -276,7 +278,7 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
         }
 
         // TODO: getPhase has been added as per https://youtrack.jetbrains.com/issue/IDEA-153582 and available only in latest IDEAs
-        return plugin.executions.filter { it.executionId == executionId }.all { execution ->
+        return plugin.executions.asSequence().filter { it.executionId == executionId }.all { execution ->
             execution::class.java.methods.filter { it.name == "getPhase" && it.parameterTypes.isEmpty() }
                 .all { it.invoke(execution) == DefaultPhases.None }
         }
@@ -575,49 +577,50 @@ class PomFile private constructor(private val xmlFile: XmlFile, val domModel: Ma
 
         // from maven code convention: https://maven.apache.org/developers/conventions/code.html
         val recommendedElementsOrder = """
-          <modelVersion/>
-          <parent/>
+              <modelVersion/>
+              <parent/>
 
-          <groupId/>
-          <artifactId/>
-          <version/>
-          <packaging/>
+              <groupId/>
+              <artifactId/>
+              <version/>
+              <packaging/>
 
-          <name/>
-          <description/>
-          <url/>
-          <inceptionYear/>
-          <organization/>
-          <licenses/>
+              <name/>
+              <description/>
+              <url/>
+              <inceptionYear/>
+              <organization/>
+              <licenses/>
 
-          <developers/>
-          <contributors/>
+              <developers/>
+              <contributors/>
 
-          <mailingLists/>
+              <mailingLists/>
 
-          <prerequisites/>
+              <prerequisites/>
 
-          <modules/>
+              <modules/>
 
-          <scm/>
-          <issueManagement/>
-          <ciManagement/>
-          <distributionManagement/>
+              <scm/>
+              <issueManagement/>
+              <ciManagement/>
+              <distributionManagement/>
 
-          <properties/>
+              <properties/>
 
-          <dependencyManagement/>
-          <dependencies/>
+              <dependencyManagement/>
+              <dependencies/>
 
-          <repositories/>
-          <pluginRepositories/>
+              <repositories/>
+              <pluginRepositories/>
 
-          <build/>
+              <build/>
 
-          <reporting/>
+              <reporting/>
 
-          <profiles/>
-        """.lines()
+              <profiles/>
+            """.lines()
+            .asSequence()
             .map { it.trim().removePrefix("<").removeSuffix("/>").trim() }
             .filter(String::isNotEmpty)
             .toCollection(LinkedHashSet())

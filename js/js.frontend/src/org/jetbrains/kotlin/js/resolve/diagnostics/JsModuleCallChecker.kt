@@ -47,7 +47,9 @@ object JsModuleCallChecker : CallChecker {
 
     private fun checkReifieidTypeParameters(call: ResolvedCall<*>, reportOn: PsiElement, context: CallCheckerContext) {
         val containingDescriptor = context.scope.ownerDescriptor
-        val typeParams = call.candidateDescriptor.typeParameters.map { it.original }.withIndex().filter { (_, param) -> param.isReified }
+        val typeParams =
+            call.candidateDescriptor.typeParameters.asSequence().map { it.original }.withIndex().filter { (_, param) -> param.isReified }
+                .toList()
         val typeArguments = call.call.typeArgumentList
                 ?.let { args ->
                     typeParams.associate { (index, param) -> param.original to args.arguments.getOrNull(index)?.typeReference }

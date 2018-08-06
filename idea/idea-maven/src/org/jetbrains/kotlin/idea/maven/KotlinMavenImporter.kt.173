@@ -278,6 +278,7 @@ class KotlinMavenImporter : MavenImporter(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_
 
     private fun detectPlatformByExecutions(mavenProject: MavenProject): TargetPlatformKind<*>? {
         return mavenProject.findPlugin(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_ARTIFACT_ID)?.executions?.flatMap { it.goals }
+            ?.asSequence()
             ?.mapNotNull { goal ->
                 when (goal) {
                     PomFile.KotlinGoals.Compile, PomFile.KotlinGoals.TestCompile -> TargetPlatformKind.Jvm[JvmTarget.JVM_1_6]

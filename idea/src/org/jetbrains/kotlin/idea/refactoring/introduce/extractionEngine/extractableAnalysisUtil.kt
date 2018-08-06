@@ -302,12 +302,13 @@ private fun ExtractionData.analyzeControlFlow(
     }
 
     if (declarationsToReport.isNotEmpty()) {
-        val localVarStr = declarationsToReport.map { it.renderForMessage(bindingContext)!! }.distinct().sorted()
+        val localVarStr = declarationsToReport.asSequence().map { it.renderForMessage(bindingContext)!! }.distinct().sorted().toList()
         return controlFlow to ErrorMessage.DECLARATIONS_ARE_USED_OUTSIDE.addAdditionalInfo(localVarStr)
     }
 
     val outParameters =
-            parameters.filter { it.mirrorVarName != null && modifiedVarDescriptors[it.originalDescriptor] != null }.sortedBy { it.nameForRef }
+        parameters.asSequence().filter { it.mirrorVarName != null && modifiedVarDescriptors[it.originalDescriptor] != null }.sortedBy { it.nameForRef }
+            .toList()
     val outDeclarations =
             declarationsToCopy.filter { modifiedVarDescriptors[bindingContext[BindingContext.DECLARATION_TO_DESCRIPTOR, it]] != null }
     val modifiedValueCount = outParameters.size + outDeclarations.size
@@ -590,7 +591,7 @@ private fun ExtractionData.checkDeclarationsMovingOutOfScope(
     )
 
     if (declarationsOutOfScope.isNotEmpty()) {
-        val declStr = declarationsOutOfScope.map { it.renderForMessage(bindingContext)!! }.sorted()
+        val declStr = declarationsOutOfScope.asSequence().map { it.renderForMessage(bindingContext)!! }.sorted().toList()
         return ErrorMessage.DECLARATIONS_OUT_OF_SCOPE.addAdditionalInfo(declStr)
     }
 
@@ -680,7 +681,7 @@ fun ExtractionData.performAnalysis(): AnalysisResult {
     returnType.processTypeIfExtractable(paramsInfo.typeParameters, paramsInfo.nonDenotableTypes, options, targetScope)
 
     if (paramsInfo.nonDenotableTypes.isNotEmpty()) {
-        val typeStr = paramsInfo.nonDenotableTypes.map {it.renderForMessage()}.sorted()
+        val typeStr = paramsInfo.nonDenotableTypes.asSequence().map {it.renderForMessage()}.sorted().toList()
         return AnalysisResult(
                 null,
                 Status.CRITICAL_ERROR,

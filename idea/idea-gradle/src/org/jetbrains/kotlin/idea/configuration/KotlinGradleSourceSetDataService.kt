@@ -178,8 +178,10 @@ fun detectPlatformByPlugin(moduleNode: DataNode<ModuleData>): TargetPlatformKind
 private fun detectPlatformByLibrary(moduleNode: DataNode<ModuleData>): TargetPlatformKind<*>? {
     val detectedPlatforms =
         mavenLibraryIdToPlatform.entries
+            .asSequence()
             .filter { moduleNode.getResolvedVersionByModuleData(KOTLIN_GROUP_ID, listOf(it.key)) != null }
             .map { it.value }.distinct()
+            .toList()
     return detectedPlatforms.singleOrNull() ?: detectedPlatforms.firstOrNull { it != TargetPlatformKind.Common }
 }
 

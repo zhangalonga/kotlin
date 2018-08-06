@@ -157,8 +157,9 @@ class JavaToKotlinConverter(
         if (usageProcessings.isEmpty()) return null
 
         val map: Map<PsiElement, Collection<UsageProcessing>> = usageProcessings.values
-                .flatMap { it }
-                .filter { it.javaCodeProcessors.isNotEmpty() || it.kotlinCodeProcessors.isNotEmpty() }
+            .flatMap { it }
+            .asSequence()
+            .filter { it.javaCodeProcessors.isNotEmpty() || it.kotlinCodeProcessors.isNotEmpty() }
                 .groupBy { it.targetElement }
         if (map.isEmpty()) return null
 

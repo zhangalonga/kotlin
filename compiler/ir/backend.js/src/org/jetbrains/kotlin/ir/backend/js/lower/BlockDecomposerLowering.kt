@@ -470,10 +470,10 @@ class BlockDecomposerLowering(val context: JsIrBackendContext) : DeclarationCont
                 newStatements
             )
 
-            val arguments = expression.elements.withIndex().map { (i, v) ->
+            val arguments = expression.elements.asSequence().withIndex().map { (i, v) ->
                 val expr = argumentsExpressions[i]!!
                 (v as? IrSpreadElement)?.run { IrSpreadElementImpl(startOffset, endOffset, expr) } ?: expr
-            }
+            }.toList()
 
             newStatements += expression.run { IrVarargImpl(startOffset, endOffset, type, varargElementType, arguments) }
             return expression.run { IrCompositeImpl(startOffset, endOffset, type, null, newStatements) }

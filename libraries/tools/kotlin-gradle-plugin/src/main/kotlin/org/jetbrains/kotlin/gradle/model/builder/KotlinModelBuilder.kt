@@ -65,9 +65,11 @@ class KotlinModelBuilder(private val kotlinPluginVersion: String) : ToolingModel
         private fun getExpectedByDependencies(project: Project): Collection<String> {
             return listOf("expectedBy", "implement")
                 .flatMap { project.configurations.findByName(it)?.dependencies ?: emptySet<Dependency>() }
+                .asSequence()
                 .filterIsInstance<ProjectDependency>()
                 .mapNotNull { it.dependencyProject }
                 .map { it.pathOrName() }
+                .toList()
         }
 
         private fun Project.pathOrName() = if (path == ":") name else path

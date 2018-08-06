@@ -49,7 +49,7 @@ class SMAPBuilder(
     }
 
     private fun generateDefaultStrata(realMappings: List<FileMapping>): String {
-        val fileIds = "*F" + realMappings.mapIndexed { id, file -> "\n${file.toSMAPFile(id + 1)}" }.joinToString("")
+        val fileIds = "*F" + realMappings.asSequence().mapIndexed { id, file -> "\n${file.toSMAPFile(id + 1)}" }.joinToString("")
         val lineMappings = "*L" + realMappings.joinToString("") { it.toSMAPMapping() }
         return "*S $KOTLIN_STRATA_NAME\n$fileIds\n$lineMappings\n*E\n"
     }
@@ -57,7 +57,7 @@ class SMAPBuilder(
     private fun generateDebugStrata(realMappings: List<FileMapping>): String {
         val combinedMapping = FileMapping(source, path)
         realMappings.forEach { fileMapping ->
-            fileMapping.lineMappings.filter { it.callSiteMarker != null }.forEach { (_, dest, range, callSiteMarker) ->
+            fileMapping.lineMappings.asSequence().filter { it.callSiteMarker != null }.forEach { (_, dest, range, callSiteMarker) ->
                 combinedMapping.addRangeMapping(
                     RangeMapping(
                         callSiteMarker!!.lineNumber, dest, range
@@ -69,7 +69,7 @@ class SMAPBuilder(
         if (combinedMapping.lineMappings.isEmpty()) return ""
 
         val newMappings = listOf(combinedMapping)
-        val fileIds = "*F" + newMappings.mapIndexed { id, file -> "\n${file.toSMAPFile(id + 1)}" }.joinToString("")
+        val fileIds = "*F" + newMappings.asSequence().mapIndexed { id, file -> "\n${file.toSMAPFile(id + 1)}" }.joinToString("")
         val lineMappings = "*L" + newMappings.joinToString("") { it.toSMAPMapping() }
         return "*S $KOTLIN_DEBUG_STRATA_NAME\n$fileIds\n$lineMappings\n*E\n"
     }

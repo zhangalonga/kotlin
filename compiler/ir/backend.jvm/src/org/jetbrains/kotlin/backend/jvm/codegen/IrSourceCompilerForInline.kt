@@ -91,13 +91,13 @@ class IrSourceCompilerForInline(
             else {
                 /*TODO: get rid of hack*/
                 val parent = irFunction.parent
-                val irClass = if (parent is IrFile) parent.declarations.filterIsInstance<IrClass>().single {
+                val irClass = if (parent is IrFile) parent.declarations.asSequence().filterIsInstance<IrClass>().single {
                     //find class for package part
                     it.thisReceiver == null
                 }
                 else parent as IrClass
 
-                irClass.declarations.filterIsInstance<IrFunction>().single {
+                irClass.declarations.asSequence().filterIsInstance<IrFunction>().single {
                     it.descriptor.name.asString() == jvmSignature.asmMethod.name + JvmAbi.DEFAULT_PARAMS_IMPL_SUFFIX &&
                             state.typeMapper.mapSignatureSkipGeneric(callableDescriptor).asmMethod.descriptor.startsWith(
                                 jvmSignature.asmMethod.descriptor.substringBeforeLast(')')

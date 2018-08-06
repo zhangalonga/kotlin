@@ -306,7 +306,7 @@ private class PropertyDetector(
     private fun dropPropertiesWithConflictingAccessors(memberToPropertyInfo: MutableMap<PsiMember, PropertyInfo>) {
         val propertyInfos = memberToPropertyInfo.values.distinct()
 
-        val mappedMethods = propertyInfos.mapNotNull { it.getMethod }.toSet() + propertyInfos.mapNotNull { it.setMethod }.toSet()
+        val mappedMethods = propertyInfos.asSequence().mapNotNull { it.getMethod }.toSet() + propertyInfos.asSequence().mapNotNull { it.setMethod }.toSet()
 
         //TODO: bases
         val prohibitedSignatures = psiClass.methods

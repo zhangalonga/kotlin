@@ -234,7 +234,7 @@ class AndroidSubplugin : KotlinGradleSubplugin<KotlinCompile> {
     private data class VariantComponentNames(val variantName: String, val flavorName: String, val buildTypeName: String)
 
     private fun getCommonResDirectories(resDirectories: List<List<File>>): Set<File> {
-        var common = resDirectories.firstOrNull()?.toSet() ?: return emptySet()
+        var common = resDirectories.asSequence().firstOrNull()?.toSet() ?: return emptySet()
 
         for (resDirs in resDirectories.drop(1)) {
             common = common.intersect(resDirs)

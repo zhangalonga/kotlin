@@ -40,7 +40,7 @@ fun Element.addClass(vararg cssClasses: String): Boolean {
 fun Element.removeClass(vararg cssClasses: String): Boolean {
     if (cssClasses.any { hasClass(it) }) {
         val toBeRemoved = cssClasses.toSet()
-        className = className.trim().split("\\s+".toRegex()).filter { it !in toBeRemoved }.joinToString(" ")
+        className = className.trim().split("\\s+".toRegex()).asSequence().filter { it !in toBeRemoved }.joinToString(" ")
         return true
     }
 

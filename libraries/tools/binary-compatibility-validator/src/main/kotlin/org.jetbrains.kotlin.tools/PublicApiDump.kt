@@ -90,15 +90,17 @@ fun List<ClassBinarySignature>.filterOutNonPublic(nonPublicPackages: List<String
     }
 
     return filter { !it.isInNonPublicPackage() && it.isPublicAndAccessible() }
+        .asSequence()
         .map { it.flattenNonPublicBases() }
         .filterNot { it.isNotUsedWhenEmpty && it.memberSignatures.isEmpty()}
+        .toList()
 }
 
 fun List<ClassBinarySignature>.dump() = dump(to = System.out)
 
 fun <T : Appendable> List<ClassBinarySignature>.dump(to: T): T = to.apply { this@dump.forEach {
         append(it.signature).appendln(" {")
-        it.memberSignatures.sortedWith(MEMBER_SORT_ORDER).forEach { append("\t").appendln(it.signature) }
+        it.memberSignatures.asSequence().sortedWith(MEMBER_SORT_ORDER).forEach { append("\t").appendln(it.signature) }
         appendln("}\n")
 }}
 

@@ -42,7 +42,8 @@ object NamedArgumentCompletion {
         val callElement = thisArgument.getStrictParentOfType<KtCallElement>() ?: return false
 
         return callElement.valueArguments
-                .takeWhile { it != thisArgument }
+            .asSequence()
+            .takeWhile { it != thisArgument }
                 .any { it.isNamed() }
     }
 

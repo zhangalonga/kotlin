@@ -72,7 +72,7 @@ private fun updateJar(
                         "name = ${library.name}\n" +
                         "isExternal = `${isExternalLibrary(library)}`\n" +
                         "entries = ${library.getUrls(libraryJarDescriptor.orderRootType)}\n" +
-                        "buildSystems = ${project.allModules().map { module -> module.getBuildSystemType() }.distinct()}"
+                        "buildSystems = ${project.allModules().asSequence().map { module -> module.getBuildSystemType() }.distinct().toList()}"
             )
         }
 

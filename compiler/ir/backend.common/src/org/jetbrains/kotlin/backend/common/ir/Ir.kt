@@ -78,7 +78,7 @@ abstract class Symbols<out T : CommonBackendContext>(val context: T, private val
     val intProgression = progression("IntProgression")
     val longProgression = progression("LongProgression")
     val progressionClasses = listOf(charProgression, intProgression, longProgression)
-    val progressionClassesTypes = progressionClasses.map { it.descriptor.defaultType }.toSet()
+    val progressionClassesTypes = progressionClasses.asSequence().map { it.descriptor.defaultType }.toSet()
 
 //    val checkProgressionStep = context.getInternalFunctions("checkProgressionStep")
 //            .map { Pair(it.returnType, symbolTable.referenceSimpleFunction(it)) }.toMap()

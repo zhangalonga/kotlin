@@ -61,7 +61,7 @@ object SuperDeclarationMarkerTooltip : Function<PsiElement, String> {
             "${if (!isAbstract && isBaseAbstract) "Implements" else "Overrides"} $memberKind in '${renderer.render(declaration)}'"
         }
 
-        return containingStrings.sorted().joinToString(separator = "<br/>")
+        return containingStrings.asSequence().sorted().joinToString(separator = "<br/>")
     }
 }
 

@@ -207,8 +207,8 @@ class KotlinCacheServiceImpl(val project: Project) : KotlinCacheService {
 
     private fun createFacadeForFilesWithSpecialModuleInfo(files: Set<KtFile>): ProjectResolutionFacade {
         // we assume that all files come from the same module
-        val targetPlatform = files.map { TargetPlatformDetector.getPlatform(it) }.toSet().single()
-        val specialModuleInfo = files.map(KtFile::getModuleInfo).toSet().single()
+        val targetPlatform = files.asSequence().map { TargetPlatformDetector.getPlatform(it) }.toSet().single()
+        val specialModuleInfo = files.asSequence().map(KtFile::getModuleInfo).toSet().single()
         val settings = specialModuleInfo.platformSettings(targetPlatform)
 
         // File copies are created during completion and receive correct modification events through POM.
@@ -459,7 +459,7 @@ class KotlinCacheServiceImpl(val project: Project) : KotlinCacheService {
     private fun Collection<KtFile>.filterNotInProjectSource(moduleInfo: IdeaModuleInfo): Set<KtFile> {
         return mapNotNull {
             if (it is KtCodeFragment) it.getContextFile() else it
-        }.filter {
+        }.asSequence().filter {
             !ProjectRootsUtil.isInProjectSource(it) || !moduleInfo.contentScope().contains(it)
         }.toSet()
     }
@@ -467,7 +467,7 @@ class KotlinCacheServiceImpl(val project: Project) : KotlinCacheService {
     private fun Collection<KtFile>.filterScripts(): Set<KtFile> {
         return mapNotNull {
             if (it is KtCodeFragment) it.getContextFile() else it
-        }.filter { it.isScript() }.toSet()
+        }.asSequence().filter { it.isScript() }.toSet()
     }
 
     private fun KtCodeFragment.getContextFile(): KtFile? {

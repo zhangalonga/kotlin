@@ -37,7 +37,7 @@ class SourceMapLocationRemapper(private val sourceMap: SourceMap, private val so
 
             if (lastGroup != group) {
                 if (lastGroup != null) {
-                    val segmentsToSkip = lastGroup!!.segments.drop(lastSegmentIndex).toMutableList()
+                    val segmentsToSkip = lastGroup!!.segments.asSequence().drop(lastSegmentIndex).toMutableList()
                     if (lastGroupIndex + 1 < source.startLine) {
                         segmentsToSkip += sourceMap.groups.subList((lastGroupIndex + 1), source.startLine).flatMap { it.segments }
                     }
@@ -122,7 +122,7 @@ class SourceMapLocationRemapper(private val sourceMap: SourceMap, private val so
                 if (node.isNotBefore(firstChild)) {
                     accept(firstChild)
                     nodeList += node
-                    nonNullChildren.drop(1).forEach { accept(it) }
+                    nonNullChildren.asSequence().drop(1).forEach { accept(it) }
                 }
                 else {
                     nodeList += node

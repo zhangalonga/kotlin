@@ -170,7 +170,7 @@ abstract class FileRankingCalculator(
 
         val jdiPropertyType = when {
             accessor.isGetter -> method.safeReturnType()
-            else -> method.safeArguments()?.map { it.safeType() }?.singleOrNull()
+            else -> method.safeArguments()?.asSequence()?.map { it.safeType() }?.singleOrNull()
         }
 
         return rankingForType(descriptor.returnType, jdiPropertyType, makeTypeMapper(bindingContext))

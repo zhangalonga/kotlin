@@ -43,7 +43,7 @@ internal fun foldConditionsWithOr(list: List<ConditionalEffect>): ESExpression? 
     if (list.isEmpty())
         null
     else
-        list.map { it.condition }.reduce { acc, condition -> ESOr(acc, condition) }
+        list.asSequence().map { it.condition }.reduce { acc, condition -> ESOr(acc, condition) }
 
 /**
  * Places all clauses that equal to `firstModel` into first list, and all clauses that equal to `secondModel` into second list

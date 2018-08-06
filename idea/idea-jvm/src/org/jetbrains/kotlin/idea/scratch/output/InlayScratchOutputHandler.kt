@@ -99,6 +99,7 @@ object InlayScratchOutputHandler : ScratchOutputHandler {
         val doc = file.editor.editor.document
         return file.getExpressions()
             .flatMap { it.lineStart..it.lineEnd }
+            .asSequence()
             .map { doc.getLineEndOffset(it) - doc.getLineStartOffset(it) }
             .max() ?: 0
     }
@@ -107,6 +108,7 @@ object InlayScratchOutputHandler : ScratchOutputHandler {
         UIUtil.invokeLaterIfNeeded {
             editor
                 .editor.inlayModel.getInlineElementsInRange(0, editor.editor.document.textLength)
+                .asSequence()
                 .filter { it.renderer is InlayScratchFileRenderer }
                 .forEach { Disposer.dispose(it) }
         }

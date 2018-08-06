@@ -156,7 +156,7 @@ internal class GradleCompilerRunner(private val project: Project) : KotlinCompil
         val argsArray = ArgumentUtils.convertArgumentsToStringList(compilerArgs).toTypedArray()
         with (project.logger) {
             kotlinDebug { "Kotlin compiler class: $compilerClassName" }
-            kotlinDebug { "Kotlin compiler classpath: ${environment.compilerFullClasspath.map { it.canonicalPath }.joinToString()}" }
+            kotlinDebug { "Kotlin compiler classpath: ${environment.compilerFullClasspath.asSequence().map { it.canonicalPath }.joinToString()}" }
             kotlinDebug { "Kotlin compiler args: ${argsArray.joinToString(" ")}" }
         }
 

@@ -175,6 +175,6 @@ class KotlinJUnitRunConfigurationProducer : RunConfigurationProducer<JUnitConfig
             this?.toLightClass()?.let { JUnitUtil.isTestClass(it, false, true) } ?: false
 
         private fun getTestClassInFile(ktFile: KtFile) =
-            ktFile.declarations.filterIsInstance<KtClass>().singleOrNull { it.isJUnitTestClass() }
+            ktFile.declarations.asSequence().filterIsInstance<KtClass>().singleOrNull { it.isJUnitTestClass() }
     }
 }

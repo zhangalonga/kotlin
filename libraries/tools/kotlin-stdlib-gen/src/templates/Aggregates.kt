@@ -230,7 +230,7 @@ object Aggregates : TemplateGroupBase() {
 
 
     val f_minMax = run {
-        val genericSpecializations = PrimitiveType.numericPrimitives.filterNot { it.isIntegral() }.toSet() + setOf(null)
+        val genericSpecializations = PrimitiveType.numericPrimitives.asSequence().filterNot { it.isIntegral() }.toSet() + setOf(null)
 
         listOf("min", "max").map { op ->
             fn("$op()") {

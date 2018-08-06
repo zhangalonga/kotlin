@@ -155,7 +155,7 @@ class ExtractSuperRefactoring(
                     elementsToMove,
                     moveTarget,
                     originalClass,
-                    memberInfos.filter { it.isToAbstract }.mapNotNull { it.member }
+                    memberInfos.asSequence().filter { it.isToAbstract }.mapNotNull { it.member }.toList()
             )
 
             project.runSynchronouslyWithProgress(RefactoringBundle.message("detecting.possible.conflicts"), true) {
@@ -242,7 +242,7 @@ class ExtractSuperRefactoring(
         }
 
         if (typeParameters.isNotEmpty()) {
-            val typeParameterListText = typeParameters.sortedBy { it.startOffset }.joinToString(prefix = "<", postfix = ">") { it.text }
+            val typeParameterListText = typeParameters.asSequence().sortedBy { it.startOffset }.joinToString(prefix = "<", postfix = ">") { it.text }
             newClass.addAfter(psiFactory.createTypeParameterList(typeParameterListText), newClass.nameIdentifier)
         }
 
@@ -254,7 +254,7 @@ class ExtractSuperRefactoring(
             }
             append(newClassName)
             if (typeParameters.isNotEmpty()) {
-                append(typeParameters.sortedBy { it.startOffset }.map { it.name }.joinToString(prefix = "<", postfix = ">"))
+                append(typeParameters.asSequence().sortedBy { it.startOffset }.map { it.name }.joinToString(prefix = "<", postfix = ">"))
             }
         }
         val needSuperCall = !extractInfo.isInterface

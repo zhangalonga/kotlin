@@ -105,9 +105,11 @@ class DeclarationsChecker(
         }
 
         val destructuringDeclarations = bodiesResolveContext.destructuringDeclarationEntries.entries
+            .asSequence()
             .map { (entry, _) -> entry.parent }
             .filterIsInstance<KtDestructuringDeclaration>()
             .distinct()
+            .toList()
 
         for (multiDeclaration in destructuringDeclarations) {
             modifiersChecker.checkModifiersForDestructuringDeclaration(multiDeclaration)
@@ -380,6 +382,7 @@ class DeclarationsChecker(
     ) {
         val upperBounds = descriptor.upperBounds
         val (boundsWhichAreTypeParameters, otherBounds) = upperBounds
+            .asSequence()
             .map(KotlinType::constructor)
             .partition { constructor -> constructor.declarationDescriptor is TypeParameterDescriptor }
             .let { pair -> pair.first.toSet() to pair.second.toSet() }
@@ -390,11 +393,13 @@ class DeclarationsChecker(
 
                 val allBounds: List<Pair<KtTypeReference, KotlinType?>> =
                     owner.typeConstraints
+                        .asSequence()
                         .filter { constraint ->
                             constraint.subjectTypeParameterName?.getReferencedNameAsName() == declaration.nameAsName
                         }
                         .mapNotNull { constraint -> constraint.boundTypeReference }
                         .map { typeReference -> typeReference to trace.bindingContext.get(TYPE, typeReference) }
+                        .toList()
 
                 val problematicBound =
                     allBounds.firstOrNull { bound -> bound.second?.constructor != boundsWhichAreTypeParameters.first() }

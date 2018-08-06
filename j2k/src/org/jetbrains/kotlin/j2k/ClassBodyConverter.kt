@@ -183,7 +183,7 @@ class ClassBodyConverter(private val psiClass: PsiClass,
     private fun shouldGenerateCompanionObject(convertedMembers: Map<PsiMember, Member>): Boolean {
         val members = convertedMembers.keys.filter { !it.isConstructor() }
         val companionObjectMembers = members.filter { it !is PsiClass && it !is PsiEnumConstant && it.hasModifierProperty(PsiModifier.STATIC) }
-        val nestedClasses = members.filterIsInstance<PsiClass>().filter { it.hasModifierProperty(PsiModifier.STATIC) }
+        val nestedClasses = members.asSequence().filterIsInstance<PsiClass>().filter { it.hasModifierProperty(PsiModifier.STATIC) }.toList()
         return if (companionObjectMembers.all { it is PsiMethod && it.hasModifierProperty(PsiModifier.PRIVATE) }) {
             nestedClasses.any { nestedClass -> companionObjectMembers.any { converter.referenceSearcher.findMethodCalls(it as PsiMethod, nestedClass).isNotEmpty() } }
         }

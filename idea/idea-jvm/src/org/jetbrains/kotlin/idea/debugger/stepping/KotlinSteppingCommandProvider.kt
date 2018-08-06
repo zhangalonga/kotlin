@@ -197,8 +197,10 @@ private fun getInlineFunctionsIfAny(file: KtFile, offset: Int): List<KtNamedFunc
 private fun getInlineArgumentsIfAny(inlineFunctionCalls: List<KtCallExpression>): List<KtFunction> {
     return inlineFunctionCalls.flatMap {
         it.valueArguments
+            .asSequence()
             .map(::getArgumentExpression)
             .filterIsInstance<KtFunction>()
+            .toList()
     }
 }
 
@@ -211,7 +213,7 @@ private fun getInlineArgumentsCallsIfAny(
 ): List<KtCallExpression>? {
     if (declarationDescriptor !is CallableDescriptor) return null
 
-    val valueParameters = declarationDescriptor.valueParameters.filter { it.type.isFunctionType }.toSet()
+    val valueParameters = declarationDescriptor.valueParameters.asSequence().filter { it.type.isFunctionType }.toSet()
 
     if (valueParameters.isEmpty()) {
         return null
@@ -258,6 +260,7 @@ private fun findCallsOnPosition(sourcePosition: SourcePosition, filter: (KtCallE
     val end = lineElement.endOffset
 
     val allFilteredCalls = CodeInsightUtils.findElementsOfClassInRange(file, start, end, KtExpression::class.java)
+        .asSequence()
         .map { KtPsiUtil.getParentCallIfPresent(it as KtExpression) }
         .filterIsInstance<KtCallExpression>()
         .filter { filter(it) }
@@ -368,6 +371,7 @@ fun getStepOverAction(
 
     fun isBackEdgeLocation(): Boolean {
         val previousSuitableLocation = methodLocations.reversed()
+            .asSequence()
             .dropWhile { it != location }
             .drop(1)
             .filter(::isThisMethodLocation)
@@ -380,6 +384,7 @@ fun getStepOverAction(
     val patchedLocation = if (isBackEdgeLocation()) {
         // Pretend we had already done a backing step
         methodLocations
+            .asSequence()
             .filter(::isThisMethodLocation)
             .firstOrNull { it.ktLineNumber() == location.ktLineNumber() } ?: location
     } else {
@@ -407,12 +412,14 @@ fun getStepOverAction(
     // We might erroneously extend this range too much when there's a call of function argument or other
     // inline function in last statement of inline function. The list of inlineRangeVariables will be used later to overcome it.
     val stepOverLocations = methodLocations
+        .asSequence()
         .dropWhile { it != patchedLocation }
         .drop(1)
         .dropWhile { it.ktLineNumber() == patchedLineNumber }
         .takeWhile { loc ->
             !isThisMethodLocation(loc) || lambdaArgumentRanges.any { loc.ktLineNumber() in it } || loc.ktLineNumber() == patchedLineNumber
         }
+        .toList()
 
     if (!stepOverLocations.isEmpty()) {
         // Some Kotlin inlined methods with 'for' (and maybe others) generates bytecode that after dexing have a strange artifact.
@@ -424,7 +431,7 @@ fun getStepOverAction(
             val method = location.method()
             val locationsOfLine = method.safeLocationsOfLine(range.last)
             if (locationsOfLine.isNotEmpty()) {
-                locationsOfLine.map { it.codeIndex() }.max() ?: -1L
+                locationsOfLine.asSequence().map { it.codeIndex() }.max() ?: -1L
             } else {
                 findReturnFromDexBytecode(location.method())
             }
@@ -433,7 +440,7 @@ fun getStepOverAction(
         return Action.STEP_OVER_INLINED(
             StepOverFilterData(
                 patchedLineNumber,
-                stepOverLocations.map { it.ktLineNumber() }.toSet(),
+                stepOverLocations.asSequence().map { it.ktLineNumber() }.toSet(),
                 inlineRangeVariables,
                 isDexDebug,
                 returnCodeIndex
@@ -454,10 +461,12 @@ fun getStepOutAction(
 
     val locations = computedReferenceType.safeAllLineLocations()
     val nextLineLocations = locations
+        .asSequence()
         .dropWhile { it != location }
         .drop(1)
         .filter { it.method() == location.method() }
         .dropWhile { it.lineNumber() == location.lineNumber() }
+        .toList()
 
     if (inlineFunctions.isNotEmpty()) {
         val position = suspendContext.getXPositionForStepOutFromInlineFunction(nextLineLocations, inlineFunctions)
@@ -524,11 +533,13 @@ private fun SuspendContextImpl.getNextPositionWithFilter(
 
 fun getInlineRangeLocalVariables(stackFrame: StackFrameProxyImpl): List<LocalVariable> {
     return stackFrame.visibleVariables()
+        .asSequence()
         .filter {
             val name = it.name()
             name.startsWith(JvmAbi.LOCAL_VARIABLE_NAME_PREFIX_INLINE_FUNCTION)
         }
         .map { it.variable }
+        .toList()
 }
 
 private fun getInlineArgumentIfAny(elementAt: PsiElement?): KtFunctionLiteral? {

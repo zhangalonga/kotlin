@@ -68,7 +68,7 @@ interface SyntheticJavaPropertyDescriptor : PropertyDescriptor, SyntheticPropert
                         it,
                         NoLookupLocation.FROM_SYNTHETIC_SCOPE
                     )
-                }.filterIsInstance<SyntheticJavaPropertyDescriptor>()
+                }.asSequence().filterIsInstance<SyntheticJavaPropertyDescriptor>()
                 .firstOrNull { originalGetterOrSetter == it.getMethod || originalGetterOrSetter == it.setMethod }
         }
 

@@ -198,9 +198,9 @@ object JvmRuntimeVersionsConsistencyChecker {
         // going to break language/library compatibility in such a way that it's easier to make the old compiler just report an error
         // in the case the new runtime library is specified in the classpath, rather than employing any other compatibility breakage tools
         // we have at our disposal (Deprecated, SinceKotlin, VersionRequirement in metadata, etc.)
-        if (runtimeJarsInfo.coreJars.map {
-            checkNotNewerThanCompiler(messageCollector, it)
-        }.any { it }) return ClasspathConsistency.InconsistentWithCompilerVersion
+        if (runtimeJarsInfo.coreJars.asSequence().map {
+                checkNotNewerThanCompiler(messageCollector, it)
+            }.any { it }) return ClasspathConsistency.InconsistentWithCompilerVersion
 
         val jars = runtimeJarsInfo.jars
         if (jars.isEmpty()) return ClasspathConsistency.Consistent
@@ -251,9 +251,9 @@ object JvmRuntimeVersionsConsistencyChecker {
         // we suggest to provide an explicit dependency on version X.
         // TODO: report this depending on the content of the jars instead
         val minReflectJar =
-                jars.filter { it.file.name.startsWith("kotlin-reflect") }.minBy { it.version }
+                jars.asSequence().filter { it.file.name.startsWith("kotlin-reflect") }.minBy { it.version }
         val maxStdlibJar =
-                jars.filter { it.file.name.startsWith("kotlin-runtime") || it.file.name.startsWith("kotlin-stdlib") }.maxBy { it.version }
+                jars.asSequence().filter { it.file.name.startsWith("kotlin-runtime") || it.file.name.startsWith("kotlin-stdlib") }.maxBy { it.version }
         if (minReflectJar != null && maxStdlibJar != null && minReflectJar.version < maxStdlibJar.version) {
             messageCollector.issue(
                     null,

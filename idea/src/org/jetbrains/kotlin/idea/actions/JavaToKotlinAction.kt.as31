@@ -173,7 +173,7 @@ class JavaToKotlinAction : AnAction() {
         val firstSyntaxError = javaFiles.asSequence().map { PsiTreeUtil.findChildOfType(it, PsiErrorElement::class.java) }.firstOrNull()
 
         if (firstSyntaxError != null) {
-            val count = javaFiles.filter { PsiTreeUtil.hasErrorElements(it) }.count()
+            val count = javaFiles.asSequence().filter { PsiTreeUtil.hasErrorElements(it) }.count()
             val question = firstSyntaxError.containingFile.name +
                            (if (count > 1) " and ${count - 1} more Java files" else " file") +
                            " contain syntax errors, the conversion result may be incorrect"

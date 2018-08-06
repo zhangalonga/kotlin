@@ -62,8 +62,10 @@ abstract class FunctionsFromAnyGenerator(protected val declaration: KtClassOrObj
 
     private val primaryConstructorProperties: List<PropertyDescriptor>
         get() = primaryConstructorParameters
+            .asSequence()
             .filter { it.hasValOrVar() }
             .map { bindingContext.get(BindingContext.PRIMARY_CONSTRUCTOR_PARAMETER, it)!! }
+            .toList()
 
     protected val primaryConstructorParameters: List<KtParameter>
         get() = (declaration as? KtClass)?.primaryConstructorParameters.orEmpty()

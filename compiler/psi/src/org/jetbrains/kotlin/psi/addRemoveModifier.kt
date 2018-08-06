@@ -68,6 +68,7 @@ internal fun addModifier(modifierList: KtModifierList, modifier: KtModifierKeywo
 
     val newModifier = KtPsiFactory(modifierList).createModifier(modifier)
     val modifierToReplace = MODIFIERS_TO_REPLACE[modifier]
+        ?.asSequence()
         ?.mapNotNull { modifierList.getModifier(it) }
         ?.firstOrNull()
 

@@ -98,15 +98,17 @@ private fun Converter.convertStaticImportOnDemand(fqName: FqName, target: PsiEle
                 if (objectFqName != null) {
                     // cannot import on demand from object, generate imports for all members
                     return importFromObject.declarations
-                            .mapNotNull {
-                                val descriptor = services.resolverForConverter.resolveToDescriptor(it) ?: return@mapNotNull null
-                                if (descriptor.hasJvmStaticAnnotation() || descriptor is PropertyDescriptor && descriptor.isConst)
-                                    descriptor.name
-                                else
-                                    null
-                            }
-                            .distinct()
-                            .map { objectFqName.child(it).render() }
+                        .asSequence()
+                        .mapNotNull {
+                            val descriptor = services.resolverForConverter.resolveToDescriptor(it) ?: return@mapNotNull null
+                            if (descriptor.hasJvmStaticAnnotation() || descriptor is PropertyDescriptor && descriptor.isConst)
+                                descriptor.name
+                            else
+                                null
+                        }
+                        .distinct()
+                        .map { objectFqName.child(it).render() }
+                        .toList()
                 }
             }
         }
@@ -164,6 +166,6 @@ private val DEFAULT_IMPORTS_SET: Set<FqName> = JvmPlatform.getDefaultImports(
     // TODO: use the correct LanguageVersionSettings instance here
     LanguageVersionSettingsImpl.DEFAULT,
     includeLowPriorityImports = true
-).filter { it.isAllUnder }.map { it.fqName }.toSet()
+).asSequence().filter { it.isAllUnder }.map { it.fqName }.toSet()
 
 private fun isImportedByDefault(c: KtLightClass) = c.qualifiedName?.let { FqName(it).parent() } in DEFAULT_IMPORTS_SET

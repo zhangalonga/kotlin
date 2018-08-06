@@ -736,7 +736,7 @@ class Converter private constructor(
     }
 
     fun convertModifiers(owner: PsiModifierListOwner, isMethodInOpenClass: Boolean, isInObject: Boolean): Modifiers {
-        var modifiers = Modifiers(MODIFIERS_MAP.filter { owner.hasModifierProperty(it.first) }.map { it.second })
+        var modifiers = Modifiers(MODIFIERS_MAP.asSequence().filter { owner.hasModifierProperty(it.first) }.map { it.second }.toList())
                 .assignPrototype(owner.modifierList, CommentsAndSpacesInheritance.NO_SPACES)
 
         if (owner is PsiMethod) {

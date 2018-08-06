@@ -349,7 +349,7 @@ class PreferContextElementsWeigher(context: DeclarationDescriptor) : LookupEleme
             .toList()
             .flatMap { if (it is CallableDescriptor) it.findOriginalTopMostOverriddenDescriptors() else listOf(it) }
             .toSet()
-    private val contextElementNames = contextElements.map { it.name }.toSet()
+    private val contextElementNames = contextElements.asSequence().map { it.name }.toSet()
 
     override fun weigh(element: LookupElement): Boolean {
         val lookupObject = element.`object` as? DeclarationLookupObject ?: return false

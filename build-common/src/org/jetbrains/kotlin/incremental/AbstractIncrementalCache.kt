@@ -101,7 +101,7 @@ abstract class AbstractIncrementalCache<ClassName>(workingDir: File) : BasicMaps
 
     protected fun addToClassStorage(proto: ProtoBuf.Class, nameResolver: NameResolver, srcFile: File) {
         val supertypes = proto.supertypes(TypeTable(proto.typeTable))
-        val parents = supertypes.map { nameResolver.getClassId(it.className).asSingleFqName() }
+        val parents = supertypes.asSequence().map { nameResolver.getClassId(it.className).asSingleFqName() }
                 .filter { it.asString() != "kotlin.Any" }
                 .toSet()
         val child = nameResolver.getClassId(proto.fqName).asSingleFqName()

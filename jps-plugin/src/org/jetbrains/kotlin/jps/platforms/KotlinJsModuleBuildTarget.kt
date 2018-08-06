@@ -135,9 +135,11 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
             // If prefix is not specified (empty) in UI, we want to produce paths relative to source maps location
             return if (module.k2JsCompilerArguments.sourceMapPrefix.isNullOrBlank()) emptyList()
             else module.contentRootsList.urls
+                .asSequence()
                 .map { URI.create(it) }
                 .filter { it.scheme == "file" }
                 .map { File(it.path) }
+                .toList()
         }
 
     val friendBuildTargetsMetaFiles

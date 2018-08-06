@@ -48,6 +48,7 @@ class MavenCoroutinesDeprecationInspection :
 
             for (dependency in pomFile.findDependencies(libMavenId)) {
                 val versionStr = mavenProject.findDependencies(deprecatedLibInfo.lib.groupId, deprecatedLibInfo.lib.name)
+                    .asSequence()
                     .map { it.version }
                     .distinct()
                     .singleOrNull()

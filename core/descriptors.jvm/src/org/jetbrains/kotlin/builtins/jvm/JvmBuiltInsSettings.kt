@@ -280,7 +280,7 @@ open class JvmBuiltInsSettings(
             OverridingUtil.getBothWaysOverridability(this, javaConstructor.substitute(substitutor)) ==
                     OverridingUtil.OverrideCompatibilityInfo.Result.OVERRIDABLE
 
-        return javaAnalogueDescriptor.constructors.filter { javaConstructor ->
+        return javaAnalogueDescriptor.constructors.asSequence().filter { javaConstructor ->
             javaConstructor.visibility.isPublicAPI &&
                     defaultKotlinVersion.constructors.none { it.isEffectivelyTheSameAs(javaConstructor) } &&
                     !javaConstructor.isTrivialCopyConstructorFor(classDescriptor) &&
@@ -303,7 +303,7 @@ open class JvmBuiltInsSettings(
                 }
 
             }.build() as ClassConstructorDescriptor
-        }
+        }.toList()
     }
 
     override fun isFunctionAvailable(classDescriptor: ClassDescriptor, functionDescriptor: SimpleFunctionDescriptor): Boolean {

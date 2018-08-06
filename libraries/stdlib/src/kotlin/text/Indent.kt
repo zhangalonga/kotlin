@@ -69,6 +69,7 @@ public fun String.replaceIndent(newIndent: String = ""): String {
     val lines = lines()
 
     val minCommonIndent = lines
+        .asSequence()
         .filter(String::isNotBlank)
         .map(String::indentWidth)
         .min() ?: 0

@@ -327,7 +327,7 @@ class ClassFileToSourceStubConverter(
 
         class EnumValueData(val field: FieldNode, val innerClass: InnerClassNode?, val correspondingClass: ClassNode?)
 
-        val enumValuesData = clazz.fields.filter { it.isEnumValue() }.map { field ->
+        val enumValuesData = clazz.fields.asSequence().filter { it.isEnumValue() }.map { field ->
             var foundInnerClass: InnerClassNode? = null
             var correspondingClass: ClassNode? = null
 
@@ -345,7 +345,7 @@ class ClassFileToSourceStubConverter(
             }
 
             EnumValueData(field, foundInnerClass, correspondingClass)
-        }
+        }.toList()
 
         val enumValues: JavacList<JCTree> = mapJList(enumValuesData) { data ->
             val constructorArguments = Type.getArgumentTypes(clazz.methods.firstOrNull {

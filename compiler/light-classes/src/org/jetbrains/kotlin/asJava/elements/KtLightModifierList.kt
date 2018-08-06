@@ -106,11 +106,12 @@ private fun lightAnnotationsForEntries(lightModifierList: KtLightModifierList<*>
     }
 
     return getAnnotationDescriptors(annotatedKtDeclaration, lightModifierListOwner)
-            .mapNotNull { descriptor ->
-                val fqName = descriptor.fqName?.asString() ?: return@mapNotNull null
-                val entry = descriptor.source.getPsi() as? KtAnnotationEntry ?: return@mapNotNull null
-                Pair(fqName, entry)
-            }
+        .asSequence()
+        .mapNotNull { descriptor ->
+            val fqName = descriptor.fqName?.asString() ?: return@mapNotNull null
+            val entry = descriptor.source.getPsi() as? KtAnnotationEntry ?: return@mapNotNull null
+            Pair(fqName, entry)
+        }
             .groupBy({ it.first }) { it.second }
             .flatMap {
                 (fqName, entries) ->
@@ -154,8 +155,10 @@ private fun getAnnotationDescriptors(declaration: KtDeclaration, annotatedLightE
     } ?: return emptyList()
 
     val annotations = annotatedDescriptor.annotations.getAllAnnotations()
+        .asSequence()
         .filter { it.matches(annotatedLightElement) }
         .map { it.annotation }
+        .toList()
 
     if (descriptor is PropertyDescriptor) {
         val jvmDefault = descriptor.annotations.findAnnotation(JVM_DEFAULT_FQ_NAME)

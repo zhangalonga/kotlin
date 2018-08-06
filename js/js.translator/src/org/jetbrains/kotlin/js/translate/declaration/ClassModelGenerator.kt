@@ -201,7 +201,7 @@ class ClassModelGenerator(val context: TranslationContext) {
         val directOverriddenDescriptors = getTypedOverriddenDescriptors()
         directOverriddenDescriptors.forEach { walk(it, it) }
         val keysWithoutDuplicates = collectedDescriptors.keys.removeRepeated(getTypedOverriddenDescriptors, getOriginalDescriptor)
-        return keysWithoutDuplicates.map { collectedDescriptors[it] }.singleOrNull()
+        return keysWithoutDuplicates.asSequence().map { collectedDescriptors[it] }.singleOrNull()
     }
 
     private fun <T : CallableMemberDescriptor> Collection<T>.removeRepeated(

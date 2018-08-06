@@ -48,7 +48,7 @@ class AnnotationChecker(
             annotated.typeParameters.forEach { check(it, trace) }
         }
         if (annotated is KtTypeReference) {
-            annotated.typeElement?.typeArgumentsAsTypes?.filterNotNull()?.forEach { check(it, trace) }
+            annotated.typeElement?.typeArgumentsAsTypes?.asSequence()?.filterNotNull()?.forEach { check(it, trace) }
         }
         if (annotated is KtDeclarationWithBody) {
             // JetFunction or JetPropertyAccessor
@@ -192,7 +192,7 @@ class AnnotationChecker(
 
         fun loadAnnotationTargets(targetEntryDescriptor: AnnotationDescriptor): Set<KotlinTarget>? {
             val valueArgument = targetEntryDescriptor.allValueArguments[TARGET_ALLOWED_TARGETS] as? ArrayValue ?: return null
-            return valueArgument.value.filterIsInstance<EnumValue>().mapNotNull {
+            return valueArgument.value.asSequence().filterIsInstance<EnumValue>().mapNotNull {
                 KotlinTarget.valueOrNull(it.enumEntryName.asString())
             }.toSet()
         }

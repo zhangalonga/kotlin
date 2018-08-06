@@ -171,7 +171,7 @@ class PackageParts(val packageFqName: String) {
                 packageTableBuilder.addJvmPackageName(packageFqName)
             }
             val packageId = packageTableBuilder.jvmPackageNameList.indexOf(packageFqName)
-            for (part in partsInPackage.map { it.className }.sorted()) {
+            for (part in partsInPackage.asSequence().map { it.className }.sorted().toList()) {
                 addClassWithJvmPackageNameShortName(part)
                 packageIds.add(packageId)
             }

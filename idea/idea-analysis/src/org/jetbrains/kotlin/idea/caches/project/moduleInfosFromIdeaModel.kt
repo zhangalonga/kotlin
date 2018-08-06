@@ -50,7 +50,7 @@ private fun collectModuleInfosFromIdeaModel(
         ModuleRootManager.getInstance(it).orderEntries.filterIsInstance<LibraryOrderEntry>().map {
             it.library
         }
-    }.filterNotNull().toSet()
+    }.asSequence().filterNotNull().toSet()
 
     val sdksFromModulesDependencies = ideaModules.flatMap {
         ModuleRootManager.getInstance(it).orderEntries.filterIsInstance<JdkOrderEntry>().map {
@@ -61,7 +61,7 @@ private fun collectModuleInfosFromIdeaModel(
     return IdeaModelInfosCache(
         moduleSourceInfos = ideaModules.flatMap(Module::correspondingModuleInfos),
         libraryInfos = ideaLibraries.map { LibraryInfo(project, it) },
-        sdkInfos = (sdksFromModulesDependencies + getAllProjectSdks()).filterNotNull().toSet().map { SdkInfo(project, it) }
+        sdkInfos = (sdksFromModulesDependencies + getAllProjectSdks()).asSequence().filterNotNull().toSet().map { SdkInfo(project, it) }.toList()
     )
 }
 

@@ -186,7 +186,8 @@ class Kapt3CommandLineProcessor : CommandLineProcessor {
         when (option) {
             ANNOTATION_PROCESSOR_CLASSPATH_OPTION -> configuration.appendList(ANNOTATION_PROCESSOR_CLASSPATH, value)
             ANNOTATION_PROCESSORS_OPTION -> configuration.appendList(
-                Kapt3ConfigurationKeys.ANNOTATION_PROCESSORS, value.split(',').map { it.trim() }.filter { it.isNotEmpty() })
+                Kapt3ConfigurationKeys.ANNOTATION_PROCESSORS, value.split(',').asSequence().map { it.trim() }.filter { it.isNotEmpty() }.toList()
+            )
             APT_OPTIONS_OPTION -> configuration.put(Kapt3ConfigurationKeys.APT_OPTIONS, value)
             JAVAC_CLI_OPTIONS_OPTION -> configuration.put(Kapt3ConfigurationKeys.JAVAC_CLI_OPTIONS, value)
             SOURCE_OUTPUT_DIR_OPTION -> configuration.put(Kapt3ConfigurationKeys.SOURCE_OUTPUT_DIR, value)
@@ -282,9 +283,9 @@ class Kapt3ComponentRegistrar : ComponentRegistrar {
 
         val contentRoots = configuration[JVMConfigurationKeys.CONTENT_ROOTS] ?: emptyList()
 
-        val compileClasspath = contentRoots.filterIsInstance<JvmClasspathRoot>().map { it.file }
+        val compileClasspath = contentRoots.asSequence().filterIsInstance<JvmClasspathRoot>().map { it.file }.toList()
 
-        val javaSourceRoots = contentRoots.filterIsInstance<JavaSourceRoot>().map { it.file }
+        val javaSourceRoots = contentRoots.asSequence().filterIsInstance<JavaSourceRoot>().map { it.file }.toList()
 
         val useLightAnalysis = configuration.get(Kapt3ConfigurationKeys.USE_LIGHT_ANALYSIS) == "true"
         val correctErrorTypes = configuration.get(Kapt3ConfigurationKeys.CORRECT_ERROR_TYPES) == "true"

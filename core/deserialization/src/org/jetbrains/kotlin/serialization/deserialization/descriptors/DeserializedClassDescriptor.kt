@@ -123,9 +123,9 @@ class DeserializedClassDescriptor(
                 c.components.additionalClassPartsProvider.getConstructors(this)
 
     private fun computeSecondaryConstructors(): List<ClassConstructorDescriptor> =
-        classProto.constructorList.filter { Flags.IS_SECONDARY.get(it.flags) }.map {
+        classProto.constructorList.asSequence().filter { Flags.IS_SECONDARY.get(it.flags) }.map {
             c.memberDeserializer.loadConstructor(it, false)
-        }
+        }.toList()
 
     override fun getConstructors() = constructors()
 

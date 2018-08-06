@@ -95,18 +95,22 @@ class KotlinIndicesHelper(
 
     fun getTopLevelExtensionOperatorsByName(name: String): Collection<FunctionDescriptor> {
         return KotlinFunctionShortNameIndex.getInstance().get(name, project, scope)
-                .filter { it.parent is KtFile && it.receiverTypeReference != null && it.hasModifier(KtTokens.OPERATOR_KEYWORD) }
-                .flatMap { it.resolveToDescriptors<FunctionDescriptor>() }
-                .filter { descriptorFilter(it) && it.extensionReceiverParameter != null }
-                .distinct()
+            .filter { it.parent is KtFile && it.receiverTypeReference != null && it.hasModifier(KtTokens.OPERATOR_KEYWORD) }
+            .flatMap { it.resolveToDescriptors<FunctionDescriptor>() }
+            .asSequence()
+            .filter { descriptorFilter(it) && it.extensionReceiverParameter != null }
+            .distinct()
+            .toList()
     }
 
     fun getMemberOperatorsByName(name: String): Collection<FunctionDescriptor> {
         return KotlinFunctionShortNameIndex.getInstance().get(name, project, scope)
-                .filter { it.parent is KtClassBody && it.receiverTypeReference == null && it.hasModifier(KtTokens.OPERATOR_KEYWORD) }
-                .flatMap { it.resolveToDescriptors<FunctionDescriptor>() }
-                .filter { descriptorFilter(it) && it.extensionReceiverParameter == null }
-                .distinct()
+            .filter { it.parent is KtClassBody && it.receiverTypeReference == null && it.hasModifier(KtTokens.OPERATOR_KEYWORD) }
+            .flatMap { it.resolveToDescriptors<FunctionDescriptor>() }
+            .asSequence()
+            .filter { descriptorFilter(it) && it.extensionReceiverParameter == null }
+            .distinct()
+            .toList()
     }
 
     fun processTopLevelCallables(nameFilter: (String) -> Boolean, processor: (CallableDescriptor) -> Unit) {
@@ -449,7 +453,8 @@ class KotlinIndicesHelper(
                     // SAM-adapter
                     val syntheticScopes = resolutionFacade.getFrontendService(SyntheticScopes::class.java)
                     syntheticScopes.collectSyntheticStaticFunctions(container.staticScope, descriptor.name, NoLookupLocation.FROM_IDE)
-                            .filterIsInstance<SamAdapterDescriptor<*>>()
+                        .asSequence()
+                        .filterIsInstance<SamAdapterDescriptor<*>>()
                             .firstOrNull { it.baseDescriptorForSynthetic.original == descriptor.original }
                             ?.let { processor(it) }
                 }

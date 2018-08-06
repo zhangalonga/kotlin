@@ -393,6 +393,7 @@ class IntrinsicifyCallsLowering(private val context: JsIrBackendContext) : FileL
         val classifier = classifierOrNull ?: return null
         if (!classifier.isBound) return null
         return ((classifier.owner as? IrClass) ?: return null).declarations
+            .asSequence()
             .filterIsInstance<IrSimpleFunction>()
             .filter {
                 it.name == Name.identifier("equals")

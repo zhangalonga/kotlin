@@ -63,11 +63,12 @@ object BuiltinSpecialProperties {
 
     private val GETTER_JVM_NAME_TO_PROPERTIES_SHORT_NAME_MAP: Map<Name, List<Name>> =
             PROPERTY_FQ_NAME_TO_JVM_GETTER_NAME_MAP.entries
-                    .map { Pair(it.key.shortName(), it.value) }
+                .asSequence()
+                .map { Pair(it.key.shortName(), it.value) }
                     .groupBy({ it.second }, { it.first })
 
     private val SPECIAL_FQ_NAMES = PROPERTY_FQ_NAME_TO_JVM_GETTER_NAME_MAP.keys
-    internal val SPECIAL_SHORT_NAMES = SPECIAL_FQ_NAMES.map(FqName::shortName).toSet()
+    internal val SPECIAL_SHORT_NAMES = SPECIAL_FQ_NAMES.asSequence().map(FqName::shortName).toSet()
 
     fun hasBuiltinSpecialPropertyFqName(callableMemberDescriptor: CallableMemberDescriptor): Boolean {
         if (callableMemberDescriptor.name !in SPECIAL_SHORT_NAMES) return false
@@ -149,8 +150,8 @@ object BuiltinMethodsWithSpecialGenericSignature {
 
     init {
         val allMethods = GENERIC_PARAMETERS_METHODS_TO_DEFAULT_VALUES_MAP.keys + ERASED_COLLECTION_PARAMETER_NAME_AND_SIGNATURES
-        ERASED_VALUE_PARAMETERS_SHORT_NAMES = allMethods.map { it.name }.toSet()
-        ERASED_VALUE_PARAMETERS_SIGNATURES = allMethods.map { it.signature }.toSet()
+        ERASED_VALUE_PARAMETERS_SHORT_NAMES = allMethods.asSequence().map { it.name }.toSet()
+        ERASED_VALUE_PARAMETERS_SIGNATURES = allMethods.asSequence().map { it.signature }.toSet()
     }
 
     private val CallableMemberDescriptor.hasErasedValueParametersInJava: Boolean
@@ -233,7 +234,8 @@ object BuiltinMethodsWithDifferentJvmName {
 
     private val JVM_SHORT_NAME_TO_BUILTIN_SHORT_NAMES_MAP: Map<Name, List<Name>> =
             NAME_AND_SIGNATURE_TO_JVM_REPRESENTATION_NAME_MAP.entries
-                    .map { Pair(it.key.name, it.value) }
+                .asSequence()
+                .map { Pair(it.key.name, it.value) }
                     .groupBy({ it.second }, { it.first })
 
     val Name.sameAsRenamedInJvmBuiltin: Boolean

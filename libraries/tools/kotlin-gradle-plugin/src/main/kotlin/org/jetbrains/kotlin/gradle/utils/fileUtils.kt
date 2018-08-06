@@ -26,7 +26,7 @@ internal fun File.relativeOrCanonical(base: File): String =
     relativeToOrNull(base)?.path ?: canonicalPath
 
 internal fun Iterable<File>.pathsAsStringRelativeTo(base: File): String =
-    map { it.relativeOrCanonical(base) }.sorted().joinToString()
+    map { it.relativeOrCanonical(base) }.asSequence().sorted().joinToString()
 
 internal fun File.relativeToRoot(project: Project): String =
     relativeOrCanonical(project.rootProject.rootDir)

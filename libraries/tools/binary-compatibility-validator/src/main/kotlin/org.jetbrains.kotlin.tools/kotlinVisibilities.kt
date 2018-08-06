@@ -23,7 +23,7 @@ class ClassVisibility(
 }
 
 fun ClassVisibility.findMember(signature: JvmMemberSignature): MemberVisibility? =
-    members[signature] ?: partVisibilities.mapNotNull { it.members[signature] }.firstOrNull()
+    members[signature] ?: partVisibilities.asSequence().mapNotNull { it.members[signature] }.firstOrNull()
 
 
 data class MemberVisibility(val member: JvmMemberSignature, val visibility: Flags?)

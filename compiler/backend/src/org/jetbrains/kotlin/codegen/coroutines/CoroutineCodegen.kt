@@ -101,7 +101,7 @@ abstract class AbstractCoroutineCodegen(
 
     override fun generateConstructor(): Method {
         val args = calculateConstructorParameters(typeMapper, closure, asmType)
-        val argTypes = args.map { it.fieldType }.plus(languageVersionSettings.continuationAsmType()).toTypedArray()
+        val argTypes = args.asSequence().map { it.fieldType }.plus(languageVersionSettings.continuationAsmType()).toList().toTypedArray()
 
         val constructor = Method("<init>", Type.VOID_TYPE, argTypes)
         val mv = v.newMethod(
@@ -293,7 +293,7 @@ class CoroutineCodegenForLambda private constructor(
             }
 
             // load resultContinuation
-            load(allFunctionParameters().map { typeMapper.mapType(it.type).size }.sum() + 1, AsmTypes.OBJECT_TYPE)
+            load(allFunctionParameters().asSequence().map { typeMapper.mapType(it.type).size }.sum() + 1, AsmTypes.OBJECT_TYPE)
 
             invokespecial(owner.internalName, constructorToUseFromInvoke.name, constructorToUseFromInvoke.descriptor, false)
 

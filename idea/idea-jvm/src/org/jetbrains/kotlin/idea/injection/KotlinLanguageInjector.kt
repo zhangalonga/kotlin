@@ -78,7 +78,7 @@ class KotlinLanguageInjector(
     var annotationInjectionsEnabled = Registry.`is`("kotlin.annotation.injection.enabled", false)
 
     private val kotlinSupport: KotlinLanguageInjectionSupport? by lazy {
-        ArrayList(InjectorUtils.getActiveInjectionSupports()).filterIsInstance(KotlinLanguageInjectionSupport::class.java).firstOrNull()
+        ArrayList(InjectorUtils.getActiveInjectionSupports()).asSequence().filterIsInstance(KotlinLanguageInjectionSupport::class.java).firstOrNull()
     }
 
     private data class KotlinCachedInjection(val modificationCount: Long, val baseInjection: BaseInjection)

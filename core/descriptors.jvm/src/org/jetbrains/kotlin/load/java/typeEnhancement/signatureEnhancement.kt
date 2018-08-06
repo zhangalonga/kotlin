@@ -355,8 +355,8 @@ class SignatureEnhancement(
             isHeadTypeConstructor: Boolean
         ): JavaTypeQualifiers {
             val superQualifiers = fromSupertypes.map { it.extractQualifiers() }
-            val mutabilityFromSupertypes = superQualifiers.mapNotNull { it.mutability }.toSet()
-            val nullabilityFromSupertypes = superQualifiers.mapNotNull { it.nullability }.toSet()
+            val mutabilityFromSupertypes = superQualifiers.asSequence().mapNotNull { it.mutability }.toSet()
+            val nullabilityFromSupertypes = superQualifiers.asSequence().mapNotNull { it.nullability }.toSet()
             val nullabilityFromSupertypesWithWarning = fromSupertypes
                 .mapNotNull { it.unwrapEnhancement().extractQualifiers().nullability }
                 .toSet()

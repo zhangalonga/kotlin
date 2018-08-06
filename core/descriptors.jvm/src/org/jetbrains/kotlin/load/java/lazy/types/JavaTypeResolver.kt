@@ -199,8 +199,7 @@ class JavaTypeResolver(
 
         val typeParameters = constructor.parameters
         if (eraseTypeParameters) {
-            return typeParameters.map {
-                parameter ->
+            return typeParameters.asSequence().map { parameter ->
                 // Some activity for preventing recursion in cases like `class A<T extends A, F extends T>`
                 //
                 // When calculating upper bound of some parameter (attr.upperBoundOfTypeParameter),
@@ -214,26 +213,26 @@ class JavaTypeResolver(
                 //   so we get A<*, *>.
                 // Summary result for upper bound of T is `A<A<*, *>, A<*, *>>..A<out A<*, *>, out A<*, *>>`
                 val erasedUpperBound =
-                        LazyWrappedType(c.storageManager) {
-                            parameter.getErasedUpperBound(attr.upperBoundOfTypeParameter) {
-                                constructor.declarationDescriptor!!.defaultType.replaceArgumentsWithStarProjections()
-                            }
+                    LazyWrappedType(c.storageManager) {
+                        parameter.getErasedUpperBound(attr.upperBoundOfTypeParameter) {
+                            constructor.declarationDescriptor!!.defaultType.replaceArgumentsWithStarProjections()
                         }
+                    }
 
                 RawSubstitution.computeProjection(
-                        parameter,
-                        // if erasure happens due to invalid arguments number, use star projections instead
-                        if (isRaw) attr else attr.withFlexibility(INFLEXIBLE),
-                        erasedUpperBound
+                    parameter,
+                    // if erasure happens due to invalid arguments number, use star projections instead
+                    if (isRaw) attr else attr.withFlexibility(INFLEXIBLE),
+                    erasedUpperBound
                 )
             }.toList()
         }
 
         if (typeParameters.size != javaType.typeArguments.size) {
             // Most of the time this means there is an error in the Java code
-            return typeParameters.map { p -> TypeProjectionImpl(ErrorUtils.createErrorType(p.name.asString())) }.toList()
+            return typeParameters.asSequence().map { p -> TypeProjectionImpl(ErrorUtils.createErrorType(p.name.asString())) }.toList()
         }
-        return javaType.typeArguments.withIndex().map {
+        return javaType.typeArguments.asSequence().withIndex().map {
             indexedArgument ->
             val (i, javaTypeArgument) = indexedArgument
 

@@ -50,7 +50,7 @@ fun extractDefaultLambdaOffsetAndDescriptor(jvmSignature: JvmMethodSignature, fu
     val parameterOffsets = parameterOffsets(AsmUtil.isStaticMethod(kind, functionDescriptor), valueParameters)
     val valueParameterOffset = valueParameters.takeWhile { it.kind != JvmMethodParameterKind.VALUE }.size
 
-    return functionDescriptor.valueParameters.filter {
+    return functionDescriptor.valueParameters.asSequence().filter {
         InlineUtil.isInlineParameter(it) && it.declaresDefaultValue()
     }.associateBy {
         parameterOffsets[valueParameterOffset + it.index]
@@ -110,7 +110,7 @@ fun expandMaskConditionsAndUpdateVariableNodes(
 
     val defaultLambdasInfo = extractDefaultLambdasInfo(conditions, defaultLambdas, toDelete, toInsert)
 
-    val indexToVarNode = node.localVariables?.filter { it.index < maskStartIndex }?.associateBy { it.index } ?: emptyMap()
+    val indexToVarNode = node.localVariables?.asSequence()?.filter { it.index < maskStartIndex }?.associateBy { it.index } ?: emptyMap()
     conditions.forEach {
         val jumpInstruction = it.jumpInstruction
         InsnSequence(it.maskInstruction, (if (it.expandNotDelete) jumpInstruction.next else jumpInstruction.label)).forEach {

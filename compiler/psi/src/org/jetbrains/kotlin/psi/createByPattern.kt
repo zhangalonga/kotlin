@@ -176,9 +176,11 @@ fun <TElement : KtElement> createByPattern(
         val stringPlaceholderRanges = allPlaceholders
             .filter { args[it.key] is String }
             .flatMap { it.value }
+            .asSequence()
             .map { it.range }
             .filterNot { it.isEmpty }
             .sortedByDescending { it.startOffset }
+            .toList()
 
         // reformat whole text except for String arguments (as they can contain user's formatting to be preserved)
         resultElement = if (stringPlaceholderRanges.none()) {

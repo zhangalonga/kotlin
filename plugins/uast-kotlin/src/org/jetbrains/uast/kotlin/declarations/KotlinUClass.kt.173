@@ -44,9 +44,9 @@ abstract class AbstractKotlinUClass(givenParent: UElement?) : KotlinAbstractUEle
     override val uastSuperTypes: List<UTypeReferenceExpression>
         get() {
             val ktClass = (psi as? KtLightClass)?.kotlinOrigin ?: return emptyList()
-            return ktClass.superTypeListEntries.mapNotNull { it.typeReference }.map {
+            return ktClass.superTypeListEntries.asSequence().mapNotNull { it.typeReference }.map {
                 LazyKotlinUTypeReferenceExpression(it, this)
-            }
+            }.toList()
         }
 
     override val uastAnchor: UElement?

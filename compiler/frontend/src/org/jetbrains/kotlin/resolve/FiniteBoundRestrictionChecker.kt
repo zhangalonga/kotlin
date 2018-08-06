@@ -58,7 +58,7 @@ object FiniteBoundRestrictionChecker {
 
         if (problemNodes.any { it.source != SourceElement.NO_SOURCE }) return
 
-        val typeFqNames = problemNodes.map { it.containingDeclaration }.map { it.fqNameUnsafe.asString() }.toSortedSet()
+        val typeFqNames = problemNodes.asSequence().map { it.containingDeclaration }.map { it.fqNameUnsafe.asString() }.toList().toSortedSet()
         diagnosticHolder.report(Errors.FINITE_BOUNDS_VIOLATION_IN_JAVA.on(declaration, typeFqNames.joinToString(", ")))
     }
 

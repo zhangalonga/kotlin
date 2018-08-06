@@ -413,7 +413,7 @@ object ExpectedActualResolver {
         // and not added if an explicit supertype _is_ specified
         val aSupertypes = a.typeConstructor.supertypes.filterNot(KotlinBuiltIns::isAny)
         val bSupertypes = b.typeConstructor.supertypes.filterNot(KotlinBuiltIns::isAny)
-        if (aSupertypes.map(substitutor).any { aSupertype ->
+        if (aSupertypes.asSequence().map(substitutor).any { aSupertype ->
             bSupertypes.none { bSupertype -> areCompatibleTypes(aSupertype, bSupertype, platformModule) }
         }) return Incompatible.Supertypes
 

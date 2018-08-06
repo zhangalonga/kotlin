@@ -80,7 +80,7 @@ class KotlinPushDownHandler : AbstractPullPushMembersHandler(
         }
         else {
             val manager = PsiManager.getInstance(project)
-            members.filter { manager.areElementsEquivalent(it.member, member) }.forEach { it.isChecked = true }
+            members.asSequence().filter { manager.areElementsEquivalent(it.member, member) }.forEach { it.isChecked = true }
             KotlinPushDownDialog(project, members, classOrObject).show()
         }
     }

@@ -123,7 +123,7 @@ private class BodyTransformer(
             +irSetVar(parameterToVariable[parameter]!!.symbol, argument)
         }
 
-        val specifiedParameters = parameterToArgument.map { (parameter, _) -> parameter }.toSet()
+        val specifiedParameters = parameterToArgument.asSequence().map { (parameter, _) -> parameter }.toSet()
 
         // For each unspecified argument set the corresponding variable to default:
         parameters.filter { it !in specifiedParameters }.forEach { parameter ->

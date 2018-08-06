@@ -53,7 +53,7 @@ class CoroutineFunctionTransformer(private val function: JsFunction, name: Strin
         coroutineBlocks.forEach { it.jsBlock.collectAdditionalLocalVariables() }
 
         val survivingLocalVars = coroutineBlocks.collectVariablesSurvivingBetweenBlocks(
-                localVariables, function.parameters.map { it.name }.toSet())
+                localVariables, function.parameters.asSequence().map { it.name }.toSet())
         coroutineBlocks.forEach { it.jsBlock.replaceLocalVariables(context, survivingLocalVars) }
 
         val additionalStatements = mutableListOf<JsStatement>()
@@ -274,12 +274,12 @@ class CoroutineFunctionTransformer(private val function: JsFunction, name: Strin
         val throwResultRef = JsNameRef(context.metadata.exceptionName, JsThisRef())
         context.globalCatchBlock.statements += JsThrow(throwResultRef)
 
-        val cases = blocks.withIndex().map { (index, block) ->
+        val cases = blocks.asSequence().withIndex().map { (index, block) ->
             JsCase().apply {
                 caseExpression = JsIntLiteral(index)
                 statements += block.statements
             }
-        }
+        }.toList()
         val switchStatement = JsSwitch(stateRef.deepCopy(), cases)
         val loop = JsDoWhile(JsBooleanLiteral(true), JsTry(JsBlock(switchStatement), catch, null))
 

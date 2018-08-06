@@ -46,11 +46,11 @@ abstract class ArgumentGenerator {
 
         val arg2Index = valueArgumentsByIndex.mapToIndex()
 
-        val actualArgsWithDeclIndex = actualArgs.filter { it !is DefaultValueArgument }.map {
+        val actualArgsWithDeclIndex = actualArgs.asSequence().filter { it !is DefaultValueArgument }.map {
             ArgumentAndDeclIndex(it, arg2Index[it]!!)
         }.toMutableList()
 
-        valueArgumentsByIndex.withIndex().forEach {
+        valueArgumentsByIndex.asSequence().withIndex().forEach {
             if (it.value is DefaultValueArgument) {
                 actualArgsWithDeclIndex.add(it.index, ArgumentAndDeclIndex(it.value, it.index))
             }

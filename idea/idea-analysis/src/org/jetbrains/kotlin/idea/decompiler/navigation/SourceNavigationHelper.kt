@@ -76,9 +76,9 @@ object SourceNavigationHelper {
         val platform = platform
         if (platform == null || platform == TargetPlatform.Common) return emptyList()
 
-        return dependencies().filterIsInstance<BinaryModuleInfo>().filter {
+        return dependencies().asSequence().filterIsInstance<BinaryModuleInfo>().filter {
             it.platform == TargetPlatform.Common
-        }
+        }.toList()
     }
 
     private fun Collection<GlobalSearchScope>.union(): List<GlobalSearchScope> =
@@ -223,9 +223,9 @@ object SourceNavigationHelper {
         sourceClassOrObject: KtClassOrObject,
         name: Name,
         declarationClass: Class<out KtNamedDeclaration>
-    ) = sourceClassOrObject.declarations.filterIsInstance(declarationClass).filter { declaration ->
+    ) = sourceClassOrObject.declarations.asSequence().filterIsInstance(declarationClass).filter { declaration ->
         name == declaration.nameAsSafeName
-    }
+    }.toList()
 
     fun getOriginalClass(classOrObject: KtClassOrObject): PsiClass? {
         // Copied from JavaPsiImplementationHelperImpl:getOriginalClass()

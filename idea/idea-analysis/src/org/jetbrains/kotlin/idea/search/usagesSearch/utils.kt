@@ -72,7 +72,8 @@ fun PsiReference.checkUsageVsOriginalDescriptor(
         checker: (usageDescriptor: DeclarationDescriptor, targetDescriptor: DeclarationDescriptor) -> Boolean
 ): Boolean {
     return unwrappedTargets
-            .filterIsInstance<KtDeclaration>()
+        .asSequence()
+        .filterIsInstance<KtDeclaration>()
             .any {
                 val usageDescriptor = declarationToDescriptor(it)
                 usageDescriptor != null && checker(usageDescriptor, targetDescriptor)

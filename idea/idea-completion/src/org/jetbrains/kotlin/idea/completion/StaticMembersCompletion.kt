@@ -67,7 +67,8 @@ class StaticMembersCompletion(
 
     fun membersFromImports(file: KtFile): Collection<DeclarationDescriptor> {
         val containers = file.importDirectives
-                .filter { !it.isAllUnder }
+            .asSequence()
+            .filter { !it.isAllUnder }
                 .mapNotNull {
                     it.targetDescriptors(resolutionFacade)
                             .map { it.containingDeclaration }

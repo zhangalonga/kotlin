@@ -84,11 +84,11 @@ interface CallGenerator {
 
         override fun reorderArgumentsIfNeeded(actualArgsWithDeclIndex: List<ArgumentAndDeclIndex>, valueParameterTypes: List<Type>) {
             val mark = codegen.myFrameMap.mark()
-            val reordered = actualArgsWithDeclIndex.withIndex().dropWhile {
+            val reordered = actualArgsWithDeclIndex.asSequence().withIndex().dropWhile {
                 it.value.declIndex == it.index
-            }
+            }.toList()
 
-            reordered.reversed().map {
+            reordered.reversed().asSequence().map {
                 val argumentAndDeclIndex = it.value
                 val type = valueParameterTypes.get(argumentAndDeclIndex.declIndex)
                 val stackValue = StackValue.local(codegen.frameMap.enterTemp(type), type)

@@ -506,7 +506,7 @@ sealed class NewAbstractResolvedCall<D : CallableDescriptor>() : ResolvedCall<D>
                     }
                     is ResolvedCallArgument.VarargArgument ->
                         VarargValueArgument().apply {
-                            resolvedCallArgument.arguments.map { it.psiCallArgument.valueArgument }.forEach { addArgument(it) }
+                            resolvedCallArgument.arguments.asSequence().map { it.psiCallArgument.valueArgument }.forEach { addArgument(it) }
                         }
                 }
             }

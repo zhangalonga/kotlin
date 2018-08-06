@@ -199,8 +199,10 @@ fun allConfigurators() = Extensions.getExtensions(KotlinProjectConfigurator.EP_N
 
 fun getCanBeConfiguredModules(project: Project, configurator: KotlinProjectConfigurator): List<Module> {
     return ModuleSourceRootMap(project).groupByBaseModules(project.allModules())
+        .asSequence()
         .filter { configurator.canConfigure(it) }
         .map { it.baseModule }
+        .toList()
 }
 
 private fun KotlinProjectConfigurator.canConfigure(moduleSourceRootGroup: ModuleSourceRootGroup) =
@@ -213,7 +215,8 @@ private fun KotlinProjectConfigurator.canConfigure(moduleSourceRootGroup: Module
  */
 fun getCanBeConfiguredModulesWithKotlinFiles(project: Project, configurator: KotlinProjectConfigurator): List<Module> {
     val modules = getConfigurableModulesWithKotlinFiles(project)
-    return modules.filter { configurator.getStatus(it) == ConfigureKotlinStatus.CAN_BE_CONFIGURED }.map { it.baseModule }
+    return modules.asSequence().filter { configurator.getStatus(it) == ConfigureKotlinStatus.CAN_BE_CONFIGURED }.map { it.baseModule }
+        .toList()
 }
 
 fun getConfigurationPossibilitiesForConfigureNotification(

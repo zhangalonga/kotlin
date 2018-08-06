@@ -77,12 +77,12 @@ class BridgeLowering(val context: JvmBackendContext) : ClassLoweringPass {
             return /*TODO?*/
         }
 
-        val functions = irClass.declarations.filterIsInstance<IrFunction>().filterNot {
+        val functions = irClass.declarations.asSequence().filterIsInstance<IrFunction>().filterNot {
             val descriptor = it.descriptor
             descriptor is ConstructorDescriptor ||
                     DescriptorUtils.isStaticDeclaration(descriptor) ||
                     !descriptor.kind.isReal
-        }
+        }.toList()
 
         functions.forEach {
             generateBridges(it.descriptor, irClass)
@@ -269,7 +269,7 @@ class BridgeLowering(val context: JvmBackendContext) : ClassLoweringPass {
         BuiltinMethodsWithSpecialGenericSignature.getOverriddenBuiltinFunctionWithErasedValueParametersInJava(overrideDescriptor)
                 ?: error("Overridden built-in method should not be null for $overrideDescriptor")
 
-        val conditions = bridgeDescriptor.valueParameters.withIndex().filter { (i, parameterDescriptor) ->
+        val conditions = bridgeDescriptor.valueParameters.asSequence().withIndex().filter { (i, parameterDescriptor) ->
             typeSafeBarrierDescription.checkParameter(i) ||
                     !(delegateParameterTypes == null || OBJECT_TYPE == delegateParameterTypes[i]) ||
                     !TypeUtils.isNullableType(parameterDescriptor.type)
@@ -286,7 +286,7 @@ class BridgeLowering(val context: JvmBackendContext) : ClassLoweringPass {
             } else {
                 irIs(checkValue, overrideDescriptor.valueParameters[i].type.toIrType()!!)
             }
-        }
+        }.toList()
 
         if (conditions.isNotEmpty()) {
             val condition = conditions.fold<IrExpression, IrExpression>(irTrue()) { arg, result ->

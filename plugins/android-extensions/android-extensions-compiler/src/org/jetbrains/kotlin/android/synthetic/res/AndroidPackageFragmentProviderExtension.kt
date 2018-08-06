@@ -96,8 +96,10 @@ abstract class AndroidPackageFragmentProviderExtension : PackageFragmentProvider
                                       lazyContext().getWidgetReceivers(forView = true, isExperimental = isExperimental)
 
                 widgetReceivers
-                        .filter { it.mayHaveCache }
-                        .map { genClearCacheFunction(descriptor, it.type) }
+                    .asSequence()
+                    .filter { it.mayHaveCache }
+                    .map { genClearCacheFunction(descriptor, it.type) }
+                    .toList()
             }
             packagesToLookupInCompletion += packageDescriptor
             allPackageDescriptors += packageDescriptor

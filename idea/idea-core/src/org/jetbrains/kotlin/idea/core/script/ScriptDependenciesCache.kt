@@ -81,7 +81,7 @@ class ScriptDependenciesCache(private val project: Project) {
         ScriptDependenciesModificationTracker.getInstance(project).incModificationCount()
 
         launch(EDT(project)) {
-            files.filter { it.isValid }.forEach {
+            files.asSequence().filter { it.isValid }.forEach {
                 PsiManager.getInstance(project).findFile(it)?.let { psiFile ->
                     DaemonCodeAnalyzer.getInstance(project).restart(psiFile)
                 }
@@ -134,7 +134,7 @@ class ScriptDependenciesCache(private val project: Project) {
         val imports = mutableListOf<String>()
         val scripts = mutableListOf<File>()
 
-        val relevantEntries = cache.entrySet().filter { filePredicate(it.key) }.map { it.value }
+        val relevantEntries = cache.entrySet().asSequence().filter { filePredicate(it.key) }.map { it.value }.toList()
         relevantEntries.forEach {
             sources += it.sources
             binaries += it.classpath
@@ -147,7 +147,7 @@ class ScriptDependenciesCache(private val project: Project) {
             sources = sources.distinct(),
             imports = imports.distinct(),
             scripts = scripts.distinct(),
-            javaHome = relevantEntries.map { it.javaHome }.firstOrNull()
+            javaHome = relevantEntries.asSequence().map { it.javaHome }.firstOrNull()
         )
     }
 }

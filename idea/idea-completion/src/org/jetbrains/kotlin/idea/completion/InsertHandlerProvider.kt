@@ -98,7 +98,7 @@ class InsertHandlerProvider(
                 potentiallyInferred.add(descriptor)
                 // Add possible inferred by type-arguments of upper-bound of parameter
                 // e.g. <T, C: Iterable<T>>, so T inferred from C
-                descriptor.upperBounds.filter { it.arguments.isNotEmpty() }.forEach(::addPotentiallyInferred)
+                descriptor.upperBounds.asSequence().filter { it.arguments.isNotEmpty() }.forEach(::addPotentiallyInferred)
             }
 
             if (type.isFunctionType && getValueParametersCountFromFunctionType(type) <= 1) {

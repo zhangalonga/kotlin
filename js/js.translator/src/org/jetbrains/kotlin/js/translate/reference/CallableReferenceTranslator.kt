@@ -86,7 +86,7 @@ object CallableReferenceTranslator {
         val fakeCall = CallMaker.makeCall(fakeExpression, null, null, fakeExpression, fakeExpression.valueArguments)
         val fakeResolvedCall = object : DelegatingResolvedCall<FunctionDescriptor>(realResolvedCall) {
             val valueArgumentList = fakeCall.valueArguments.map(::ExpressionValueArgument)
-            val valueArgumentMap = valueArgumentList.withIndex().associate { (index, arg) -> descriptor.valueParameters[index] to arg }
+            val valueArgumentMap = valueArgumentList.asSequence().withIndex().associate { (index, arg) -> descriptor.valueParameters[index] to arg }
 
             override fun getCall() = fakeCall
 

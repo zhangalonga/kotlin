@@ -71,6 +71,7 @@ object JsAnalyzerFacade : ResolverForModuleFactory() {
         if (moduleInfo is LibraryModuleInfo && moduleInfo.platform == JsPlatform) {
             val providers = moduleInfo.getLibraryRoots()
                 .flatMap { KotlinJavascriptMetadataUtils.loadMetadata(it) }
+                .asSequence()
                 .filter { it.version.isCompatible() }
                 .map { metadata ->
                     val (header, packageFragmentProtos) =
@@ -80,6 +81,7 @@ object JsAnalyzerFacade : ResolverForModuleFactory() {
                         container.get(), LookupTracker.DO_NOTHING
                     )
                 }
+                .toList()
 
             if (providers.isNotEmpty()) {
                 packageFragmentProvider = CompositePackageFragmentProvider(listOf(packageFragmentProvider) + providers)

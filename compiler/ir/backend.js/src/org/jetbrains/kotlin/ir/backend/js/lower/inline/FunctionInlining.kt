@@ -293,7 +293,7 @@ private class Inliner(val globalSubstituteMap: MutableMap<DeclarationDescriptor,
             )
 
         val valueArguments =
-            irCall.descriptor.valueParameters.map { irCall.getValueArgument(it) }.toMutableList()
+            irCall.descriptor.valueParameters.asSequence().map { irCall.getValueArgument(it) }.toMutableList()
 
         if (functionDescriptor.extensionReceiverParameter != null) {
             parameterToArgument += ParameterToArgument(

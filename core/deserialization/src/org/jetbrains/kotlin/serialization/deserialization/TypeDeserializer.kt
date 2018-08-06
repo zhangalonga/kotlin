@@ -79,6 +79,7 @@ class TypeDeserializer(
 
         val annotations = DeserializedAnnotationsWithPossibleTargets(c.storageManager) {
             c.components.annotationAndConstantLoader.loadTypeAnnotations(proto, c.nameResolver)
+                .asSequence()
                 .map { AnnotationWithTarget(it, null) }
                 .plus(additionalAnnotations.getAllAnnotations())
                 .toList()
@@ -87,7 +88,7 @@ class TypeDeserializer(
         fun ProtoBuf.Type.collectAllArguments(): List<ProtoBuf.Type.Argument> =
             argumentList + outerType(c.typeTable)?.collectAllArguments().orEmpty()
 
-        val arguments = proto.collectAllArguments().mapIndexed { index, argumentProto ->
+        val arguments = proto.collectAllArguments().asSequence().mapIndexed { index, argumentProto ->
             typeArgument(constructor.parameters.getOrNull(index), argumentProto)
         }.toList()
 

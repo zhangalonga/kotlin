@@ -91,9 +91,10 @@ class KDocNameCompletionSession(
     private fun addParamCompletions(position: KDocName,
                                     declarationDescriptor: DeclarationDescriptor) {
         val section = position.getContainingSection()
-        val documentedParameters = section.findTagsByName("param").map { it.getSubjectName() }.toSet()
+        val documentedParameters = section.findTagsByName("param").asSequence().map { it.getSubjectName() }.toSet()
         getParamDescriptors(declarationDescriptor)
-                .filter { it.name.asString() !in documentedParameters }
+            .asSequence()
+            .filter { it.name.asString() !in documentedParameters }
                 .forEach {
                     collector.addElement(basicLookupElementFactory.createLookupElement(it, parametersAndTypeGrayed = true))
                 }

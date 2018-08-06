@@ -170,7 +170,7 @@ abstract class LazyJavaScope(protected val c: LazyJavaResolverContext) : MemberS
         var synthesizedNames = false
         val usedNames = mutableSetOf<String>()
 
-        val descriptors = jValueParameters.withIndex().map { (index, javaParameter) ->
+        val descriptors = jValueParameters.asSequence().withIndex().map { (index, javaParameter) ->
             val annotations = c.resolveAnnotations(javaParameter)
             val typeUsage = TypeUsage.COMMON.toAttributes()
             val parameterName = annotations

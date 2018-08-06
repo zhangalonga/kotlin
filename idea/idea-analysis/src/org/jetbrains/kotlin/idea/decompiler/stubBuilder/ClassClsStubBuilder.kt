@@ -126,10 +126,10 @@ private class ClassClsStubBuilder(
         val isCompanionObject = classKind == ProtoBuf.Class.Kind.COMPANION_OBJECT
         val fqName = classId.asSingleFqName()
         val shortName = fqName.shortName().ref()
-        val superTypeRefs = supertypeIds.filterNot {
+        val superTypeRefs = supertypeIds.asSequence().filterNot {
             //TODO: filtering function types should go away
             isNumberedFunctionClassFqName(it.asSingleFqName().toUnsafe())
-        }.map { it.shortClassName.ref() }.toTypedArray()
+        }.map { it.shortClassName.ref() }.toList().toTypedArray()
         return when (classKind) {
             ProtoBuf.Class.Kind.OBJECT, ProtoBuf.Class.Kind.COMPANION_OBJECT -> {
                 KotlinObjectStubImpl(
