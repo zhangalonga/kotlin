@@ -11,6 +11,7 @@ import java.io.Reader
 import java.io.StringReader
 import java.net.URL
 import java.util.ArrayList
+import kotlin.random.Random
 
 fun sample(): Reader = StringReader("Hello\nWorld");
 
