@@ -5,13 +5,18 @@
 
 package org.jetbrains.kotlin.generators.tests
 
-import org.jetbrains.kotlin.checkers.*
 import org.jetbrains.kotlin.generators.tests.generator.testGroup
+import org.jetbrains.kotlin.checkers.AbstractDiagnosticsTestSpec
+import org.jetbrains.kotlin.parsing.AbstractParsingTestSpec
 
 fun main(args: Array<String>) {
     testGroup("compiler/tests-spec/tests", "compiler/tests-spec/testData") {
         testClass<AbstractDiagnosticsTestSpec> {
             model("diagnostics", excludeDirs = listOf("_helpers"))
+        }
+
+        testClass<AbstractParsingTestSpec> {
+            model("psi", testMethod = "doParsingTest", excludeDirs = listOf("_helpers"))
         }
     }
 }

@@ -38,6 +38,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import kotlin.jvm.functions.Function1;
+
 public abstract class AbstractParsingTest extends KtParsingTestCase {
     @Override
     protected void setUp() throws Exception {
@@ -90,6 +92,10 @@ public abstract class AbstractParsingTest extends KtParsingTestCase {
         doBaseTest(filePath, KtNodeTypes.KT_FILE);
     }
 
+    protected void doParsingTest(@NotNull String filePath, Function1<String, String> contentFilterFunction) throws Exception {
+        doBaseTest(filePath, KtNodeTypes.KT_FILE, contentFilterFunction);
+    }
+
     protected void doExpressionCodeFragmentParsingTest(@NotNull String filePath) throws Exception {
         doBaseTest(filePath, KtNodeTypes.EXPRESSION_CODE_FRAGMENT);
     }
@@ -98,10 +104,21 @@ public abstract class AbstractParsingTest extends KtParsingTestCase {
         doBaseTest(filePath, KtNodeTypes.BLOCK_CODE_FRAGMENT);
     }
 
+    private void doBaseTest(@NotNull String filePath, @NotNull IElementType fileType, Function1<String, String> contentFilterFunction) throws Exception {
+        myFileExt = FileUtilRt.getExtension(PathUtil.getFileName(filePath));
+        myFile = createFile(filePath, fileType, contentFilterFunction.invoke(loadFile(filePath)));
+
+        doBaseTest(filePath, myFile);
+    }
+
     private void doBaseTest(@NotNull String filePath, @NotNull IElementType fileType) throws Exception {
         myFileExt = FileUtilRt.getExtension(PathUtil.getFileName(filePath));
         myFile = createFile(filePath, fileType);
 
+        doBaseTest(filePath, myFile);
+    }
+
+    private void doBaseTest(@NotNull String filePath, @NotNull PsiFile myFile) throws Exception {
         myFile.acceptChildren(new KtVisitorVoid() {
             @Override
             public void visitKtElement(@NotNull KtElement element) {
@@ -119,15 +136,20 @@ public abstract class AbstractParsingTest extends KtParsingTestCase {
     }
 
     private PsiFile createFile(@NotNull String filePath, @NotNull IElementType fileType) throws Exception {
+        return createFile(filePath, fileType, loadFile(filePath));
+    }
+
+    private PsiFile createFile(@NotNull String filePath, @NotNull IElementType fileType, @NotNull String fileContent) {
         KtPsiFactory psiFactory = KtPsiFactoryKt.KtPsiFactory(myProject);
+
         if (fileType == KtNodeTypes.EXPRESSION_CODE_FRAGMENT) {
-            return psiFactory.createExpressionCodeFragment(loadFile(filePath), null);
+            return psiFactory.createExpressionCodeFragment(fileContent, null);
         }
         else if (fileType == KtNodeTypes.BLOCK_CODE_FRAGMENT) {
-            return psiFactory.createBlockCodeFragment(loadFile(filePath), null);
+            return psiFactory.createBlockCodeFragment(fileContent, null);
         }
         else {
-            return createPsiFile(FileUtil.getNameWithoutExtension(PathUtil.getFileName(filePath)), loadFile(filePath));
+            return createPsiFile(FileUtil.getNameWithoutExtension(PathUtil.getFileName(filePath)), fileContent);
         }
     }
 

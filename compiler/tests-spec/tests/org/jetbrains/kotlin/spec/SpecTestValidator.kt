@@ -160,6 +160,15 @@ abstract class SpecTestValidator(private val testDataFile: File, private val tes
 
             return testCases
         }
+
+        fun testMetaInfoFilter(fileContent: String): String {
+            val fileContentWithoutTestInfo = Pattern.compile(testContentMetaInfoRegex).matcher(fileContent).replaceAll("")
+            val fileContentWithoutCasesInfo = Pattern.compile(testCaseInfo).matcher(fileContentWithoutTestInfo).replaceAll("")
+
+            return fileContentWithoutCasesInfo
+        }
+
+        fun testMetaInfoFilter(testFilePath: File) = testMetaInfoFilter(testFilePath.readText())
     }
 
     private fun hasUnexpectedBehavior(testCases: List<TestCase>, testInfoMatcher: Matcher): Boolean {

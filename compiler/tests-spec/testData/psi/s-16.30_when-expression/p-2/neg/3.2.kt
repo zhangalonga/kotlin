@@ -10,15 +10,15 @@
 
 // CASE DESCRIPTION: 'When' with bound value.
 fun case_1(value: Int) {
-    when (<!UNUSED_EXPRESSION!>value<!>)<!SYNTAX!><!>
+    when (value)
 }
 
 // CASE DESCRIPTION: 'When' without bound value, but with parentheses.
 fun case_2() {
-    when (<!SYNTAX!><!>)<!SYNTAX!><!>
+    when ()
 }
 
 // CASE DESCRIPTION: 'When' without bound value and parentheses.
 fun case_3() {
-    when<!SYNTAX!><!>
+    when
 }
