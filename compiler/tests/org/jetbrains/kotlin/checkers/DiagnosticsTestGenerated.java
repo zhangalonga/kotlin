@@ -11215,6 +11215,11 @@ public class DiagnosticsTestGenerated extends AbstractDiagnosticsTest {
                 runTest("compiler/testData/diagnostics/tests/j+k/invisiblePackagePrivateInheritedMember.kt");
             }
 
+            @TestMetadata("javaNullableNothing.kt")
+            public void testJavaNullableNothing() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/j+k/javaNullableNothing.kt");
+            }
+
             @TestMetadata("javaStaticImport.kt")
             public void testJavaStaticImport() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/j+k/javaStaticImport.kt");
