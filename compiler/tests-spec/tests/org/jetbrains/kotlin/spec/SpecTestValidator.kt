@@ -19,10 +19,15 @@ enum class TestType(val type: String) {
     }
 }
 
-enum class TestArea(val title: String) {
-    PARSING("PARSING"),
-    DIAGNOSTIC("DIAGNOSTIC"),
-    BLACKBOX("BLACK BOX")
+enum class TestArea(val folderName: String) {
+    PSI("psi"),
+    DIAGNOSTIC("diagnostics"),
+    CODEGEN("codegen");
+
+    companion object {
+        private val map = TestArea.values().associateBy(TestArea::folderName)
+        fun fromValue(folderName: String) = map[folderName]
+    }
 }
 
 data class TestCase(
@@ -33,6 +38,7 @@ data class TestCase(
 )
 
 data class TestInfo(
+    val testArea: TestArea,
     val testType: TestType,
     val sectionNumber: String,
     val sectionName: String,
@@ -49,7 +55,8 @@ data class TestInfo(
         if (this === other) return true
         if (other !is TestInfo) return false
 
-        return this.testType == other.testType
+        return this.testArea == other.testArea
+                && this.testType == other.testType
                 && this.sectionNumber == other.sectionNumber
                 && this.testNumber == other.testNumber
                 && this.paragraphNumber == other.paragraphNumber
@@ -65,8 +72,8 @@ enum class SpecTestValidationFailedReason(val description: String) {
     FILENAME_NOT_VALID(
         "Incorrect test filename or folder name.\n" +
                 "It must match the following path pattern: " +
-                "testsSpec/s<sectionNumber>_<sectionName>/p<paragraph>s<sentence>_<pos|neg>.kt " +
-                "(example: testsSpec/s16.30:when-expression/1:1-pos.kt)"
+                "testsData/<diagnostic|psi|codegen>/s<sectionNumber>_<sectionName>/p-<paragraph>/<pos|neg>/<sentence>_<testNumber>.kt " +
+                "(example: testsData/diagnostic/s-16.30_when-expression/p-3/pos/1.3.kt)"
     ),
     METAINFO_NOT_VALID("Incorrect meta info in test file."),
     FILENAME_AND_METAINFO_NOT_CONSISTENCY("Test info from filename and file content is not consistency"),
@@ -88,11 +95,11 @@ abstract class SpecTestValidator(private val testDataFile: File, private val tes
 
         private const val integerRegex = "[1-9]\\d*"
         private const val testPathRegex =
-            "^.*?/s-(?<sectionNumber>(?:$integerRegex)(?:\\.$integerRegex)*)_(?<sectionName>[\\w-]+)/p-(?<paragraphNumber>$integerRegex)/(?<testType>pos|neg)/(?<sentenceNumber>$integerRegex)\\.(?<testNumber>$integerRegex)\\.kt$"
+            "^.*?/(?<testArea>diagnostics|psi|codegen)/s-(?<sectionNumber>(?:$integerRegex)(?:\\.$integerRegex)*)_(?<sectionName>[\\w-]+)/p-(?<paragraphNumber>$integerRegex)/(?<testType>pos|neg)/(?<sentenceNumber>$integerRegex)\\.(?<testNumber>$integerRegex)\\.kt$"
         private const val testUnexpectedBehaviour = "(?:\n\\s*(?<unexpectedBehaviour>UNEXPECTED BEHAVIOUR))"
         private const val testIssues = "(?:\n\\s*ISSUES:\\s*(?<issues>(KT-[1-9]\\d*)(,\\s*KT-[1-9]\\d*)*))"
         private const val testContentMetaInfoRegex =
-            "\\/\\*\\s+KOTLIN SPEC TEST \\((?<testType>POSITIVE|NEGATIVE)\\)\\s+SECTION (?<sectionNumber>(?:$integerRegex)(?:\\.$integerRegex)*):\\s*(?<sectionName>.*?)\\s+PARAGRAPH:\\s*(?<paragraphNumber>$integerRegex)\\s+SENTENCE\\s*(?<sentenceNumber>$integerRegex):\\s*(?<sentence>.*?)\\s+NUMBER:\\s*(?<testNumber>$integerRegex)\\s+DESCRIPTION:\\s*(?<testDescription>.*?)$testUnexpectedBehaviour?$testIssues?\\s+\\*\\/\\s+"
+            "\\/\\*\\s+KOTLIN (?<testArea>DIAGNOSTIC|PSI|CODEGEN) SPEC TEST \\((?<testType>POSITIVE|NEGATIVE)\\)\\s+SECTION (?<sectionNumber>(?:$integerRegex)(?:\\.$integerRegex)*):\\s*(?<sectionName>.*?)\\s+PARAGRAPH:\\s*(?<paragraphNumber>$integerRegex)\\s+SENTENCE\\s*(?<sentenceNumber>$integerRegex):\\s*(?<sentence>.*?)\\s+NUMBER:\\s*(?<testNumber>$integerRegex)\\s+DESCRIPTION:\\s*(?<testDescription>.*?)$testUnexpectedBehaviour?$testIssues?\\s+\\*\\/\\s+"
         private const val testCaseInfo =
             "(?:(?:\\/\\*\n\\s*)|(?:\\/\\/\\s*))CASE DESCRIPTION:\\s*(?<testCaseDescription>.*?)$testUnexpectedBehaviour?$testIssues?\n(\\s\\*\\/)?"
 
@@ -107,6 +114,9 @@ abstract class SpecTestValidator(private val testDataFile: File, private val tes
             val testDescription = if (withDetails) testInfoMatcher.group("testDescription") else null
 
             return TestInfo(
+                if (directMappedTestTypeEnum)
+                    TestArea.valueOf(testInfoMatcher.group("testArea")) else
+                    TestArea.fromValue(testInfoMatcher.group("testArea"))!!,
                 if (directMappedTestTypeEnum)
                     TestType.valueOf(testInfoMatcher.group("testType")) else
                     TestType.fromValue(testInfoMatcher.group("testType"))!!,
@@ -225,6 +235,19 @@ abstract class SpecTestValidator(private val testDataFile: File, private val tes
         }
     }
 
+    protected fun validateTestType(computedTestType: TestType) {
+        if (computedTestType != testInfo.testType) {
+            val isNotNegative = computedTestType == TestType.POSITIVE && testInfo.testType == TestType.NEGATIVE
+            val isNotPositive = computedTestType == TestType.NEGATIVE && testInfo.testType == TestType.POSITIVE
+            val reason = when {
+                isNotNegative -> SpecTestValidationFailedReason.TEST_IS_NOT_NEGATIVE
+                isNotPositive -> SpecTestValidationFailedReason.TEST_IS_NOT_POSITIVE
+                else -> SpecTestValidationFailedReason.UNKNOWN
+            }
+            throw SpecTestValidationException(reason)
+        }
+    }
+
     fun validateByTestInfo() {
         this.parseTestInfo()
     }
@@ -241,7 +264,7 @@ abstract class SpecTestValidator(private val testDataFile: File, private val tes
         if (testInfoByContent.unexpectedBehavior) {
             println("(!!!) HAS UNEXPECTED BEHAVIOUR (!!!)")
         }
-        println("${testInfoByFilename.testType} ${testArea.title} SPEC TEST")
+        println("$testArea ${testInfoByFilename.testType} SPEC TEST")
         println("SECTION: ${testInfoByFilename.sectionNumber} ${testInfoByContent.sectionName} (paragraph: ${testInfoByFilename.paragraphNumber})")
         println("SENTENCE ${testInfoByContent.sentenceNumber}: ${testInfoByContent.sentence}")
         println("TEST NUMBER: ${testInfoByContent.testNumber}")

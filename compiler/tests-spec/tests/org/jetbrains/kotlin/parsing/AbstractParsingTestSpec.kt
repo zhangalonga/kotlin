@@ -25,5 +25,11 @@ abstract class AbstractParsingTestSpec : AbstractParsingTest() {
         testValidator.printTestInfo()
 
         super.doParsingTest(filePath, SpecTestValidator::testMetaInfoFilter)
+
+        try {
+            testValidator.validateTestType(myFile)
+        } catch (e: SpecTestValidationException) {
+            Assert.fail(e.reason.description)
+        }
     }
 }

@@ -54,33 +54,15 @@ class DiagnosticSpecTestValidator(testDataFile: File) : SpecTestValidator(testDa
         collectDiagnosticStatistic()
     }
 
-    private fun validateTestType(files: List<BaseDiagnosticsTest.TestFile>) {
-        if (!this::diagnostics.isInitialized) {
-            this.collectDiagnostics(files)
-        }
+    fun validateTestType(files: List<BaseDiagnosticsTest.TestFile>) {
+        if (!this::diagnostics.isInitialized) this.collectDiagnostics(files)
 
-        val computedTestType = computeTestType()
-
-        if (computedTestType != testInfo.testType) {
-            val isNotNegative = computedTestType == TestType.POSITIVE && testInfo.testType == TestType.NEGATIVE
-            val isNotPositive = computedTestType == TestType.NEGATIVE && testInfo.testType == TestType.POSITIVE
-            val reason = when {
-                isNotNegative -> SpecTestValidationFailedReason.TEST_IS_NOT_NEGATIVE
-                isNotPositive -> SpecTestValidationFailedReason.TEST_IS_NOT_POSITIVE
-                else -> SpecTestValidationFailedReason.UNKNOWN
-            }
-
-            throw SpecTestValidationException(reason)
-        }
+        validateTestType(computeTestType())
     }
 
     fun printDiagnosticStatistic() {
         val diagnostics = if (diagnosticStats.isNotEmpty()) "$diagnosticSeverityStats | $diagnosticStats" else "does not contain"
 
         println("DIAGNOSTICS: $diagnostics")
-    }
-
-    fun validateByDiagnostics(files: List<BaseDiagnosticsTest.TestFile>) {
-        validateTestType(files)
     }
 }

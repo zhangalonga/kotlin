@@ -45,7 +45,7 @@ A comment with meta information has the following format:
 Example:
 ```
 /*
- KOTLIN SPEC TEST (NEGATIVE)
+ KOTLIN DIAGNOSTIC SPEC TEST (NEGATIVE)
 
  SECTION 16.30: When expression
  PARAGRAPH: 3

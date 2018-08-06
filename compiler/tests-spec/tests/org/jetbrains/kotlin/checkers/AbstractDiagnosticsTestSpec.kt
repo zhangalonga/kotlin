@@ -87,7 +87,7 @@ abstract class AbstractDiagnosticsTestSpec : AbstractDiagnosticsTest() {
         moduleBindings: Map<TestModule?, BindingContext>
     ) {
         try {
-            testValidator.validateByDiagnostics(testFiles)
+            testValidator.validateTestType(testFiles)
         } catch (e: SpecTestValidationException) {
             Assert.fail(e.reason.description)
         } finally {
