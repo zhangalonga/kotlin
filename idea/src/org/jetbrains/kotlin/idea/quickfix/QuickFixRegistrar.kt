@@ -176,6 +176,7 @@ class QuickFixRegistrar : QuickFixContributor {
         CONFLICTING_IMPORT.registerFactory(RemovePsiElementSimpleFix.RemoveImportFactory)
 
         SUPERTYPE_NOT_INITIALIZED.registerFactory(SuperClassNotInitialized)
+        EXPECT_SUPER_CLASS_WITHOUT_CONSTRUCTORS.registerFactory(SuperClassNotInitialized)
         FUNCTION_CALL_EXPECTED.registerFactory(ChangeToFunctionInvocationFix)
         FUNCTION_EXPECTED.registerFactory(ChangeToPropertyAccessFix)
 

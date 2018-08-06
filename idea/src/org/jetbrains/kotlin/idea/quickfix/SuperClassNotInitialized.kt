@@ -64,7 +64,9 @@ object SuperClassNotInitialized : KotlinIntentionActionsFactory() {
         val constructors = superClass.constructors.filter {
             it.isVisible(classDescriptor) || (superClass.modality == Modality.SEALED && inSameFile)
         }
-        if (constructors.isEmpty()) return emptyList() // no accessible constructor
+        if (constructors.isEmpty() && (!superClass.isExpect || superClass.kind != ClassKind.CLASS)) {
+            return emptyList() // no accessible constructor
+        }
 
         val fixes = ArrayList<IntentionAction>()
 
