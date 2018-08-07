@@ -56,7 +56,7 @@ object NonExpansiveInheritanceRestrictionChecker {
 
         if (problemNodes.any { it.source != SourceElement.NO_SOURCE }) return
 
-        val typeFqNames = problemNodes.asSequence().map { it.containingDeclaration }.map { it.fqNameUnsafe.asString() }.toList().toSortedSet()
+        val typeFqNames = problemNodes.asSequence().map { it.containingDeclaration }.map { it.fqNameUnsafe.asString() }.toSortedSet()
         diagnosticHolder.report(Errors.EXPANSIVE_INHERITANCE_IN_JAVA.on(declaration, typeFqNames.joinToString(", ")))
     }
 

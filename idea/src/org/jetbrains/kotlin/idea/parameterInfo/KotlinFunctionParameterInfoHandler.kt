@@ -260,7 +260,6 @@ abstract class KotlinParameterInfoWithCallHandlerBase<TArgumentList : KtElement,
             parameter
                 .annotations
                 .getAllAnnotations()
-                .asSequence()
                 .filterNot { it.annotation.fqName in NULLABILITY_ANNOTATIONS }
                 .forEach {
                     it.annotation.fqName?.let { append("@${it.shortName().asString()} ") }

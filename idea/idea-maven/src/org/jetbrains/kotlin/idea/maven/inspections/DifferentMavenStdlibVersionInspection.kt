@@ -53,7 +53,7 @@ class DifferentMavenStdlibVersionInspection : DomElementsInspection<MavenDomProj
         }
 
         val pomFile = PomFile.forFileOrNull(file) ?: return
-        pomFile.findKotlinPlugins().asSequence().filter { it.version.stringValue != stdlibVersion.singleOrNull() }.forEach { plugin ->
+        pomFile.findKotlinPlugins().filter { it.version.stringValue != stdlibVersion.singleOrNull() }.forEach { plugin ->
             val fixes = plugin.version.stringValue?.let { version ->
                 createFixes(project, plugin.version, stdlibVersion + version)
             } ?: emptyList()
@@ -67,7 +67,6 @@ class DifferentMavenStdlibVersionInspection : DomElementsInspection<MavenDomProj
         }
 
         pomFile.findDependencies(MavenId(KotlinMavenConfigurator.GROUP_ID, MAVEN_STDLIB_ID, null))
-            .asSequence()
             .filter { it.version.stringValue != pluginVersion }
             .forEach { dependency ->
                 val fixes = dependency.version.stringValue?.let { version ->

@@ -33,7 +33,7 @@ object JsIrBuilder {
         ).apply {
             typeArguments?.let {
                 assert(typeArguments.size == typeArgumentsCount)
-                it.asSequence().withIndex().forEach { (i, t) -> putTypeArgument(i, t) }
+                it.withIndex().forEach { (i, t) -> putTypeArgument(i, t) }
             }
         }
 

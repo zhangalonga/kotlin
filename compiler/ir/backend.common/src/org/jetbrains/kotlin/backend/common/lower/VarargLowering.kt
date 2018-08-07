@@ -70,7 +70,6 @@ class VarargInjectionLowering constructor(val context: CommonBackendContext): De
                         log { "varargElementType: ${it.varargElementType} expr: ${ir2string(expression.getValueArgument(it))}" }
                     }
                     expression.symbol.owner.valueParameters
-                        .asSequence()
                         .filter { it.varargElementType != null && expression.getValueArgument(it.index) == null }
                         .forEach {
                             expression.putValueArgument(

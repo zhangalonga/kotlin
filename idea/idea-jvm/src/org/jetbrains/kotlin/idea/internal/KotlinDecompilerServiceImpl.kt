@@ -86,7 +86,7 @@ class KotlinDecompilerServiceImpl : KotlinDecompilerService {
         val generationState = KotlinBytecodeToolWindow.compileSingleFile(file, configuration) ?: return emptyMap()
 
         val bytecodeMap = hashMapOf<File, () -> ByteArray>()
-        generationState.factory.asList().asSequence().filter { FileUtilRt.extensionEquals(it.relativePath, "class") }.forEach {
+        generationState.factory.asList().filter { FileUtilRt.extensionEquals(it.relativePath, "class") }.forEach {
             bytecodeMap[File("/${it.relativePath}").absoluteFile] = { it.asByteArray() }
         }
         return bytecodeMap

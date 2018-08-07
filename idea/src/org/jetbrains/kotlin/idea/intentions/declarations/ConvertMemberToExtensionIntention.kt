@@ -260,7 +260,7 @@ class ConvertMemberToExtensionIntention : SelfTargetingRangeIntention<KtCallable
     ): Pair<KtCallableDeclaration, KtExpression?> {
         val expectedDeclaration = element.liftToExpected() as? KtCallableDeclaration
         if (expectedDeclaration != null) {
-            element.withExpectedActuals().asSequence().filterIsInstance<KtCallableDeclaration>().forEach {
+            element.withExpectedActuals().filterIsInstance<KtCallableDeclaration>().forEach {
                 if (it != element) {
                     processSingleDeclaration(it, allowExpected)
                 }

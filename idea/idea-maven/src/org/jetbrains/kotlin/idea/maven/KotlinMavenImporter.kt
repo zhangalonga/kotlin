@@ -346,7 +346,7 @@ class KotlinMavenImporter : MavenImporter(KOTLIN_PLUGIN_GROUP_ID, KOTLIN_PLUGIN_
             mavenProject.testResources.forEach { rootModel.addSourceFolder(it.directory, KotlinResourceRootType.TestResource) }
         }
 
-        state.addedSources.asSequence().filter { it !in toBeAdded }.forEach {
+        state.addedSources.filter { it !in toBeAdded }.forEach {
             rootModel.unregisterAll(it, true, true)
             state.addedSources.remove(it)
         }

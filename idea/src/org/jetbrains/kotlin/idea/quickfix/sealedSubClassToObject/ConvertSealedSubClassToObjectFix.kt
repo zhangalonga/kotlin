@@ -80,7 +80,7 @@ class ConvertSealedSubClassToObjectFix : LocalQuickFix {
         val list = this[KOTLIN_LANG] ?: return
         val singletonCall = KtPsiFactory(klass).buildExpression { appendName(klass.nameAsSafeName) }
 
-        list.asSequence().filter { it.node.elementType == KtNodeTypes.CALL_EXPRESSION }
+        list.filter { it.node.elementType == KtNodeTypes.CALL_EXPRESSION }
             .forEach { it.replace(singletonCall) }
     }
 
@@ -94,7 +94,7 @@ class ConvertSealedSubClassToObjectFix : LocalQuickFix {
         val elementFactory = JavaPsiFacade.getElementFactory(klass.project)
         val javaSingletonCall = elementFactory.createExpressionFromText("${klass.name}.INSTANCE", first)
 
-        list.asSequence().filter { it.node.elementType == JavaElementType.NEW_EXPRESSION }
+        list.filter { it.node.elementType == JavaElementType.NEW_EXPRESSION }
             .forEach {
                 when (it.parent.node.elementType) {
                     JavaElementType.EXPRESSION_STATEMENT -> it.delete()

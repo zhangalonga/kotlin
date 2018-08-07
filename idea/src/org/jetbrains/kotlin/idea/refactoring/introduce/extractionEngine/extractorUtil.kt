@@ -404,7 +404,6 @@ private fun makeCall(
     controlFlow.outputValues
         .filter { it != defaultValue }
         .flatMap { wrapCall(it, unboxingExpressions[it]!!) }
-        .asSequence()
         .withIndex()
             .forEach {
                 val (i, e) = it

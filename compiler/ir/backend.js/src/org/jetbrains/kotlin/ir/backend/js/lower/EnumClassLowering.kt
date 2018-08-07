@@ -154,7 +154,7 @@ class EnumClassTransformer(val context: JsIrBackendContext, private val irClass:
     }
 
     private fun lowerEnumConstructorsBody() {
-        irClass.declarations.asSequence().filterIsInstance<IrConstructor>().forEach {
+        irClass.declarations.filterIsInstance<IrConstructor>().forEach {
             IrEnumClassConstructorTransformer(it).transformBody()
         }
     }

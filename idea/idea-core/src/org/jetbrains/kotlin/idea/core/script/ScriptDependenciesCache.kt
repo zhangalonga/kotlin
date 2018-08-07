@@ -81,7 +81,7 @@ class ScriptDependenciesCache(private val project: Project) {
         ScriptDependenciesModificationTracker.getInstance(project).incModificationCount()
 
         launch(EDT(project)) {
-            files.asSequence().filter { it.isValid }.forEach {
+            files.filter { it.isValid }.forEach {
                 PsiManager.getInstance(project).findFile(it)?.let { psiFile ->
                     DaemonCodeAnalyzer.getInstance(project).restart(psiFile)
                 }

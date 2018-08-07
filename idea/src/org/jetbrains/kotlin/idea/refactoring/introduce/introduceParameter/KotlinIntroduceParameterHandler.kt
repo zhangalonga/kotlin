@@ -428,7 +428,6 @@ private fun findInternalUsagesOfParametersAndReceiver(
     val searchComplete = targetParent.project.runSynchronouslyWithProgress("Searching usages of '${targetParent.name}' parameter", true) {
         runReadAction {
             targetParent.getValueParameters()
-                .asSequence()
                 .filter { !it.hasValOrVar() }
                     .forEach {
                         val paramUsages = ReferencesSearch.search(it).map { it.element as KtElement }

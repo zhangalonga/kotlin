@@ -500,7 +500,7 @@ class PSICallResolver(
             oldCall.valueArguments.last()
         } else {
             if (externalLambdaArguments.size > 2) {
-                externalLambdaArguments.asSequence().drop(1).mapNotNull { it.getLambdaExpression() }.forEach {
+                externalLambdaArguments.drop(1).mapNotNull { it.getLambdaExpression() }.forEach {
                     context.trace.report(Errors.MANY_LAMBDA_EXPRESSION_ARGUMENTS.on(it))
                 }
             }

@@ -48,7 +48,7 @@ class AnnotationChecker(
             annotated.typeParameters.forEach { check(it, trace) }
         }
         if (annotated is KtTypeReference) {
-            annotated.typeElement?.typeArgumentsAsTypes?.asSequence()?.filterNotNull()?.forEach { check(it, trace) }
+            annotated.typeElement?.typeArgumentsAsTypes?.filterNotNull()?.forEach { check(it, trace) }
         }
         if (annotated is KtDeclarationWithBody) {
             // JetFunction or JetPropertyAccessor

@@ -35,7 +35,6 @@ class KotlinCallerUsage(element: KtNamedDeclaration): KotlinUsageInfo<KtNamedDec
             else -> null
         } ?: return true
         changeInfo.getNonReceiverParameters()
-            .asSequence()
             .withIndex()
                 .filter { it.value.isNewParameter }
                 .forEach {
@@ -53,7 +52,6 @@ class KotlinCallerCallUsage(element: KtCallElement): KotlinUsageInfo<KtCallEleme
         val psiFactory = KtPsiFactory(project)
         val isNamedCall = argumentList.arguments.any { it.getArgumentName() != null }
         changeInfo.getNonReceiverParameters()
-            .asSequence()
             .filter { it.isNewParameter }
                 .forEach {
                     val parameterName = it.name

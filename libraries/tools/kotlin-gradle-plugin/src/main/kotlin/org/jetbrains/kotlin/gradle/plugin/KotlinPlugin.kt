@@ -367,7 +367,7 @@ internal abstract class AbstractKotlinPlugin(
             if (isGradleVersionAtLeast(4, 4)) {
                 // Use the API introduced in Gradle 4.4 to modify the dependencies directly before they are resolved:
                 configuration.withDependencies { dependencySet ->
-                    dependencySet.asSequence().filterIsInstance<ExternalDependency>()
+                    dependencySet.filterIsInstance<ExternalDependency>()
                             .filter { it.group == "org.jetbrains.kotlin" && it.version.isNullOrEmpty() }
                             .forEach { it.version { constraint -> constraint.prefer(kotlinPluginVersion) } }
                 }

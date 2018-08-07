@@ -112,7 +112,7 @@ class MutableContextInfo private constructor(
         val info = this@MutableContextInfo
 
         fun <D> Map<ESValue, Set<D>>.printMapEntriesWithSeparator(separator: String) {
-            this.entries.asSequence().filter { it.value.isNotEmpty() }.forEach { (key, value) ->
+            this.entries.filter { it.value.isNotEmpty() }.forEach { (key, value) ->
                 append(key.toString())
                 append(" $separator ")
                 appendln(value.toString())

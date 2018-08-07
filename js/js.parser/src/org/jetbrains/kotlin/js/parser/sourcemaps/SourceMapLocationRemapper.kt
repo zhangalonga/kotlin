@@ -122,7 +122,7 @@ class SourceMapLocationRemapper(private val sourceMap: SourceMap, private val so
                 if (node.isNotBefore(firstChild)) {
                     accept(firstChild)
                     nodeList += node
-                    nonNullChildren.asSequence().drop(1).forEach { accept(it) }
+                    nonNullChildren.drop(1).forEach { accept(it) }
                 }
                 else {
                     nodeList += node

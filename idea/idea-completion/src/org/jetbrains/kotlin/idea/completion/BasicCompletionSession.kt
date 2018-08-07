@@ -749,7 +749,6 @@ class BasicCompletionSession(
             }
 
             superClasses
-                .asSequence()
                 .map { basicLookupElementFactory.createLookupElement(it, qualifyNestedClasses = true, includeClassTypeArguments = false) }
                 .forEach { collector.addElement(it) }
         }

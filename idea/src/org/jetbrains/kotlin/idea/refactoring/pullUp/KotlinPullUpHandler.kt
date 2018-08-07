@@ -106,7 +106,7 @@ class KotlinPullUpHandler : AbstractPullPushMembersHandler(
         }
         else {
             val manager = classOrObject.manager
-            members.asSequence().filter { manager.areElementsEquivalent(it.member, member) }.forEach { it.isChecked = true }
+            members.filter { manager.areElementsEquivalent(it.member, member) }.forEach { it.isChecked = true }
 
             KotlinPullUpDialog(project, classOrObject, superClasses, memberInfoStorage).show()
         }

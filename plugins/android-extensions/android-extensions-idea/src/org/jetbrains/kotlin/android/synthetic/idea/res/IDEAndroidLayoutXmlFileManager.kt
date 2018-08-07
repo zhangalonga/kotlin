@@ -160,7 +160,6 @@ class IDEAndroidLayoutXmlFileManager(val module: Module) : AndroidLayoutXmlFileM
         val variants = mutableListOf(AndroidVariant("main", resDirectoriesForMainVariant))
 
         androidFacet.getActiveSourceProviders()
-            .asSequence()
             .filter { it.name != "main" }
             .forEach { sourceProvider -> variants += sourceProvider.toVariant() }
 

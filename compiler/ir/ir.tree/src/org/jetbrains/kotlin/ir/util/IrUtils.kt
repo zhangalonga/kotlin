@@ -279,7 +279,7 @@ fun IrSimpleFunction.resolveFakeOverride(): IrSimpleFunction? {
     }
 
     visited.clear()
-    realOverrides.asSequence().toList().forEach { excludeRepeated(it) }
+    realOverrides.toList().forEach { excludeRepeated(it) }
 
     return realOverrides.singleOrNull { it.modality != Modality.ABSTRACT }
 }

@@ -46,7 +46,7 @@ class InterfaceLowering(val state: GenerationState) : IrElementTransformerVoid()
 
         val members = defaultImplsIrClass.declarations
 
-        irClass.declarations.asSequence().filterIsInstance<IrFunction>().forEach {
+        irClass.declarations.filterIsInstance<IrFunction>().forEach {
             val descriptor = it.descriptor
             if (it.origin == DECLARATION_ORIGIN_FUNCTION_FOR_DEFAULT_PARAMETER) {
                 members.add(it) //just copy $default to DefaultImpls

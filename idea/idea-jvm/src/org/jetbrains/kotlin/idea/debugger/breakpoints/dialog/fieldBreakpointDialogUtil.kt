@@ -27,7 +27,7 @@ fun PsiClass.collectProperties(): Array<DescriptorMemberChooserObject> {
     if (this is KtLightClassForFacade) {
         val result = arrayListOf<DescriptorMemberChooserObject>()
         this.files.forEach {
-            it.declarations.asSequence().filterIsInstance<KtProperty>().forEach {
+            it.declarations.filterIsInstance<KtProperty>().forEach {
                 result.add(DescriptorMemberChooserObject(it, it.unsafeResolveToDescriptor()))
             }
         }

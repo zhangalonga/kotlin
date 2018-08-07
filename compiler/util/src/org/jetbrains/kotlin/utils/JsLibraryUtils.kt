@@ -137,7 +137,6 @@ object JsLibraryUtils {
             }
 
             librariesWithoutSourceMaps
-                .asSequence()
                 .map {
                     val zipEntry = possibleMapFiles[it.path]
                     if (zipEntry != null) {

@@ -88,7 +88,7 @@ interface CallGenerator {
                 it.value.declIndex == it.index
             }.toList()
 
-            reordered.reversed().asSequence().map {
+            reordered.reversed().map {
                 val argumentAndDeclIndex = it.value
                 val type = valueParameterTypes.get(argumentAndDeclIndex.declIndex)
                 val stackValue = StackValue.local(codegen.frameMap.enterTemp(type), type)

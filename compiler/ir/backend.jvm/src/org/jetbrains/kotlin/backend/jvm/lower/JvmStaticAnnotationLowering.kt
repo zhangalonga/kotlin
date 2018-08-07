@@ -54,7 +54,7 @@ private class CompanionObjectJvmStaticLowering(val context: JvmBackendContext) :
             it is IrClass && it.isCompanion
         } as IrClass?
 
-        companion?.declarations?.asSequence()?.filter(::isJvmStaticFunction)?.forEach {
+        companion?.declarations?.filter(::isJvmStaticFunction)?.forEach {
             val jvmStaticFunction = it as IrSimpleFunction
             val newName = Name.identifier(context.state.typeMapper.mapFunctionName(jvmStaticFunction.symbol.descriptor, null))
             if (AsmUtil.getVisibilityAccessFlag(jvmStaticFunction.descriptor) != Opcodes.ACC_PUBLIC) {
@@ -143,7 +143,7 @@ private class SingletonObjectJvmStaticLowering(
     override fun lower(irClass: IrClass) {
         if (!irClass.isObject || irClass.isCompanion) return
 
-        irClass.declarations.asSequence().filter(::isJvmStaticFunction).forEach {
+        irClass.declarations.filter(::isJvmStaticFunction).forEach {
             val jvmStaticFunction = it as IrSimpleFunction
             val oldDispatchReceiverParemeter = jvmStaticFunction.dispatchReceiverParameter!!
             jvmStaticFunction.dispatchReceiverParameter = null

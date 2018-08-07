@@ -315,7 +315,7 @@ class ReifiedTypeParametersUsages {
         // 1. at least one of it's method contains operations to reify
         // 2. reified type parameter of these operations is not from current method signature
         // i.e. from outer scope
-        child.usedTypeParameters.asSequence().filterNot { name ->
+        child.usedTypeParameters.filterNot { name ->
             context.contextDescriptor.typeParameters.any { typeParameter ->
                 typeParameter.isReified && typeParameter.name.asString() == name
             }

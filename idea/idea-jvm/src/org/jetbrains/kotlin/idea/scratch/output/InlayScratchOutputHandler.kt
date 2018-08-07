@@ -108,7 +108,6 @@ object InlayScratchOutputHandler : ScratchOutputHandler {
         UIUtil.invokeLaterIfNeeded {
             editor
                 .editor.inlayModel.getInlineElementsInRange(0, editor.editor.document.textLength)
-                .asSequence()
                 .filter { it.renderer is InlayScratchFileRenderer }
                 .forEach { Disposer.dispose(it) }
         }

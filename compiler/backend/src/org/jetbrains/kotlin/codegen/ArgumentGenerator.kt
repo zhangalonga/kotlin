@@ -50,7 +50,7 @@ abstract class ArgumentGenerator {
             ArgumentAndDeclIndex(it, arg2Index[it]!!)
         }.toMutableList()
 
-        valueArgumentsByIndex.asSequence().withIndex().forEach {
+        valueArgumentsByIndex.withIndex().forEach {
             if (it.value is DefaultValueArgument) {
                 actualArgsWithDeclIndex.add(it.index, ArgumentAndDeclIndex(it.value, it.index))
             }
