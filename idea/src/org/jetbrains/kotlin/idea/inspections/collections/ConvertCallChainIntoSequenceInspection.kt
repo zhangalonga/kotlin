@@ -216,8 +216,6 @@ private val terminations = listOf(
     "firstOrNull",
     "fold",
     "foldIndexed",
-    "forEach",
-    "forEachIndexed",
     "groupBy",
     "groupByTo",
     "groupingBy",
@@ -253,7 +251,8 @@ private val terminations = listOf(
     "toList",
     "toMutableList",
     "toMutableSet",
-    "toSet"
+    "toSet",
+    "toSortedSet"
 ).associate {
     val pkg = if (it in listOf("contains", "indexOf", "lastIndexOf")) "kotlin.collections.List" else "kotlin.collections"
     it to FqName("$pkg.$it")
